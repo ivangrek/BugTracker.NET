@@ -12,6 +12,24 @@ IMPORTANT: If you are using the subversion integration feature and
 upgrading a pre-3.3.0 version, it's important that you read the notes 
 for version 3.3.0 below.
 
+
+-----------------------------------------------------------------------
+Version 3.6.6   2019/01/02  (svn revision 716, 717)
+-----------------------------------------------------------------------
+
+* Possibly fixed undefined "foo" error in add_attachment.aspx.
+
+Sometimes people ask me whether I'm still maintaining BugTracker.NET. 
+The answer is yes. I still do try to fix bugs. But I'm not planning on
+any new features.
+
+I first released BugTracker.NET in November 2002 and it's still being
+used. Not a bad run for a piece of software, right? If you are in the 
+mood, consider visiting my donation page:
+
+https://ifdefined.com/donate_to_bugtracker.html
+
+
 -----------------------------------------------------------------------
 Version 3.6.5   2017/10/05   (svn revision 714)
 -----------------------------------------------------------------------

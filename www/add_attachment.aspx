@@ -64,7 +64,7 @@ void Page_Load(Object sender, EventArgs e)
 void write_msg(string msg, bool rewrite_posts)
 {
 	string script = "script"; // C# compiler doesn't like s c r i p t
-	Response.Write("<" + script + ">");
+	Response.Write("<html><" + script + ">");
 	Response.Write("function foo() {");
 	Response.Write("parent.set_msg('");
 	Response.Write(msg);
@@ -75,7 +75,7 @@ void write_msg(string msg, bool rewrite_posts)
 		Response.Write 	("parent.opener.rewrite_posts(" + Convert.ToString(bugid) + ")");
 	}
 	Response.Write("}</" + script + ">");
-	Response.Write("<html><body onload='foo()'>");
+	Response.Write("<body onload='foo()'>");
 	Response.Write("</body></html>");
 	Response.End();
 }
