@@ -1,0 +1,69 @@
+<%--
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+--%>
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="users.aspx.cs" Inherits="BugTracker.Web.users" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Import Namespace="BugTracker.Web.Core" %>
+
+<asp:Content ContentPlaceHolderID="Head" runat="server">
+    <%--TODO
+    <body onload="filter_changed()">--%>
+
+    <script type="text/javascript" src="sortable.js"></script>
+
+    <script>
+
+        function filter_changed() {
+            el = document.getElementById("filter_users");
+
+            if (el.value != "") {
+                el.style.background = "yellow";
+            } else {
+                el.style.background = "white";
+            }
+
+        }
+    </script>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
+    <% this.security.write_menu(Response, "admin"); %>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="BodyContent" runat="server">
+    <div class="align">
+        <table border="0" width="80%">
+            <tr>
+                <td align="left" valign="top">
+                    <a href="edit_user.aspx">add new user </a>
+                    <td align="right" valign="top">
+                        <form runat="server">
+
+                            <span class="lbl">Show only usernames starting with:</span>
+                            <input type="text" runat="server" id="filter_users" class="txt" value="" onkeyup="filter_changed()" style="color: red;">
+                            &nbsp;&nbsp;&nbsp;
+
+                <span class="lbl">hide inactive users:</span>
+                            <asp:CheckBox ID="hide_inactive_users" class="cb" runat="server" />
+
+                            <input type="submit" class="btn" value="Refresh User List">
+                        </form>
+        </table>
+
+        <%
+
+            if (this.ds.Tables[0].Rows.Count > 0)
+                SortableHtmlTable.create_from_dataset(
+                    Response, this.ds, "", "", false);
+            else
+                Response.Write("No users to display.");
+        %>
+    </div>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="BodyFooter" runat="server">
+    <% Response.Write(Application["custom_footer"]); %>
+</asp:Content>

@@ -141,3 +141,4 @@ App_Data/*.ldf
 # Custom ruls
 *.jfm
 logs
+/src/BugTracker.Web/App_Data/lucene_index/
