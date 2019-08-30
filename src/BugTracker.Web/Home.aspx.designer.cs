@@ -11,7 +11,8 @@
 
 namespace BugTracker.Web
 {
-    public partial class Default {
+    public partial class Home
+    {
     
         /// <summary>
         /// user control.

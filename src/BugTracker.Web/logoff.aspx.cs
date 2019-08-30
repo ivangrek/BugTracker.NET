@@ -45,7 +45,7 @@ namespace BugTracker.Web
                 Session["project"] = null;
             }
 
-            Response.Redirect("default.aspx?msg=logged+off");
+            Response.Redirect("Home.aspx?msg=logged+off");
         }
     }
 }

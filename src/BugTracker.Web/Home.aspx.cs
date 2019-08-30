@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class Default : Page
+    public partial class Home : Page
     {
         public string Sql;
 
@@ -23,8 +23,7 @@ namespace BugTracker.Web
 
             Util.DoNotCache(Response);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "logon";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - logon";
 
             this.msg.InnerText = "";
 
@@ -130,7 +129,7 @@ namespace BugTracker.Web
                 var dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
                 {
-                    var usId = (int) dr["us_id"];
+                    var usId = (int)dr["us_id"];
 
                     Security.CreateSession(
                         Request,

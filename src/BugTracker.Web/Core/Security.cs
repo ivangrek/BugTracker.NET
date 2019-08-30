@@ -44,12 +44,12 @@ namespace BugTracker.Web.Core
 
             // This logic allows somebody to put a link in an email, like
             // EditBug.aspx?id=66
-            // The user would click on the link, go to the logon page (default.aspx),
+            // The user would click on the link, go to the logon page (Home.aspx),
             // and then after logging in continue on to EditBug.aspx?id=66
             var originalUrl = request.ServerVariables["URL"].ToLower();
             var originalQuerystring = request.ServerVariables["QUERY_STRING"].ToLower();
 
-            var target = "default.aspx";
+            var target = "Home.aspx";
 
             if (originalUrl.EndsWith("MBug.aspx")) target = "MLogin.aspx";
 
@@ -162,17 +162,17 @@ and us_active = 1";
             if (level == MustBeAdmin && !this.User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
-                response.Redirect("default.aspx");
+                response.Redirect("Home.aspx");
             }
             else if (level == AnyUserOkExceptGuest && this.User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
-                response.Redirect("default.aspx");
+                response.Redirect("Home.aspx");
             }
             else if (level == MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
-                response.Redirect("default.aspx");
+                response.Redirect("Home.aspx");
             }
 
             if (Util.GetSetting("WindowsAuthentication", "0") == "1")
@@ -280,7 +280,7 @@ function on_submit_search()
                     Util.GetSetting("CustomMenuLinkUrl", ""));
 
             if (this.User.IsAdmin)
-                WriteMenuItem(response, thisLink, "admin", "Admin.aspx");
+                WriteMenuItem(response, thisLink, "admin", "Administration/Home.aspx");
             else if (this.User.IsProjectAdmin) WriteMenuItem(response, thisLink, "users", "Users.aspx");
 
             // go to
@@ -317,7 +317,7 @@ function on_submit_search()
             if (this.AuthMethod == "plain")
             {
                 if (this.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
-                    WriteMenuItem(response, thisLink, "login", "default.aspx");
+                    WriteMenuItem(response, thisLink, "login", "Home.aspx");
                 else
                     WriteMenuItem(response, thisLink, "logoff", "Logoff.aspx");
             }

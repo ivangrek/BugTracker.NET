@@ -31,7 +31,7 @@
 
                     <div runat="server" class="err" id="msg">&nbsp;</div>
                     <p>
-                        <a href="Default.aspx">Go to login page</a>
+                        <a href="Home.aspx">Go to login page</a>
                 </td>
             </tr>
         </table>

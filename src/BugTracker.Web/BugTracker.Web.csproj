@@ -393,7 +393,7 @@
     <Content Include="Scripts\datejs\date-de-DE.js" />
     <Content Include="Scripts\datejs\date-fr-FR.js" />
     <Content Include="Scripts\datejs\date.js" />
-    <Content Include="Default.aspx" />
+    <Content Include="Home.aspx" />
     <Content Include="Content\images\delete.png" />
     <Content Include="DeleteAttachment.aspx" />
     <Content Include="DeleteBug.aspx" />
@@ -722,12 +722,12 @@
     <Compile Include="Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
+    <Compile Include="Home.aspx.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
+    <Compile Include="Home.aspx.designer.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeleteAttachment.aspx.cs">
       <DependentUpon>DeleteAttachment.aspx</DependentUpon>

@@ -26,7 +26,7 @@
         protocol.
     </p>
     <p>
-        <a href="default.aspx?msg=configuration+problem">Go to logon page.</a>
+        <a href="Home.aspx?msg=configuration+problem">Go to logon page.</a>
     </p>
 </asp:Content>
 

@@ -24,7 +24,7 @@
         3) Copy/paste the text in the file <a target="_blank" href="setup.sql">"setup.sql"</a> into <a target="_blank" href="Query.aspx">this form</a>
     and run it.
     <p>
-        4) Logon at <a href="default.aspx">default.aspx</a>
+        4) Logon at <a href="Home.aspx">Home.aspx</a>
     using user "admin" and password "admin"
     <p>
         You probably should spend time looking at the README.HTML and Web.config files. If you have any questions, post them to the <a href="http://sourceforge.net/projects/btnet/forums/forum/226938">Help Forum</a>.

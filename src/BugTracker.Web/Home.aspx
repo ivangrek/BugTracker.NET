@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="BugTracker.Web.Default" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="BugTracker.Web.Home" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
