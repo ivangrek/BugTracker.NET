@@ -34,4 +34,3 @@
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">
     <% Response.Write(Application["custom_footer"]); %>
 </asp:Content>
->

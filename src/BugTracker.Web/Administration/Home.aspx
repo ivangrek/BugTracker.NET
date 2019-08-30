@@ -82,44 +82,66 @@
             <tr>
                 <td>
                     <ul>
-                        <p>
-                            <li class="listitem"><a href="Users.aspx">Users</a>
-                                <p>
-                                <li class="listitem"><a href="Orgs.aspx">Organizations</a>
-                                    <p>
-                                    <li class="listitem"><a href="Projects.aspx">Projects</a>
-                                        <p>
-                                        <li class="listitem"><a href="Categories.aspx">Categories</a>
-                                            <p>
-                                            <li class="listitem"><a href="Priorities.aspx">Priorities</a>
-                                                <p>
-                                                <li class="listitem"><a href="Statuses.aspx">Statuses</a>
-                                                    <p>
-                                                    <li class="listitem"><a href="Udfs.aspx">User Defined Attribute</a>
-                                                        &nbsp;&nbsp;<span class="smallnote">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</span>
-                                                        <p>
-                                                        <li class="listitem"><a href="CustomFields.aspx">Custom Fields</a>
-                                                            &nbsp;&nbsp;<span class="smallnote">(add custom fields to the bug page)</span>
-                                                            <p>
-                                                            <li class="listitem"><a target="_blank" href="Query.aspx">Run Ad-hoc Query</a>
-                                                                &nbsp;&nbsp;
-                    <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">This links to Query.aspx.&nbsp;&nbsp;Query.aspx is potentially unsafe.&nbsp;&nbsp;Delete it if you are deploying on a public web server.
-                    </span>
-                                                                <br>
-                                                                <p>
-                                                                <li class="listitem"><a href="Notifications.aspx">Queued Email Notifications</a>
-                                                                    <p>
-                                                                    <li class="listitem"><a href="EditCustomHtml.aspx">Edit Custom Html</a>
-                                                                        <p>
-                                                                        <li class="listitem"><a href="EditWebConfig.aspx">Edit Web.Config</a>
-                                                                            &nbsp;&nbsp;
-                    <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!
-                    </span>
-                                                                            <br>
-                                                                            <p>
-                                                                            <li class="listitem"><a href="BackupDb.aspx">Backup Database</a>
-                                                                                <p>
-                                                                                <li class="listitem"><a href="ManageLogs.aspx">Manage Logs</a>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Users.aspx")%>">Users</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Orgs.aspx")%>">Organizations</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Projects.aspx")%>">Projects</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Categories.aspx")%>">Categories</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Priorities.aspx")%>">Priorities</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Statuses.aspx")%>">Statuses</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/Udfs.aspx")%>">User Defined Attribute</a>
+                            &nbsp;&nbsp;<span class="smallnote">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</span>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/CustomFields.aspx")%>">Custom Fields</a>
+                            &nbsp;&nbsp;<span class="smallnote">(add custom fields to the bug page)</span>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a target="_blank" href="<%= ResolveUrl("~/Query.aspx")%>">Run Ad-hoc Query</a>
+                            &nbsp;&nbsp;
+                            <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">This links to Query.aspx.&nbsp;&nbsp;Query.aspx is potentially unsafe.&nbsp;&nbsp;Delete it if you are deploying on a public web server.</span>
+                            <br>
+                            <p>
+                            <li class="listitem"><a href="<%= ResolveUrl("~/Notifications.aspx")%>">Queued Email Notifications</a></li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/EditCustomHtml.aspx")%>">Edit Custom Html</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/EditWebConfig.aspx")%>">Edit Web.Config</a>
+                            &nbsp;&nbsp;
+                            <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!</span>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/BackupDb.aspx")%>">Backup Database</a>
+                        </li>
+                        <p />
+                        <li class="listitem">
+                            <a href="<%= ResolveUrl("~/ManageLogs.aspx")%>">Manage Logs</a>
+                        </li>
                     </ul>
                 </td>
             </tr>

@@ -79,6 +79,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Administration\Home.aspx" />
     <Content Include="Content\about.html" />
     <Content Include="Content\btnet_screen_capture.exe" />
     <Content Include="Content\custom\btnet_custom.css" />
@@ -92,7 +93,6 @@
     <Content Include="Content\images\add.png" />
     <Content Include="AddAttachment.aspx" />
     <Content Include="AddCustomfield.aspx" />
-    <Content Include="Admin.aspx" />
     <Content Include="Ajax.aspx" />
     <Content Include="Ajax2.aspx" />
     <Content Include="App_Code\Highlighter.Net.dll" />
@@ -633,12 +633,12 @@
     <Compile Include="AddCustomfield.aspx.designer.cs">
       <DependentUpon>AddCustomfield.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin.aspx.cs">
-      <DependentUpon>Admin.aspx</DependentUpon>
+    <Compile Include="Administration\Home.aspx.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin.aspx.designer.cs">
-      <DependentUpon>Admin.aspx</DependentUpon>
+    <Compile Include="Administration\Home.aspx.designer.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
     </Compile>
     <Compile Include="Ajax.aspx.cs">
       <DependentUpon>Ajax.aspx</DependentUpon>
