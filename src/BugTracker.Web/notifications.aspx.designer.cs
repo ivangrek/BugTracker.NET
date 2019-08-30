@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class notifications {
+    public partial class Notifications {
     }
 }

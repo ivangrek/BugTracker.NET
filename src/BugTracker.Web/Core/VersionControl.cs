@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -15,7 +16,7 @@ namespace BugTracker.Web.Core
 
     public class VersionControl
     {
-        private static void configure_startinfo(ProcessStartInfo startInfo)
+        private static void ConfigureStartInfo(ProcessStartInfo startInfo)
         {
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.UseShellExecute = false;
@@ -24,17 +25,17 @@ namespace BugTracker.Web.Core
             startInfo.StandardOutputEncoding = Encoding.UTF8;
         }
 
-        public static string run_and_capture(string filename, string args, string working_dir)
+        public static string RunAndCapture(string filename, string args, string workingDir)
         {
             var p = new Process();
 
-            p.StartInfo.WorkingDirectory = working_dir;
+            p.StartInfo.WorkingDirectory = workingDir;
             p.StartInfo.Arguments = args;
             p.StartInfo.FileName = filename;
 
-            configure_startinfo(p.StartInfo);
+            ConfigureStartInfo(p.StartInfo);
 
-            Util.write_to_log(filename + " " + args);
+            Util.WriteToLog(filename + " " + args);
 
             p.Start();
             var stdout = p.StandardOutput.ReadToEnd();
@@ -45,8 +46,8 @@ namespace BugTracker.Web.Core
 
             if (error != "")
             {
-                Util.write_to_log("stderr:" + error);
-                Util.write_to_log("stdout:" + stdout);
+                Util.WriteToLog("stderr:" + error);
+                Util.WriteToLog("stdout:" + stdout);
             }
 
             if (error != ""
@@ -61,55 +62,55 @@ namespace BugTracker.Web.Core
                 return msg;
             }
 
-            Util.write_to_log("stdout:" + stdout);
+            Util.WriteToLog("stdout:" + stdout);
             return stdout;
         }
 
-        public static string run_git(string args, string working_dir)
+        public static string RunGit(string args, string workingDir)
         {
-            var filename = Util.get_setting("GitPathToGit", "[path to git.exe?]");
-            return run_and_capture(filename, args, working_dir);
+            var filename = Util.GetSetting("GitPathToGit", "[path to git.exe?]");
+            return RunAndCapture(filename, args, workingDir);
         }
 
-        public static string run_hg(string args, string working_dir)
+        public static string RunHg(string args, string workingDir)
         {
-            var filename = Util.get_setting("MercurialPathToHg", "[path to hg.exe?]");
-            return run_and_capture(filename, args, working_dir);
+            var filename = Util.GetSetting("MercurialPathToHg", "[path to hg.exe?]");
+            return RunAndCapture(filename, args, workingDir);
         }
 
-        public static string run_svn(string args_without_password, string repo)
+        public static string RunSvn(string argsWithoutPassword, string repo)
         {
             // run "svn.exe" and capture its output
 
             var p = new Process();
-            var filename = Util.get_setting("SubversionPathToSvn", "svn");
+            var filename = Util.GetSetting("SubversionPathToSvn", "svn");
             p.StartInfo.FileName = filename;
 
-            configure_startinfo(p.StartInfo);
+            ConfigureStartInfo(p.StartInfo);
 
-            args_without_password += " --non-interactive";
+            argsWithoutPassword += " --non-interactive";
 
-            var more_args = Util.get_setting("SubversionAdditionalArgs", "");
-            if (more_args != "") args_without_password += " " + more_args;
+            var moreArgs = Util.GetSetting("SubversionAdditionalArgs", "");
+            if (moreArgs != "") argsWithoutPassword += " " + moreArgs;
 
-            Util.write_to_log(filename + " " + args_without_password);
+            Util.WriteToLog(filename + " " + argsWithoutPassword);
 
-            var args_with_password = args_without_password;
+            var argsWithPassword = argsWithoutPassword;
 
             // add a username and password to the args
-            var username_and_password_and_websvn = Util.get_setting(repo, "");
+            var usernameAndPasswordAndWebsvn = Util.GetSetting(repo, "");
 
-            var parts = Util.rePipes.Split(username_and_password_and_websvn);
+            var parts = Util.RePipes.Split(usernameAndPasswordAndWebsvn);
             if (parts.Length > 1)
                 if (parts[0] != "" && parts[1] != "")
                 {
-                    args_with_password += " --username ";
-                    args_with_password += parts[0];
-                    args_with_password += " --password ";
-                    args_with_password += parts[1];
+                    argsWithPassword += " --username ";
+                    argsWithPassword += parts[0];
+                    argsWithPassword += " --password ";
+                    argsWithPassword += parts[1];
                 }
 
-            p.StartInfo.Arguments = args_with_password;
+            p.StartInfo.Arguments = argsWithPassword;
             p.Start();
             var stdout = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
@@ -119,8 +120,8 @@ namespace BugTracker.Web.Core
 
             if (error != "")
             {
-                Util.write_to_log("stderr:" + error);
-                Util.write_to_log("stdout:" + stdout);
+                Util.WriteToLog("stderr:" + error);
+                Util.WriteToLog("stdout:" + stdout);
             }
 
             if (error != "")
@@ -128,7 +129,7 @@ namespace BugTracker.Web.Core
                 var msg = "<div style='color:red; font-weight: bold; font-size: 10pt;'>";
                 msg += "<br>Error executing svn command:";
                 msg += "<br>Error: " + error;
-                msg += "<br>Command: " + filename + " " + args_without_password;
+                msg += "<br>Command: " + filename + " " + argsWithoutPassword;
                 if (error.Contains("File not found"))
                 {
                     msg += "<br><br>***** Has this file been deleted or renamed? See the following links:";
@@ -143,11 +144,11 @@ namespace BugTracker.Web.Core
                 return msg;
             }
 
-            Util.write_to_log("stdout:" + stdout);
+            Util.WriteToLog("stdout:" + stdout);
             return stdout;
         }
 
-        private static void which_chars_changed(string s1, string s2, ref string part1, ref string part2,
+        private static void WhichCharsChanged(string s1, string s2, ref string part1, ref string part2,
             ref string part3)
         {
             // Input is two strings
@@ -157,18 +158,18 @@ namespace BugTracker.Web.Core
             // Starting from the beginning of string 2, what is the first char that's different from string 1? That's one divide.
             // Starting from the end of string 2, going in reverse, what's the first char that's different from string 1?  That's another divider.
 
-            var first_diff_char = -1;
-            var last_diff_char = -1;
+            var firstDiffChar = -1;
+            var lastDiffChar = -1;
 
             if (s1.Length <= s2.Length)
             {
                 var i = 0;
-                while (first_diff_char == -1
+                while (firstDiffChar == -1
                        && i < s1.Length)
                 {
                     if (s1[i] != s2[i])
                     {
-                        first_diff_char = i;
+                        firstDiffChar = i;
                         break;
                     }
 
@@ -176,17 +177,17 @@ namespace BugTracker.Web.Core
                 }
 
                 // if chars were appended to s2
-                if (first_diff_char == -1) first_diff_char = i;
+                if (firstDiffChar == -1) firstDiffChar = i;
             }
             else
             {
                 var i = 0;
-                while (first_diff_char == -1
+                while (firstDiffChar == -1
                        && i < s2.Length)
                 {
                     if (s1[i] != s2[i])
                     {
-                        first_diff_char = i;
+                        firstDiffChar = i;
                         break;
                     }
 
@@ -196,19 +197,19 @@ namespace BugTracker.Web.Core
                 // if chars were deleted off the end of s2, we won't mark anything as orange
             }
 
-            if (first_diff_char != -1)
+            if (firstDiffChar != -1)
             {
                 var index1 = s1.Length - 1;
                 var index2 = s2.Length - 1;
 
                 if (s1.Length <= s2.Length)
                 {
-                    while (last_diff_char == -1
+                    while (lastDiffChar == -1
                            && index1 > -1)
                     {
                         if (s1[index1] != s2[index2])
                         {
-                            last_diff_char = index2;
+                            lastDiffChar = index2;
                             break;
                         }
 
@@ -217,16 +218,16 @@ namespace BugTracker.Web.Core
                     }
 
                     // if chars were added onto the front of s2
-                    if (last_diff_char == -1) last_diff_char = index2;
+                    if (lastDiffChar == -1) lastDiffChar = index2;
                 }
                 else
                 {
-                    while (last_diff_char == -1
+                    while (lastDiffChar == -1
                            && index2 > -1)
                     {
                         if (s1[index1] != s2[index2])
                         {
-                            last_diff_char = index2;
+                            lastDiffChar = index2;
                             break;
                         }
 
@@ -238,37 +239,37 @@ namespace BugTracker.Web.Core
                 }
             }
 
-            if (first_diff_char == -1 || last_diff_char == -1)
+            if (firstDiffChar == -1 || lastDiffChar == -1)
             {
                 part1 = s2;
             }
             else
             {
-                if (first_diff_char > last_diff_char)
+                if (firstDiffChar > lastDiffChar)
                     // here's an example
                     // ab c
                     // ab b c
                     // From the left, the first diff char is the second "b", at index 3
                     // From the right, the first (meaning last) diff char is the space, at index 2
-                    last_diff_char = s2.Length - 1;
+                    lastDiffChar = s2.Length - 1;
 
-                part1 = s2.Substring(0, first_diff_char);
-                part2 = s2.Substring(first_diff_char, last_diff_char + 1 - first_diff_char);
-                part3 = s2.Substring(last_diff_char + 1);
+                part1 = s2.Substring(0, firstDiffChar);
+                part2 = s2.Substring(firstDiffChar, lastDiffChar + 1 - firstDiffChar);
+                part3 = s2.Substring(lastDiffChar + 1);
             }
         }
 
-        private static void mark_change_lines(int i, string[] lines, int PlusCount)
+        private static void MarkChangeLines(int i, string[] lines, int plusCount)
         {
             // Modify the UDF to make it richer and easier to process.
             // The heuristic has identified some of the -/+ lines as really meaning a change.
             // Marking the before lines with a "P" and the after lines with an "M".
 
             // mark the "before" lines
-            var prev_line = i - 1;
-            for (var j = 0; j < PlusCount; j++)
+            var prevLine = i - 1;
+            for (var j = 0; j < plusCount; j++)
             {
-                var m = prev_line - j;
+                var m = prevLine - j;
                 var sub = "";
                 if (lines[m].Length > 0)
                     sub = lines[m].Substring(1);
@@ -276,22 +277,22 @@ namespace BugTracker.Web.Core
             }
 
             // mark the "after" lineas
-            for (var j = PlusCount; j < 2 * PlusCount; j++)
+            for (var j = plusCount; j < 2 * plusCount; j++)
             {
-                var m = prev_line - j;
+                var m = prevLine - j;
                 var sub = "";
                 if (lines[m].Length > 0)
                     sub = lines[m].Substring(1);
-                lines[prev_line - j] = "M" + lines[prev_line - j].Substring(1);
+                lines[prevLine - j] = "M" + lines[prevLine - j].Substring(1);
             }
         }
 
-        private static void maybe_mark_change_lines_in_unified_diff(string[] lines)
+        private static void MaybeMarkCangeLnesInUnifiedDiff(string[] lines)
         {
             // If there are N minuses followed by exactly N pluses, we'll call that a change
 
-            var MinusCount = 0;
-            var PlusCount = 0;
+            var minusCount = 0;
+            var plusCount = 0;
             var state = State.None;
 
             var len = lines.Length;
@@ -303,88 +304,88 @@ namespace BugTracker.Web.Core
                     if (lines[i].StartsWith("-"))
                     {
                         state = State.CountingMinuses;
-                        MinusCount++;
+                        minusCount++;
                     }
                 }
                 else if (state == State.CountingMinuses)
                 {
                     if (lines[i].StartsWith("-"))
                     {
-                        MinusCount++;
+                        minusCount++;
                     }
                     else if (lines[i].StartsWith("+"))
                     {
                         state = State.CountingPluses;
-                        PlusCount++;
+                        plusCount++;
                     }
                     else
                     {
                         state = State.None;
-                        MinusCount = 0;
-                        PlusCount = 0;
+                        minusCount = 0;
+                        plusCount = 0;
                     }
                 }
                 else if (state == State.CountingPluses)
                 {
                     if (lines[i].StartsWith("+"))
                     {
-                        PlusCount++;
+                        plusCount++;
                     }
                     else
                     {
-                        if (PlusCount > 0 && PlusCount < 20 && PlusCount == MinusCount)
-                            mark_change_lines(i, lines, PlusCount);
+                        if (plusCount > 0 && plusCount < 20 && plusCount == minusCount)
+                            MarkChangeLines(i, lines, plusCount);
 
                         state = State.None;
-                        PlusCount = 0;
-                        MinusCount = 0;
+                        plusCount = 0;
+                        minusCount = 0;
 
                         if (lines[i].StartsWith("-"))
                         {
                             state = State.CountingMinuses;
-                            MinusCount++;
+                            minusCount++;
                         }
                     }
                 }
 
-            if (PlusCount > 0 && PlusCount < 20 && PlusCount == MinusCount) mark_change_lines(i, lines, PlusCount);
+            if (plusCount > 0 && plusCount < 20 && plusCount == minusCount) MarkChangeLines(i, lines, plusCount);
         }
 
-        public static string visual_diff(string unified_diff_text, string left_in, string right_in, ref string left_out,
-            ref string right_out)
+        public static string VisualDiff(string unifiedDiffText, string leftIn, string rightIn, ref string leftOut,
+            ref string rightOut)
         {
             var regex = new Regex("\n");
             var line = "";
 
-            var diff_text = unified_diff_text;
+            var diffText = unifiedDiffText;
 
             // get rid of lines we don't need
-            var pos = unified_diff_text.IndexOf("\n@@");
-            if (pos > -1) diff_text = unified_diff_text.Substring(pos + 1);
+            var pos = unifiedDiffText.IndexOf("\n@@");
+            if (pos > -1) diffText = unifiedDiffText.Substring(pos + 1);
 
-            if (diff_text == "") return "No differences.";
+            if (diffText == "") return "No differences.";
 
             // first, split everything into lines
-            var diff_lines = regex.Split(diff_text.Replace("\r\n", "\n"));
+            var diffLines = regex.Split(diffText.Replace("\r\n", "\n"));
 
-            maybe_mark_change_lines_in_unified_diff(diff_lines);
+            MaybeMarkCangeLnesInUnifiedDiff(diffLines);
 
             // html encode
-            var left_text = HttpUtility.HtmlEncode(left_in);
-            var right_text = HttpUtility.HtmlEncode(right_in);
+            var leftText = HttpUtility.HtmlEncode(leftIn);
+            var rightText = HttpUtility.HtmlEncode(rightIn);
             // split into lines
-            var left_lines = regex.Split(left_text.Replace("\r\n", "\n"));
-            var right_lines = regex.Split(right_text.Replace("\r\n", "\n"));
+            var leftLines = regex.Split(leftText.Replace("\r\n", "\n"));
+            var rightLines = regex.Split(rightText.Replace("\r\n", "\n"));
 
             // for formatting line numbers
-            var max_lines = left_lines.Length;
-            if (right_lines.Length > left_lines.Length)
-                max_lines = right_lines.Length;
+            var maxLines = leftLines.Length;
+            if (rightLines.Length > leftLines.Length)
+                maxLines = rightLines.Length;
 
             // I just want to pad left a certain number of places
             // probably any 5th grader would know how to do this better than me
             var blank = "";
-            var digit_places = Convert.ToString(max_lines).Length;
+            var digitPlaces = Convert.ToString(maxLines).Length;
 
             var lx = 0;
             var rx = 0;
@@ -393,7 +394,7 @@ namespace BugTracker.Web.Core
             var sL = new StringBuilder();
             var sR = new StringBuilder();
 
-            var changed_lines_saved_for_later_compare = new List<string>();
+            var changedLinesSavedForLaterCompare = new List<string>();
 
             // L E F T
             // L E F T
@@ -402,9 +403,9 @@ namespace BugTracker.Web.Core
             //sL.Append("<div class=difffile>" + "left"  + "</div>");
             //sR.Append("<div class=difffile>" + "right" + "</div>");
 
-            while (dx < diff_lines.Length)
+            while (dx < diffLines.Length)
             {
-                line = diff_lines[dx];
+                line = diffLines[dx];
                 if (line.StartsWith("@@ -") && line.Contains(" @@"))
                 {
                     // See comment at the top of this file explaining Unified Diff Format
@@ -414,59 +415,59 @@ namespace BugTracker.Web.Core
                     // @@ -1 +1,2 @@
 
                     var pos1 = line.IndexOf("-");
-                    var comma_pos = line.IndexOf(",", pos1);
-                    if (comma_pos == -1) comma_pos = 9999;
-                    var pos2 = Math.Min(line.IndexOf(" ", pos1), comma_pos);
-                    var left_start_line_string = line.Substring(pos1 + 1, pos2 - (pos1 + 1));
-                    var start_line = Convert.ToInt32(left_start_line_string);
-                    start_line -= 1; // adjust for zero based index
+                    var commaPos = line.IndexOf(",", pos1);
+                    if (commaPos == -1) commaPos = 9999;
+                    var pos2 = Math.Min(line.IndexOf(" ", pos1), commaPos);
+                    var leftStartLineString = line.Substring(pos1 + 1, pos2 - (pos1 + 1));
+                    var startLine = Convert.ToInt32(leftStartLineString);
+                    startLine -= 1; // adjust for zero based index
 
                     // advance through left file until we hit the starting line of the range
-                    while (lx < start_line)
+                    while (lx < startLine)
                     {
                         sL.Append("<span class=diffnum>");
-                        sL.Append(Convert.ToString(lx + 1).PadLeft(digit_places, '0'));
+                        sL.Append(Convert.ToString(lx + 1).PadLeft(digitPlaces, '0'));
                         sL.Append(" </span>");
-                        sL.Append(left_lines[lx++]);
+                        sL.Append(leftLines[lx++]);
                         sL.Append("\n");
                     }
 
                     // we are positioned in the left file at the start of the diff blockk
                     dx++;
-                    line = diff_lines[dx];
-                    while (dx < diff_lines.Length
+                    line = diffLines[dx];
+                    while (dx < diffLines.Length
                            && !(line.StartsWith("@@ -") && line.EndsWith(" @@")))
                     {
                         if (line.StartsWith("+"))
                         {
                             sL.Append("<span class=diffnum>");
-                            sL.Append(blank.PadLeft(digit_places, ' '));
+                            sL.Append(blank.PadLeft(digitPlaces, ' '));
                             sL.Append(" </span>");
                             sL.Append("<span class=diffblank>&nbsp;&nbsp;&nbsp;&nbsp;</span>\n");
                         }
                         else if (line.StartsWith("-"))
                         {
                             sL.Append("<span class=diffnum>");
-                            sL.Append(Convert.ToString(lx + 1).PadLeft(digit_places, '0'));
+                            sL.Append(Convert.ToString(lx + 1).PadLeft(digitPlaces, '0'));
                             sL.Append(" </span>");
 
                             sL.Append("<span class=diffdel>");
 
-                            sL.Append(left_lines[lx++]);
+                            sL.Append(leftLines[lx++]);
                             sL.Append("</span>\n");
                         }
                         else if (line.StartsWith("M"))
                         {
                             sL.Append("<span class=diffnum>");
-                            sL.Append(Convert.ToString(lx + 1).PadLeft(digit_places, '0'));
+                            sL.Append(Convert.ToString(lx + 1).PadLeft(digitPlaces, '0'));
                             sL.Append(" </span>");
 
                             sL.Append("<span class=diffchg>");
 
                             // Save the left lines for later, so that we can mark the changed chars in orange
-                            changed_lines_saved_for_later_compare.Add(left_lines[lx]);
+                            changedLinesSavedForLaterCompare.Add(leftLines[lx]);
 
-                            sL.Append(left_lines[lx++]);
+                            sL.Append(leftLines[lx++]);
                             sL.Append("</span>\n");
                         }
                         else if (line.StartsWith("\\") || line == "" || line.StartsWith("P"))
@@ -475,31 +476,31 @@ namespace BugTracker.Web.Core
                         else
                         {
                             sL.Append("<span class=diffnum>");
-                            sL.Append(Convert.ToString(lx + 1).PadLeft(digit_places, '0'));
+                            sL.Append(Convert.ToString(lx + 1).PadLeft(digitPlaces, '0'));
                             sL.Append(" </span>");
-                            sL.Append(left_lines[lx++]);
+                            sL.Append(leftLines[lx++]);
                             sL.Append("\n");
                         }
 
                         dx++;
 
-                        if (dx < diff_lines.Length) line = diff_lines[dx];
+                        if (dx < diffLines.Length) line = diffLines[dx];
                     } // end of range block
                 }
 
-                if (dx < diff_lines.Length && line.StartsWith("@@ -") && line.Contains(" @@"))
+                if (dx < diffLines.Length && line.StartsWith("@@ -") && line.Contains(" @@"))
                     continue;
                 break;
             } // end of all blocks
 
             // advance through left file until we hit the starting line of the range
 
-            while (lx < left_lines.Length)
+            while (lx < leftLines.Length)
             {
                 sL.Append("<span class=diffnum>");
-                sL.Append(Convert.ToString(lx + 1).PadLeft(digit_places, '0'));
+                sL.Append(Convert.ToString(lx + 1).PadLeft(digitPlaces, '0'));
                 sL.Append(" </span>");
-                sL.Append(left_lines[lx++]);
+                sL.Append(leftLines[lx++]);
                 sL.Append("\n");
             }
 
@@ -507,11 +508,11 @@ namespace BugTracker.Web.Core
             // R I G H T
             // R I G H T
             dx = 0;
-            var index_of_changed_lines = 0;
+            var indexOfChangedLines = 0;
 
-            while (dx < diff_lines.Length)
+            while (dx < diffLines.Length)
             {
-                line = diff_lines[dx];
+                line = diffLines[dx];
                 if (line.StartsWith("@@ -") && line.Contains(" @@"))
                 {
                     // See comment at the top of this file explaining Unified Diff Format
@@ -522,55 +523,55 @@ namespace BugTracker.Web.Core
                     var pos2 = line.IndexOf(",", pos1);
                     if (pos2 == -1) pos2 = line.IndexOf(" ", pos1);
 
-                    var right_start_line_string = line.Substring(pos1 + 1, pos2 - (pos1 + 1));
-                    var start_line = Convert.ToInt32(right_start_line_string);
-                    start_line -= 1; // adjust for zero based index
+                    var rightStartLineString = line.Substring(pos1 + 1, pos2 - (pos1 + 1));
+                    var startLine = Convert.ToInt32(rightStartLineString);
+                    startLine -= 1; // adjust for zero based index
 
                     // advance through right file until we hit the starting line of the range
-                    while (rx < start_line)
+                    while (rx < startLine)
                     {
                         sR.Append("<span class=diffnum>");
-                        sR.Append(Convert.ToString(rx + 1).PadLeft(digit_places, '0'));
+                        sR.Append(Convert.ToString(rx + 1).PadLeft(digitPlaces, '0'));
                         sR.Append(" </span>");
-                        sR.Append(right_lines[rx++]);
+                        sR.Append(rightLines[rx++]);
                         sR.Append("\n");
                     }
 
                     // we are positioned in the right file at the start of the diff block
                     dx++;
-                    line = diff_lines[dx];
+                    line = diffLines[dx];
 
-                    while (dx < diff_lines.Length && !(line.StartsWith("@@ -") && line.Contains(" @@")))
+                    while (dx < diffLines.Length && !(line.StartsWith("@@ -") && line.Contains(" @@")))
                     {
                         if (line.StartsWith("-"))
                         {
                             sR.Append("<span class=diffnum>");
-                            sR.Append(blank.PadLeft(digit_places, ' '));
+                            sR.Append(blank.PadLeft(digitPlaces, ' '));
                             sR.Append(" </span>");
                             sR.Append("<span class=diffblank>&nbsp;&nbsp;&nbsp;&nbsp;</span>\n");
                         }
                         else if (line.StartsWith("+"))
                         {
                             sR.Append("<span class=diffnum>");
-                            sR.Append(Convert.ToString(rx + 1).PadLeft(digit_places, '0'));
+                            sR.Append(Convert.ToString(rx + 1).PadLeft(digitPlaces, '0'));
                             sR.Append(" </span>");
                             sR.Append("<span class=diffadd>");
-                            sR.Append(right_lines[rx++]);
+                            sR.Append(rightLines[rx++]);
                             sR.Append("</span>\n");
                         }
                         else if (line.StartsWith("P"))
                         {
                             sR.Append("<span class=diffnum>");
-                            sR.Append(Convert.ToString(rx + 1).PadLeft(digit_places, '0'));
+                            sR.Append(Convert.ToString(rx + 1).PadLeft(digitPlaces, '0'));
                             sR.Append(" </span>");
 
                             var part1 = "";
                             var part2 = "";
                             var part3 = "";
 
-                            which_chars_changed(changed_lines_saved_for_later_compare[
-                                    index_of_changed_lines],
-                                right_lines[rx++],
+                            WhichCharsChanged(changedLinesSavedForLaterCompare[
+                                    indexOfChangedLines],
+                                rightLines[rx++],
                                 ref part1, ref part2, ref part3);
 
                             sR.Append("<span class=diffchg>");
@@ -585,7 +586,7 @@ namespace BugTracker.Web.Core
                             sR.Append(part3);
                             sR.Append("</span>");
 
-                            index_of_changed_lines++;
+                            indexOfChangedLines++;
                             sR.Append("</span>\n");
                         }
                         else if (line.StartsWith("\\") || line == "" || line.StartsWith("M"))
@@ -594,84 +595,84 @@ namespace BugTracker.Web.Core
                         else
                         {
                             sR.Append("<span class=diffnum>");
-                            sR.Append(Convert.ToString(rx + 1).PadLeft(digit_places, '0'));
+                            sR.Append(Convert.ToString(rx + 1).PadLeft(digitPlaces, '0'));
                             sR.Append(" </span>");
-                            sR.Append(right_lines[rx++]);
+                            sR.Append(rightLines[rx++]);
                             sR.Append("\n");
                         }
 
                         dx++;
 
-                        if (dx < diff_lines.Length) line = diff_lines[dx];
+                        if (dx < diffLines.Length) line = diffLines[dx];
                     } // end of range block
                 }
 
-                if (dx < diff_lines.Length && line.StartsWith("@@ -") && line.EndsWith(" @@"))
+                if (dx < diffLines.Length && line.StartsWith("@@ -") && line.EndsWith(" @@"))
                     continue;
                 break;
             } // end of all blocks
 
             // advance through right file until we're done
 
-            while (rx < right_lines.Length)
+            while (rx < rightLines.Length)
             {
                 sR.Append("<span class=diffnum>");
-                sR.Append(Convert.ToString(rx + 1).PadLeft(digit_places, '0'));
+                sR.Append(Convert.ToString(rx + 1).PadLeft(digitPlaces, '0'));
                 sR.Append(" </span>");
-                sR.Append(right_lines[rx++]);
+                sR.Append(rightLines[rx++]);
                 sR.Append("\n");
             }
 
-            left_out = sL.ToString();
-            right_out = sR.ToString();
+            leftOut = sL.ToString();
+            rightOut = sR.ToString();
 
             return "";
         }
 
-/*
+        /*
 
-hg
+        hg
 
-*/
+        */
 
-        public static string hg_log(string repo, string revision, string file_path)
+        public static string HgLog(string repo, string revision, string filePath)
         {
             var args = "log  --style btnet -r :";
             args += revision;
             args += " \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_hg(args, repo);
+            var result = RunHg(args, repo);
             return result;
         }
 
-        public static string hg_blame(string repo, string file_path, string revision)
+        public static string HgBlame(string repo, string filePath, string revision)
         {
             var args = "blame -u -d -c -l -v -r ";
             args += revision;
             args += " \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_hg(args, repo);
+            var result = RunHg(args, repo);
             return result;
         }
 
-        public static string hg_get_file_contents(string repo, string revision, string file_path)
+        public static string HgGetFileContents(string repo, string revision, string filePath)
         {
             var args = "cat -r ";
             args += revision;
             args += " \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_hg(args, repo);
+            var result = RunHg(args, repo);
             return result;
         }
 
-        public static string hg_get_unified_diff_two_revisions(string repo, string revision0, string revision1,
-            string file_path)
+        public static string HgGetUnifiedDiffTwoRevisions(string repo, string revision0, string revision1,
+            string filePath)
         {
             var args = "diff -r ";
             args += revision0;
@@ -679,57 +680,57 @@ hg
             args += revision1;
 
             args += " \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_hg(args, repo);
+            var result = RunHg(args, repo);
             return result;
         }
 
-/*
+        /*
 
-git
+        git
 
-*/
+        */
 
-        public static string git_log(string repo, string commit, string file_path)
+        public static string GitLog(string repo, string commit, string filePath)
         {
             var args = "log --name-status --date=iso ";
             args += commit;
             args += " -- \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_git(args, repo);
+            var result = RunGit(args, repo);
             return result;
         }
 
-        public static string git_blame(string repo, string file_path, string commit)
+        public static string GitBlame(string repo, string filePath, string commit)
         {
             var args = "blame ";
             args += " -- \"";
-            args += file_path;
+            args += filePath;
             args += "\" ";
             args += commit;
 
-            var result = run_git(args, repo);
+            var result = RunGit(args, repo);
             return result;
         }
 
-        public static string git_get_file_contents(string repo, string commit, string file_path)
+        public static string GitGetFileContents(string repo, string commit, string filePath)
         {
             var args = "show --pretty=raw ";
             args += commit;
             args += ":\"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_git(args, repo);
+            var result = RunGit(args, repo);
             return result;
         }
 
-        public static string git_get_unified_diff_two_commits(string repo, string commit0, string commit1,
-            string file_path)
+        public static string GitGetUnifiedDiffTwoCommits(string repo, string commit0, string commit1,
+            string filePath)
         {
             var args = "diff ";
             args += commit0;
@@ -737,88 +738,88 @@ git
             args += commit1;
 
             args += " -- \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_git(args, repo);
+            var result = RunGit(args, repo);
             return result;
         }
 
-        public static string git_get_unified_diff_one_commit(string repo, string commit, string file_path)
+        public static string GitGetUnifiedDiffOneCommit(string repo, string commit, string filePath)
         {
             var args = "show  --pretty=format: ";
             args += commit;
 
             args += " -- \"";
-            args += file_path;
+            args += filePath;
             args += "\"";
 
-            var result = run_git(args, repo);
+            var result = RunGit(args, repo);
             return result;
         }
 
-/*
+        /*
 
-svn
+        svn
 
-*/
+        */
 
-        public static string svn_log(string repo, string file_path, int rev)
+        public static string SvnLog(string repo, string filePath, int rev)
         {
             var args = new StringBuilder();
 
             args.Append("log ");
             args.Append(repo);
-            args.Append(file_path.Replace(" ", "%20"));
+            args.Append(filePath.Replace(" ", "%20"));
             args.Append("@" + Convert.ToString(rev)); // peg to revision rev in case file deleted
             args.Append(" -r ");
             args.Append(Convert.ToString(rev)); // view log from beginning to rev
             args.Append(":0 --xml -v");
 
-            return run_svn(args.ToString(), repo);
+            return RunSvn(args.ToString(), repo);
         }
 
-        public static string svn_blame(string repo, string file_path, int rev)
+        public static string SvnBlame(string repo, string filePath, int rev)
         {
             var args = new StringBuilder();
 
             args.Append("blame ");
             args.Append(repo);
-            args.Append(file_path.Replace(" ", "%20"));
+            args.Append(filePath.Replace(" ", "%20"));
             args.Append("@");
             args.Append(Convert.ToString(rev));
             args.Append(" --xml");
 
-            return run_svn(args.ToString(), repo);
+            return RunSvn(args.ToString(), repo);
         }
 
-        public static string svn_cat(string repo, string file_path, int rev)
+        public static string SvnCat(string repo, string filePath, int rev)
         {
             var args = new StringBuilder();
 
             args.Append("cat ");
             args.Append(repo);
-            args.Append(file_path.Replace(" ", "%20"));
+            args.Append(filePath.Replace(" ", "%20"));
             args.Append("@");
             args.Append(Convert.ToInt32(rev));
 
-            return run_svn(args.ToString(), repo);
+            return RunSvn(args.ToString(), repo);
         }
 
-        public static string svn_diff(string repo, string file_path, int revision, int old_revision)
+        public static string SvnDiff(string repo, string filePath, int revision, int oldRevision)
         {
             var args = new StringBuilder();
 
-            if (old_revision != 0)
+            if (oldRevision != 0)
             {
                 args.Append("diff -r ");
 
-                args.Append(Convert.ToString(old_revision));
+                args.Append(Convert.ToString(oldRevision));
                 args.Append(":");
                 args.Append(Convert.ToString(revision));
                 args.Append(" ");
                 args.Append(repo);
-                args.Append(file_path.Replace(" ", "%20"));
+                args.Append(filePath.Replace(" ", "%20"));
             }
             else
             {
@@ -826,10 +827,10 @@ svn
                 args.Append(Convert.ToString(revision));
                 args.Append(" ");
                 args.Append(repo);
-                args.Append(file_path.Replace(" ", "%20"));
+                args.Append(filePath.Replace(" ", "%20"));
             }
 
-            var result = run_svn(args.ToString(), repo);
+            var result = RunSvn(args.ToString(), repo);
             return result;
         }
 

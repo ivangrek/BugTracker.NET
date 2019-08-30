@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class install {
+    public partial class Install {
     }
 }

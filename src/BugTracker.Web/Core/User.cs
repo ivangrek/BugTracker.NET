@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -13,145 +14,145 @@ namespace BugTracker.Web.Core
 
     public class User
     {
-        public bool adds_not_allowed;
+        public bool AddsNotAllowed;
 
-        public int assigned_to_field_permission_level = Security.PERMISSION_ALL;
-        public int bugs_per_page = 10;
-        public bool can_assign_to_internal_users;
-        public bool can_be_assigned_to = true;
-        public bool can_delete_bug;
+        public int AssignedToFieldPermissionLevel = Security.PermissionAll;
+        public int BugsPerPage = 10;
+        public bool CanAssignToInternalUsers;
+        public bool CanBeAssignedTo = true;
+        public bool CanDeleteBug;
 
-        public bool can_edit_and_delete_posts;
-        public bool can_edit_reports;
-        public bool can_edit_sql;
-        public bool can_edit_tasks = true;
-        public bool can_mass_edit_bugs;
-        public bool can_merge_bugs;
-        public bool can_only_see_own_reported;
-        public bool can_search = true;
+        public bool CanEditAndDeletePosts;
+        public bool CanEditReports;
+        public bool CanEditSql;
+        public bool CanEditTasks = true;
+        public bool CanMassEditBugs;
+        public bool CanMergeBugs;
+        public bool CanOnlySeeOwnReported;
+        public bool CanSearch = true;
 
-        public bool can_use_reports;
+        public bool CanUseReports;
 
-        public bool can_view_tasks = true;
-        public int category_field_permission_level = Security.PERMISSION_ALL;
+        public bool CanViewTasks = true;
+        public int CategoryFieldPermissionLevel = Security.PermissionAll;
 
-        public Dictionary<string, int> dict_custom_field_permission_level = new Dictionary<string, int>();
-        public string email = "";
-        public bool enable_popups = true;
+        public Dictionary<string, int> DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+        public string Email = "";
+        public bool EnablePopups = true;
 
-        public bool external_user;
-        public int forced_project;
-        public string fullname = "";
-        public bool is_admin;
-        public bool is_guest;
-        public bool is_project_admin;
-        public int org;
-        public int org_field_permission_level = Security.PERMISSION_ALL;
-        public string org_name = "";
+        public bool ExternalUser;
+        public int ForcedProject;
+        public string Fullname = "";
+        public bool IsAdmin;
+        public bool IsGuest;
+        public bool IsProjectAdmin;
+        public int Org;
+        public int OrgFieldPermissionLevel = Security.PermissionAll;
+        public string OrgName = "";
 
-        public int other_orgs_permission_level = Security.PERMISSION_ALL;
-        public int priority_field_permission_level = Security.PERMISSION_ALL;
-        public int project_field_permission_level = Security.PERMISSION_ALL;
-        public int status_field_permission_level = Security.PERMISSION_ALL;
-        public int tags_field_permission_level = Security.PERMISSION_ALL;
-        public int udf_field_permission_level = Security.PERMISSION_ALL;
-        public bool use_fckeditor;
-        public string username = "";
-        public int usid;
+        public int OtherOrgsPermissionLevel = Security.PermissionAll;
+        public int PriorityFieldPermissionLevel = Security.PermissionAll;
+        public int ProjectFieldPermissionLevel = Security.PermissionAll;
+        public int StatusFieldPermissionLevel = Security.PermissionAll;
+        public int TagsFieldPermissionLevel = Security.PermissionAll;
+        public int UdfFieldPermissionLevel = Security.PermissionAll;
+        public bool UseFckeditor;
+        public string Username = "";
+        public int Usid;
 
-        public void set_from_db(DataRow dr)
+        public void SetFromDb(DataRow dr)
         {
-            this.usid = Convert.ToInt32(dr["us_id"]);
-            this.username = (string) dr["us_username"];
-            this.email = (string) dr["us_email"];
+            this.Usid = Convert.ToInt32(dr["us_id"]);
+            this.Username = (string) dr["us_username"];
+            this.Email = (string) dr["us_email"];
 
-            this.bugs_per_page = Convert.ToInt32(dr["us_bugs_per_page"]);
-            if (Util.get_setting("DisableFCKEditor", "0") == "1")
-                this.use_fckeditor = false;
+            this.BugsPerPage = Convert.ToInt32(dr["us_bugs_per_page"]);
+            if (Util.GetSetting("DisableFCKEditor", "0") == "1")
+                this.UseFckeditor = false;
             else
-                this.use_fckeditor = Convert.ToBoolean(dr["us_use_fckeditor"]);
-            this.enable_popups = Convert.ToBoolean(dr["us_enable_bug_list_popups"]);
+                this.UseFckeditor = Convert.ToBoolean(dr["us_use_fckeditor"]);
+            this.EnablePopups = Convert.ToBoolean(dr["us_enable_bug_list_popups"]);
 
-            this.external_user = Convert.ToBoolean(dr["og_external_user"]);
-            this.can_only_see_own_reported = Convert.ToBoolean(dr["og_can_only_see_own_reported"]);
-            this.can_edit_sql = Convert.ToBoolean(dr["og_can_edit_sql"]);
-            this.can_delete_bug = Convert.ToBoolean(dr["og_can_delete_bug"]);
-            this.can_edit_and_delete_posts = Convert.ToBoolean(dr["og_can_edit_and_delete_posts"]);
-            this.can_merge_bugs = Convert.ToBoolean(dr["og_can_merge_bugs"]);
-            this.can_mass_edit_bugs = Convert.ToBoolean(dr["og_can_mass_edit_bugs"]);
-            this.can_use_reports = Convert.ToBoolean(dr["og_can_use_reports"]);
-            this.can_edit_reports = Convert.ToBoolean(dr["og_can_edit_reports"]);
-            this.can_be_assigned_to = Convert.ToBoolean(dr["og_can_be_assigned_to"]);
-            this.can_view_tasks = Convert.ToBoolean(dr["og_can_view_tasks"]);
-            this.can_edit_tasks = Convert.ToBoolean(dr["og_can_edit_tasks"]);
-            this.can_search = Convert.ToBoolean(dr["og_can_search"]);
-            this.can_assign_to_internal_users = Convert.ToBoolean(dr["og_can_assign_to_internal_users"]);
-            this.other_orgs_permission_level = (int) dr["og_other_orgs_permission_level"];
-            this.org = (int) dr["og_id"];
-            this.org_name = (string) dr["og_name"];
-            this.forced_project = (int) dr["us_forced_project"];
+            this.ExternalUser = Convert.ToBoolean(dr["og_external_user"]);
+            this.CanOnlySeeOwnReported = Convert.ToBoolean(dr["og_can_only_see_own_reported"]);
+            this.CanEditSql = Convert.ToBoolean(dr["og_can_edit_sql"]);
+            this.CanDeleteBug = Convert.ToBoolean(dr["og_can_delete_bug"]);
+            this.CanEditAndDeletePosts = Convert.ToBoolean(dr["og_can_edit_and_delete_posts"]);
+            this.CanMergeBugs = Convert.ToBoolean(dr["og_can_merge_bugs"]);
+            this.CanMassEditBugs = Convert.ToBoolean(dr["og_can_mass_edit_bugs"]);
+            this.CanUseReports = Convert.ToBoolean(dr["og_can_use_reports"]);
+            this.CanEditReports = Convert.ToBoolean(dr["og_can_edit_reports"]);
+            this.CanBeAssignedTo = Convert.ToBoolean(dr["og_can_be_assigned_to"]);
+            this.CanViewTasks = Convert.ToBoolean(dr["og_can_view_tasks"]);
+            this.CanEditTasks = Convert.ToBoolean(dr["og_can_edit_tasks"]);
+            this.CanSearch = Convert.ToBoolean(dr["og_can_search"]);
+            this.CanAssignToInternalUsers = Convert.ToBoolean(dr["og_can_assign_to_internal_users"]);
+            this.OtherOrgsPermissionLevel = (int) dr["og_other_orgs_permission_level"];
+            this.Org = (int) dr["og_id"];
+            this.OrgName = (string) dr["og_name"];
+            this.ForcedProject = (int) dr["us_forced_project"];
 
-            this.category_field_permission_level = (int) dr["og_category_field_permission_level"];
+            this.CategoryFieldPermissionLevel = (int) dr["og_category_field_permission_level"];
 
-            if (Util.get_setting("EnableTags", "0") == "1")
-                this.tags_field_permission_level = (int) dr["og_tags_field_permission_level"];
+            if (Util.GetSetting("EnableTags", "0") == "1")
+                this.TagsFieldPermissionLevel = (int) dr["og_tags_field_permission_level"];
             else
-                this.tags_field_permission_level = Security.PERMISSION_NONE;
-            this.priority_field_permission_level = (int) dr["og_priority_field_permission_level"];
-            this.assigned_to_field_permission_level = (int) dr["og_assigned_to_field_permission_level"];
-            this.status_field_permission_level = (int) dr["og_status_field_permission_level"];
-            this.project_field_permission_level = (int) dr["og_project_field_permission_level"];
-            this.org_field_permission_level = (int) dr["og_org_field_permission_level"];
-            this.udf_field_permission_level = (int) dr["og_udf_field_permission_level"];
+                this.TagsFieldPermissionLevel = Security.PermissionNone;
+            this.PriorityFieldPermissionLevel = (int) dr["og_priority_field_permission_level"];
+            this.AssignedToFieldPermissionLevel = (int) dr["og_assigned_to_field_permission_level"];
+            this.StatusFieldPermissionLevel = (int) dr["og_status_field_permission_level"];
+            this.ProjectFieldPermissionLevel = (int) dr["og_project_field_permission_level"];
+            this.OrgFieldPermissionLevel = (int) dr["og_org_field_permission_level"];
+            this.UdfFieldPermissionLevel = (int) dr["og_udf_field_permission_level"];
 
             // field permission for custom fields
-            var ds_custom = Util.get_custom_columns();
-            foreach (DataRow dr_custom in ds_custom.Tables[0].Rows)
+            var dsCustom = Util.GetCustomColumns();
+            foreach (DataRow drCustom in dsCustom.Tables[0].Rows)
             {
-                var bg_name = (string) dr_custom["name"];
-                var og_name = "og_"
-                              + (string) dr_custom["name"]
+                var bgName = (string) drCustom["name"];
+                var ogName = "og_"
+                              + (string) drCustom["name"]
                               + "_field_permission_level";
 
                 try
                 {
-                    var obj = dr[og_name];
+                    var obj = dr[ogName];
                     if (Convert.IsDBNull(obj))
-                        this.dict_custom_field_permission_level[bg_name] = Security.PERMISSION_ALL;
+                        this.DictCustomFieldPermissionLevel[bgName] = Security.PermissionAll;
                     else
-                        this.dict_custom_field_permission_level[bg_name] = (int) dr[og_name];
+                        this.DictCustomFieldPermissionLevel[bgName] = (int) dr[ogName];
                 }
 
                 catch (Exception ex)
                 {
-                    Util.write_to_log("exception looking for " + og_name + ":" + ex.Message);
+                    Util.WriteToLog("exception looking for " + ogName + ":" + ex.Message);
 
                     // automatically add it if it's missing
-                    DbUtil.execute_nonquery("alter table orgs add ["
-                                            + og_name
+                    DbUtil.ExecuteNonQuery("alter table orgs add ["
+                                            + ogName
                                             + "] int null");
-                    this.dict_custom_field_permission_level[bg_name] = Security.PERMISSION_ALL;
+                    this.DictCustomFieldPermissionLevel[bgName] = Security.PermissionAll;
                 }
             }
 
             if (((string) dr["us_firstname"]).Trim().Length == 0)
-                this.fullname = (string) dr["us_lastname"];
+                this.Fullname = (string) dr["us_lastname"];
             else
-                this.fullname = (string) dr["us_lastname"] + ", " + (string) dr["us_firstname"];
+                this.Fullname = (string) dr["us_lastname"] + ", " + (string) dr["us_firstname"];
 
             if ((int) dr["us_admin"] == 1)
             {
-                this.is_admin = true;
+                this.IsAdmin = true;
             }
             else
             {
                 if ((int) dr["project_admin"] > 0)
                 {
-                    this.is_project_admin = true;
+                    this.IsProjectAdmin = true;
                 }
                 else
                 {
-                    if (this.username.ToLower() == "guest") this.is_guest = true;
+                    if (this.Username.ToLower() == "guest") this.IsGuest = true;
                 }
             }
 
@@ -159,12 +160,12 @@ namespace BugTracker.Web.Core
             // at least reporter permission on that project, than user
             // can't add bugs
             if ((int) dr["us_forced_project"] != 0)
-                if ((int) dr["pu_permission_level"] == Security.PERMISSION_READONLY
-                    || (int) dr["pu_permission_level"] == Security.PERMISSION_NONE)
-                    this.adds_not_allowed = true;
+                if ((int) dr["pu_permission_level"] == Security.PermissionReadonly
+                    || (int) dr["pu_permission_level"] == Security.PermissionNone)
+                    this.AddsNotAllowed = true;
         }
 
-        public static int copy_user(
+        public static int CopyUser(
             string username,
             string email,
             string firstname,
@@ -172,17 +173,17 @@ namespace BugTracker.Web.Core
             string signature,
             int salt,
             string password,
-            string template_username,
-            bool use_domain_as_org_name)
+            string templateUsername,
+            bool useDomainAsOrgName)
         {
             // get all the org columns
 
-            Util.write_to_log("copy_user creating " + username + " from template user " + template_username);
-            var org_columns = new StringBuilder();
+            Util.WriteToLog("CopyUser creating " + username + " from template user " + templateUsername);
+            var orgColumns = new StringBuilder();
 
             var sql = "";
 
-            if (use_domain_as_org_name)
+            if (useDomainAsOrgName)
             {
                 sql = @" /* get org cols */
 select sc.name
@@ -191,13 +192,13 @@ inner join sysobjects so on sc.id = so.id
 where so.name = 'orgs'
 and sc.name not in ('og_id', 'og_name', 'og_domain')";
 
-                var ds = DbUtil.get_dataset(sql);
+                var ds = DbUtil.GetDataSet(sql);
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-                    org_columns.Append(",");
-                    org_columns.Append("[");
-                    org_columns.Append(Convert.ToString(dr["name"]));
-                    org_columns.Append("]");
+                    orgColumns.Append(",");
+                    orgColumns.Append("[");
+                    orgColumns.Append(Convert.ToString(dr["name"]));
+                    orgColumns.Append("]");
                 }
             }
 
@@ -295,18 +296,18 @@ END
             sql = sql.Replace("$signature", signature.Replace("'", "''"));
             sql = sql.Replace("$salt", Convert.ToString(salt));
             sql = sql.Replace("$password", password);
-            sql = sql.Replace("$template_user", template_username.Replace("'", "''"));
+            sql = sql.Replace("$template_user", templateUsername.Replace("'", "''"));
 
-            sql = sql.Replace("$use_domain_as_org_name", Convert.ToString(use_domain_as_org_name ? "1" : "0"));
+            sql = sql.Replace("$use_domain_as_org_name", Convert.ToString(useDomainAsOrgName ? "1" : "0"));
 
-            var email_parts = email.Split('@');
-            if (email_parts.Length == 2)
-                sql = sql.Replace("$domain", email_parts[1].Replace("'", "''"));
+            var emailParts = email.Split('@');
+            if (emailParts.Length == 2)
+                sql = sql.Replace("$domain", emailParts[1].Replace("'", "''"));
             else
                 sql = sql.Replace("$domain", email.Replace("'", "''"));
 
-            sql = sql.Replace("$ORG_COLUMNS", org_columns.ToString());
-            return Convert.ToInt32(DbUtil.execute_scalar(sql));
+            sql = sql.Replace("$ORG_COLUMNS", orgColumns.ToString());
+            return Convert.ToInt32(DbUtil.ExecuteScalar(sql));
         }
     } // end class
 }

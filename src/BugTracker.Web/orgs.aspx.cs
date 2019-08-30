@@ -13,25 +13,25 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class orgs : Page
+    public partial class Orgs : Page
     {
-        public DataSet ds;
-        public Security security;
+        public DataSet Ds;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.MUST_BE_ADMIN);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "organizations";
 
-            this.ds = DbUtil.get_dataset(
+            this.Ds = DbUtil.GetDataSet(
                 @"select og_id [id],
-		'<a href=edit_org.aspx?id=' + convert(varchar,og_id) + '>edit</a>' [$no_sort_edit],
-		'<a href=delete_org.aspx?id=' + convert(varchar,og_id) + '>delete</a>' [$no_sort_delete],
+		'<a href=EditOrg.aspx?id=' + convert(varchar,og_id) + '>edit</a>' [$no_sort_edit],
+		'<a href=DeleteOrg.aspx?id=' + convert(varchar,og_id) + '>delete</a>' [$no_sort_delete],
 		og_name[desc],
 		case when og_active = 1 then 'Y' else 'N' end [active],
 		case when og_can_search = 1 then 'Y' else 'N' end [can<br>search],

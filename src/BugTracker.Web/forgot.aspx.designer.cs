@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class forgot {
+    public partial class Forgot {
         
         /// <summary>
         /// username control.

@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="dashboard.aspx.cs" Inherits="BugTracker.Web.dashboard" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BugTracker.Web.Dashboard" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <style>
@@ -29,17 +29,17 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "reports"); %>
+    <% this.Security.WriteMenu(Response, "reports"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <% if (this.security.user.is_guest) /* no dashboard */
+    <% if (this.Security.User.IsGuest) /* no dashboard */
         { %>
     <span class="disabled_link">edit dashboard not available to "guest" user</span>
     <% }
         else
         { %>
-    <a href="edit_dashboard.aspx">edit dashboard</a>
+    <a href="EditDashboard.aspx">edit dashboard</a>
     <% } %>
 
 

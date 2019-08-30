@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="users.aspx.cs" Inherits="BugTracker.Web.users" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Users.aspx.cs" Inherits="BugTracker.Web.Users" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO
     <body onload="filter_changed()">--%>
 
-    <script type="text/javascript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 
     <script>
 
@@ -30,7 +30,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "admin"); %>
+    <% this.Security.WriteMenu(Response, "admin"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -38,7 +38,7 @@
         <table border="0" width="80%">
             <tr>
                 <td align="left" valign="top">
-                    <a href="edit_user.aspx">add new user </a>
+                    <a href="EditUser.aspx">add new user </a>
                     <td align="right" valign="top">
                         <form runat="server">
 
@@ -55,9 +55,9 @@
 
         <%
 
-            if (this.ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.create_from_dataset(
-                    Response, this.ds, "", "", false);
+            if (this.Ds.Tables[0].Rows.Count > 0)
+                SortableHtmlTable.CreateFromDataSet(
+                    Response, this.Ds, "", "", false);
             else
                 Response.Write("No users to display.");
         %>

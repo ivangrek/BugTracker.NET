@@ -5,33 +5,33 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="reports.aspx.cs" Inherits="BugTracker.Web.reports" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Reports.aspx.cs" Inherits="BugTracker.Web.Reports" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "reports"); %>
+    <% this.Security.WriteMenu(Response, "reports"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
         </p>
 
-        <% if (this.security.user.is_admin || this.security.user.can_edit_reports)
+        <% if (this.Security.User.IsAdmin || this.Security.User.CanEditReports)
             { %>
-        <a href="edit_report.aspx">add new report</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="EditReport.aspx">add new report</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <% } %>
 
-        <a href="dashboard.aspx">dashboard</a>
+        <a href="Dashboard.aspx">dashboard</a>
 
         <%
 
-            if (this.ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.create_from_dataset(
-                    Response, this.ds, "", "", false);
+            if (this.Ds.Tables[0].Rows.Count > 0)
+                SortableHtmlTable.CreateFromDataSet(
+                    Response, this.Ds, "", "", false);
             else
                 Response.Write("No reports in the database.");
         %>

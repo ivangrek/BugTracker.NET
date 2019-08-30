@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -12,11 +13,11 @@ namespace BugTracker.Web.Core
 
     public class SortableHtmlTable
     {
-        public static void create_nonsortable_from_dataset(
+        public static void CreateNonSortableFromDataSet(
             HttpResponse r,
             DataSet ds)
         {
-            create_from_dataset(
+            CreateFromDataSet(
                 r,
                 ds,
                 "",
@@ -25,46 +26,46 @@ namespace BugTracker.Web.Core
                 false); // write_column_headings_as_links
         }
 
-        public static void create_from_dataset(
+        public static void CreateFromDataSet(
             HttpResponse r,
             DataSet ds,
-            string edit_url,
-            string delete_url)
+            string editUrl,
+            string deleteUrl)
         {
-            create_from_dataset(r, ds, edit_url, delete_url, true);
+            CreateFromDataSet(r, ds, editUrl, deleteUrl, true);
         }
 
-        public static void create_from_dataset(
+        public static void CreateFromDataSet(
             HttpResponse r,
             DataSet ds,
-            string edit_url,
-            string delete_url,
-            bool html_encode,
-            bool write_column_headings_as_links)
+            string editUrl,
+            string deleteUrl,
+            bool htmlEncode,
+            bool writeColumnHeadingsAsLinks)
         {
-            create_start_of_table(r, write_column_headings_as_links);
-            create_headings(r, ds, edit_url, delete_url, write_column_headings_as_links);
-            create_body(r, ds, edit_url, delete_url, html_encode);
-            create_end_of_table(r);
+            CreateStartOfTable(r, writeColumnHeadingsAsLinks);
+            CreateHeadings(r, ds, editUrl, deleteUrl, writeColumnHeadingsAsLinks);
+            CreateBody(r, ds, editUrl, deleteUrl, htmlEncode);
+            CreateEndOfTable(r);
         }
 
-        public static void create_from_dataset(
+        public static void CreateFromDataSet(
             HttpResponse r,
             DataSet ds,
-            string edit_url,
-            string delete_url,
-            bool html_encode)
+            string editUrl,
+            string deleteUrl,
+            bool htmlEncode)
         {
-            create_start_of_table(r, true); // write_column_headings_as_links
-            create_headings(r, ds, edit_url, delete_url, true); // write_column_headings_as_links
-            create_body(r, ds, edit_url, delete_url, html_encode);
-            create_end_of_table(r);
+            CreateStartOfTable(r, true); // write_column_headings_as_links
+            CreateHeadings(r, ds, editUrl, deleteUrl, true); // write_column_headings_as_links
+            CreateBody(r, ds, editUrl, deleteUrl, htmlEncode);
+            CreateEndOfTable(r);
         }
 
-        public static void create_start_of_table(
-            HttpResponse r, bool write_column_headings_as_links)
+        public static void CreateStartOfTable(
+            HttpResponse r, bool writeColumnHeadingsAsLinks)
         {
-            if (write_column_headings_as_links)
+            if (writeColumnHeadingsAsLinks)
             {
                 r.Write("\n<div id=wait class=please_wait>&nbsp;</div>\n");
                 r.Write("<div class=click_to_sort>click on column headings to sort</div>\n");
@@ -74,7 +75,7 @@ namespace BugTracker.Web.Core
             r.Write("<table id=mytable border=1 class=datat>\n");
         }
 
-        public static void create_end_of_table(
+        public static void CreateEndOfTable(
             HttpResponse r)
         {
             // data
@@ -85,30 +86,30 @@ namespace BugTracker.Web.Core
 
         // headings
 
-        public static void create_headings(
+        public static void CreateHeadings(
             HttpResponse r,
             DataSet ds,
-            string edit_url,
-            string delete_url,
-            bool write_column_headings_as_links)
+            string editUrl,
+            string deleteUrl,
+            bool writeColumnHeadingsAsLinks)
         {
             r.Write("<tr>\n");
 
-            var db_column_count = 0;
+            var dbColumnCount = 0;
 
             foreach (DataColumn dc in ds.Tables[0].Columns)
             {
-                if ((edit_url != "" || delete_url != "")
-                    && db_column_count == ds.Tables[0].Columns.Count - 1)
+                if ((editUrl != "" || deleteUrl != "")
+                    && dbColumnCount == ds.Tables[0].Columns.Count - 1)
                 {
-                    if (edit_url != "") r.Write("<td class=datah valign=bottom>edit</td>");
-                    if (delete_url != "") r.Write("<td class=datah valign=bottom>delete</td>");
+                    if (editUrl != "") r.Write("<td class=datah valign=bottom>edit</td>");
+                    if (deleteUrl != "") r.Write("<td class=datah valign=bottom>delete</td>");
                 }
                 else
                 {
                     // determine data type
                     var datatype = "";
-                    if (Util.is_numeric_datatype(dc.DataType))
+                    if (Util.IsNumericDataType(dc.DataType))
                         datatype = "num";
                     else if (dc.DataType == typeof(DateTime))
                         datatype = "date";
@@ -123,16 +124,16 @@ namespace BugTracker.Web.Core
                     }
                     else
                     {
-                        if (write_column_headings_as_links)
+                        if (writeColumnHeadingsAsLinks)
                         {
                             var sortlink = "<a href='javascript: sort_by_col($col, \"$type\")'>";
-                            sortlink = sortlink.Replace("$col", Convert.ToString(db_column_count));
+                            sortlink = sortlink.Replace("$col", Convert.ToString(dbColumnCount));
                             sortlink = sortlink.Replace("$type", datatype);
                             r.Write(sortlink);
                         }
 
                         r.Write(dc.ColumnName);
-                        if (write_column_headings_as_links) r.Write("</a>");
+                        if (writeColumnHeadingsAsLinks) r.Write("</a>");
                     }
 
                     //r.Write ("<br>"); // for debugging
@@ -141,7 +142,7 @@ namespace BugTracker.Web.Core
                     r.Write("</td>\n");
                 }
 
-                db_column_count++;
+                dbColumnCount++;
             }
 
             r.Write("</tr>\n");
@@ -149,12 +150,12 @@ namespace BugTracker.Web.Core
 
         // body, data
 
-        public static void create_body(
+        public static void CreateBody(
             HttpResponse r,
             DataSet ds,
-            string edit_url,
-            string delete_url,
-            bool html_encode)
+            string editUrl,
+            string deleteUrl,
+            bool htmlEncode)
         {
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
@@ -163,19 +164,19 @@ namespace BugTracker.Web.Core
                 {
                     var datatype = ds.Tables[0].Columns[i].DataType;
 
-                    if ((edit_url != "" || delete_url != "")
+                    if ((editUrl != "" || deleteUrl != "")
                         && i == ds.Tables[0].Columns.Count - 1)
                     {
-                        if (edit_url != "")
+                        if (editUrl != "")
                             r.Write("<td class=datad><a href="
-                                    + edit_url + dr[ds.Tables[0].Columns.Count - 1] + ">edit</a></td>");
-                        if (delete_url != "")
+                                    + editUrl + dr[ds.Tables[0].Columns.Count - 1] + ">edit</a></td>");
+                        if (deleteUrl != "")
                             r.Write("<td class=datad><a href="
-                                    + delete_url + dr[ds.Tables[0].Columns.Count - 1] + ">delete</a></td>");
+                                    + deleteUrl + dr[ds.Tables[0].Columns.Count - 1] + ">delete</a></td>");
                     }
                     else
                     {
-                        if (Util.is_numeric_datatype(datatype))
+                        if (Util.IsNumericDataType(datatype))
                             r.Write("<td class=datad align=right>");
                         else
                             r.Write("<td class=datad>");
@@ -188,15 +189,15 @@ namespace BugTracker.Web.Core
                         {
                             if (datatype == typeof(DateTime))
                             {
-                                r.Write(Util.format_db_date_and_time(dr[i]));
+                                r.Write(Util.FormatDbDateTime(dr[i]));
                             }
                             else if (datatype == typeof(decimal))
                             {
-                                r.Write(Util.format_db_value(Convert.ToDecimal(dr[i])));
+                                r.Write(Util.FormatDbValue(Convert.ToDecimal(dr[i])));
                             }
                             else
                             {
-                                if (html_encode)
+                                if (htmlEncode)
                                     r.Write(HttpUtility.HtmlEncode(dr[i].ToString()));
                                 else
                                     r.Write(dr[i]);
@@ -210,5 +211,5 @@ namespace BugTracker.Web.Core
                 r.Write("</tr>\n");
             }
         }
-    } // end SortableHtmlTable
-} // end namespace
+    }
+}

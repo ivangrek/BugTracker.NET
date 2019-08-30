@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class priorities {
+    public partial class Priorities {
     }
 }

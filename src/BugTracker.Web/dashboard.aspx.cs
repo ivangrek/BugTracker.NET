@@ -13,22 +13,22 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class dashboard : Page
+    public partial class Dashboard : Page
     {
-        public DataSet ds;
-        public Security security;
+        public DataSet Ds;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "dashboard";
 
-            if (this.security.user.is_admin || this.security.user.can_use_reports)
+            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports)
             {
                 //
             }
@@ -45,22 +45,22 @@ inner join reports on rp_id = ds_report
 where ds_user = $us
 order by ds_col, ds_row";
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.user.usid));
-            this.ds = DbUtil.get_dataset(sql);
+            sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            this.Ds = DbUtil.GetDataSet(sql);
         }
 
         public void write_column(int col)
         {
-            var iframe_id = 0;
+            var iframeId = 0;
 
-            foreach (DataRow dr in this.ds.Tables[0].Rows)
+            foreach (DataRow dr in this.Ds.Tables[0].Rows)
                 if ((int) dr["ds_col"] == col)
                 {
                     if ((string) dr["ds_chart_type"] == "data")
                     {
-                        iframe_id++;
+                        iframeId++;
                         Response.Write("\n<div class=panel>");
-                        Response.Write("\n<iframe frameborder='0' src=view_report.aspx?view=data&id="
+                        Response.Write("\n<iframe frameborder='0' src=ViewReport.aspx?view=data&id="
                                        + dr["ds_report"]
                                        // this didn't work
                                        //+ "&parent_iframe="
@@ -73,7 +73,7 @@ order by ds_col, ds_row";
                     else
                     {
                         Response.Write("\n<div class=panel>");
-                        Response.Write("\n<img src=view_report.aspx?scale=2&view=" + dr["ds_chart_type"] + "&id=" +
+                        Response.Write("\n<img src=ViewReport.aspx?scale=2&view=" + dr["ds_chart_type"] + "&id=" +
                                        dr["ds_report"] + ">");
                         Response.Write("\n</div>");
                     }

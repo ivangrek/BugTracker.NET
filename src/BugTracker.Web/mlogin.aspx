@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="mlogin.aspx.cs" Inherits="BugTracker.Web.mlogin" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="MLogin.aspx.cs" Inherits="BugTracker.Web.MLogin" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="jquery/jquery.mobile-1.2.0.min.css" />
-    <link rel="stylesheet" href="mbtnet_base.css" />
-    <script src="jquery/jquery-1.8.2.min.js"></script>
-    <script src="jquery/jquery.mobile-1.2.0.min.js"></script>
+    <link rel="stylesheet" href="Scripts/jquery/jquery.mobile-1.2.0.min.css" />
+    <link rel="stylesheet" href="Content/mbtnet_base.css" />
+    <script src="Scripts/jquery/jquery-1.8.2.min.js"></script>
+    <script src="Scripts/jquery/jquery.mobile-1.2.0.min.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">

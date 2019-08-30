@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class mlogin {
+    public partial class MLogin {
         
         /// <summary>
         /// my_header control.

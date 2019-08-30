@@ -1,4 +1,12 @@
 /*
+    Copyright 2002 William J Dean
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*/
+
+/*
     [Corey Trager] I downloaded this code from the URL below September 14, 2003:
 
     http://www.codeproject.com/csharp/pop3client.asp
@@ -54,32 +62,32 @@ namespace BugTracker.Web.Core
 
     public class Pop3Client
     {
-        public enum connect_state
+        public enum ConnectState
         {
-            disc,
-            AUTHORIZATION,
-            TRANSACTION,
-            UPDATE
+            Disc,
+            Authorization,
+            Transaction,
+            Update
         }
 
-        private readonly string CRLF = "\r\n";
+        private readonly string crlf = "\r\n";
 
-        public bool bReadInputStreamCharByChar;
-        private string Data;
-        public bool error;
-        private Stream NetStrm;
-        public string pop;
-        public int popPort = 110;
-        public bool popSSL;
-        public string pwd;
-        private StreamReader RdStrm;
+        public bool BReadInputStreamCharByChar;
+        private string data;
+        public bool Error;
+        private Stream netStrm;
+        public string Pop;
+        public int PopPort = 110;
+        public bool PopSsl;
+        public string Pwd;
+        private StreamReader rdStrm;
 
         //borrowed from Agus Kurniawan's article:"Retrieve Mail From a POP3 Server Using C#"  at http://www.codeproject.com/csharp/popapp.asp
-        private TcpClient Server;
-        public connect_state state = connect_state.disc;
+        private TcpClient server;
+        public ConnectState State = ConnectState.Disc;
         private byte[] szData;
 
-        public string user;
+        public string UserName;
 
         public Pop3Client()
         {
@@ -89,31 +97,31 @@ namespace BugTracker.Web.Core
         // This constructor added by Corey Trager Mar 2007
         public Pop3Client(bool bReadInputStreamCharByCharArg)
         {
-            this.bReadInputStreamCharByChar = bReadInputStreamCharByCharArg;
+            this.BReadInputStreamCharByChar = bReadInputStreamCharByCharArg;
         }
 
-        public Pop3Client(string pop_server, int pop_port, bool pop_ssl, string user_name, string password)
+        public Pop3Client(string popServer, int popPort, bool popSsl, string userName, string password)
         {
             //put the specied server (pop_server), port (pop_port), if the server is an ssl server (pop_ssl),
             //user (user_name) and password (password) into the appropriate properties.
-            this.pop = pop_server;
-            this.popPort = pop_port;
-            this.popSSL = pop_ssl;
-            this.user = user_name;
-            this.pwd = password;
+            this.Pop = popServer;
+            this.PopPort = popPort;
+            this.PopSsl = popSsl;
+            this.UserName = userName;
+            this.Pwd = password;
         }
 
         #region Utility Methods, some public, some private
 
-        public string connect(string pop_server, int pop_port, bool pop_ssl)
+        public string Connect(string popServer, int popPort, bool popSsl)
         {
-            this.pop = pop_server; //put the specified server into the pop property
-            this.popPort = pop_port; //put the specified port into the popPort property
-            this.popSSL = pop_ssl; //put the ssl into the popSSL property
-            return connect(); //call the connect method
+            this.Pop = popServer; //put the specified server into the pop property
+            this.PopPort = popPort; //put the specified port into the popPort property
+            this.PopSsl = popSsl; //put the ssl into the popSSL property
+            return Connect(); //call the connect method
         }
 
-        public string connect()
+        public string Connect()
         {
             //Initialize to the pop server.  This code snipped "borrowed"
             //with some modifications...
@@ -125,24 +133,24 @@ namespace BugTracker.Web.Core
 
             try
             {
-                this.Server = new TcpClient(this.pop, this.popPort);
+                this.server = new TcpClient(this.Pop, this.PopPort);
                 // initialization
-                if (!this.popSSL)
+                if (!this.PopSsl)
                 {
                     // initialization
-                    this.NetStrm = this.Server.GetStream();
+                    this.netStrm = this.server.GetStream();
                 }
                 else
                 {
-                    this.NetStrm = new SslStream(this.Server.GetStream());
-                    ((SslStream) this.NetStrm).AuthenticateAsClient(this.pop);
+                    this.netStrm = new SslStream(this.server.GetStream());
+                    ((SslStream)this.netStrm).AuthenticateAsClient(this.Pop);
                 }
 
-                this.RdStrm = new StreamReader(this.NetStrm);
+                this.rdStrm = new StreamReader(this.netStrm);
 
                 //The pop session is now in the AUTHORIZATION state
-                this.state = connect_state.AUTHORIZATION;
-                return this.RdStrm.ReadLine();
+                this.State = ConnectState.Authorization;
+                return this.rdStrm.ReadLine();
             }
             catch (Exception err)
             {
@@ -150,15 +158,15 @@ namespace BugTracker.Web.Core
             }
         }
 
-        private string disconnect()
+        private string Disconnect()
         {
             var temp = "disconnected successfully.";
-            if (this.state != connect_state.disc)
+            if (this.State != ConnectState.Disc)
             {
                 //close connection
-                this.NetStrm.Close();
-                this.RdStrm.Close();
-                this.state = connect_state.disc;
+                this.netStrm.Close();
+                this.rdStrm.Close();
+                this.State = ConnectState.Disc;
             }
             else
             {
@@ -168,19 +176,19 @@ namespace BugTracker.Web.Core
             return temp;
         }
 
-        private void issue_command(string command)
+        private void IssueCommand(string command)
         {
             //send the command to the pop server.  This code snipped "borrowed"
             //with some modifications...
             //from the article "Retrieve Mail From a POP3 Server Using C#" at
             //www.codeproject.com by Agus Kurniawan
             //http://www.codeproject.com/csharp/popapp.asp
-            this.Data = command + this.CRLF;
-            this.szData = Encoding.ASCII.GetBytes(this.Data.ToCharArray());
-            this.NetStrm.Write(this.szData, 0, this.szData.Length);
+            this.data = command + this.crlf;
+            this.szData = Encoding.ASCII.GetBytes(this.data.ToCharArray());
+            this.netStrm.Write(this.szData, 0, this.szData.Length);
         }
 
-        private string read_single_line_response()
+        private string ReadSingleLineResponse()
         {
             //read the response of the pop server.  This code snipped "borrowed"
             //with some modifications...
@@ -190,13 +198,13 @@ namespace BugTracker.Web.Core
             string temp;
             try
             {
-                temp = this.RdStrm.ReadLine();
+                temp = this.rdStrm.ReadLine();
                 was_pop_error(temp);
                 return temp;
             }
             catch (Exception err)
             {
-                return "Error in read_single_line_response(): " + err;
+                return "Error in ReadSingleLineResponse(): " + err;
             }
         }
 
@@ -213,13 +221,13 @@ namespace BugTracker.Web.Core
 
             try
             {
-                szTemp = this.RdStrm.ReadLine();
+                szTemp = this.rdStrm.ReadLine();
                 was_pop_error(szTemp);
-                if (!this.error)
+                if (!this.Error)
                     while (szTemp != ".")
                     {
-                        temp.Append(szTemp + this.CRLF);
-                        szTemp = this.RdStrm.ReadLine();
+                        temp.Append(szTemp + this.crlf);
+                        szTemp = this.rdStrm.ReadLine();
                     }
                 else
                     return szTemp;
@@ -240,13 +248,13 @@ namespace BugTracker.Web.Core
             try
             {
                 var b = new byte[4096];
-                var bytes_read = 0;
+                var bytesRead = 0;
 
-                bytes_read = this.Server.GetStream().Read(b, 0, b.Length);
+                bytesRead = this.server.GetStream().Read(b, 0, b.Length);
 
-                while (bytes_read > 0)
+                while (bytesRead > 0)
                 {
-                    for (var i = 0; i < bytes_read; i++) temp.Append(Convert.ToChar(b[i])); // Does work
+                    for (var i = 0; i < bytesRead; i++) temp.Append(Convert.ToChar(b[i])); // Does work
 
                     if (temp.Length > 4
                         && temp[temp.Length - 1] == 0x0A
@@ -256,11 +264,11 @@ namespace BugTracker.Web.Core
                         && temp[temp.Length - 5] == 0x0D)
                     {
                         temp[temp.Length - 3] = '\0';
-                        bytes_read = 0;
+                        bytesRead = 0;
                     }
                     else
                     {
-                        bytes_read = this.Server.GetStream().Read(b, 0, b.Length);
+                        bytesRead = this.server.GetStream().Read(b, 0, b.Length);
                     }
                 }
 
@@ -281,104 +289,104 @@ namespace BugTracker.Web.Core
                 //if the first character of the response is "-" then the
                 //pop server has encountered an error executing the last
                 //command send by the client
-                this.error = true;
+                this.Error = true;
             else
                 //success
-                this.error = false;
+                this.Error = false;
         }
 
         #endregion
 
         #region POP commands
 
-        public string DELE(int msg_number)
+        public string Dele(int msgNumber)
         {
             string temp;
 
-            if (this.state != connect_state.TRANSACTION)
+            if (this.State != ConnectState.Transaction)
             {
                 //DELE is only valid when the pop session is in the TRANSACTION STATE
                 temp = "Connection state not = TRANSACTION";
             }
             else
             {
-                issue_command("DELE " + msg_number);
-                temp = read_single_line_response();
+                IssueCommand("DELE " + msgNumber);
+                temp = ReadSingleLineResponse();
             }
 
             return temp;
         }
 
-        public string LIST()
+        public string List()
         {
             var temp = "";
-            if (this.state != connect_state.TRANSACTION)
+            if (this.State != ConnectState.Transaction)
             {
                 //the pop command LIST is only valid in the TRANSACTION state
                 temp = "Connection state not = TRANSACTION";
             }
             else
             {
-                issue_command("LIST");
+                IssueCommand("LIST");
                 temp = read_multi_line_response();
             }
 
             return temp;
         }
 
-        public string LIST(int msg_number)
+        public string List(int msgNumber)
         {
             var temp = "";
 
-            if (this.state != connect_state.TRANSACTION)
+            if (this.State != ConnectState.Transaction)
             {
                 //the pop command LIST is only valid in the TRANSACTION state
                 temp = "Connection state not = TRANSACTION";
             }
             else
             {
-                issue_command("LIST " + msg_number);
-                temp = read_single_line_response(); //when the message number is supplied, expect a single line response
+                IssueCommand("LIST " + msgNumber);
+                temp = ReadSingleLineResponse(); //when the message number is supplied, expect a single line response
             }
 
             return temp;
         }
 
-        public string NOOP()
+        public string Noop()
         {
             string temp;
-            if (this.state != connect_state.TRANSACTION)
+            if (this.State != ConnectState.Transaction)
             {
                 //the pop command NOOP is only valid in the TRANSACTION state
                 temp = "Connection state not = TRANSACTION";
             }
             else
             {
-                issue_command("NOOP");
-                temp = read_single_line_response();
+                IssueCommand("NOOP");
+                temp = ReadSingleLineResponse();
             }
 
             return temp;
         }
 
-        public string PASS()
+        public string Pass()
         {
             string temp;
-            if (this.state != connect_state.AUTHORIZATION)
+            if (this.State != ConnectState.Authorization)
             {
                 //the pop command PASS is only valid in the AUTHORIZATION state
                 temp = "Connection state not = AUTHORIZATION";
             }
             else
             {
-                if (this.pwd != null)
+                if (this.Pwd != null)
                 {
-                    issue_command("PASS " + this.pwd);
-                    temp = read_single_line_response();
+                    IssueCommand("PASS " + this.Pwd);
+                    temp = ReadSingleLineResponse();
 
-                    if (!this.error)
+                    if (!this.Error)
                         //transition to the Transaction state
-                        this.state = connect_state.TRANSACTION;
+                        this.State = ConnectState.Transaction;
                 }
                 else
                 {
@@ -389,22 +397,22 @@ namespace BugTracker.Web.Core
             return temp;
         }
 
-        public string PASS(string password)
+        public string Pass(string password)
         {
-            this.pwd = password; //put the supplied password into the appropriate property
-            return PASS(); //call PASS() with no arguement
+            this.Pwd = password; //put the supplied password into the appropriate property
+            return Pass(); //call PASS() with no arguement
         }
 
-        public string QUIT()
+        public string Quit()
         {
             //QUIT is valid in all pop states
 
             string temp;
-            if (this.state != connect_state.disc)
+            if (this.State != ConnectState.Disc)
             {
-                issue_command("QUIT");
-                temp = read_single_line_response();
-                temp += this.CRLF + disconnect();
+                IssueCommand("QUIT");
+                temp = ReadSingleLineResponse();
+                temp += this.crlf + Disconnect();
             }
             else
             {
@@ -414,10 +422,10 @@ namespace BugTracker.Web.Core
             return temp;
         }
 
-        public string RETR(int msg)
+        public string Retr(int msg)
         {
             var temp = "";
-            if (this.state != connect_state.TRANSACTION)
+            if (this.State != ConnectState.Transaction)
             {
                 //the pop command RETR is only valid in the TRANSACTION state
                 temp = "Connection state not = TRANSACTION";
@@ -425,8 +433,8 @@ namespace BugTracker.Web.Core
             else
             {
                 // retrieve mail with number mail parameter
-                issue_command("RETR " + msg);
-                if (this.bReadInputStreamCharByChar)
+                IssueCommand("RETR " + msg);
+                if (this.BReadInputStreamCharByChar)
                     temp = NEW_read_multi_line_response();
                 else
                     temp = read_multi_line_response();
@@ -435,30 +443,30 @@ namespace BugTracker.Web.Core
             return temp;
         }
 
-        public string RSET()
+        public string Rset()
         {
             string temp;
-            if (this.state != connect_state.TRANSACTION)
+            if (this.State != ConnectState.Transaction)
             {
                 //the pop command STAT is only valid in the TRANSACTION state
                 temp = "Connection state not = TRANSACTION";
             }
             else
             {
-                issue_command("RSET");
-                temp = read_single_line_response();
+                IssueCommand("RSET");
+                temp = ReadSingleLineResponse();
             }
 
             return temp;
         }
 
-        public string STAT()
+        public string Stat()
         {
             string temp;
-            if (this.state == connect_state.TRANSACTION)
+            if (this.State == ConnectState.Transaction)
             {
-                issue_command("STAT");
-                temp = read_single_line_response();
+                IssueCommand("STAT");
+                temp = ReadSingleLineResponse();
 
                 return temp;
             }
@@ -467,20 +475,20 @@ namespace BugTracker.Web.Core
             return "Connection state not = TRANSACTION";
         }
 
-        public string USER()
+        public string User()
         {
             string temp;
-            if (this.state != connect_state.AUTHORIZATION)
+            if (this.State != ConnectState.Authorization)
             {
                 //the pop command USER is only valid in the AUTHORIZATION state
                 temp = "Connection state not = AUTHORIZATION";
             }
             else
             {
-                if (this.user != null)
+                if (this.UserName != null)
                 {
-                    issue_command("USER " + this.user);
-                    temp = read_single_line_response();
+                    IssueCommand("USER " + this.UserName);
+                    temp = ReadSingleLineResponse();
                 }
                 else
                 {
@@ -492,10 +500,10 @@ namespace BugTracker.Web.Core
             return temp;
         }
 
-        public string USER(string user_name)
+        public string User(string userName)
         {
-            this.user = user_name; //put the user name in the appropriate propertity
-            return USER(); //call USER with no arguements
+            this.UserName = userName; //put the user name in the appropriate propertity
+            return User(); //call USER with no arguements
         }
 
         #endregion

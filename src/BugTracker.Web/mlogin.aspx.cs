@@ -12,16 +12,16 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class mlogin : Page
+    public partial class MLogin : Page
     {
-        public string sql;
+        public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.set_context(HttpContext.Current);
-            Util.do_not_cache(Response);
+            Util.SetContext(HttpContext.Current);
+            Util.DoNotCache(Response);
 
-            if (Util.get_setting("EnableMobile", "0") == "0")
+            if (Util.GetSetting("EnableMobile", "0") == "0")
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
                 Response.End();
@@ -29,7 +29,7 @@ namespace BugTracker.Web
 
             this.msg.InnerText = "";
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - Logon";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Logon";
             this.my_header.InnerText = Page.Title;
 
             // fill in the username first time in
@@ -38,24 +38,24 @@ namespace BugTracker.Web
 
         public void on_logon()
         {
-            var authenticated = Authenticate.check_password(this.user.Value, this.pw.Value);
+            var authenticated = Authenticate.CheckPassword(this.user.Value, this.pw.Value);
 
             if (authenticated)
             {
-                this.sql = "select us_id from users where us_username = N'$us'";
-                this.sql = this.sql.Replace("$us", this.user.Value.Replace("'", "''"));
-                var dr = DbUtil.get_datarow(this.sql);
+                this.Sql = "select us_id from users where us_username = N'$us'";
+                this.Sql = this.Sql.Replace("$us", this.user.Value.Replace("'", "''"));
+                var dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
                 {
-                    var us_id = (int) dr["us_id"];
+                    var usId = (int) dr["us_id"];
 
-                    Security.create_session(
+                    Security.CreateSession(
                         Request,
                         Response,
-                        us_id, this.user.Value,
+                        usId, this.user.Value,
                         "0");
 
-                    Util.redirect(Request, Response);
+                    Util.Redirect(Request, Response);
                 }
             }
             else

@@ -12,21 +12,21 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class subscribe : Page
+    public partial class Subscribe : Page
     {
-        public Security security;
-        public string sql;
+        public Security Security;
+        public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK_EXCEPT_GUEST);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
 
             var bugid = Convert.ToInt32(Request["id"]);
-            var permission_level = Bug.get_bug_permission_level(bugid, this.security);
-            if (permission_level == Security.PERMISSION_NONE) Response.End();
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.Security);
+            if (permissionLevel == Security.PermissionNone) Response.End();
 
             if (Request.QueryString["ses"] != (string) Session["session_cookie"])
             {
@@ -35,15 +35,15 @@ namespace BugTracker.Web
             }
 
             if (Request.QueryString["actn"] == "1")
-                this.sql = @"insert into bug_subscriptions (bs_bug, bs_user)
+                this.Sql = @"insert into bug_subscriptions (bs_bug, bs_user)
 			values($bg, $us)";
             else
-                this.sql = @"delete from bug_subscriptions
+                this.Sql = @"delete from bug_subscriptions
 			where bs_bug = $bg and bs_user = $us";
 
-            this.sql = this.sql.Replace("$bg", Util.sanitize_integer(Request["id"]));
-            this.sql = this.sql.Replace("$us", Convert.ToString(this.security.user.usid));
-            DbUtil.execute_nonquery(this.sql);
+            this.Sql = this.Sql.Replace("$bg", Util.SanitizeInteger(Request["id"]));
+            this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            DbUtil.ExecuteNonQuery(this.Sql);
         }
     }
 }

@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class ajax {
+    public partial class Ajax {
     }
 }

@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -15,7 +16,7 @@ namespace BugTracker.Web.Core
 
     public class Authenticate
     {
-        public static bool check_password(string username, string password)
+        public static bool CheckPassword(string username, string password)
         {
             var sql = @"
 select us_username, us_id, us_password, isnull(us_salt,0) us_salt, us_active
@@ -24,43 +25,43 @@ where us_username = N'$username'";
 
             sql = sql.Replace("$username", username.Replace("'", "''"));
 
-            var dr = DbUtil.get_datarow(sql);
+            var dr = DbUtil.GetDataRow(sql);
 
             if (dr == null)
             {
-                Util.write_to_log("Unknown user " + username + " attempted to login.");
+                Util.WriteToLog("Unknown user " + username + " attempted to login.");
                 return false;
             }
 
-            var us_active = (int) dr["us_active"];
+            var usActive = (int) dr["us_active"];
 
-            if (us_active == 0)
+            if (usActive == 0)
             {
-                Util.write_to_log("Inactive user " + username + " attempted to login.");
+                Util.WriteToLog("Inactive user " + username + " attempted to login.");
                 return false;
             }
 
             var authenticated = false;
-            LinkedList<DateTime> failed_attempts = null;
+            LinkedList<DateTime> failedAttempts = null;
 
             // Too many failed attempts?
             // We'll only allow N in the last N minutes.
-            failed_attempts = (LinkedList<DateTime>) HttpRuntime.Cache[username];
+            failedAttempts = (LinkedList<DateTime>) HttpRuntime.Cache[username];
 
-            if (failed_attempts != null)
+            if (failedAttempts != null)
             {
                 // Don't count attempts older than N minutes ago.
-                var minutes_ago = Convert.ToInt32(Util.get_setting("FailedLoginAttemptsMinutes", "10"));
-                var failed_attempts_allowed = Convert.ToInt32(Util.get_setting("FailedLoginAttemptsAllowed", "10"));
+                var minutesAgo = Convert.ToInt32(Util.GetSetting("FailedLoginAttemptsMinutes", "10"));
+                var failedAttemptsAllowed = Convert.ToInt32(Util.GetSetting("FailedLoginAttemptsAllowed", "10"));
 
-                var n_minutes_ago = DateTime.Now.AddMinutes(-1 * minutes_ago);
+                var nMinutesAgo = DateTime.Now.AddMinutes(-1 * minutesAgo);
                 while (true)
-                    if (failed_attempts.Count > 0)
+                    if (failedAttempts.Count > 0)
                     {
-                        if (failed_attempts.First.Value < n_minutes_ago)
+                        if (failedAttempts.First.Value < nMinutesAgo)
                         {
-                            Util.write_to_log("removing stale failed attempt for " + username);
-                            failed_attempts.RemoveFirst();
+                            Util.WriteToLog("removing stale failed attempt for " + username);
+                            failedAttempts.RemoveFirst();
                         }
                         else
                         {
@@ -73,88 +74,88 @@ where us_username = N'$username'";
                     }
 
                 // how many failed attempts in last N minutes?
-                Util.write_to_log(
-                    "failed attempt count for " + username + ":" + Convert.ToString(failed_attempts.Count));
+                Util.WriteToLog(
+                    "failed attempt count for " + username + ":" + Convert.ToString(failedAttempts.Count));
 
-                if (failed_attempts.Count > failed_attempts_allowed)
+                if (failedAttempts.Count > failedAttemptsAllowed)
                 {
-                    Util.write_to_log("Too many failed login attempts in too short a time period: " + username);
+                    Util.WriteToLog("Too many failed login attempts in too short a time period: " + username);
                     return false;
                 }
 
                 // Save the list of attempts
-                HttpRuntime.Cache[username] = failed_attempts;
+                HttpRuntime.Cache[username] = failedAttempts;
             }
 
-            if (Util.get_setting("AuthenticateUsingLdap", "0") == "1")
-                authenticated = check_password_with_ldap(username, password);
+            if (Util.GetSetting("AuthenticateUsingLdap", "0") == "1")
+                authenticated = CheckPasswordWithLdap(username, password);
             else
-                authenticated = check_password_with_db(username, password, dr);
+                authenticated = CheckPasswordWithDb(username, password, dr);
 
             if (authenticated)
             {
                 // clear list of failed attempts
-                if (failed_attempts != null)
+                if (failedAttempts != null)
                 {
-                    failed_attempts.Clear();
-                    HttpRuntime.Cache[username] = failed_attempts;
+                    failedAttempts.Clear();
+                    HttpRuntime.Cache[username] = failedAttempts;
                 }
 
-                Util.update_most_recent_login_datetime((int) dr["us_id"]);
+                Util.UpdateMostRecentLoginDateTime((int) dr["us_id"]);
                 return true;
             }
 
-            if (failed_attempts == null) failed_attempts = new LinkedList<DateTime>();
+            if (failedAttempts == null) failedAttempts = new LinkedList<DateTime>();
 
             // Record a failed login attempt.
-            failed_attempts.AddLast(DateTime.Now);
-            HttpRuntime.Cache[username] = failed_attempts;
+            failedAttempts.AddLast(DateTime.Now);
+            HttpRuntime.Cache[username] = failedAttempts;
 
             return false;
         }
 
-        public static bool check_password_with_ldap(string username, string password)
+        public static bool CheckPasswordWithLdap(string username, string password)
         {
             // allow multiple, seperated by a pipe character
-            var dns = Util.get_setting(
+            var dns = Util.GetSetting(
                 "LdapUserDistinguishedName",
                 "uid=$REPLACE_WITH_USERNAME$,ou=people,dc=mycompany,dc=com");
 
-            var dn_array = dns.Split('|');
+            var dnArray = dns.Split('|');
 
-            var ldap_server = Util.get_setting(
+            var ldapServer = Util.GetSetting(
                 "LdapServer",
                 "127.0.0.1");
 
-            using (var ldap = new LdapConnection(ldap_server))
+            using (var ldap = new LdapConnection(ldapServer))
             {
-                for (var i = 0; i < dn_array.Length; i++)
+                for (var i = 0; i < dnArray.Length; i++)
                 {
-                    var dn = dn_array[i].Replace("$REPLACE_WITH_USERNAME$", username);
+                    var dn = dnArray[i].Replace("$REPLACE_WITH_USERNAME$", username);
 
                     var cred = new NetworkCredential(dn, password);
 
                     ldap.AuthType = (AuthType) Enum.Parse
                     (typeof(AuthType),
-                        Util.get_setting("LdapAuthType", "Basic"));
+                        Util.GetSetting("LdapAuthType", "Basic"));
 
                     try
                     {
                         ldap.Bind(cred);
-                        Util.write_to_log("LDAP authentication ok using " + dn + " for username: " + username);
+                        Util.WriteToLog("LDAP authentication ok using " + dn + " for username: " + username);
                         return true;
                     }
                     catch (Exception e)
                     {
-                        var exception_msg = e.Message;
+                        var exceptionMsg = e.Message;
 
                         if (e.InnerException != null)
                         {
-                            exception_msg += "\n";
-                            exception_msg += e.InnerException.Message;
+                            exceptionMsg += "\n";
+                            exceptionMsg += e.InnerException.Message;
                         }
 
-                        Util.write_to_log("LDAP authentication failed using " + dn + ": " + exception_msg);
+                        Util.WriteToLog("LDAP authentication failed using " + dn + ": " + exceptionMsg);
                     }
                 }
             }
@@ -162,31 +163,31 @@ where us_username = N'$username'";
             return false;
         }
 
-        public static bool check_password_with_db(string username, string password, DataRow dr)
+        public static bool CheckPasswordWithDb(string username, string password, DataRow dr)
         {
-            var us_salt = (int) dr["us_salt"];
+            var usSalt = (int) dr["us_salt"];
 
             string encrypted;
 
-            var us_password = (string) dr["us_password"];
+            var usPassword = (string) dr["us_password"];
 
-            if (us_password.Length < 32) // if password in db is unencrypted
+            if (usPassword.Length < 32) // if password in db is unencrypted
                 encrypted = password; // in other words, unecrypted
-            else if (us_salt == 0)
-                encrypted = Util.encrypt_string_using_MD5(password);
+            else if (usSalt == 0)
+                encrypted = Util.EncryptStringUsingMd5(password);
             else
-                encrypted = Util.encrypt_string_using_MD5(password + Convert.ToString(us_salt));
+                encrypted = Util.EncryptStringUsingMd5(password + Convert.ToString(usSalt));
 
-            if (encrypted == us_password)
+            if (encrypted == usPassword)
             {
                 // Authenticated, but let's do a better job encrypting the password.
                 // If it is not encrypted, or, if it is encrypted without salt, then
                 // update it so that it is encrypted WITH salt.
-                if (us_salt == 0 || us_password.Length < 32) Util.update_user_password((int) dr["us_id"], password);
+                if (usSalt == 0 || usPassword.Length < 32) Util.UpdateUserPassword((int) dr["us_id"], password);
                 return true;
             }
 
-            Util.write_to_log("User " + username + " entered an incorrect password.");
+            Util.WriteToLog("User " + username + " entered an incorrect password.");
             return false;
         }
     }

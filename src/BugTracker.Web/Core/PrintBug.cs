@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -15,7 +16,7 @@ namespace BugTracker.Web.Core
 
     public class PrintBug
     {
-        private static readonly Regex reEmail = new Regex(
+        private static readonly Regex ReEmail = new Regex(
             @"([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\."
             + @")|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})",
             RegexOptions.IgnoreCase
@@ -24,7 +25,7 @@ namespace BugTracker.Web.Core
             | RegexOptions.Compiled);
 
         // convert URL's to hyperlinks
-        private static readonly Regex reHyperlinks = new Regex(
+        private static readonly Regex ReHyperlinks = new Regex(
             //@"(?<Protocol>\w+):\/\/(?<Domain>[\w.]+\/?)\S*",
             @"https?://[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]",
             RegexOptions.IgnoreCase
@@ -32,192 +33,192 @@ namespace BugTracker.Web.Core
             | RegexOptions.IgnorePatternWhitespace
             | RegexOptions.Compiled);
 
-        public static void print_bug(HttpResponse Response, DataRow dr, Security security,
-            bool include_style,
-            bool images_inline,
-            bool history_inline,
-            bool internal_posts)
+        public static void print_bug(HttpResponse response, DataRow dr, Security security,
+            bool includeStyle,
+            bool imagesInline,
+            bool historyInline,
+            bool internalPosts)
         {
             var bugid = Convert.ToInt32(dr["id"]);
-            var string_bugid = Convert.ToString(bugid);
+            var stringBugid = Convert.ToString(bugid);
 
-            if (include_style) // when sending emails
+            if (includeStyle) // when sending emails
             {
-                Response.Write("\n<style>\n");
+                response.Write("\n<style>\n");
 
                 // If this file exists, use it.
 
-                var map_path = (string) HttpRuntime.Cache["MapPath"];
+                var mapPath = (string)HttpRuntime.Cache["MapPath"];
 
-                var css_for_email_file = map_path + "\\custom\\btnet_css_for_email.css";
+                var cssForEmailFile = mapPath + "\\Content\\custom\\btnet_css_for_email.css";
 
                 try
                 {
-                    if (File.Exists(css_for_email_file))
+                    if (File.Exists(cssForEmailFile))
                     {
-                        Response.WriteFile(css_for_email_file);
-                        Response.Write("\n");
+                        response.WriteFile(cssForEmailFile);
+                        response.Write("\n");
                     }
                     else
                     {
-                        css_for_email_file = map_path + "\\btnet_base.css";
-                        Response.WriteFile(css_for_email_file);
-                        Response.Write("\n");
-                        css_for_email_file = map_path + "\\custom\\" + "btnet_custom.css";
-                        if (File.Exists(css_for_email_file))
+                        cssForEmailFile = mapPath + "Content\\btnet_base.css";
+                        response.WriteFile(cssForEmailFile);
+                        response.Write("\n");
+                        cssForEmailFile = mapPath + "\\Content\\custom\\" + "btnet_custom.css";
+                        if (File.Exists(cssForEmailFile))
                         {
-                            Response.WriteFile(css_for_email_file);
-                            Response.Write("\n");
+                            response.WriteFile(cssForEmailFile);
+                            response.Write("\n");
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Util.write_to_log("Exception trying to read css file for email \""
-                                      + css_for_email_file
+                    Util.WriteToLog("Exception trying to read css file for email \""
+                                      + cssForEmailFile
                                       + "\":"
                                       + e.Message);
                 }
 
                 // underline links in the emails to make them more obvious
-                Response.Write("\na {text-decoration: underline; }");
-                Response.Write("\na:visited {text-decoration: underline; }");
-                Response.Write("\na:hover {text-decoration: underline; }");
-                Response.Write("\n</style>\n");
+                response.Write("\na {text-decoration: underline; }");
+                response.Write("\na:visited {text-decoration: underline; }");
+                response.Write("\na:hover {text-decoration: underline; }");
+                response.Write("\n</style>\n");
             }
 
-            Response.Write("<body style='background:white'>");
-            Response.Write("<b>"
-                           + Util.capitalize_first_letter(Util.get_setting("SingularBugLabel", "bug"))
+            response.Write("<body style='background:white'>");
+            response.Write("<b>"
+                           + Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
                            + " ID:&nbsp;<a href="
-                           + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                           + "edit_bug.aspx?id="
-                           + string_bugid
+                           + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                           + "EditBug.aspx?id="
+                           + stringBugid
                            + ">"
-                           + string_bugid
+                           + stringBugid
                            + "</a>");
 
-            if (Util.get_setting("EnableMobile", "0") == "1")
-                Response.Write(
+            if (Util.GetSetting("EnableMobile", "0") == "1")
+                response.Write(
                     "&nbsp;&nbsp;&nbsp;&nbsp;Mobile link:&nbsp;<a href="
-                    + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                    + "mbug.aspx?id="
-                    + string_bugid
+                    + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                    + "MBug.aspx?id="
+                    + stringBugid
                     + ">"
-                    + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                    + "mbug.aspx?id="
-                    + string_bugid
+                    + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                    + "MBug.aspx?id="
+                    + stringBugid
                     + "</a>");
 
-            Response.Write("<br>");
+            response.Write("<br>");
 
-            Response.Write("Short desc:&nbsp;<a href="
-                           + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                           + "edit_bug.aspx?id="
-                           + string_bugid
+            response.Write("Short desc:&nbsp;<a href="
+                           + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                           + "EditBug.aspx?id="
+                           + stringBugid
                            + ">"
-                           + HttpUtility.HtmlEncode((string) dr["short_desc"])
+                           + HttpUtility.HtmlEncode((string)dr["short_desc"])
                            + "</a></b><p>");
 
             // start of the table with the bug fields
-            Response.Write("\n<table border=1 cellpadding=3 cellspacing=0>");
-            Response.Write("\n<tr><td>Last changed by<td>"
-                           + format_username((string) dr["last_updated_user"], (string) dr["last_updated_fullname"])
+            response.Write("\n<table border=1 cellpadding=3 cellspacing=0>");
+            response.Write("\n<tr><td>Last changed by<td>"
+                           + FormatUserName((string)dr["last_updated_user"], (string)dr["last_updated_fullname"])
                            + "&nbsp;");
-            Response.Write("\n<tr><td>Reported By<td>"
-                           + format_username((string) dr["reporter"], (string) dr["reporter_fullname"])
+            response.Write("\n<tr><td>Reported By<td>"
+                           + FormatUserName((string)dr["reporter"], (string)dr["reporter_fullname"])
                            + "&nbsp;");
-            Response.Write("\n<tr><td>Reported On<td>" + Util.format_db_date_and_time(dr["reported_date"]) + "&nbsp;");
+            response.Write("\n<tr><td>Reported On<td>" + Util.FormatDbDateTime(dr["reported_date"]) + "&nbsp;");
 
-            if (security.user.tags_field_permission_level > 0)
-                Response.Write("\n<tr><td>Tags<td>" + dr["bg_tags"] + "&nbsp;");
+            if (security.User.TagsFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Tags<td>" + dr["bg_tags"] + "&nbsp;");
 
-            if (security.user.project_field_permission_level > 0)
-                Response.Write("\n<tr><td>Project<td>" + dr["current_project"] + "&nbsp;");
+            if (security.User.ProjectFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Project<td>" + dr["current_project"] + "&nbsp;");
 
-            if (security.user.org_field_permission_level > 0)
-                Response.Write("\n<tr><td>Organization<td>" + dr["og_name"] + "&nbsp;");
+            if (security.User.OrgFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Organization<td>" + dr["og_name"] + "&nbsp;");
 
-            if (security.user.category_field_permission_level > 0)
-                Response.Write("\n<tr><td>Category<td>" + dr["category_name"] + "&nbsp;");
+            if (security.User.CategoryFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Category<td>" + dr["category_name"] + "&nbsp;");
 
-            if (security.user.priority_field_permission_level > 0)
-                Response.Write("\n<tr><td>Priority<td>" + dr["priority_name"] + "&nbsp;");
+            if (security.User.PriorityFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Priority<td>" + dr["priority_name"] + "&nbsp;");
 
-            if (security.user.assigned_to_field_permission_level > 0)
-                Response.Write("\n<tr><td>Assigned<td>"
-                               + format_username((string) dr["assigned_to_username"],
-                                   (string) dr["assigned_to_fullname"])
+            if (security.User.AssignedToFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Assigned<td>"
+                               + FormatUserName((string)dr["assigned_to_username"],
+                                   (string)dr["assigned_to_fullname"])
                                + "&nbsp;");
 
-            if (security.user.status_field_permission_level > 0)
-                Response.Write("\n<tr><td>Status<td>" + dr["status_name"] + "&nbsp;");
+            if (security.User.StatusFieldPermissionLevel > 0)
+                response.Write("\n<tr><td>Status<td>" + dr["status_name"] + "&nbsp;");
 
-            if (security.user.udf_field_permission_level > 0)
-                if (Util.get_setting("ShowUserDefinedBugAttribute", "1") == "1")
-                    Response.Write("\n<tr><td>"
-                                   + Util.get_setting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")
+            if (security.User.UdfFieldPermissionLevel > 0)
+                if (Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1")
+                    response.Write("\n<tr><td>"
+                                   + Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")
                                    + "<td>"
                                    + dr["udf_name"] + "&nbsp;");
 
             // Get custom column info  (There's an inefficiency here - we just did this
             // same call in get_bug_datarow...)
 
-            var ds_custom_cols = Util.get_custom_columns();
+            var dsCustomCols = Util.GetCustomColumns();
 
             // Show custom columns
 
-            foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+            foreach (DataRow drcc in dsCustomCols.Tables[0].Rows)
             {
-                var column_name = (string) drcc["name"];
+                var columnName = (string)drcc["name"];
 
-                if (security.user.dict_custom_field_permission_level[column_name] == Security.PERMISSION_NONE) continue;
+                if (security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone) continue;
 
-                Response.Write("\n<tr><td>");
-                Response.Write(column_name);
-                Response.Write("<td>");
+                response.Write("\n<tr><td>");
+                response.Write(columnName);
+                response.Write("<td>");
 
-                if ((string) drcc["datatype"] == "datetime")
+                if ((string)drcc["datatype"] == "datetime")
                 {
-                    var dt = dr[(string) drcc["name"]];
+                    var dt = dr[(string)drcc["name"]];
 
-                    Response.Write(Util.format_db_date_and_time(dt));
+                    response.Write(Util.FormatDbDateTime(dt));
                 }
                 else
                 {
                     var s = "";
 
-                    if ((string) drcc["dropdown type"] == "users")
+                    if ((string)drcc["dropdown type"] == "users")
                     {
-                        var obj = dr[(string) drcc["name"]];
+                        var obj = dr[(string)drcc["name"]];
                         if (obj.GetType() != typeof(DBNull))
                         {
                             var userid = Convert.ToInt32(obj);
                             if (userid != 0)
                             {
-                                var sql_get_username = "select us_username from users where us_id = $1";
-                                s = (string) DbUtil.execute_scalar(sql_get_username.Replace("$1",
+                                var sqlGetUsername = "select us_username from users where us_id = $1";
+                                s = (string)DbUtil.ExecuteScalar(sqlGetUsername.Replace("$1",
                                     Convert.ToString(userid)));
                             }
                         }
                     }
                     else
                     {
-                        s = Convert.ToString(dr[(string) drcc["name"]]);
+                        s = Convert.ToString(dr[(string)drcc["name"]]);
                     }
 
                     s = HttpUtility.HtmlEncode(s);
                     s = s.Replace("\n", "<br>");
                     s = s.Replace("  ", "&nbsp; ");
                     s = s.Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-                    Response.Write(s);
+                    response.Write(s);
                 }
 
-                Response.Write("&nbsp;");
+                response.Write("&nbsp;");
             }
 
             // create project custom dropdowns
-            if ((int) dr["project"] != 0)
+            if ((int)dr["project"] != 0)
             {
                 var sql = @"select
 					isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
@@ -228,59 +229,59 @@ namespace BugTracker.Web.Core
 					isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3]
 					from projects where pj_id = $pj";
 
-                sql = sql.Replace("$pj", Convert.ToString((int) dr["project"]));
+                sql = sql.Replace("$pj", Convert.ToString((int)dr["project"]));
 
-                var project_dr = DbUtil.get_datarow(sql);
+                var projectDr = DbUtil.GetDataRow(sql);
 
-                if (project_dr != null)
+                if (projectDr != null)
                     for (var i = 1; i < 4; i++)
-                        if ((int) project_dr["pj_enable_custom_dropdown" + Convert.ToString(i)] == 1)
+                        if ((int)projectDr["pj_enable_custom_dropdown" + Convert.ToString(i)] == 1)
                         {
-                            Response.Write("\n<tr><td>");
-                            Response.Write(project_dr["pj_custom_dropdown_label" + Convert.ToString(i)]);
-                            Response.Write("<td>");
-                            Response.Write(dr["bg_project_custom_dropdown_value" + Convert.ToString(i)]);
-                            Response.Write("&nbsp;");
+                            response.Write("\n<tr><td>");
+                            response.Write(projectDr["pj_custom_dropdown_label" + Convert.ToString(i)]);
+                            response.Write("<td>");
+                            response.Write(dr["bg_project_custom_dropdown_value" + Convert.ToString(i)]);
+                            response.Write("&nbsp;");
                         }
             }
 
-            Response.Write("\n</table><p>"); // end of the table with the bug fields
+            response.Write("\n</table><p>"); // end of the table with the bug fields
 
             // Relationships
-            if (Util.get_setting("EnableRelationships", "0") == "1") write_relationships(Response, bugid);
+            if (Util.GetSetting("EnableRelationships", "0") == "1") WriteRelationships(response, bugid);
 
             // Tasks
-            if (Util.get_setting("EnableTasks", "0") == "1") write_tasks(Response, bugid);
+            if (Util.GetSetting("EnableTasks", "0") == "1") WriteTasks(response, bugid);
 
-            var ds_posts = get_bug_posts(bugid, security.user.external_user, history_inline);
-            write_posts(
-                ds_posts,
-                Response,
+            var dsPosts = GetBugPosts(bugid, security.User.ExternalUser, historyInline);
+            WritePosts(
+                dsPosts,
+                response,
                 bugid,
                 0,
                 false, /* don't write links */
-                images_inline,
-                history_inline,
-                internal_posts,
-                security.user);
+                imagesInline,
+                historyInline,
+                internalPosts,
+                security.User);
 
-            Response.Write("</body>");
+            response.Write("</body>");
         }
 
-        protected static void write_tasks(HttpResponse Response, int bugid)
+        protected static void WriteTasks(HttpResponse response, int bugid)
         {
-            var ds_tasks = Util.get_all_tasks(null, bugid);
+            var dsTasks = Util.GetAllTasks(null, bugid);
 
-            if (ds_tasks.Tables[0].Rows.Count > 0)
+            if (dsTasks.Tables[0].Rows.Count > 0)
             {
-                Response.Write("<b>Tasks</b><p>");
+                response.Write("<b>Tasks</b><p>");
 
-                SortableHtmlTable.create_nonsortable_from_dataset(
-                    Response, ds_tasks);
+                SortableHtmlTable.CreateNonSortableFromDataSet(
+                    response, dsTasks);
             }
         }
 
-        protected static void write_relationships(HttpResponse Response, int bugid)
+        protected static void WriteRelationships(HttpResponse response, int bugid)
         {
             var sql = @"select bg_id [id],
 				bg_short_desc [desc],
@@ -295,109 +296,109 @@ namespace BugTracker.Web.Core
 				order by 1";
 
             sql = sql.Replace("$bg", Convert.ToString(bugid));
-            var ds_relationships = DbUtil.get_dataset(sql);
+            var dsRelationships = DbUtil.GetDataSet(sql);
 
-            if (ds_relationships.Tables[0].Rows.Count > 0)
+            if (dsRelationships.Tables[0].Rows.Count > 0)
             {
-                Response.Write("<b>Relationships</b><p><table border=1 class=datat><tr>");
-                Response.Write("<td class=datah valign=bottom>id</td>");
-                Response.Write("<td class=datah valign=bottom>desc</td>");
-                Response.Write("<td class=datah valign=bottom>comment</td>");
-                Response.Write("<td class=datah valign=bottom>parent/child</td>");
+                response.Write("<b>Relationships</b><p><table border=1 class=datat><tr>");
+                response.Write("<td class=datah valign=bottom>id</td>");
+                response.Write("<td class=datah valign=bottom>desc</td>");
+                response.Write("<td class=datah valign=bottom>comment</td>");
+                response.Write("<td class=datah valign=bottom>parent/child</td>");
 
-                foreach (DataRow dr_relationships in ds_relationships.Tables[0].Rows)
+                foreach (DataRow drRelationships in dsRelationships.Tables[0].Rows)
                 {
-                    Response.Write("<tr>");
+                    response.Write("<tr>");
 
-                    Response.Write("<td class=datad valign=top align=right>");
-                    Response.Write(Convert.ToString((int) dr_relationships["id"]));
+                    response.Write("<td class=datad valign=top align=right>");
+                    response.Write(Convert.ToString((int)drRelationships["id"]));
 
-                    Response.Write("<td class=datad valign=top>");
-                    Response.Write(Convert.ToString(dr_relationships["desc"]));
+                    response.Write("<td class=datad valign=top>");
+                    response.Write(Convert.ToString(drRelationships["desc"]));
 
-                    Response.Write("<td class=datad valign=top>");
-                    Response.Write(Convert.ToString(dr_relationships["comment"]));
+                    response.Write("<td class=datad valign=top>");
+                    response.Write(Convert.ToString(drRelationships["comment"]));
 
-                    Response.Write("<td class=datad valign=top>");
-                    Response.Write(Convert.ToString(dr_relationships["parent/child"]));
+                    response.Write("<td class=datad valign=top>");
+                    response.Write(Convert.ToString(drRelationships["parent/child"]));
                 }
 
-                Response.Write("</table><p>");
+                response.Write("</table><p>");
             }
         }
 
-        public static int write_posts(
-            DataSet ds_posts,
-            HttpResponse Response,
+        public static int WritePosts(
+            DataSet dsPosts,
+            HttpResponse response,
             int bugid,
-            int permission_level,
-            bool write_links,
-            bool images_inline,
-            bool history_inline,
-            bool internal_posts,
+            int permissionLevel,
+            bool writeLinks,
+            bool imagesInline,
+            bool historyInline,
+            bool internalPosts,
             User user)
         {
-            if (Util.get_setting("ForceBordersInEmails", "0") == "1")
-                Response.Write("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
+            if (Util.GetSetting("ForceBordersInEmails", "0") == "1")
+                response.Write("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
             else
-                Response.Write("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
+                response.Write("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
 
-            var post_cnt = ds_posts.Tables[0].Rows.Count;
+            var postCnt = dsPosts.Tables[0].Rows.Count;
 
-            int bp_id;
-            var prev_bp_id = -1;
+            int bpId;
+            var prevBpId = -1;
 
-            foreach (DataRow dr in ds_posts.Tables[0].Rows)
+            foreach (DataRow dr in dsPosts.Tables[0].Rows)
             {
-                if (!internal_posts)
-                    if ((int) dr["bp_hidden_from_external_users"] == 1)
+                if (!internalPosts)
+                    if ((int)dr["bp_hidden_from_external_users"] == 1)
                         continue;
 
-                bp_id = (int) dr["bp_id"];
+                bpId = (int)dr["bp_id"];
 
-                if ((string) dr["bp_type"] == "update")
+                if ((string)dr["bp_type"] == "update")
                 {
-                    var comment = (string) dr["bp_comment"];
+                    var comment = (string)dr["bp_comment"];
 
-                    if (user.tags_field_permission_level == Security.PERMISSION_NONE
+                    if (user.TagsFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed tags from"))
                         continue;
 
-                    if (user.project_field_permission_level == Security.PERMISSION_NONE
+                    if (user.ProjectFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed project from"))
                         continue;
 
-                    if (user.org_field_permission_level == Security.PERMISSION_NONE
+                    if (user.OrgFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed organization from"))
                         continue;
 
-                    if (user.category_field_permission_level == Security.PERMISSION_NONE
+                    if (user.CategoryFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed category from"))
                         continue;
 
-                    if (user.priority_field_permission_level == Security.PERMISSION_NONE
+                    if (user.PriorityFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed priority from"))
                         continue;
 
-                    if (user.assigned_to_field_permission_level == Security.PERMISSION_NONE
+                    if (user.AssignedToFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed assigned_to from"))
                         continue;
 
-                    if (user.status_field_permission_level == Security.PERMISSION_NONE
+                    if (user.StatusFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed status from"))
                         continue;
 
-                    if (user.udf_field_permission_level == Security.PERMISSION_NONE
+                    if (user.UdfFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed " +
-                                              Util.get_setting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE") +
+                                              Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE") +
                                               " from"))
                         continue;
 
                     var bSkip = false;
-                    foreach (var key in user.dict_custom_field_permission_level.Keys)
+                    foreach (var key in user.DictCustomFieldPermissionLevel.Keys)
                     {
-                        var field_permission_level = user.dict_custom_field_permission_level[key];
-                        if (field_permission_level == Security.PERMISSION_NONE)
+                        var fieldPermissionLevel = user.DictCustomFieldPermissionLevel[key];
+                        if (fieldPermissionLevel == Security.PermissionNone)
                             if (comment.StartsWith("changed " + key + " from"))
                                 bSkip = true;
                     }
@@ -405,56 +406,56 @@ namespace BugTracker.Web.Core
                     if (bSkip) continue;
                 }
 
-                if (bp_id == prev_bp_id)
+                if (bpId == prevBpId)
                 {
                     // show another attachment
-                    write_email_attachment(Response, bugid, dr, write_links, images_inline);
+                    WriteEmailAttachment(response, bugid, dr, writeLinks, imagesInline);
                 }
                 else
                 {
                     // show the comment and maybe an attachment
-                    if (prev_bp_id != -1) Response.Write("\n</table>"); // end the previous table
+                    if (prevBpId != -1) response.Write("\n</table>"); // end the previous table
 
-                    write_post(Response, bugid, permission_level, dr, bp_id, write_links, images_inline,
-                        user.is_admin,
-                        user.can_edit_and_delete_posts,
-                        user.external_user);
+                    WritePost(response, bugid, permissionLevel, dr, bpId, writeLinks, imagesInline,
+                        user.IsAdmin,
+                        user.CanEditAndDeletePosts,
+                        user.ExternalUser);
 
                     if (Convert.ToString(dr["ba_file"]) != "") // intentially "ba"
-                        write_email_attachment(Response, bugid, dr, write_links, images_inline);
-                    prev_bp_id = bp_id;
+                        WriteEmailAttachment(response, bugid, dr, writeLinks, imagesInline);
+                    prevBpId = bpId;
                 }
             }
 
-            if (prev_bp_id != -1) Response.Write("\n</table>"); // end the previous table
+            if (prevBpId != -1) response.Write("\n</table>"); // end the previous table
 
-            Response.Write("\n</table>");
+            response.Write("\n</table>");
 
-            return post_cnt;
+            return postCnt;
         }
 
-        private static void write_post(
-            HttpResponse Response,
+        private static void WritePost(
+            HttpResponse response,
             int bugid,
-            int permission_level,
+            int permissionLevel,
             DataRow dr,
-            int post_id,
-            bool write_links,
-            bool images_inline,
-            bool this_is_admin,
-            bool this_can_edit_and_delete_posts,
-            bool this_external_user)
+            int postId,
+            bool writeLinks,
+            bool imagesInline,
+            bool thisIsAdmin,
+            bool thisCanEditAndDeletePosts,
+            bool thisExternalUser)
         {
-            var type = (string) dr["bp_type"];
+            var type = (string)dr["bp_type"];
 
-            var string_post_id = Convert.ToString(post_id);
-            var string_bug_id = Convert.ToString(bugid);
+            var stringPostId = Convert.ToString(postId);
+            var stringBugId = Convert.ToString(bugid);
 
-            if ((int) dr["seconds_ago"] < 2 && write_links)
+            if ((int)dr["seconds_ago"] < 2 && writeLinks)
                 // for the animation effect
-                Response.Write("\n\n<tr><td class=cmt name=new_post>\n<table width=100%>\n<tr><td align=left>");
+                response.Write("\n\n<tr><td class=cmt name=new_post>\n<table width=100%>\n<tr><td align=left>");
             else
-                Response.Write("\n\n<tr><td class=cmt>\n<table width=100%>\n<tr><td align=left>");
+                response.Write("\n\n<tr><td class=cmt>\n<table width=100%>\n<tr><td align=left>");
 
             /*
 				Format one of the following:
@@ -469,98 +470,98 @@ namespace BugTracker.Web.Core
 
             if (type == "update")
             {
-                if (write_links) Response.Write("<img src=database.png align=top>&nbsp;");
+                if (writeLinks) response.Write("<img src=Content/images/database.png align=top>&nbsp;");
 
                 // posted by
-                Response.Write("<span class=pst>changed by ");
-                Response.Write(format_email_username(
-                    write_links,
+                response.Write("<span class=pst>changed by ");
+                response.Write(FormatEmailUserName(
+                    writeLinks,
                     bugid,
-                    permission_level,
-                    (string) dr["us_email"],
-                    (string) dr["us_username"],
-                    (string) dr["us_fullname"]));
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
             }
             else if (type == "sent")
             {
-                if (write_links) Response.Write("<img src=email_edit.png align=top>&nbsp;");
+                if (writeLinks) response.Write("<img src=Content/images/email_edit.png align=top>&nbsp;");
 
-                Response.Write("<span class=pst>email <a name=" + Convert.ToString(post_id) + "></a>" +
-                               Convert.ToString(post_id) + " sent to ");
+                response.Write("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " sent to ");
 
-                if (write_links)
-                    Response.Write(format_email_to(
+                if (writeLinks)
+                    response.Write(FormatEmailTo(
                         bugid,
-                        HttpUtility.HtmlEncode((string) dr["bp_email_to"])));
+                        HttpUtility.HtmlEncode((string)dr["bp_email_to"])));
                 else
-                    Response.Write(HttpUtility.HtmlEncode((string) dr["bp_email_to"]));
+                    response.Write(HttpUtility.HtmlEncode((string)dr["bp_email_to"]));
 
-                if ((string) dr["bp_email_cc"] != "")
+                if ((string)dr["bp_email_cc"] != "")
                 {
-                    Response.Write(", cc: ");
+                    response.Write(", cc: ");
 
-                    if (write_links)
-                        Response.Write(format_email_to(
+                    if (writeLinks)
+                        response.Write(FormatEmailTo(
                             bugid,
-                            HttpUtility.HtmlEncode((string) dr["bp_email_cc"])));
+                            HttpUtility.HtmlEncode((string)dr["bp_email_cc"])));
                     else
-                        Response.Write(HttpUtility.HtmlEncode((string) dr["bp_email_cc"]));
+                        response.Write(HttpUtility.HtmlEncode((string)dr["bp_email_cc"]));
 
-                    Response.Write(", ");
+                    response.Write(", ");
                 }
 
-                Response.Write(" by ");
+                response.Write(" by ");
 
-                Response.Write(format_email_username(
-                    write_links,
+                response.Write(FormatEmailUserName(
+                    writeLinks,
                     bugid,
-                    permission_level,
-                    (string) dr["us_email"],
-                    (string) dr["us_username"],
-                    (string) dr["us_fullname"]));
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
             }
             else if (type == "received")
             {
-                if (write_links) Response.Write("<img src=email_open.png align=top>&nbsp;");
-                Response.Write("<span class=pst>email <a name=" + Convert.ToString(post_id) + "></a>" +
-                               Convert.ToString(post_id) + " received from ");
-                if (write_links)
-                    Response.Write(format_email_from(
-                        post_id,
-                        (string) dr["bp_email_from"]));
+                if (writeLinks) response.Write("<img src=Content/images/email_open.png align=top>&nbsp;");
+                response.Write("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " received from ");
+                if (writeLinks)
+                    response.Write(FormatEmailFrom(
+                        postId,
+                        (string)dr["bp_email_from"]));
                 else
-                    Response.Write((string) dr["bp_email_from"]);
+                    response.Write((string)dr["bp_email_from"]);
             }
             else if (type == "file")
             {
-                if ((int) dr["bp_hidden_from_external_users"] == 1)
-                    Response.Write("<div class=private>Internal Only!</div>");
-                Response.Write("<span class=pst>file <a name=" + Convert.ToString(post_id) + "></a>" +
-                               Convert.ToString(post_id) + " attached by ");
-                Response.Write(format_email_username(
-                    write_links,
+                if ((int)dr["bp_hidden_from_external_users"] == 1)
+                    response.Write("<div class=private>Internal Only!</div>");
+                response.Write("<span class=pst>file <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " attached by ");
+                response.Write(FormatEmailUserName(
+                    writeLinks,
                     bugid,
-                    permission_level,
-                    (string) dr["us_email"],
-                    (string) dr["us_username"],
-                    (string) dr["us_fullname"]));
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
             }
             else if (type == "comment")
             {
-                if ((int) dr["bp_hidden_from_external_users"] == 1)
-                    Response.Write("<div class=private>Internal Only!</div>");
+                if ((int)dr["bp_hidden_from_external_users"] == 1)
+                    response.Write("<div class=private>Internal Only!</div>");
 
-                if (write_links) Response.Write("<img src=comment.png align=top>&nbsp;");
+                if (writeLinks) response.Write("<img src=Content/images/comment.png align=top>&nbsp;");
 
-                Response.Write("<span class=pst>comment <a name=" + Convert.ToString(post_id) + "></a>" +
-                               Convert.ToString(post_id) + " posted by ");
-                Response.Write(format_email_username(
-                    write_links,
+                response.Write("<span class=pst>comment <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " posted by ");
+                response.Write(FormatEmailUserName(
+                    writeLinks,
                     bugid,
-                    permission_level,
-                    (string) dr["us_email"],
-                    (string) dr["us_username"],
-                    (string) dr["us_fullname"]));
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
             }
             else
             {
@@ -568,332 +569,332 @@ namespace BugTracker.Web.Core
             }
 
             // Format the date
-            Response.Write(" on ");
-            Response.Write(Util.format_db_date_and_time(dr["bp_date"]));
-            Response.Write(", ");
-            Response.Write(Util.how_long_ago((int) dr["seconds_ago"]));
-            Response.Write("</span>");
+            response.Write(" on ");
+            response.Write(Util.FormatDbDateTime(dr["bp_date"]));
+            response.Write(", ");
+            response.Write(Util.HowLongAgo((int)dr["seconds_ago"]));
+            response.Write("</span>");
 
             // Write the links
 
-            if (write_links)
+            if (writeLinks)
             {
-                Response.Write("<td align=right>&nbsp;");
+                response.Write("<td align=right>&nbsp;");
 
-                if (permission_level != Security.PERMISSION_READONLY)
+                if (permissionLevel != Security.PermissionReadonly)
                     if (type == "comment" || type == "sent" || type == "received")
                     {
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=send_email.aspx?quote=1&bp_id=" + string_post_id + "&reply=forward");
-                        Response.Write(">forward</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId + "&reply=forward");
+                        response.Write(">forward</a>");
                     }
 
                 // format links for responding to email
                 if (type == "received")
                 {
-                    if (this_is_admin
-                        || this_can_edit_and_delete_posts
-                        && permission_level == Security.PERMISSION_ALL)
+                    if (thisIsAdmin
+                        || thisCanEditAndDeletePosts
+                        && permissionLevel == Security.PermissionAll)
                     {
                         // This doesn't just work.  Need to make changes in edit/delete pages.
                         //	Response.Write ("&nbsp;&nbsp;&nbsp;<a style='font-size: 8pt;'");
-                        //	Response.Write (" href=edit_comment.aspx?id="
+                        //	Response.Write (" href=EditComment.aspx?id="
                         //		+ string_post_id + "&bug_id=" + string_bug_id);
                         //	Response.Write (">edit</a>");
 
                         // This delete leaves debris around, but it's better than nothing
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=delete_comment.aspx?id="
-                                       + string_post_id + "&bug_id=" + string_bug_id);
-                        Response.Write(">delete</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=DeleteComment.aspx?id="
+                                       + stringPostId + "&bug_id=" + stringBugId);
+                        response.Write(">delete</a>");
                     }
 
-                    if (permission_level != Security.PERMISSION_READONLY)
+                    if (permissionLevel != Security.PermissionReadonly)
                     {
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=send_email.aspx?quote=1&bp_id=" + string_post_id);
-                        Response.Write(">reply</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId);
+                        response.Write(">reply</a>");
 
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=send_email.aspx?quote=1&bp_id=" + string_post_id + "&reply=all");
-                        Response.Write(">reply all</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId + "&reply=all");
+                        response.Write(">reply all</a>");
                     }
                 }
                 else if (type == "file")
                 {
-                    if (this_is_admin
-                        || this_can_edit_and_delete_posts
-                        && permission_level == Security.PERMISSION_ALL)
+                    if (thisIsAdmin
+                        || thisCanEditAndDeletePosts
+                        && permissionLevel == Security.PermissionAll)
                     {
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=edit_attachment.aspx?id="
-                                       + string_post_id + "&bug_id=" + string_bug_id);
-                        Response.Write(">edit</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=EditAttachment.aspx?id="
+                                       + stringPostId + "&bug_id=" + stringBugId);
+                        response.Write(">edit</a>");
 
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=delete_attachment.aspx?id="
-                                       + string_post_id + "&bug_id=" + string_bug_id);
-                        Response.Write(">delete</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=DeleteAttachment.aspx?id="
+                                       + stringPostId + "&bug_id=" + stringBugId);
+                        response.Write(">delete</a>");
                     }
                 }
                 else if (type == "comment")
                 {
-                    if (this_is_admin
-                        || this_can_edit_and_delete_posts
-                        && permission_level == Security.PERMISSION_ALL)
+                    if (thisIsAdmin
+                        || thisCanEditAndDeletePosts
+                        && permissionLevel == Security.PermissionAll)
                     {
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=edit_comment.aspx?id="
-                                       + string_post_id + "&bug_id=" + string_bug_id);
-                        Response.Write(">edit</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=EditComment.aspx?id="
+                                       + stringPostId + "&bug_id=" + stringBugId);
+                        response.Write(">edit</a>");
 
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        Response.Write(" href=delete_comment.aspx?id="
-                                       + string_post_id + "&bug_id=" + string_bug_id);
-                        Response.Write(">delete</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        response.Write(" href=DeleteComment.aspx?id="
+                                       + stringPostId + "&bug_id=" + stringBugId);
+                        response.Write(">delete</a>");
                     }
                 }
 
                 // custom bug link
-                if (Util.get_setting("CustomPostLinkLabel", "") != "")
+                if (Util.GetSetting("CustomPostLinkLabel", "") != "")
                 {
-                    var custom_post_link = "&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;' href="
-                                           + Util.get_setting("CustomPostLinkUrl", "")
+                    var customPostLink = "&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;' href="
+                                           + Util.GetSetting("CustomPostLinkUrl", "")
                                            + "?postid="
-                                           + string_post_id
+                                           + stringPostId
                                            + ">"
-                                           + Util.get_setting("CustomPostLinkLabel", "")
+                                           + Util.GetSetting("CustomPostLinkLabel", "")
                                            + "</a>";
 
-                    Response.Write(custom_post_link);
+                    response.Write(customPostLink);
                 }
             }
 
-            Response.Write("\n</table>\n<table border=0>\n<tr><td>");
+            response.Write("\n</table>\n<table border=0>\n<tr><td>");
             // the text itself
-            var comment = (string) dr["bp_comment"];
-            var comment_type = (string) dr["bp_content_type"];
+            var comment = (string)dr["bp_comment"];
+            var commentType = (string)dr["bp_content_type"];
 
-            if (write_links)
-                comment = format_comment(post_id, comment, comment_type);
+            if (writeLinks)
+                comment = FormatComment(postId, comment, commentType);
             else
-                comment = format_comment(0, comment, comment_type);
+                comment = FormatComment(0, comment, commentType);
 
             if (type == "file")
             {
                 if (comment.Length > 0)
                 {
-                    Response.Write(comment);
-                    Response.Write("<p>");
+                    response.Write(comment);
+                    response.Write("<p>");
                 }
 
-                Response.Write("<span class=pst>");
-                if (write_links) Response.Write("<img src=attach.gif>");
-                Response.Write("attachment:&nbsp;</span><span class=cmt_text>");
-                Response.Write(dr["bp_file"]);
-                Response.Write("</span>");
+                response.Write("<span class=pst>");
+                if (writeLinks) response.Write("<img src=Content/images/attach.gif>");
+                response.Write("attachment:&nbsp;</span><span class=cmt_text>");
+                response.Write(dr["bp_file"]);
+                response.Write("</span>");
 
-                if (write_links)
+                if (writeLinks)
                 {
-                    if ((string) dr["bp_content_type"] != "text/html" ||
-                        Util.get_setting("ShowPotentiallyDangerousHtml", "0") == "1")
+                    if ((string)dr["bp_content_type"] != "text/html" ||
+                        Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
                     {
-                        Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                        Response.Write(" href=view_attachment.aspx?download=0&id="
-                                       + string_post_id + "&bug_id=" + string_bug_id);
-                        Response.Write(">view</a>");
+                        response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
+                        response.Write(" href=ViewAttachment.aspx?download=0&id="
+                                       + stringPostId + "&bug_id=" + stringBugId);
+                        response.Write(">view</a>");
                     }
 
-                    Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                    Response.Write(" href=view_attachment.aspx?download=1&id="
-                                   + string_post_id + "&bug_id=" + string_bug_id);
-                    Response.Write(">save</a>");
+                    response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
+                    response.Write(" href=ViewAttachment.aspx?download=1&id="
+                                   + stringPostId + "&bug_id=" + stringBugId);
+                    response.Write(">save</a>");
                 }
 
-                Response.Write("<p><span class=pst>size: ");
-                Response.Write(dr["bp_size"]);
-                Response.Write("&nbsp;&nbsp;&nbsp;content-type: ");
-                Response.Write(dr["bp_content_type"]);
-                Response.Write("</span>");
+                response.Write("<p><span class=pst>size: ");
+                response.Write(dr["bp_size"]);
+                response.Write("&nbsp;&nbsp;&nbsp;content-type: ");
+                response.Write(dr["bp_content_type"]);
+                response.Write("</span>");
             }
             else
             {
-                Response.Write(comment);
+                response.Write(comment);
             }
 
             // maybe show inline images
             if (type == "file")
-                if (images_inline)
+                if (imagesInline)
                 {
                     var file = Convert.ToString(dr["bp_file"]);
-                    write_file_inline(Response, file, string_post_id, string_bug_id, (string) dr["bp_content_type"]);
+                    WriteFileInline(response, file, stringPostId, stringBugId, (string)dr["bp_content_type"]);
                 }
         }
 
-        private static void write_email_attachment(HttpResponse Response, int bugid, DataRow dr, bool write_links,
-            bool images_inline)
+        private static void WriteEmailAttachment(HttpResponse response, int bugid, DataRow dr, bool writeLinks,
+            bool imagesInline)
         {
-            var string_post_id = Convert.ToString(dr["ba_id"]); // intentially "ba"
-            var string_bug_id = Convert.ToString(bugid);
+            var stringPostId = Convert.ToString(dr["ba_id"]); // intentially "ba"
+            var stringBugId = Convert.ToString(bugid);
 
-            Response.Write("\n<p><span class=pst>");
-            if (write_links) Response.Write("<img src=attach.gif>");
-            Response.Write("attachment:&nbsp;</span>");
-            Response.Write(dr["ba_file"]); // intentially "ba"
-            Response.Write("&nbsp;&nbsp;&nbsp;&nbsp;");
+            response.Write("\n<p><span class=pst>");
+            if (writeLinks) response.Write("<img src=Content/images/attach.gif>");
+            response.Write("attachment:&nbsp;</span>");
+            response.Write(dr["ba_file"]); // intentially "ba"
+            response.Write("&nbsp;&nbsp;&nbsp;&nbsp;");
 
-            if (write_links)
+            if (writeLinks)
             {
-                if ((string) dr["bp_content_type"] != "text/html" ||
-                    Util.get_setting("ShowPotentiallyDangerousHtml", "0") == "1")
+                if ((string)dr["bp_content_type"] != "text/html" ||
+                    Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
                 {
-                    Response.Write("<a target=_blank href=view_attachment.aspx?download=0&id=");
-                    Response.Write(string_post_id);
-                    Response.Write("&bug_id=");
-                    Response.Write(string_bug_id);
-                    Response.Write(">view</a>");
+                    response.Write("<a target=_blank href=ViewAttachment.aspx?download=0&id=");
+                    response.Write(stringPostId);
+                    response.Write("&bug_id=");
+                    response.Write(stringBugId);
+                    response.Write(">view</a>");
                 }
 
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=view_attachment.aspx?download=1&id=");
-                Response.Write(string_post_id);
-                Response.Write("&bug_id=");
-                Response.Write(string_bug_id);
-                Response.Write(">save</a>");
+                response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=ViewAttachment.aspx?download=1&id=");
+                response.Write(stringPostId);
+                response.Write("&bug_id=");
+                response.Write(stringBugId);
+                response.Write(">save</a>");
             }
 
-            if (images_inline)
+            if (imagesInline)
             {
                 var file = Convert.ToString(dr["ba_file"]); // intentially "ba"
-                write_file_inline(Response, file, string_post_id, string_bug_id, (string) dr["ba_content_type"]);
+                WriteFileInline(response, file, stringPostId, stringBugId, (string)dr["ba_content_type"]);
             }
 
-            Response.Write("<p><span class=pst>size: ");
-            Response.Write(dr["ba_size"]);
-            Response.Write("&nbsp;&nbsp;&nbsp;content-type: ");
-            Response.Write(dr["ba_content_type"]);
-            Response.Write("</span>");
+            response.Write("<p><span class=pst>size: ");
+            response.Write(dr["ba_size"]);
+            response.Write("&nbsp;&nbsp;&nbsp;content-type: ");
+            response.Write(dr["ba_content_type"]);
+            response.Write("</span>");
         }
 
-        private static void write_file_inline(
-            HttpResponse Response,
+        private static void WriteFileInline(
+            HttpResponse response,
             string filename,
-            string string_post_id,
-            string string_bug_id,
-            string content_type)
+            string stringPostId,
+            string stringBugId,
+            string contentType)
         {
-            if (content_type == "image/gif"
-                || content_type == "image/jpg"
-                || content_type == "image/jpeg"
-                || content_type == "image/pjpeg"
-                || content_type == "image/png"
-                || content_type == "image/x-png"
-                || content_type == "image/bmp"
-                || content_type == "image/tiff")
-                Response.Write("<p>"
-                               + "<a href=javascript:resize_image('im" + string_post_id + "',1.5)>" + "[+]</a>&nbsp;"
-                               + "<a href=javascript:resize_image('im" + string_post_id + "',.6)>" + "[-]</a>"
-                               + "<br><img id=im" + string_post_id
-                               + " src=view_attachment.aspx?download=0&id="
-                               + string_post_id + "&bug_id=" + string_bug_id
+            if (contentType == "image/gif"
+                || contentType == "image/jpg"
+                || contentType == "image/jpeg"
+                || contentType == "image/pjpeg"
+                || contentType == "image/png"
+                || contentType == "image/x-png"
+                || contentType == "image/bmp"
+                || contentType == "image/tiff")
+                response.Write("<p>"
+                               + "<a href=javascript:resize_image('im" + stringPostId + "',1.5)>" + "[+]</a>&nbsp;"
+                               + "<a href=javascript:resize_image('im" + stringPostId + "',.6)>" + "[-]</a>"
+                               + "<br><img id=im" + stringPostId
+                               + " src=ViewAttachment.aspx?download=0&id="
+                               + stringPostId + "&bug_id=" + stringBugId
                                + ">");
-            else if (content_type == "text/plain"
-                     || content_type == "text/xml"
-                     || content_type == "text/css"
-                     || content_type == "text/js"
-                     || content_type == "text/html" && Util.get_setting("ShowPotentiallyDangerousHtml", "0") == "1")
-                Response.Write("<p>"
-                               + "<a href=javascript:resize_iframe('if" + string_post_id + "',200)>" + "[+]</a>&nbsp;"
-                               + "<a href=javascript:resize_iframe('if" + string_post_id + "',-200)>" + "[-]</a>"
+            else if (contentType == "text/plain"
+                     || contentType == "text/xml"
+                     || contentType == "text/css"
+                     || contentType == "text/js"
+                     || contentType == "text/html" && Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
+                response.Write("<p>"
+                               + "<a href=javascript:resize_iframe('if" + stringPostId + "',200)>" + "[+]</a>&nbsp;"
+                               + "<a href=javascript:resize_iframe('if" + stringPostId + "',-200)>" + "[-]</a>"
                                + "<br><iframe id=if"
-                               + string_post_id
-                               + " width=780 height=200 src=view_attachment.aspx?download=0&id="
-                               + string_post_id + "&bug_id=" + string_bug_id
+                               + stringPostId
+                               + " width=780 height=200 src=ViewAttachment.aspx?download=0&id="
+                               + stringPostId + "&bug_id=" + stringBugId
                                + "></iframe>");
         }
 
-        public static string format_email_username(
-            bool write_links,
+        public static string FormatEmailUserName(
+            bool writeLinks,
             int bugid,
-            int permission_level,
+            int permissionLevel,
             string email,
             string username,
             string fullname)
         {
-            if (email != null && email != "" && write_links && permission_level != Security.PERMISSION_READONLY)
+            if (email != null && email != "" && writeLinks && permissionLevel != Security.PermissionReadonly)
                 return "<a href="
-                       + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                       + "send_email.aspx?bg_id="
+                       + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                       + "SendEmail.aspx?bg_id="
                        + Convert.ToString(bugid)
                        + "&to="
                        + email
                        + ">"
-                       + format_username(username, fullname)
+                       + FormatUserName(username, fullname)
                        + "</a>";
-            return format_username(username, fullname);
+            return FormatUserName(username, fullname);
         }
 
-        private static string format_email_to(int bugid, string email)
+        private static string FormatEmailTo(int bugid, string email)
         {
             return "<a href="
-                   + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                   + "send_email.aspx?bg_id=" + Convert.ToString(bugid)
+                   + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                   + "SendEmail.aspx?bg_id=" + Convert.ToString(bugid)
                    + "&to=" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(email)) + ">"
                    + email
                    + "</a>";
         }
 
-        private static string format_email_from(int comment_id, string from)
+        private static string FormatEmailFrom(int commentId, string from)
         {
-            var display_part = "";
-            var email_part = "";
+            var displayPart = "";
+            var emailPart = "";
             var pos = from.IndexOf("<"); // "
 
             if (pos > 0)
             {
-                display_part = from.Substring(0, pos);
-                email_part = from.Substring(pos + 1, from.Length - pos - 2);
+                displayPart = from.Substring(0, pos);
+                emailPart = from.Substring(pos + 1, from.Length - pos - 2);
             }
             else
             {
-                email_part = from;
+                emailPart = from;
             }
 
-            return display_part
+            return displayPart
                    + " <a href="
-                   + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                   + "send_email.aspx?bp_id="
-                   + Convert.ToString(comment_id)
+                   + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                   + "SendEmail.aspx?bp_id="
+                   + Convert.ToString(commentId)
                    + ">"
-                   + email_part
+                   + emailPart
                    + "</a>";
         }
 
-        private static string format_comment(int post_id, string s1, string t1)
+        private static string FormatComment(int postId, string s1, string t1)
         {
             string s2;
-            string link_marker;
+            string linkMarker;
 
             if (t1 != "text/html")
             {
                 s2 = HttpUtility.HtmlEncode(s1);
 
-                if (post_id != 0)
+                if (postId != 0)
                 {
                     // convert urls to links
-                    s2 = reHyperlinks.Replace(
+                    s2 = ReHyperlinks.Replace(
                         s2,
-                        convert_to_hyperlink);
+                        ConvertToHyperLink);
 
                     // This code doesn't perform well if s2 is one big string, no spaces, line breaks
 
                     // convert email addresses to send_email links
-                    s2 = reEmail.Replace(
+                    s2 = ReEmail.Replace(
                         s2,
-                        delegate(Match m)
+                        delegate (Match m)
                         {
                             return
-                                "<a href=send_email.aspx?bp_id="
-                                + Convert.ToString(post_id)
+                                "<a href=SendEmail.aspx?bp_id="
+                                + Convert.ToString(postId)
                                 + "&to="
                                 + m
                                 + ">"
@@ -913,48 +914,48 @@ namespace BugTracker.Web.Core
             }
 
             // convert references to other bugs to links
-            link_marker = Util.get_setting("BugLinkMarker", "bugid#");
-            var reLinkMarker = new Regex(link_marker + "([0-9]+)");
+            linkMarker = Util.GetSetting("BugLinkMarker", "bugid#");
+            var reLinkMarker = new Regex(linkMarker + "([0-9]+)");
             s2 = reLinkMarker.Replace(
                 s2,
-                convert_bug_link);
+                ConvertBugLink);
 
             return "<span class=cmt_text>" + s2 + "</span>";
         }
 
-        private static string convert_to_email(Match m)
+        private static string ConvertToEmail(Match m)
         {
             // Get the matched string.
             return string.Format("<a href='mailto:{0}'>{0}</a>", m);
         }
 
-        private static string convert_bug_link(Match m)
+        private static string ConvertBugLink(Match m)
         {
             return "<a href="
-                   + Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                   + "edit_bug.aspx?id="
+                   + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                   + "EditBug.aspx?id="
                    + m.Groups[1]
                    + ">"
                    + m
                    + "</a>";
         }
 
-        private static string convert_to_hyperlink(Match m)
+        private static string ConvertToHyperLink(Match m)
         {
             return string.Format("<a target=_blank href='{0}'>{0}</a>", m);
         }
 
-        private static string format_username(string username, string fullname)
+        private static string FormatUserName(string username, string fullname)
         {
-            if (Util.get_setting("UseFullNames", "0") == "0")
+            if (Util.GetSetting("UseFullNames", "0") == "0")
                 return username;
             return fullname;
         }
 
-        public static DataSet get_bug_posts(int bugid, bool external_user, bool history_inline)
+        public static DataSet GetBugPosts(int bugid, bool externalUser, bool historyInline)
         {
             var sql = @"
-/* get_bug_posts */
+/* GetBugPosts */
 select
 a.bp_bug,
 a.bp_comment,
@@ -986,24 +987,24 @@ left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
 where a.bp_bug = $id
 and a.bp_parent is null";
 
-            if (!history_inline) sql += "\n and a.bp_type <> 'update'";
+            if (!historyInline) sql += "\n and a.bp_type <> 'update'";
 
-            if (external_user) sql += "\n and a.bp_hidden_from_external_users = 0";
+            if (externalUser) sql += "\n and a.bp_hidden_from_external_users = 0";
 
             sql += "\n order by a.bp_id ";
-            sql += Util.get_setting("CommentSortOrder", "desc");
+            sql += Util.GetSetting("CommentSortOrder", "desc");
             sql += ", ba.bp_parent, ba.bp_id";
 
             sql = sql.Replace("$id", Convert.ToString(bugid));
 
-            return DbUtil.get_dataset(sql);
+            return DbUtil.GetDataSet(sql);
         }
     } // end PrintBug
 
     public class WritePostResult
     {
-        public int post_cnt;
-        public string post_string;
-        public string related_bugs;
+        public int PostCnt;
+        public string PostString;
+        public string RelatedBugs;
     }
 } // end namespace

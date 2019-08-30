@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class whatsnew {
+    public partial class WhatsNew {
     }
 }

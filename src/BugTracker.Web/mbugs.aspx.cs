@@ -13,31 +13,31 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class mbugs : Page
+    public partial class MBugs : Page
     {
-        public DataSet ds;
-        public Security security;
+        public DataSet Ds;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
-            if (Util.get_setting("EnableMobile", "0") == "0")
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            if (Util.GetSetting("EnableMobile", "0") == "0")
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
                 Response.End();
             }
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - List ";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - List ";
             this.my_header.InnerText = Page.Title;
             this.create.InnerText =
-                "Create " + Util.capitalize_first_letter(Util.get_setting("SingularBugLabel", "bug"));
-            this.only_mine_label.InnerText = "Show only " + Util.get_setting("PluralBugLabel", "bugs") +
+                "Create " + Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"));
+            this.only_mine_label.InnerText = "Show only " + Util.GetSetting("PluralBugLabel", "bugs") +
                                              " reported by or assigned to me";
 
-            var bug_sql = @"
+            var bugSql = @"
 select top 200
 bg_id [id],
 bg_short_desc [desc], 
@@ -59,17 +59,17 @@ $WHERE$
 order by bg_last_updated_date desc";
 
             if (this.only_mine.Checked)
-                bug_sql = bug_sql.Replace("$WHERE$",
+                bugSql = bugSql.Replace("$WHERE$",
                     "where bg_reported_user = "
-                    + Convert.ToString(this.security.user.usid)
+                    + Convert.ToString(this.Security.User.Usid)
                     + " or bg_assigned_to_user = "
-                    + Convert.ToString(this.security.user.usid));
+                    + Convert.ToString(this.Security.User.Usid));
             else
-                bug_sql = bug_sql.Replace("$WHERE$", "");
+                bugSql = bugSql.Replace("$WHERE$", "");
 
-            bug_sql = Util.alter_sql_per_project_permissions(bug_sql, this.security);
+            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, this.Security);
 
-            this.ds = DbUtil.get_dataset(bug_sql);
+            this.Ds = DbUtil.GetDataSet(bugSql);
         }
     }
 }

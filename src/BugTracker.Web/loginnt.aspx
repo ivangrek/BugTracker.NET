@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="loginnt.aspx.cs" Inherits="BugTracker.Web.loginnt" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginNt.aspx.cs" Inherits="BugTracker.Web.LoginNt" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -21,7 +21,7 @@
         Please contact your web administrator.
     </p>
     <p>
-        Windows Integrated Authentication requires that this page (loginNT.aspx) does not
+        Windows Integrated Authentication requires that this page (LoginNt.aspx) does not
         permit anonymous access and Windows Integrated Security is selected as the authentication
         protocol.
     </p>

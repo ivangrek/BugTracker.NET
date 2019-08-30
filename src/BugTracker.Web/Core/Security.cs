@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -12,65 +13,65 @@ namespace BugTracker.Web.Core
 
     public class Security
     {
-        public const int MUST_BE_ADMIN = 1;
-        public const int ANY_USER_OK = 2;
-        public const int ANY_USER_OK_EXCEPT_GUEST = 3;
-        public const int MUST_BE_ADMIN_OR_PROJECT_ADMIN = 4;
-        public const int PERMISSION_NONE = 0;
-        public const int PERMISSION_READONLY = 1;
-        public const int PERMISSION_REPORTER = 3;
-        public const int PERMISSION_ALL = 2;
+        public const int MustBeAdmin = 1;
+        public const int AnyUserOk = 2;
+        public const int AnyUserOkExceptGuest = 3;
+        public const int MustBeAdminOrProjectAdmin = 4;
+        public const int PermissionNone = 0;
+        public const int PermissionReadonly = 1;
+        public const int PermissionReporter = 3;
+        public const int PermissionAll = 2;
 
-        private static readonly string goto_form = @"
+        private static readonly string GotoForm = @"
 <td nowrap valign=middle>
-    <form style='margin: 0px; padding: 0px;' action=edit_bug.aspx method=get>
+    <form style='margin: 0px; padding: 0px;' action=EditBug.aspx method=get>
         <input class=menubtn type=submit value='go to ID'>
         <input class=menuinput size=4 type=text class=txt name=id accesskey=g>
     </form>
 </td>";
 
-        public string auth_method = "";
-        public HttpContext context = null;
+        public string AuthMethod = string.Empty;
+        public HttpContext Context = null;
 
-        public User user = new User();
+        public User User = new User();
 
-        public void check_security(HttpContext asp_net_context, int level)
+        public void CheckSecurity(HttpContext aspNetContext, int level)
         {
-            Util.set_context(asp_net_context);
-            var Request = asp_net_context.Request;
-            var Response = asp_net_context.Response;
-            var cookie = Request.Cookies["se_id"];
+            Util.SetContext(aspNetContext);
+            var request = aspNetContext.Request;
+            var response = aspNetContext.Response;
+            var cookie = request.Cookies["se_id"];
 
             // This logic allows somebody to put a link in an email, like
-            // edit_bug.aspx?id=66
+            // EditBug.aspx?id=66
             // The user would click on the link, go to the logon page (default.aspx),
-            // and then after logging in continue on to edit_bug.aspx?id=66
-            var original_url = Request.ServerVariables["URL"].ToLower();
-            var original_querystring = Request.ServerVariables["QUERY_STRING"].ToLower();
+            // and then after logging in continue on to EditBug.aspx?id=66
+            var originalUrl = request.ServerVariables["URL"].ToLower();
+            var originalQuerystring = request.ServerVariables["QUERY_STRING"].ToLower();
 
             var target = "default.aspx";
 
-            if (original_url.EndsWith("mbug.aspx")) target = "mlogin.aspx";
+            if (originalUrl.EndsWith("MBug.aspx")) target = "MLogin.aspx";
 
-            target += "?url=" + original_url + "&qs=" + HttpUtility.UrlEncode(original_querystring);
+            target += "?url=" + originalUrl + "&qs=" + HttpUtility.UrlEncode(originalQuerystring);
 
             DataRow dr = null;
 
             if (cookie == null)
             {
-                if (Util.get_setting("AllowGuestWithoutLogin", "0") == "0")
+                if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "0")
                 {
-                    Util.write_to_log("se_id cookie is null, so redirecting");
-                    Response.Redirect(target);
+                    Util.WriteToLog("se_id cookie is null, so redirecting");
+                    response.Redirect(target);
                 }
             }
             else
             {
                 // guard against "Sql Injection" exploit
-                var se_id = cookie.Value.Replace("'", "''");
-                var user_id = 0;
-                var obj = asp_net_context.Session[se_id];
-                if (obj != null) user_id = Convert.ToInt32(obj);
+                var seId = cookie.Value.Replace("'", "''");
+                var userId = 0;
+                var obj = aspNetContext.Session[seId];
+                if (obj != null) userId = Convert.ToInt32(obj);
 
                 // check for existing session for active user
                 var sql = @"
@@ -102,13 +103,13 @@ left outer join project_user_xref
 where se_id = '$se'
 and us_active = 1";
 
-                sql = sql.Replace("$se", se_id);
-                sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
-                dr = DbUtil.get_datarow(sql);
+                sql = sql.Replace("$se", seId);
+                sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                dr = DbUtil.GetDataRow(sql);
             }
 
             if (dr == null)
-                if (Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
+                if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
                 {
                     // allow users in, even without logging on.
                     // The user will have the permissions of the "guest" user.
@@ -133,105 +134,104 @@ left outer join project_user_xref
 where us_username = 'guest'
 and us_active = 1";
 
-                    sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
-                    dr = DbUtil.get_datarow(sql);
+                    sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                    dr = DbUtil.GetDataRow(sql);
                 }
 
             // no previous session, no guest login allowed
             if (dr == null)
             {
-                Util.write_to_log("no previous session, no guest login allowed");
-                Response.Redirect(target);
+                Util.WriteToLog("no previous session, no guest login allowed");
+                response.Redirect(target);
             }
             else
             {
-                this.user.set_from_db(dr);
+                this.User.SetFromDb(dr);
             }
 
             if (cookie != null)
             {
-                asp_net_context.Session["session_cookie"] = cookie.Value;
+                aspNetContext.Session["session_cookie"] = cookie.Value;
             }
             else
             {
-                Util.write_to_log("blanking cookie");
-                asp_net_context.Session["session_cookie"] = "";
+                Util.WriteToLog("blanking cookie");
+                aspNetContext.Session["session_cookie"] = "";
             }
 
-            if (level == MUST_BE_ADMIN && !this.user.is_admin)
+            if (level == MustBeAdmin && !this.User.IsAdmin)
             {
-                Util.write_to_log("must be admin, redirecting");
-                Response.Redirect("default.aspx");
+                Util.WriteToLog("must be admin, redirecting");
+                response.Redirect("default.aspx");
             }
-            else if (level == ANY_USER_OK_EXCEPT_GUEST && this.user.is_guest)
+            else if (level == AnyUserOkExceptGuest && this.User.IsGuest)
             {
-                Util.write_to_log("cant be guest, redirecting");
-                Response.Redirect("default.aspx");
+                Util.WriteToLog("cant be guest, redirecting");
+                response.Redirect("default.aspx");
             }
-            else if (level == MUST_BE_ADMIN_OR_PROJECT_ADMIN && !this.user.is_admin && !this.user.is_project_admin)
+            else if (level == MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
-                Util.write_to_log("must be project admin, redirecting");
-                Response.Redirect("default.aspx");
+                Util.WriteToLog("must be project admin, redirecting");
+                response.Redirect("default.aspx");
             }
 
-            if (Util.get_setting("WindowsAuthentication", "0") == "1")
-                this.auth_method = "windows";
+            if (Util.GetSetting("WindowsAuthentication", "0") == "1")
+                this.AuthMethod = "windows";
             else
-                this.auth_method = "plain";
+                this.AuthMethod = "plain";
         }
 
-        public static void create_session(HttpRequest Request, HttpResponse Response, int userid, string username,
-            string NTLM)
+        public static void CreateSession(HttpRequest request, HttpResponse response, int userid, string username, string ntlm)
         {
             // Generate a random session id
             // Don't use a regularly incrementing identity
             // column because that can be guessed.
             var guid = Guid.NewGuid().ToString();
 
-            Util.write_to_log("guid=" + guid);
+            Util.WriteToLog("guid=" + guid);
 
             var sql = @"insert into sessions (se_id, se_user) values('$gu', $us)";
             sql = sql.Replace("$gu", guid);
             sql = sql.Replace("$us", Convert.ToString(userid));
 
-            DbUtil.execute_nonquery(sql);
+            DbUtil.ExecuteNonQuery(sql);
 
             HttpContext.Current.Session[guid] = userid;
 
-            var sAppPath = Request.Url.AbsolutePath;
+            var sAppPath = request.Url.AbsolutePath;
             sAppPath = sAppPath.Substring(0, sAppPath.LastIndexOf('/'));
-            Util.write_to_log("AppPath:" + sAppPath);
+            Util.WriteToLog("AppPath:" + sAppPath);
 
-            Response.Cookies["se_id"].Value = guid;
-            Response.Cookies["se_id"].Path = sAppPath;
-            Response.Cookies["user"]["name"] = username;
-            Response.Cookies["user"]["NTLM"] = NTLM;
-            Response.Cookies["user"].Path = sAppPath;
+            response.Cookies["se_id"].Value = guid;
+            response.Cookies["se_id"].Path = sAppPath;
+            response.Cookies["user"]["name"] = username;
+            response.Cookies["user"]["NTLM"] = ntlm;
+            response.Cookies["user"].Path = sAppPath;
             var dt = DateTime.Now;
             var ts = new TimeSpan(365, 0, 0, 0);
-            Response.Cookies["user"].Expires = dt.Add(ts);
+            response.Cookies["user"].Expires = dt.Add(ts);
         }
 
-        public void write_menu_item(HttpResponse Response,
-            string this_link, string menu_item, string href)
+        public void WriteMenuItem(HttpResponse response,
+            string thisLink, string menuItem, string href)
         {
-            Response.Write("<td class='menu_td'>");
-            if (this_link == menu_item)
-                Response.Write("<a href=" + href + "><span class='selected_menu_item warn'  style='margin-left:3px;'>" +
-                               menu_item + "</span></a>");
+            response.Write("<td class='menu_td'>");
+            if (thisLink == menuItem)
+                response.Write("<a href=" + href + "><span class='selected_menu_item warn'  style='margin-left:3px;'>" +
+                               menuItem + "</span></a>");
             else
-                Response.Write("<a href=" + href + "><span class='menu_item warn' style='margin-left:3px;'>" +
-                               menu_item + "</span></a>");
-            Response.Write("</td>");
+                response.Write("<a href=" + href + "><span class='menu_item warn' style='margin-left:3px;'>" +
+                               menuItem + "</span></a>");
+            response.Write("</td>");
         }
 
-        public void write_menu(HttpResponse Response, string this_link)
+        public void WriteMenu(HttpResponse response, string thisLink)
         {
             // topmost visible HTML
-            var custom_header = (string) Util.context.Application["custom_header"];
-            Response.Write(custom_header);
+            var customHeader = (string)Util.Context.Application["custom_header"];
+            response.Write(customHeader);
 
-            Response.Write(@"
+            response.Write(@"
 <span id=debug style='position:absolute;top:0;left:0;'></span>
 <script>
 function dbg(s)
@@ -258,81 +258,81 @@ function on_submit_search()
 <table border=0 width=100% cellpadding=0 cellspacing=0 class=menubar><tr>");
 
             // logo
-            var logo = (string) Util.context.Application["custom_logo"];
-            Response.Write(logo);
+            var logo = (string)Util.Context.Application["custom_logo"];
+            response.Write(logo);
 
-            Response.Write("<td width=20>&nbsp;</td>");
-            write_menu_item(Response, this_link, Util.get_setting("PluralBugLabel", "bugs"), "bugs.aspx");
+            response.Write("<td width=20>&nbsp;</td>");
+            WriteMenuItem(response, thisLink, Util.GetSetting("PluralBugLabel", "bugs"), "Bugs.aspx");
 
-            if (this.user.can_search) write_menu_item(Response, this_link, "search", "search.aspx");
+            if (this.User.CanSearch) WriteMenuItem(response, thisLink, "search", "Search.aspx");
 
-            if (Util.get_setting("EnableWhatsNewPage", "0") == "1")
-                write_menu_item(Response, this_link, "news", "view_whatsnew.aspx");
+            if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
+                WriteMenuItem(response, thisLink, "news", "ViewWhatsNew.aspx");
 
-            if (!this.user.is_guest) write_menu_item(Response, this_link, "queries", "queries.aspx");
+            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", "Queries.aspx");
 
-            if (this.user.is_admin || this.user.can_use_reports || this.user.can_edit_reports)
-                write_menu_item(Response, this_link, "reports", "reports.aspx");
+            if (this.User.IsAdmin || this.User.CanUseReports || this.User.CanEditReports)
+                WriteMenuItem(response, thisLink, "reports", "Reports.aspx");
 
-            if (Util.get_setting("CustomMenuLinkLabel", "") != "")
-                write_menu_item(Response, this_link,
-                    Util.get_setting("CustomMenuLinkLabel", ""),
-                    Util.get_setting("CustomMenuLinkUrl", ""));
+            if (Util.GetSetting("CustomMenuLinkLabel", "") != "")
+                WriteMenuItem(response, thisLink,
+                    Util.GetSetting("CustomMenuLinkLabel", ""),
+                    Util.GetSetting("CustomMenuLinkUrl", ""));
 
-            if (this.user.is_admin)
-                write_menu_item(Response, this_link, "admin", "admin.aspx");
-            else if (this.user.is_project_admin) write_menu_item(Response, this_link, "users", "users.aspx");
+            if (this.User.IsAdmin)
+                WriteMenuItem(response, thisLink, "admin", "Admin.aspx");
+            else if (this.User.IsProjectAdmin) WriteMenuItem(response, thisLink, "users", "Users.aspx");
 
             // go to
 
-            Response.Write(goto_form);
+            response.Write(GotoForm);
 
             // search
-            if (Util.get_setting("EnableLucene", "1") == "1" && this.user.can_search)
+            if (Util.GetSetting("EnableLucene", "1") == "1" && this.User.CanSearch)
             {
-                var query = (string) HttpContext.Current.Session["query"];
+                var query = (string)HttpContext.Current.Session["query"];
                 if (query == null) query = "";
-                var search_form = @"
+                var searchForm = @"
 
 <td nowrap valign=middle>
-    <form style='margin: 0px; padding: 0px;' action=search_text.aspx method=get onsubmit='return on_submit_search()'>
+    <form style='margin: 0px; padding: 0px;' action=SearchText.aspx method=get onsubmit='return on_submit_search()'>
         <input class=menubtn type=submit value='search text'>
         <input class=menuinput  id=lucene_input size=24 type=text class=txt
         value='" + query.Replace("'", "") + @"' name=query accesskey=s>
-        <a href=lucene_syntax.html target=_blank style='font-size: 7pt;'>advanced</a>
+        <a href=Content/lucene_syntax.html target=_blank style='font-size: 7pt;'>advanced</a>
     </form>
 </td>";
                 //context.Session["query"] = null;
-                Response.Write(search_form);
+                response.Write(searchForm);
             }
 
-            Response.Write("<td nowrap valign=middle>");
-            if (this.user.is_guest && Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
-                Response.Write("<span class=smallnote>using as<br>");
+            response.Write("<td nowrap valign=middle>");
+            if (this.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
+                response.Write("<span class=smallnote>using as<br>");
             else
-                Response.Write("<span class=smallnote>logged in as<br>");
-            Response.Write(this.user.username);
-            Response.Write("</span></td>");
+                response.Write("<span class=smallnote>logged in as<br>");
+            response.Write(this.User.Username);
+            response.Write("</span></td>");
 
-            if (this.auth_method == "plain")
+            if (this.AuthMethod == "plain")
             {
-                if (this.user.is_guest && Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
-                    write_menu_item(Response, this_link, "login", "default.aspx");
+                if (this.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
+                    WriteMenuItem(response, thisLink, "login", "default.aspx");
                 else
-                    write_menu_item(Response, this_link, "logoff", "logoff.aspx");
+                    WriteMenuItem(response, thisLink, "logoff", "Logoff.aspx");
             }
 
             // for guest account, suppress display of "edit_self
-            if (!this.user.is_guest) write_menu_item(Response, this_link, "settings", "edit_self.aspx");
+            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "settings", "EditSelf.aspx");
 
-            Response.Write("<td valign=middle align=left'>");
-            Response.Write(
-                "<a target=_blank href=about.html><span class='menu_item' style='margin-left:3px;'>about</span></a></td>");
-            Response.Write("<td nowrap valign=middle>");
-            Response.Write(
+            response.Write("<td valign=middle align=left'>");
+            response.Write(
+                "<a target=_blank href=Content/about.html><span class='menu_item' style='margin-left:3px;'>about</span></a></td>");
+            response.Write("<td nowrap valign=middle>");
+            response.Write(
                 "<a target=_blank href=http://ifdefined.com/README.html><span class='menu_item' style='margin-left:3px;'>help</span></a></td>");
 
-            Response.Write("</tr></table><br>");
+            response.Write("</tr></table><br>");
         }
-    } // end Security
+    }
 }

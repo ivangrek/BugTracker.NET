@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class customfields {
+    public partial class CustomFields {
     }
 }

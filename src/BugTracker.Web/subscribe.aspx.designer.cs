@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class subscribe {
+    public partial class Subscribe {
     }
 }

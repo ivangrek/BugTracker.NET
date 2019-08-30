@@ -5,4 +5,4 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="subscribe.aspx.cs" Inherits="BugTracker.Web.subscribe" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Subscribe.aspx.cs" Inherits="BugTracker.Web.Subscribe" %>

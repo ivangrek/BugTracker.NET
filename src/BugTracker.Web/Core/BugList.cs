@@ -1,10 +1,9 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
-
-//using System.Data.SqlClient;
 
 namespace BugTracker.Web.Core
 {
@@ -15,7 +14,7 @@ namespace BugTracker.Web.Core
 
     public class BugList
     {
-        private static string get_distinct_vals_from_dataset(DataTable dt, int col)
+        private static string GetDistinctValsFromDataset(DataTable dt, int col)
         {
             var dict = new SortedDictionary<string, int>();
 
@@ -33,13 +32,13 @@ namespace BugTracker.Web.Core
             return vals;
         }
 
-        private static string get_buglist_bug_count_string(DataView dv)
+        private static string GetBugListBugCountString(DataView dv)
         {
             if (dv.Count == dv.Table.Rows.Count)
                 return "<br><br>"
                        + Convert.ToString(dv.Table.Rows.Count)
                        + " "
-                       + Util.get_setting("PluralBugLabel", "bugs")
+                       + Util.GetSetting("PluralBugLabel", "bugs")
                        + " returned by query<br>";
             return "<br><br>"
                    + "Showing "
@@ -47,90 +46,90 @@ namespace BugTracker.Web.Core
                    + " out of "
                    + Convert.ToString(dv.Table.Rows.Count)
                    + " "
-                   + Util.get_setting("PluralBugLabel", "bugs")
+                   + Util.GetSetting("PluralBugLabel", "bugs")
                    + " returned by query<br>";
         }
 
-        private static string get_buglist_paging_string(DataView dv, Security security, bool IsPostBack,
-            string new_page, ref int this_page)
+        private static string GetBugListPagingString(DataView dv, Security security, bool isPostBack,
+            string newPage, ref int thisPage)
         {
             // format the text "page N of N:  1 2..."
-            this_page = 0;
-            if (IsPostBack)
+            thisPage = 0;
+            if (isPostBack)
             {
-                this_page = Convert.ToInt32(new_page);
-                HttpContext.Current.Session["page"] = this_page;
+                thisPage = Convert.ToInt32(newPage);
+                HttpContext.Current.Session["page"] = thisPage;
             }
             else
             {
-                if (HttpContext.Current.Session["page"] != null) this_page = (int) HttpContext.Current.Session["page"];
+                if (HttpContext.Current.Session["page"] != null) thisPage = (int)HttpContext.Current.Session["page"];
             }
 
             // how many pages to show all the rows?
-            var total_pages = (dv.Count - 1) / security.user.bugs_per_page + 1;
+            var totalPages = (dv.Count - 1) / security.User.BugsPerPage + 1;
 
-            if (this_page > total_pages - 1)
+            if (thisPage > totalPages - 1)
             {
-                this_page = 0;
-                HttpContext.Current.Session["page"] = this_page;
+                thisPage = 0;
+                HttpContext.Current.Session["page"] = thisPage;
             }
 
-            var paging_string = "";
+            var pagingString = "";
 
-            if (total_pages > 1)
+            if (totalPages > 1)
             {
                 // The "<"
-                if (this_page > 0)
-                    paging_string += "<a href='javascript: on_page("
-                                     + Convert.ToString(this_page - 1)
+                if (thisPage > 0)
+                    pagingString += "<a href='javascript: on_page("
+                                     + Convert.ToString(thisPage - 1)
                                      + ")'><b>&nbsp;&lt&lt&nbsp;</b></a>&nbsp;";
 
                 // first page is "0", second page is "1", so add 1 for display purposes
-                paging_string += "page&nbsp;"
-                                 + Convert.ToString(this_page + 1)
+                pagingString += "page&nbsp;"
+                                 + Convert.ToString(thisPage + 1)
                                  + "&nbsp;of&nbsp;"
-                                 + Convert.ToString(total_pages)
+                                 + Convert.ToString(totalPages)
                                  + "&nbsp;";
 
                 // The ">"
-                if (this_page < total_pages - 1)
-                    paging_string += "<a href='javascript: on_page("
-                                     + Convert.ToString(this_page + 1)
+                if (thisPage < totalPages - 1)
+                    pagingString += "<a href='javascript: on_page("
+                                     + Convert.ToString(thisPage + 1)
                                      + ")'><b>&nbsp;&gt;&gt;&nbsp;</b></a>";
 
-                paging_string += "&nbsp;&nbsp;&nbsp;";
+                pagingString += "&nbsp;&nbsp;&nbsp;";
 
-                var left = this_page - 16;
+                var left = thisPage - 16;
                 if (left < 1)
                     left = 0;
                 else
-                    paging_string += "<a href='javascript: on_page(0)'>[first]</a>...&nbsp;";
+                    pagingString += "<a href='javascript: on_page(0)'>[first]</a>...&nbsp;";
 
                 var right = left + 32;
-                if (right > total_pages) right = total_pages;
+                if (right > totalPages) right = totalPages;
 
                 for (var i = left; i < right; i++)
-                    if (this_page == i)
-                        paging_string += "[" + Convert.ToString(i + 1) + "]&nbsp;";
+                    if (thisPage == i)
+                        pagingString += "[" + Convert.ToString(i + 1) + "]&nbsp;";
                     else
-                        paging_string += "<a href='javascript: on_page("
+                        pagingString += "<a href='javascript: on_page("
                                          + Convert.ToString(i)
                                          + ")'>"
                                          + Convert.ToString(i + 1)
                                          + "</a>&nbsp;";
 
-                if (right < total_pages)
-                    paging_string += "&nbsp;...<a href='javascript: on_page("
-                                     + Convert.ToString(total_pages - 1)
+                if (right < totalPages)
+                    pagingString += "&nbsp;...<a href='javascript: on_page("
+                                     + Convert.ToString(totalPages - 1)
                                      + ")'>[last]</a>";
             }
 
-            return paging_string;
+            return pagingString;
         }
 
-        protected static string adjust_filter_val(string filter_val)
+        protected static string adjust_filter_val(string filterVal)
         {
-            var s = filter_val.Replace("[$FLAG] =$$$red$$$", "[$FLAG] =1");
+            var s = filterVal.Replace("[$FLAG] =$$$red$$$", "[$FLAG] =1");
             s = s.Replace("[$FLAG] =$$$green$$$", "[$FLAG] =2");
             s = s.Replace("[$FLAG]<>$$$$$$", "[$FLAG] <>0");
             s = s.Replace("[$FLAG] =$$$$$$", "[$FLAG] =0");
@@ -143,24 +142,24 @@ namespace BugTracker.Web.Core
             return s;
         }
 
-        public static void sort_and_filter_buglist_dataview(DataView dv, bool IsPostBack,
-            string actn_val,
-            ref string filter_val,
-            ref string sort_val,
-            ref string prev_sort_val,
-            ref string prev_dir_val)
+        public static void SortAndFilterBugListDataView(DataView dv, bool isPostBack,
+            string actnVal,
+            ref string filterVal,
+            ref string sortVal,
+            ref string prevSortVal,
+            ref string prevDirVal)
         {
             if (dv == null) return;
 
             // remember filter
-            if (!IsPostBack)
+            if (!isPostBack)
             {
                 if (HttpContext.Current.Session["filter"] != null)
                 {
-                    filter_val = (string) HttpContext.Current.Session["filter"];
+                    filterVal = (string)HttpContext.Current.Session["filter"];
                     try
                     {
-                        dv.RowFilter = adjust_filter_val(filter_val).Replace("'", "''").Replace("$$$", "'");
+                        dv.RowFilter = adjust_filter_val(filterVal).Replace("'", "''").Replace("$$$", "'");
                     }
                     catch (Exception)
                     {
@@ -170,16 +169,16 @@ namespace BugTracker.Web.Core
             }
             else
             {
-                HttpContext.Current.Session["filter"] = filter_val;
+                HttpContext.Current.Session["filter"] = filterVal;
                 try
                 {
-                    var filter_string2 = adjust_filter_val(filter_val).Replace("'", "''").Replace("$$$", "'");
+                    var filterString2 = adjust_filter_val(filterVal).Replace("'", "''").Replace("$$$", "'");
                     if (HttpContext.Current.Request["tags"] != null && HttpContext.Current.Request["tags"] != "")
-                        filter_string2 += Tags.build_filter_clause(
+                        filterString2 += Tags.BuildFilterClause(
                             HttpContext.Current.Application,
                             HttpContext.Current.Request["tags"]);
 
-                    dv.RowFilter = filter_string2;
+                    dv.RowFilter = filterString2;
                 }
                 catch (Exception)
                 {
@@ -190,39 +189,39 @@ namespace BugTracker.Web.Core
             // Determine which column to sort
             // and toggle ASC  DESC
 
-            if (actn_val == "sort")
+            if (actnVal == "sort")
             {
-                var sort_column = Convert.ToInt32(sort_val) + 1;
-                var sort_expression = dv.Table.Columns[sort_column].ColumnName;
-                if (sort_val == prev_sort_val)
+                var sortColumn = Convert.ToInt32(sortVal) + 1;
+                var sortExpression = dv.Table.Columns[sortColumn].ColumnName;
+                if (sortVal == prevSortVal)
                 {
-                    if (prev_dir_val == "ASC")
+                    if (prevDirVal == "ASC")
                     {
-                        prev_dir_val = "DESC";
-                        sort_expression += " DESC";
+                        prevDirVal = "DESC";
+                        sortExpression += " DESC";
                     }
                     else
                     {
-                        prev_dir_val = "ASC";
+                        prevDirVal = "ASC";
                     }
                 }
                 else
                 {
-                    prev_sort_val = sort_val;
-                    prev_dir_val = "ASC";
+                    prevSortVal = sortVal;
+                    prevDirVal = "ASC";
                 }
 
-                dv.Sort = sort_expression;
-                HttpContext.Current.Session["sort"] = sort_expression;
+                dv.Sort = sortExpression;
+                HttpContext.Current.Session["sort"] = sortExpression;
             }
             else
             {
                 // remember sort
-                if (!IsPostBack)
+                if (!isPostBack)
                     if (HttpContext.Current.Session["sort"] != null)
                         try
                         {
-                            dv.Sort = (string) HttpContext.Current.Session["sort"];
+                            dv.Sort = (string)HttpContext.Current.Session["sort"];
                         }
                         catch (Exception)
                         {
@@ -231,214 +230,214 @@ namespace BugTracker.Web.Core
             }
         }
 
-        private static string maybe_not(string op, string text)
+        private static string MaybeNot(string op, string text)
         {
             if (op == "<>")
                 return "NOT " + text;
             return text;
         }
 
-        private static void display_buglist_filter_select(
-            HttpResponse Response,
-            string filter_val,
+        private static void DisplayBugListFilterSelect(
+            HttpResponse response,
+            string filterVal,
             string which,
             DataTable table,
-            string dropdown_vals,
+            string dropdownVals,
             int col)
         {
             // determine what the selected item in the dropdown should be
 
-            var selected_value = "[no filter]";
+            var selectedValue = "[no filter]";
             var op = " =";
-            var something_selected = false;
+            var somethingSelected = false;
 
-            if (filter_val.IndexOf("66 = 66") > -1)
+            if (filterVal.IndexOf("66 = 66") > -1)
             {
-                var pos = filter_val.IndexOf(which);
+                var pos = filterVal.IndexOf(which);
                 if (pos != -1)
                 {
                     // move past the variable
                     pos += which.Length;
                     pos += 5; // to move past the " =$$$" and the single quote
-                    var pos2 = filter_val.IndexOf("$$$", pos); // find the trailing $$$
-                    selected_value = filter_val.Substring(pos, pos2 - pos);
-                    op = filter_val.Substring(pos - 5, 2);
+                    var pos2 = filterVal.IndexOf("$$$", pos); // find the trailing $$$
+                    selectedValue = filterVal.Substring(pos, pos2 - pos);
+                    op = filterVal.Substring(pos - 5, 2);
                 }
             }
 
-            if (selected_value == "")
+            if (selectedValue == "")
             {
                 if (op == " =")
-                    selected_value = "[none]";
+                    selectedValue = "[none]";
                 else
-                    selected_value = "[any]";
+                    selectedValue = "[any]";
             }
 
             // at this point we have the selected value
 
-            if (selected_value == "[no filter]")
-                Response.Write("<select class=filter ");
+            if (selectedValue == "[no filter]")
+                response.Write("<select class=filter ");
             else
-                Response.Write("<select class=filter_selected ");
+                response.Write("<select class=filter_selected ");
 
-            Response.Write(" id='sel_" + which + "' onchange='on_filter()'>");
-            Response.Write("<option>[no filter]</option>");
+            response.Write(" id='sel_" + which + "' onchange='on_filter()'>");
+            response.Write("<option>[no filter]</option>");
 
             if (which != "[$SEEN]")
             {
-                if (selected_value == "[none]")
+                if (selectedValue == "[none]")
                 {
-                    Response.Write("<option selected value=''>[none]</option>");
-                    something_selected = true;
+                    response.Write("<option selected value=''>[none]</option>");
+                    somethingSelected = true;
                 }
                 else
                 {
-                    Response.Write("<option value=''>[none]</option>");
+                    response.Write("<option value=''>[none]</option>");
                 }
             }
 
             if (which != "[$SEEN]")
             {
-                if (selected_value == "[any]")
+                if (selectedValue == "[any]")
                 {
-                    Response.Write("<option selected value=''>[any]</option>");
-                    something_selected = true;
+                    response.Write("<option selected value=''>[any]</option>");
+                    somethingSelected = true;
                 }
                 else
                 {
-                    Response.Write("<option value=''>[any]</option>");
+                    response.Write("<option value=''>[any]</option>");
                 }
             }
 
-            if (dropdown_vals != null)
+            if (dropdownVals != null)
             {
-                var options = Util.split_dropdown_vals(dropdown_vals);
+                var options = Util.SplitDropdownVals(dropdownVals);
                 for (var i = 0; i < options.Length; i++)
-                    if (selected_value == options[i])
+                    if (selectedValue == options[i])
                     {
-                        Response.Write("<option selected>" + maybe_not(op, options[i]) + "</option>");
-                        something_selected = true;
+                        response.Write("<option selected>" + MaybeNot(op, options[i]) + "</option>");
+                        somethingSelected = true;
                     }
                     else
                     {
-                        Response.Write("<option>" + options[i] + "</option>");
+                        response.Write("<option>" + options[i] + "</option>");
                     }
             }
             else
             {
                 foreach (DataRow dr in table.Rows)
-                    if (selected_value == Convert.ToString(dr[col]))
+                    if (selectedValue == Convert.ToString(dr[col]))
                     {
-                        Response.Write("<option selected>" + maybe_not(op, Convert.ToString(dr[col])) + "</option>");
-                        something_selected = true;
+                        response.Write("<option selected>" + MaybeNot(op, Convert.ToString(dr[col])) + "</option>");
+                        somethingSelected = true;
                     }
                     else
                     {
-                        Response.Write("<option>" + Convert.ToString(dr[col]) + "</option>");
+                        response.Write("<option>" + Convert.ToString(dr[col]) + "</option>");
                     }
             }
 
-            if (!something_selected)
-                if (selected_value != "[no filter]")
-                    Response.Write("<option selected>" + selected_value + "</option>");
+            if (!somethingSelected)
+                if (selectedValue != "[no filter]")
+                    response.Write("<option selected>" + selectedValue + "</option>");
 
-            Response.Write("</select>");
+            response.Write("</select>");
         }
 
-        public static void display_buglist_tags_line(HttpResponse Response, Security security)
+        public static void DisplayBugListTagsLine(HttpResponse response, Security security)
         {
-            if (security.user.tags_field_permission_level == Security.PERMISSION_NONE) return;
+            if (security.User.TagsFieldPermissionLevel == Security.PermissionNone) return;
 
-            Response.Write("\n<p>Show only rows with the following tags:&nbsp;");
-            Response.Write(
+            response.Write("\n<p>Show only rows with the following tags:&nbsp;");
+            response.Write(
                 "<input class=txt size=40 name=tags_input id=tags_input onchange='javascript:on_tags_change()' value=\"");
-            Response.Write(HttpUtility.HtmlEncode(HttpContext.Current.Request["tags"]));
-            Response.Write("\">");
-            Response.Write("<a href='javascript:show_tags()'>&nbsp;&nbsp;select tags</a>");
-            Response.Write("<br><br>\n");
+            response.Write(HttpUtility.HtmlEncode(HttpContext.Current.Request["tags"]));
+            response.Write("\">");
+            response.Write("<a href='javascript:show_tags()'>&nbsp;&nbsp;select tags</a>");
+            response.Write("<br><br>\n");
         }
 
-        private static void display_filter_select(HttpResponse Response, string filter_val, string which,
+        private static void DisplayFilterSelect(HttpResponse response, string filterVal, string which,
             DataTable table)
         {
-            display_buglist_filter_select(
-                Response,
-                filter_val,
+            DisplayBugListFilterSelect(
+                response,
+                filterVal,
                 which,
                 table,
                 null,
                 0);
         }
 
-        private static void display_filter_select(HttpResponse Response, string filter_val, string which,
+        private static void DisplayFilterSelect(HttpResponse response, string filterVal, string which,
             DataTable table, int col)
         {
-            display_buglist_filter_select(
-                Response,
-                filter_val,
+            DisplayBugListFilterSelect(
+                response,
+                filterVal,
                 which,
                 table,
                 null,
                 col);
         }
 
-        private static void display_filter_select(HttpResponse Response, string filter_val, string which,
-            string dropdown_vals)
+        private static void DisplayFilterSelect(HttpResponse response, string filterVal, string which,
+            string dropdownVals)
         {
-            display_buglist_filter_select(
-                Response,
-                filter_val,
+            DisplayBugListFilterSelect(
+                response,
+                filterVal,
                 which,
                 null,
-                dropdown_vals,
+                dropdownVals,
                 0);
         }
 
-        public static void display_bugs(
-            bool show_checkbox,
+        public static void DisplayBugs(
+            bool showCheckbox,
             DataView dv,
-            HttpResponse Response,
+            HttpResponse response,
             Security security,
-            string new_page_val,
-            bool IsPostBack,
-            DataSet ds_custom_cols,
-            string filter_val
+            string newPageVal,
+            bool isPostBack,
+            DataSet dsCustomCols,
+            string filterVal
         )
         {
-            var this_page = 0;
-            var paging_string = get_buglist_paging_string(
+            var thisPage = 0;
+            var pagingString = GetBugListPagingString(
                 dv,
                 security,
-                IsPostBack,
-                new_page_val,
-                ref this_page);
+                isPostBack,
+                newPageVal,
+                ref thisPage);
 
-            var bug_count_string = get_buglist_bug_count_string(dv);
+            var bugCountString = GetBugListBugCountString(dv);
 
-            Response.Write("<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=left valign=top>");
-            Response.Write(paging_string);
-            Response.Write(
+            response.Write("<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=left valign=top>");
+            response.Write(pagingString);
+            response.Write(
                 "<td align=right valign=top><span class=smallnote>clicking while holding Ctrl key toggles \"NOT\" in a filter: \"NOT project 1\"</span></table>");
-            Response.Write("\n<table class=bugt border=1 ><tr>\n");
+            response.Write("\n<table class=bugt border=1 ><tr>\n");
 
             ///////////////////////////////////////////////////////////////////
             // headings
             ///////////////////////////////////////////////////////////////////
 
-            var db_column_count = 0;
-            var description_column = -1;
+            var dbColumnCount = 0;
+            var descriptionColumn = -1;
 
-            var search_desc_column = -1;
-            var search_source_column = -1;
-            var search_text_column = -1;
+            var searchDescColumn = -1;
+            var searchSourceColumn = -1;
+            var searchTextColumn = -1;
 
             foreach (DataColumn dc in dv.Table.Columns)
             {
-                if (db_column_count == 0)
+                if (dbColumnCount == 0)
                 {
                     // skip color/style
 
-                    if (show_checkbox) Response.Write("<td class=bugh><font size=0>sel</font>");
+                    if (showCheckbox) response.Write("<td class=bugh><font size=0>sel</font>");
                 }
                 else if (dc.ColumnName == "$SCORE")
                 {
@@ -447,76 +446,76 @@ namespace BugTracker.Web.Core
                 }
                 else
                 {
-                    Response.Write("<td class=bugh>\n");
+                    response.Write("<td class=bugh>\n");
                     // sorting
                     var s = "<a href='javascript: on_sort($col)'>";
-                    s = s.Replace("$col", Convert.ToString(db_column_count - 1));
-                    Response.Write(s);
+                    s = s.Replace("$col", Convert.ToString(dbColumnCount - 1));
+                    response.Write(s);
 
                     if (dc.ColumnName == "$FLAG")
                     {
-                        Response.Write("flag");
+                        response.Write("flag");
                     }
                     else if (dc.ColumnName == "$SEEN")
                     {
-                        Response.Write("new");
+                        response.Write("new");
                     }
                     else if (dc.ColumnName == "$VOTE")
                     {
-                        Response.Write("votes");
+                        response.Write("votes");
                     }
                     else if (dc.ColumnName.ToLower().IndexOf("desc") == 0)
                     {
                         // remember this column so that we can make it a link
-                        description_column = db_column_count; // zero based here
-                        Response.Write(dc.ColumnName);
+                        descriptionColumn = dbColumnCount; // zero based here
+                        response.Write(dc.ColumnName);
                     }
                     else if (dc.ColumnName == "search_desc")
                     {
-                        search_desc_column = db_column_count;
-                        Response.Write("desc");
+                        searchDescColumn = dbColumnCount;
+                        response.Write("desc");
                     }
                     else if (dc.ColumnName == "search_text")
                     {
-                        search_text_column = db_column_count;
-                        Response.Write("context");
+                        searchTextColumn = dbColumnCount;
+                        response.Write("context");
                     }
                     else if (dc.ColumnName == "search_source")
                     {
-                        search_source_column = db_column_count;
-                        Response.Write("text source");
+                        searchSourceColumn = dbColumnCount;
+                        response.Write("text source");
                     }
                     else
                     {
-                        Response.Write(dc.ColumnName);
+                        response.Write(dc.ColumnName);
                     }
 
-                    Response.Write("</a>");
-                    Response.Write("\n");
+                    response.Write("</a>");
+                    response.Write("\n");
                 }
 
-                db_column_count++;
+                dbColumnCount++;
             }
 
-            Response.Write("\n<tr>");
+            response.Write("\n<tr>");
 
             ////////////////////////////////////////////////////////////////////
             /// filter row
             ////////////////////////////////////////////////////////////////////
 
-            if (ds_custom_cols == null) ds_custom_cols = Util.get_custom_columns();
+            if (dsCustomCols == null) dsCustomCols = Util.GetCustomColumns();
 
-            db_column_count = 0;
-            var udf_column_name = Util.get_setting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
+            dbColumnCount = 0;
+            var udfColumnName = Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
 
             foreach (DataColumn dc in dv.Table.Columns)
             {
-                var lowercase_column_name = dc.ColumnName.ToLower();
+                var lowercaseColumnName = dc.ColumnName.ToLower();
 
                 // skip color
-                if (db_column_count == 0)
+                if (dbColumnCount == 0)
                 {
-                    if (show_checkbox) Response.Write("<td class=bugf>&nbsp;");
+                    if (showCheckbox) response.Write("<td class=bugf>&nbsp;");
                 }
                 else if (dc.ColumnName == "$SCORE")
                 {
@@ -524,121 +523,121 @@ namespace BugTracker.Web.Core
                 }
                 else
                 {
-                    Response.Write("<td class=bugf> ");
+                    response.Write("<td class=bugf> ");
 
                     if (dc.ColumnName == "$FLAG")
                     {
-                        display_filter_select(Response, filter_val, "[$FLAG]", "red|green");
+                        DisplayFilterSelect(response, filterVal, "[$FLAG]", "red|green");
                     }
                     else if (dc.ColumnName == "$SEEN")
                     {
-                        display_filter_select(Response, filter_val, "[$SEEN]", "yes|no");
+                        DisplayFilterSelect(response, filterVal, "[$SEEN]", "yes|no");
                     }
-                    else if (lowercase_column_name == "project"
-                             || lowercase_column_name == "organization"
-                             || lowercase_column_name == "category"
-                             || lowercase_column_name == "priority"
-                             || lowercase_column_name == "status"
-                             || lowercase_column_name == "reported by"
-                             || lowercase_column_name == "assigned to"
-                             || lowercase_column_name == udf_column_name.ToLower())
+                    else if (lowercaseColumnName == "project"
+                             || lowercaseColumnName == "organization"
+                             || lowercaseColumnName == "category"
+                             || lowercaseColumnName == "priority"
+                             || lowercaseColumnName == "status"
+                             || lowercaseColumnName == "reported by"
+                             || lowercaseColumnName == "assigned to"
+                             || lowercaseColumnName == udfColumnName.ToLower())
                     {
-                        var string_vals = get_distinct_vals_from_dataset(
-                            (DataTable) HttpContext.Current.Session["bugs_unfiltered"],
-                            db_column_count);
+                        var stringVals = GetDistinctValsFromDataset(
+                            (DataTable)HttpContext.Current.Session["bugs_unfiltered"],
+                            dbColumnCount);
 
-                        display_filter_select(
-                            Response,
-                            filter_val,
+                        DisplayFilterSelect(
+                            response,
+                            filterVal,
                             "[" + dc.ColumnName + "]",
-                            string_vals);
+                            stringVals);
                     }
                     else
                     {
-                        var with_filter = false;
-                        foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+                        var withFilter = false;
+                        foreach (DataRow drcc in dsCustomCols.Tables[0].Rows)
                             if (dc.ColumnName.ToLower() == Convert.ToString(drcc["name"]).ToLower())
                             {
-                                if ((string) drcc["dropdown type"] == "normal"
-                                    || (string) drcc["dropdown type"] == "users")
+                                if ((string)drcc["dropdown type"] == "normal"
+                                    || (string)drcc["dropdown type"] == "users")
                                 {
-                                    with_filter = true;
+                                    withFilter = true;
 
-                                    var string_vals = get_distinct_vals_from_dataset(
-                                        (DataTable) HttpContext.Current.Session["bugs_unfiltered"],
-                                        db_column_count);
+                                    var stringVals = GetDistinctValsFromDataset(
+                                        (DataTable)HttpContext.Current.Session["bugs_unfiltered"],
+                                        dbColumnCount);
 
-                                    display_filter_select(
-                                        Response,
-                                        filter_val,
-                                        "[" + (string) drcc["name"] + "]",
-                                        string_vals);
+                                    DisplayFilterSelect(
+                                        response,
+                                        filterVal,
+                                        "[" + (string)drcc["name"] + "]",
+                                        stringVals);
                                 }
 
                                 break;
                             }
 
-                        if (!with_filter) Response.Write("&nbsp");
+                        if (!withFilter) response.Write("&nbsp");
                     }
 
-                    Response.Write("\n");
+                    response.Write("\n");
                 }
 
-                db_column_count++;
+                dbColumnCount++;
             }
 
-            Response.Write("\n");
+            response.Write("\n");
 
-            var class_or_color = "class=bugd";
-            string col_one;
+            var classOrColor = "class=bugd";
+            string colOne;
 
             ///////////////////////////////////////////////////////////////////
             // data
             ///////////////////////////////////////////////////////////////////
-            var rows_this_page = 0;
+            var rowsThisPage = 0;
             var j = 0;
 
             foreach (DataRowView drv in dv)
             {
                 // skip over rows prior to this page
-                if (j < security.user.bugs_per_page * this_page)
+                if (j < security.User.BugsPerPage * thisPage)
                 {
                     j++;
                     continue;
                 }
 
                 // do not show rows beyond this page
-                rows_this_page++;
-                if (rows_this_page > security.user.bugs_per_page) break;
+                rowsThisPage++;
+                if (rowsThisPage > security.User.BugsPerPage) break;
 
                 var dr = drv.Row;
 
-                var string_bugid = Convert.ToString(dr[1]);
+                var stringBugid = Convert.ToString(dr[1]);
 
-                Response.Write("\n<tr>");
+                response.Write("\n<tr>");
 
-                if (show_checkbox)
+                if (showCheckbox)
                 {
-                    Response.Write("<td class=bugd><input type=checkbox name=");
-                    Response.Write(string_bugid);
-                    Response.Write(">");
+                    response.Write("<td class=bugd><input type=checkbox name=");
+                    response.Write(stringBugid);
+                    response.Write(">");
                 }
 
                 for (var i = 0; i < dv.Table.Columns.Count; i++)
                     if (i == 0)
                     {
-                        col_one = Convert.ToString(dr[0]);
+                        colOne = Convert.ToString(dr[0]);
 
-                        if (col_one == "")
+                        if (colOne == "")
                         {
-                            class_or_color = "class=bugd";
+                            classOrColor = "class=bugd";
                         }
                         else
                         {
-                            if (col_one[0] == '#')
-                                class_or_color = "class=bugd bgcolor=" + col_one;
+                            if (colOne[0] == '#')
+                                classOrColor = "class=bugd bgcolor=" + colOne;
                             else
-                                class_or_color = "class=\"" + col_one + "\"";
+                                classOrColor = "class=\"" + colOne + "\"";
                         }
                     }
                     else
@@ -649,28 +648,28 @@ namespace BugTracker.Web.Core
                         }
                         else if (dv.Table.Columns[i].ColumnName == "$FLAG")
                         {
-                            var flag = (int) dr[i];
+                            var flag = (int)dr[i];
                             var cls = "wht";
                             if (flag == 1) cls = "red";
                             else if (flag == 2) cls = "grn";
 
-                            Response.Write(
+                            response.Write(
                                 "<td class=bugd align=center><span title='click to flag/unflag this for yourself' class="
                                 + cls
                                 + " onclick='flag(this, "
-                                + string_bugid
+                                + stringBugid
                                 + ")'>&nbsp;</span>");
                         }
                         else if (dv.Table.Columns[i].ColumnName == "$SEEN")
                         {
-                            var seen = (int) dr[i];
+                            var seen = (int)dr[i];
                             var cls = "old";
                             if (seen == 0) cls = "new";
 
-                            Response.Write("<td class=bugd align=center><span title='click to toggle new/old' class="
+                            response.Write("<td class=bugd align=center><span title='click to toggle new/old' class="
                                            + cls
                                            + " onclick='seen(this, "
-                                           + string_bugid
+                                           + stringBugid
                                            + ")'>&nbsp;</span>");
                         }
                         else if (dv.Table.Columns[i].ColumnName == "$VOTE")
@@ -687,41 +686,41 @@ namespace BugTracker.Web.Core
                             // The purpose of this is so that we can sort the column by votes,
                             // but still color it by THIS user's vote.
 
-                            var vote_count = 0;
-                            var this_users_vote = 0;
-                            var magic_number = 10000;
+                            var voteCount = 0;
+                            var thisUsersVote = 0;
+                            var magicNumber = 10000;
 
-                            var val = (int) dr[i];
-                            this_users_vote = val % magic_number;
+                            var val = (int)dr[i];
+                            thisUsersVote = val % magicNumber;
 
-                            var obj_vote_count = HttpContext.Current.Application[string_bugid];
-                            if (obj_vote_count != null) vote_count = (int) obj_vote_count;
+                            var objVoteCount = HttpContext.Current.Application[stringBugid];
+                            if (objVoteCount != null) voteCount = (int)objVoteCount;
 
-                            dr[i] = vote_count * magic_number + this_users_vote;
+                            dr[i] = voteCount * magicNumber + thisUsersVote;
 
                             var cls = "novote";
-                            if (this_users_vote == 1) cls = "yesvote";
+                            if (thisUsersVote == 1) cls = "yesvote";
 
-                            Response.Write("<td class=bugd align=right><span title='click to toggle your vote' class="
+                            response.Write("<td class=bugd align=right><span title='click to toggle your vote' class="
                                            + cls
                                            + " onclick='vote(this, "
-                                           + string_bugid
-                                           + ")'>" + Convert.ToString(vote_count) + "</span>");
+                                           + stringBugid
+                                           + ")'>" + Convert.ToString(voteCount) + "</span>");
                         }
 
                         else
                         {
                             var datatype = dv.Table.Columns[i].DataType;
 
-                            if (Util.is_numeric_datatype(datatype))
-                                Response.Write("<td " + class_or_color + " align=right>");
+                            if (Util.IsNumericDataType(datatype))
+                                response.Write("<td " + classOrColor + " align=right>");
                             else
-                                Response.Write("<td " + class_or_color + " >");
+                                response.Write("<td " + classOrColor + " >");
 
                             // write the data
                             if (dr[i].ToString() == "")
                             {
-                                Response.Write("&nbsp;");
+                                response.Write("&nbsp;");
                             }
                             else
                             {
@@ -729,81 +728,81 @@ namespace BugTracker.Web.Core
                                 {
                                     // Some columns we'd like both date and time, some just date,
                                     // so let's be clever and if the time is exactly midnight, space it out
-                                    Response.Write(Util.format_db_date_and_time(dr[i]));
+                                    response.Write(Util.FormatDbDateTime(dr[i]));
                                 }
                                 else
                                 {
-                                    if (i == description_column)
+                                    if (i == descriptionColumn)
                                     {
                                         // write description as a link
-                                        Response.Write(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=edit_bug.aspx?id="
-                                            + string_bugid + ">");
-                                        Response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
-                                        Response.Write("</a>");
+                                        response.Write(
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=EditBug.aspx?id="
+                                            + stringBugid + ">");
+                                        response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
+                                        response.Write("</a>");
                                     }
-                                    else if (i == search_desc_column)
+                                    else if (i == searchDescColumn)
                                     {
                                         // write description as a link
-                                        Response.Write(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=edit_bug.aspx?id="
-                                            + string_bugid + ">");
-                                        Response.Write(dr[i].ToString()); // already encoded
-                                        Response.Write("</a>");
+                                        response.Write(
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=EditBug.aspx?id="
+                                            + stringBugid + ">");
+                                        response.Write(dr[i].ToString()); // already encoded
+                                        response.Write("</a>");
                                     }
-                                    else if (i == search_source_column)
+                                    else if (i == searchSourceColumn)
                                     {
                                         var val = dr[i].ToString();
                                         if (string.IsNullOrEmpty(val))
                                         {
-                                            Response.Write("&nbsp;");
+                                            response.Write("&nbsp;");
                                         }
                                         else
                                         {
-                                            var parts = Util.split_string_using_commas(val);
+                                            var parts = Util.SplitStringUsingCommas(val);
 
                                             if (parts.Length < 2)
                                             {
-                                                Response.Write(val);
+                                                response.Write(val);
                                             }
                                             else
                                             {
-                                                Response.Write("<a href=edit_bug.aspx?id=");
-                                                Response.Write(string_bugid); // bg_id
-                                                Response.Write("#");
-                                                Response.Write(parts[1]); // bp_id, the post id
-                                                Response.Write(">");
-                                                Response.Write(parts[0]); // sent, received, comment
-                                                Response.Write(" #");
-                                                Response.Write(parts[1]);
-                                                Response.Write("</a>");
+                                                response.Write("<a href=EditBug.aspx?id=");
+                                                response.Write(stringBugid); // bg_id
+                                                response.Write("#");
+                                                response.Write(parts[1]); // bp_id, the post id
+                                                response.Write(">");
+                                                response.Write(parts[0]); // sent, received, comment
+                                                response.Write(" #");
+                                                response.Write(parts[1]);
+                                                response.Write("</a>");
                                             }
                                         }
                                     }
-                                    else if (i == search_text_column)
+                                    else if (i == searchTextColumn)
                                     {
-                                        Response.Write(dr[i].ToString()); // already encoded
+                                        response.Write(dr[i].ToString()); // already encoded
                                     }
                                     else
                                     {
-                                        Response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString())
+                                        response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString())
                                             .Replace("\n", "<br>"));
                                     }
                                 }
                             }
                         }
 
-                        Response.Write("");
+                        response.Write("");
                     }
 
-                Response.Write("\n");
+                response.Write("\n");
 
                 j++;
             }
 
-            Response.Write("</table>");
-            Response.Write(paging_string);
-            Response.Write(bug_count_string);
+            response.Write("</table>");
+            response.Write(pagingString);
+            response.Write(bugCountString);
         }
     }
 }

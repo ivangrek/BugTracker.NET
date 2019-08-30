@@ -5,18 +5,18 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="tasks.aspx.cs" Inherits="BugTracker.Web.tasks" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Tasks.aspx.cs" Inherits="BugTracker.Web.Tasks" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO
     <body onload="body_on_load()">--%>
 
-    <script type="text/javascript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
     <script>
 
         function body_on_load() {
-            parent.set_task_cnt(<% Response.Write(Convert.ToString(ds.Tables[0].Rows.Count)); %>);
+            parent.set_task_cnt(<% Response.Write(Convert.ToString(this.Ds.Tables[0].Rows.Count)); %>);
         }
 
     </script>
@@ -29,28 +29,28 @@
     <div class="align">
         Tasks for
         <%
-            Response.Write(Util.get_setting("SingularBugLabel", "bug")
+            Response.Write(Util.GetSetting("SingularBugLabel", "bug")
                            + " "
-                           + Convert.ToString(bugid));
+                           + Convert.ToString(this.Bugid));
         %>
         <p>
 
-            <% if (permission_level == Security.PERMISSION_ALL && (security.user.is_admin || security.user.can_edit_tasks))
+            <% if (this.PermissionLevel == Security.PermissionAll && (this.Security.User.IsAdmin || this.Security.User.CanEditTasks))
                 { %>
-            <a href="edit_task.aspx?id=0&bugid=" <% Response.Write(Convert.ToString(bugid)); %>>add new task</a>
+            <a href="EditTask?id=0&bugid=" <% Response.Write(Convert.ToString(this.Bugid)); %>>add new task</a>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <a target="_blank" href="tasks_all.aspx">view all tasks</a>
+            <a target="_blank" href="TasksAll.aspx">view all tasks</a>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <a target="_blank" href="tasks_all_excel.aspx">export all tasks to excel</a>
+            <a target="_blank" href="TasksAllExcel.aspx">export all tasks to excel</a>
         <p>
 
             <% } %>
 
             <%
-                if (ds.Tables[0].Rows.Count > 0)
+                if (this.Ds.Tables[0].Rows.Count > 0)
                 {
-                    SortableHtmlTable.create_from_dataset(
-                        Response, ds, "", "", false);
+                    SortableHtmlTable.CreateFromDataSet(
+                        Response, this.Ds, "", "", false);
                 }
                 else
                 {

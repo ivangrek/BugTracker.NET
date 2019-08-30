@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class logoff {
+    public partial class Logoff {
     }
 }

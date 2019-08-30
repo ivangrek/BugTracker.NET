@@ -12,16 +12,16 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class logoff : Page
+    public partial class Logoff : Page
     {
         ///////////////////////////////////////////////////////////////////
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            Util.set_context(HttpContext.Current);
+            Util.SetContext(HttpContext.Current);
 
-            DbUtil.get_sqlconnection();
+            DbUtil.GetSqlConnection();
 
             // delete the session row
 
@@ -29,15 +29,15 @@ namespace BugTracker.Web
 
             if (cookie != null)
             {
-                var se_id = cookie.Value.Replace("'", "''");
+                var seId = cookie.Value.Replace("'", "''");
 
                 var sql = @"delete from sessions
 			where se_id = N'$se'
 			or datediff(d, se_date, getdate()) > 2";
-                sql = sql.Replace("$se", se_id);
-                DbUtil.execute_nonquery(sql);
+                sql = sql.Replace("$se", seId);
+                DbUtil.ExecuteNonQuery(sql);
 
-                Session[se_id] = 0;
+                Session[seId] = 0;
 
                 Session["SelectedBugQuery"] = null;
                 Session["bugs"] = null;

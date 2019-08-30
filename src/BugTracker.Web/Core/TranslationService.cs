@@ -64,22 +64,22 @@ namespace BugTracker.Web.Core
             RequestNamespace = "http://zeta-software.de/TranslationWebService",
             ResponseNamespace = "http://zeta-software.de/TranslationWebService", Use = SoapBindingUse.Literal,
             ParameterStyle = SoapParameterStyle.Wrapped)]
-        public TranslationMode GetTranslationModeByObjectID(string objectID)
+        public TranslationMode GetTranslationModeByObjectID(string objectId)
         {
             var results = Invoke("GetTranslationModeByObjectID", new object[]
             {
-                objectID
+                objectId
             });
             return (TranslationMode) results[0];
         }
 
         /// <remarks />
-        public IAsyncResult BeginGetTranslationModeByObjectID(string objectID, AsyncCallback callback,
+        public IAsyncResult BeginGetTranslationModeByObjectID(string objectId, AsyncCallback callback,
             object asyncState)
         {
             return BeginInvoke("GetTranslationModeByObjectID", new object[]
             {
-                objectID
+                objectId
             }, callback, asyncState);
         }
 

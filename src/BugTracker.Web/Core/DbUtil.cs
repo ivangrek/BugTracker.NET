@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -14,11 +15,11 @@ namespace BugTracker.Web.Core
 
     public class DbUtil
     {
-        public static object execute_scalar(string sql)
+        public static object ExecuteScalar(string sql)
         {
-            if (Util.get_setting("LogSqlEnabled", "1") == "1") Util.write_to_log("sql=\n" + sql);
+            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
 
-            using (var conn = get_sqlconnection())
+            using (var conn = GetSqlConnection())
             {
                 object returnValue;
                 var cmd = new SqlCommand(sql, conn);
@@ -28,9 +29,9 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static void execute_nonquery_without_logging(string sql)
+        public static void ExecuteNonQueryWithoutLogging(string sql)
         {
-            using (var conn = get_sqlconnection())
+            using (var conn = GetSqlConnection())
             {
                 var cmd = new SqlCommand(sql, conn);
                 cmd.ExecuteNonQuery();
@@ -38,11 +39,11 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static void execute_nonquery(string sql)
+        public static void ExecuteNonQuery(string sql)
         {
-            if (Util.get_setting("LogSqlEnabled", "1") == "1") Util.write_to_log("sql=\n" + sql);
+            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
 
-            using (var conn = get_sqlconnection())
+            using (var conn = GetSqlConnection())
             {
                 var cmd = new SqlCommand(sql, conn);
                 cmd.ExecuteNonQuery();
@@ -50,11 +51,11 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static void execute_nonquery(SqlCommand cmd)
+        public static void ExecuteNonQuery(SqlCommand cmd)
         {
-            log_command(cmd);
+            LogCommand(cmd);
 
-            using (var conn = get_sqlconnection())
+            using (var conn = GetSqlConnection())
             {
                 try
                 {
@@ -70,11 +71,11 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static SqlDataReader execute_reader(string sql, CommandBehavior behavior)
+        public static SqlDataReader ExecuteReader(string sql, CommandBehavior behavior)
         {
-            if (Util.get_setting("LogSqlEnabled", "1") == "1") Util.write_to_log("sql=\n" + sql);
+            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
 
-            var conn = get_sqlconnection();
+            var conn = GetSqlConnection();
             try
             {
                 using (var cmd = new SqlCommand(sql, conn))
@@ -89,11 +90,11 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static SqlDataReader execute_reader(SqlCommand cmd, CommandBehavior behavior)
+        public static SqlDataReader ExecuteReader(SqlCommand cmd, CommandBehavior behavior)
         {
-            log_command(cmd);
+            LogCommand(cmd);
 
-            var conn = get_sqlconnection();
+            var conn = GetSqlConnection();
             try
             {
                 cmd.Connection = conn;
@@ -110,12 +111,12 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static DataSet get_dataset(string sql)
+        public static DataSet GetDataSet(string sql)
         {
-            if (Util.get_setting("LogSqlEnabled", "1") == "1") Util.write_to_log("sql=\n" + sql);
+            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
 
             var ds = new DataSet();
-            using (var conn = get_sqlconnection())
+            using (var conn = GetSqlConnection())
             {
                 using (var da = new SqlDataAdapter(sql, conn))
                 {
@@ -123,44 +124,44 @@ namespace BugTracker.Web.Core
                     stopwatch.Start();
                     da.Fill(ds);
                     stopwatch.Stop();
-                    log_stopwatch_time(stopwatch);
+                    LogStopwatchTime(stopwatch);
                     conn.Close(); // redundant, but just to be clear
                     return ds;
                 }
             }
         }
 
-        public static void log_stopwatch_time(Stopwatch stopwatch)
+        public static void LogStopwatchTime(Stopwatch stopwatch)
         {
-            if (Util.get_setting("LogSqlEnabled", "1") == "1")
-                Util.write_to_log("elapsed milliseconds:" + stopwatch.ElapsedMilliseconds.ToString("0000"));
+            if (Util.GetSetting("LogSqlEnabled", "1") == "1")
+                Util.WriteToLog("elapsed milliseconds:" + stopwatch.ElapsedMilliseconds.ToString("0000"));
         }
 
-        public static DataView get_dataview(string sql)
+        public static DataView GetDataView(string sql)
         {
-            var ds = get_dataset(sql);
+            var ds = GetDataSet(sql);
             return new DataView(ds.Tables[0]);
         }
 
-        public static DataRow get_datarow(string sql)
+        public static DataRow GetDataRow(string sql)
         {
-            var ds = get_dataset(sql);
+            var ds = GetDataSet(sql);
             if (ds.Tables[0].Rows.Count != 1)
                 return null;
             return ds.Tables[0].Rows[0];
         }
 
-        public static SqlConnection get_sqlconnection()
+        public static SqlConnection GetSqlConnection()
         {
-            var connection_string = Util.get_setting("ConnectionString", "MISSING CONNECTION STRING");
-            var conn = new SqlConnection(connection_string);
+            var connectionString = Util.GetSetting("ConnectionString", "MISSING CONNECTION STRING");
+            var conn = new SqlConnection(connectionString);
             conn.Open();
             return conn;
         }
 
-        private static void log_command(SqlCommand cmd)
+        private static void LogCommand(SqlCommand cmd)
         {
-            if (Util.get_setting("LogSqlEnabled", "1") == "1")
+            if (Util.GetSetting("LogSqlEnabled", "1") == "1")
             {
                 var sb = new StringBuilder();
                 sb.Append("sql=\n" + cmd.CommandText);
@@ -185,8 +186,8 @@ namespace BugTracker.Web.Core
                     }
                 }
 
-                Util.write_to_log(sb.ToString());
+                Util.WriteToLog(sb.ToString());
             }
         }
-    } // end DbUtil
-} // end namespace
+    }
+}

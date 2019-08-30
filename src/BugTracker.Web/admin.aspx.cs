@@ -12,27 +12,27 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class admin : Page
+    public partial class Admin : Page
     {
-        public bool nag;
-        public Security security;
+        public bool Nag;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.MUST_BE_ADMIN);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "admin";
 
             if (false) // change this to if(true) to make the donation nag message go away
             {
             }
 
-            var bugs = Convert.ToInt32(DbUtil.execute_scalar("select count(1) from bugs"));
-            if (bugs > 100) this.nag = true;
+            var bugs = Convert.ToInt32(DbUtil.ExecuteScalar("select count(1) from bugs"));
+            if (bugs > 100) this.Nag = true;
         }
     }
 }

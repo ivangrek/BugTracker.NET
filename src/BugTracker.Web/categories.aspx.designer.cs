@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class categories {
+    public partial class Categories {
     }
 }

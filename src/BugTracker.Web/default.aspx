@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="default.aspx.cs" Inherits="BugTracker.Web.Default" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="BugTracker.Web.Default" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -23,7 +23,7 @@
             <br>
             <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="mailto:ctrager@yahoo.com">Feedback</a>
             <br>
-            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="about.html">About</a>
+            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="Content/about.html">About</a>
             <br>
             <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="http://ifdefined.com/README.html">Donate</a>
         </span>
@@ -45,7 +45,7 @@
                     <form class="frm" runat="server">
                         <table border="0">
 
-                            <% if (Util.get_setting("WindowsAuthentication", "0") != "0")
+                            <% if (Util.GetSetting("WindowsAuthentication", "0") != "0")
                                 { %>
                             <tr>
                                 <td colspan="2" class="smallnote">To login using your Windows ID, leave User blank</td>
@@ -82,24 +82,24 @@
 
                     <span>
 
-                        <% if (Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
+                        <% if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
                             { %>
                         <p>
-                            <a style="font-size: 8pt;" href="bugs.aspx">Continue as "guest" without logging in</a>
+                            <a style="font-size: 8pt;" href="Bugs.aspx">Continue as "guest" without logging in</a>
                         <p>
                             <% } %>
 
-                            <% if (Util.get_setting("AllowSelfRegistration", "0") == "1")
+                            <% if (Util.GetSetting("AllowSelfRegistration", "0") == "1")
                                 { %>
                         <p>
-                            <a style="font-size: 8pt;" href="register.aspx">Register</a>
+                            <a style="font-size: 8pt;" href="Register.aspx">Register</a>
                         <p>
                             <% } %>
 
-                            <% if (Util.get_setting("ShowForgotPasswordLink", "1") == "1")
+                            <% if (Util.GetSetting("ShowForgotPasswordLink", "1") == "1")
                                 { %>
                         <p>
-                            <a style="font-size: 8pt;" href="forgot.aspx">Forgot your username or password?</a>
+                            <a style="font-size: 8pt;" href="Forgot.aspx">Forgot your username or password?</a>
                         <p>
                             <% } %>
                     </span>

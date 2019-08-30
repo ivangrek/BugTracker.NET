@@ -5,22 +5,22 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="relationships.aspx.cs" Inherits="BugTracker.Web.relationships" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Relationships.aspx.cs" Inherits="BugTracker.Web.Relationships" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="body_on_load()">--%>
 
-    <script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 
     <script>
-        var asp_form_id = '<% Response.Write(Util.get_form_name()); %>';
+        var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
 
-        function remove(bugid2_arg) {
+        function remove(bugid2Arg) {
             var frm = document.getElementById(asp_form_id);
             var actn = document.getElementById("actn");
             actn.value = "remove";
-            document.getElementById("bugid2").value = bugid2_arg;
+            document.getElementById("bugid2").value = bugid2Arg;
             frm.submit();
         }
 
@@ -28,9 +28,9 @@
 
             opener.set_relationship_cnt(
                 <%
-        Response.Write(Convert.ToString(this.bugid));
+        Response.Write(Convert.ToString(this.Bugid));
         Response.Write(",");
-        Response.Write(Convert.ToString(this.ds.Tables[0].Rows.Count));
+        Response.Write(Convert.ToString(this.Ds.Tables[0].Rows.Count));
                 %>
             );
         }
@@ -44,9 +44,9 @@
     <div class="align">
         Relationships for
     <%
-        Response.Write(Util.get_setting("SingularBugLabel", "bug")
+        Response.Write(Util.GetSetting("SingularBugLabel", "bug")
                        + " "
-                       + Convert.ToString(this.bugid));
+                       + Convert.ToString(this.Bugid));
     %>
 
         <p>
@@ -55,11 +55,11 @@
                     <td>
 
                         <%
-                            if (this.permission_level != Security.PERMISSION_READONLY)
+                            if (this.PermissionLevel != Security.PermissionReadonly)
                             {
                         %>
                         <p>
-                            <form class="frm" runat="server" action="relationships.aspx">
+                            <form class="frm" runat="server" action="Relationships.aspx">
                                 <table>
                                     <tr>
                                         <td>
@@ -87,7 +87,7 @@
                                 </table>
                                 <input runat="server" id="bgid" type="hidden" name="bgid" value="">
                                 <input id="actn" type="hidden" name="actn" value="add">
-                                <input id="ses" type="hidden" name="ses" value="<% Response.Write(this.ses); %>">
+                                <input id="ses" type="hidden" name="ses" value="<% Response.Write(this.Ses); %>">
                             </form>
                             <% } %>
                     </td>
@@ -97,16 +97,16 @@
         </p>
         <%
 
-            if (this.ds.Tables[0].Rows.Count > 0)
+            if (this.Ds.Tables[0].Rows.Count > 0)
             {
-                SortableHtmlTable.create_from_dataset(
-                    Response, this.ds, "", "", false);
+                SortableHtmlTable.CreateFromDataSet(
+                    Response, this.Ds, "", "", false);
 
                 display_hierarchy();
             }
             else
             {
-                Response.Write("No related " + Util.get_setting("PluralBugLabel", "bugs"));
+                Response.Write("No related " + Util.GetSetting("PluralBugLabel", "bugs"));
             }
         %>
     </div>

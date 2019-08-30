@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class vote {
+    public partial class Vote {
     }
 }

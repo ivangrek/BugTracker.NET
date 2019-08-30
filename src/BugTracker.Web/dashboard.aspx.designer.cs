@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class dashboard {
+    public partial class Dashboard {
     }
 }

@@ -11,11 +11,11 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class install : Page
+    public partial class Install : Page
     {
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
             var dbname = Request["dbname"];
 
@@ -34,12 +34,12 @@ namespace BugTracker.Web
 
                     Application["dbs"] = ++dbs;
 
-                    DbUtil.get_sqlconnection();
+                    DbUtil.GetSqlConnection();
                     var sql = @"use master
 				create database [$db]";
 
                     sql = sql.Replace("$db", dbname);
-                    DbUtil.execute_nonquery(sql);
+                    DbUtil.ExecuteNonQuery(sql);
 
                     Response.Write("<font color=red><b>Database Created.</b></font>");
                 }

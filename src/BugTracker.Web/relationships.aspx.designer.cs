@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class relationships {
+    public partial class Relationships {
         
         /// <summary>
         /// siblings control.

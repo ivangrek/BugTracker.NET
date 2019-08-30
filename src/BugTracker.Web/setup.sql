@@ -907,6 +907,3 @@ insert into queries (qu_desc, qu_sql, qu_default) values (
 + char(10) + ' left outer join statuses on st_id = bg_status '
 + char(10) + ' order by 3 desc ',
 0)
-
-
-

@@ -13,71 +13,71 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class tags : Page
+    public partial class Tags : Page
     {
-        public Security security;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
         }
 
         public void print_tags()
         {
-            if (this.security.user.category_field_permission_level == Security.PERMISSION_NONE) return;
+            if (this.Security.User.CategoryFieldPermissionLevel == Security.PermissionNone) return;
 
             var tags =
                 (SortedDictionary<string, List<int>>) Application["tags"];
 
-            var tags_by_count = new List<TagLabel>();
+            var tagsByCount = new List<TagLabel>();
 
             var fonts = new Dictionary<string, string>();
 
             foreach (var s in tags.Keys)
             {
                 var tl = new TagLabel();
-                tl.count = tags[s].Count;
-                tl.label = s;
-                tags_by_count.Add(tl);
+                tl.Count = tags[s].Count;
+                tl.Label = s;
+                tagsByCount.Add(tl);
             }
 
-            tags_by_count.Sort(); // sort in descending count order
+            tagsByCount.Sort(); // sort in descending count order
 
             float total = tags.Count;
-            var so_far = 0.0F;
-            var previous_count = -1;
-            var previous_font = "";
+            var soFar = 0.0F;
+            var previousCount = -1;
+            var previousFont = "";
 
-            foreach (var tl in tags_by_count)
+            foreach (var tl in tagsByCount)
             {
-                so_far++;
+                soFar++;
 
-                if (tl.count == previous_count)
-                    fonts[tl.label] = previous_font; // if same count, then same font
-                else if (so_far / total < .1)
-                    fonts[tl.label] = "24pt";
-                else if (so_far / total < .2)
-                    fonts[tl.label] = "22pt";
-                else if (so_far / total < .3)
-                    fonts[tl.label] = "20pt";
-                else if (so_far / total < .4)
-                    fonts[tl.label] = "18pt";
-                else if (so_far / total < .5)
-                    fonts[tl.label] = "16pt";
-                else if (so_far / total < .6)
-                    fonts[tl.label] = "14pt";
-                else if (so_far / total < .7)
-                    fonts[tl.label] = "12pt";
-                else if (so_far / total < .8)
-                    fonts[tl.label] = "10pt";
+                if (tl.Count == previousCount)
+                    fonts[tl.Label] = previousFont; // if same count, then same font
+                else if (soFar / total < .1)
+                    fonts[tl.Label] = "24pt";
+                else if (soFar / total < .2)
+                    fonts[tl.Label] = "22pt";
+                else if (soFar / total < .3)
+                    fonts[tl.Label] = "20pt";
+                else if (soFar / total < .4)
+                    fonts[tl.Label] = "18pt";
+                else if (soFar / total < .5)
+                    fonts[tl.Label] = "16pt";
+                else if (soFar / total < .6)
+                    fonts[tl.Label] = "14pt";
+                else if (soFar / total < .7)
+                    fonts[tl.Label] = "12pt";
+                else if (soFar / total < .8)
+                    fonts[tl.Label] = "10pt";
                 else
-                    fonts[tl.label] = "8pt";
+                    fonts[tl.Label] = "8pt";
 
-                previous_font = fonts[tl.label];
-                previous_count = tl.count;
+                previousFont = fonts[tl.Label];
+                previousCount = tl.Count;
             }
 
             foreach (var s in tags.Keys)
@@ -100,14 +100,14 @@ namespace BugTracker.Web
 
         public class TagLabel : IComparable<TagLabel>
         {
-            public int count;
-            public string label;
+            public int Count;
+            public string Label;
 
             public int CompareTo(TagLabel other)
             {
-                if (this.count > other.count)
+                if (this.Count > other.Count)
                     return -1;
-                if (this.count < other.count)
+                if (this.Count < other.Count)
                     return 1;
                 return 0;
             }

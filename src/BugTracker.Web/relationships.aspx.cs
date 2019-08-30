@@ -13,15 +13,15 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class relationships : Page
+    public partial class Relationships : Page
     {
-        public int bugid;
-        public DataSet ds;
-        public int permission_level;
-        public int previd;
+        public int Bugid;
+        public DataSet Ds;
+        public int PermissionLevel;
+        public int Previd;
 
-        public Security security;
-        public string ses;
+        public Security Security;
+        public string Ses;
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -30,45 +30,45 @@ namespace BugTracker.Web
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "relationships";
 
             string sql;
             this.add_err.InnerText = "";
 
-            this.bugid = Convert.ToInt32(Util.sanitize_integer(Request["bgid"]));
+            this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["bgid"]));
 
             if (string.IsNullOrEmpty(Request["bugid"]))
-                this.previd = 0;
+                this.Previd = 0;
             else
-                this.previd = Convert.ToInt32(Util.sanitize_integer(Request["prev"]));
+                this.Previd = Convert.ToInt32(Util.SanitizeInteger(Request["prev"]));
 
             var bugid2 = 0;
 
-            this.permission_level = Bug.get_bug_permission_level(this.bugid, this.security);
-            if (this.permission_level == Security.PERMISSION_NONE)
+            this.PermissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            if (this.PermissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();
             }
 
-            this.ses = (string) Session["session_cookie"];
+            this.Ses = (string) Session["session_cookie"];
             var action = Request["actn"];
 
             if (!string.IsNullOrEmpty(action))
             {
-                if (Request["ses"] != this.ses)
+                if (Request["ses"] != this.Ses)
                 {
                     Response.Write("session in Request doesn't match session cookie");
                     Response.End();
                 }
 
-                if (this.permission_level == Security.PERMISSION_READONLY)
+                if (this.PermissionLevel == Security.PermissionReadonly)
                 {
                     Response.Write("You are not allowed to edit this item");
                     Response.End();
@@ -76,13 +76,13 @@ namespace BugTracker.Web
 
                 if (action == "remove") // remove
                 {
-                    if (this.security.user.is_guest)
+                    if (this.Security.User.IsGuest)
                     {
                         Response.Write("You are not allowed to delete a relationship");
                         Response.End();
                     }
 
-                    bugid2 = Convert.ToInt32(Util.sanitize_integer(Request["bugid2"]));
+                    bugid2 = Convert.ToInt32(Util.SanitizeInteger(Request["bugid2"]));
 
                     sql = @"
 				delete from bug_relationships where re_bug2 = $bg2 and re_bug1 = $bg;
@@ -91,9 +91,9 @@ namespace BugTracker.Web
 						(bp_bug, bp_user, bp_date, bp_comment, bp_type)
 						values($bg, $us, getdate(), N'deleted relationship to $bg2', 'update')";
                     sql = sql.Replace("$bg2", Convert.ToString(bugid2));
-                    sql = sql.Replace("$bg", Convert.ToString(this.bugid));
-                    sql = sql.Replace("$us", Convert.ToString(this.security.user.usid));
-                    DbUtil.execute_nonquery(sql);
+                    sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
+                    sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                    DbUtil.ExecuteNonQuery(sql);
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace BugTracker.Web
 
                     if (Request["bugid2"] != null)
                     {
-                        if (!Util.is_int(Request["bugid2"]))
+                        if (!Util.IsInt(Request["bugid2"]))
                         {
                             this.add_err.InnerText = "Related ID must be an integer.";
                         }
@@ -109,7 +109,7 @@ namespace BugTracker.Web
                         {
                             bugid2 = Convert.ToInt32(Request["bugid2"]);
 
-                            if (this.bugid == bugid2)
+                            if (this.Bugid == bugid2)
                             {
                                 this.add_err.InnerText = "Cannot create a relationship to self.";
                             }
@@ -120,7 +120,7 @@ namespace BugTracker.Web
                                 // check if bug exists
                                 sql = @"select count(1) from bugs where bg_id = $bg2";
                                 sql = sql.Replace("$bg2", Convert.ToString(bugid2));
-                                rows = (int) DbUtil.execute_scalar(sql);
+                                rows = (int) DbUtil.ExecuteScalar(sql);
 
                                 if (rows == 0)
                                 {
@@ -132,8 +132,8 @@ namespace BugTracker.Web
                                     sql =
                                         @"select count(1) from bug_relationships where re_bug1 = $bg and re_bug2 = $bg2";
                                     sql = sql.Replace("$bg2", Convert.ToString(bugid2));
-                                    sql = sql.Replace("$bg", Convert.ToString(this.bugid));
-                                    rows = (int) DbUtil.execute_scalar(sql);
+                                    sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
+                                    rows = (int) DbUtil.ExecuteScalar(sql);
 
                                     if (rows > 0)
                                     {
@@ -142,8 +142,8 @@ namespace BugTracker.Web
                                     else
                                     {
                                         // check permission of related bug
-                                        var permission_level2 = Bug.get_bug_permission_level(bugid2, this.security);
-                                        if (permission_level2 == Security.PERMISSION_NONE)
+                                        var permissionLevel2 = Bug.GetBugPermissionLevel(bugid2, this.Security);
+                                        if (permissionLevel2 == Security.PermissionNone)
                                         {
                                             this.add_err.InnerText = "You are not allowed to view the related item.";
                                         }
@@ -158,8 +158,8 @@ insert into bug_posts
 	values($bg, $us, getdate(), N'added relationship to $bg2', 'update');";
 
                                             sql = sql.Replace("$bg2", Convert.ToString(bugid2));
-                                            sql = sql.Replace("$bg", Convert.ToString(this.bugid));
-                                            sql = sql.Replace("$us", Convert.ToString(this.security.user.usid));
+                                            sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
+                                            sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
                                             sql = sql.Replace("$ty", Request["type"].Replace("'", "''"));
 
                                             if (this.siblings.Checked)
@@ -178,7 +178,7 @@ insert into bug_posts
                                                 sql = sql.Replace("$dir1", "1");
                                             }
 
-                                            DbUtil.execute_nonquery(sql);
+                                            DbUtil.ExecuteNonQuery(sql);
                                             this.add_err.InnerText = "Relationship was added.";
                                         }
                                     }
@@ -199,9 +199,9 @@ select bg_id [id],
 		when re_direction = 2 then 'child of $bg'
 		else                       'parent of $bg' 
 	end as [parent or child],
-	'<a target=_blank href=edit_bug.aspx?id=' + convert(varchar,bg_id) + '>view</a>' [view]";
+	'<a target=_blank href=EditBug.aspx?id=' + convert(varchar,bg_id) + '>view</a>' [view]";
 
-            if (!this.security.user.is_guest && this.permission_level == Security.PERMISSION_ALL)
+            if (!this.Security.User.IsGuest && this.PermissionLevel == Security.PermissionAll)
                 sql += @"
 ,'<a href=''javascript:remove(' + convert(varchar,re_bug2) + ')''>detach</a>' [detach]";
 
@@ -212,12 +212,12 @@ left outer join statuses on st_id = bg_status
 where re_bug1 = $bg
 order by bg_id desc";
 
-            sql = sql.Replace("$bg", Convert.ToString(this.bugid));
-            sql = Util.alter_sql_per_project_permissions(sql, this.security);
+            sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
+            sql = Util.AlterSqlPerProjectPermissions(sql, this.Security);
 
-            this.ds = DbUtil.get_dataset(sql);
+            this.Ds = DbUtil.GetDataSet(sql);
 
-            this.bgid.Value = Convert.ToString(this.bugid);
+            this.bgid.Value = Convert.ToString(this.Bugid);
         }
 
         public string get_bug_html(DataRow dr)
@@ -229,12 +229,12 @@ order by bg_id desc";
 <div
 style='background: #dddddd; border: 1px solid blue; padding 15px;  width: 140px; height: 50px; overflow: hidden;'
 ><a 
-href='relationships.aspx?bgid=$id&prev=$prev'>$id&nbsp;&nbsp;&nbsp;&nbsp;$title</a></div>";
+href='Relationships.aspx?bgid=$id&prev=$prev'>$id&nbsp;&nbsp;&nbsp;&nbsp;$title</a></div>";
 
-            if (this.previd == (int) dr["id"]) s = s.Replace("1px solid blue", "2px solid red");
+            if (this.Previd == (int) dr["id"]) s = s.Replace("1px solid blue", "2px solid red");
 
             s = s.Replace("$id", Convert.ToString(dr["id"]));
-            s = s.Replace("$prev", Convert.ToString(this.bugid));
+            s = s.Replace("$prev", Convert.ToString(this.Bugid));
             s = s.Replace(
                 "$title",
                 Server.HtmlEncode(
@@ -251,7 +251,7 @@ href='relationships.aspx?bgid=$id&prev=$prev'>$id&nbsp;&nbsp;&nbsp;&nbsp;$title<
             var siblings = "";
             var children = "";
 
-            foreach (DataRow dr in this.ds.Tables[0].Rows)
+            foreach (DataRow dr in this.Ds.Tables[0].Rows)
             {
                 var level = (string) dr["parent or child"];
 

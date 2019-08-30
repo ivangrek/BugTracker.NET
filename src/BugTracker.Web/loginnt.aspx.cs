@@ -12,27 +12,27 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class loginnt : Page
+    public partial class LoginNt : Page
     {
-        public string sql;
+        public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            DbUtil.get_sqlconnection();
+            DbUtil.GetSqlConnection();
 
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
             // Get authentication mode
-            var auth_mode = Util.get_setting("WindowsAuthentication", "0");
+            var authMode = Util.GetSetting("WindowsAuthentication", "0");
 
             // If manual authentication only, we shouldn't be here, so redirect to manual screen
 
-            if (auth_mode == "0") Util.redirect("default.aspx", Request, Response);
+            if (authMode == "0") Util.Redirect("default.aspx", Request, Response);
 
             // Get the logon user from IIS
-            var domain_windows_username = Request.ServerVariables["LOGON_USER"];
+            var domainWindowsUsername = Request.ServerVariables["LOGON_USER"];
 
-            if (domain_windows_username == "")
+            if (domainWindowsUsername == "")
             {
                 // If the logon user is blank, then the page is misconfigured
                 // in IIS. Do nothing and let the HTML display.
@@ -40,68 +40,68 @@ namespace BugTracker.Web
             else
             {
                 // Extract the user name from the logon ID
-                var pos = domain_windows_username.IndexOf("\\") + 1;
-                var windows_username =
-                    domain_windows_username.Substring(pos, domain_windows_username.Length - pos);
+                var pos = domainWindowsUsername.IndexOf("\\") + 1;
+                var windowsUsername =
+                    domainWindowsUsername.Substring(pos, domainWindowsUsername.Length - pos);
 
                 // Fetch the user's information from the users table
-                this.sql = @"select us_id, us_username
+                this.Sql = @"select us_id, us_username
 			from users
 			where us_username = N'$us'
 			and us_active = 1";
-                this.sql = this.sql.Replace("$us", windows_username.Replace("'", "''"));
+                this.Sql = this.Sql.Replace("$us", windowsUsername.Replace("'", "''"));
 
-                var dr = DbUtil.get_datarow(this.sql);
+                var dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
                 {
                     // The user was found, so bake a cookie and redirect
                     var userid = (int) dr["us_id"];
-                    Security.create_session(
+                    Security.CreateSession(
                         Request,
                         Response,
                         userid,
                         (string) dr["us_username"],
                         "1");
 
-                    Util.update_most_recent_login_datetime(userid);
+                    Util.UpdateMostRecentLoginDateTime(userid);
 
-                    Util.redirect(Request, Response);
+                    Util.Redirect(Request, Response);
                 }
 
                 // Is self register enabled for users authenticated by windows?
                 // If yes, then automatically insert a row in the user table
-                var enable_auto_registration = Util.get_setting("EnableWindowsUserAutoRegistration", "1") == "1";
-                if (enable_auto_registration)
+                var enableAutoRegistration = Util.GetSetting("EnableWindowsUserAutoRegistration", "1") == "1";
+                if (enableAutoRegistration)
                 {
-                    var template_user = Util.get_setting("WindowsUserAutoRegistrationUserTemplate", "guest");
+                    var templateUser = Util.GetSetting("WindowsUserAutoRegistrationUserTemplate", "guest");
 
-                    var first_name = windows_username;
-                    var last_name = windows_username;
-                    var signature = windows_username;
+                    var firstName = windowsUsername;
+                    var lastName = windowsUsername;
+                    var signature = windowsUsername;
                     var email = string.Empty;
 
                     // From the browser, we only know the Windows username.  Maybe we can get the other
                     // info from LDAP?
-                    if (Util.get_setting("EnableWindowsUserAutoRegistrationLdapSearch", "0") == "1")
+                    if (Util.GetSetting("EnableWindowsUserAutoRegistrationLdapSearch", "0") == "1")
                         using (var de = new DirectoryEntry())
                         {
-                            de.Path = Util.get_setting("LdapDirectoryEntryPath",
+                            de.Path = Util.GetSetting("LdapDirectoryEntryPath",
                                 "LDAP://127.0.0.1/DC=mycompany,DC=com");
 
                             de.AuthenticationType =
                                 (AuthenticationTypes) Enum.Parse(
                                     typeof(AuthenticationTypes),
-                                    Util.get_setting("LdapDirectoryEntryAuthenticationType", "Anonymous"));
+                                    Util.GetSetting("LdapDirectoryEntryAuthenticationType", "Anonymous"));
 
-                            de.Username = Util.get_setting("LdapDirectoryEntryUsername", "");
-                            de.Password = Util.get_setting("LdapDirectoryEntryPassword", "");
+                            de.Username = Util.GetSetting("LdapDirectoryEntryUsername", "");
+                            de.Password = Util.GetSetting("LdapDirectoryEntryPassword", "");
 
                             using (var search =
                                 new DirectorySearcher(de))
                             {
-                                var search_filter = Util.get_setting("LdapDirectorySearcherFilter",
+                                var searchFilter = Util.GetSetting("LdapDirectorySearcherFilter",
                                     "(uid=$REPLACE_WITH_USERNAME$)");
-                                search.Filter = search_filter.Replace("$REPLACE_WITH_USERNAME$", windows_username);
+                                search.Filter = searchFilter.Replace("$REPLACE_WITH_USERNAME$", windowsUsername);
                                 SearchResult result = null;
 
                                 try
@@ -109,21 +109,21 @@ namespace BugTracker.Web
                                     result = search.FindOne();
                                     if (result != null)
                                     {
-                                        first_name = get_ldap_property_value(result,
-                                            Util.get_setting("LdapFirstName", "gn"), first_name);
-                                        last_name = get_ldap_property_value(result,
-                                            Util.get_setting("LdapLastName", "sn"),
-                                            last_name);
-                                        email = get_ldap_property_value(result, Util.get_setting("LdapEmail", "mail"),
+                                        firstName = get_ldap_property_value(result,
+                                            Util.GetSetting("LdapFirstName", "gn"), firstName);
+                                        lastName = get_ldap_property_value(result,
+                                            Util.GetSetting("LdapLastName", "sn"),
+                                            lastName);
+                                        email = get_ldap_property_value(result, Util.GetSetting("LdapEmail", "mail"),
                                             email);
                                         ;
                                         signature = get_ldap_property_value(result,
-                                            Util.get_setting("LdapEmailSigniture", "cn"), signature);
+                                            Util.GetSetting("LdapEmailSigniture", "cn"), signature);
                                         ;
                                     }
                                     else
                                     {
-                                        Util.write_to_log("LDAP search.FindOne() result = null");
+                                        Util.WriteToLog("LDAP search.FindOne() result = null");
                                     }
                                 }
                                 catch (Exception e2)
@@ -137,65 +137,65 @@ namespace BugTracker.Web
                                     }
 
                                     // write the message to the log
-                                    Util.write_to_log("LDAP search failed: " + s);
+                                    Util.WriteToLog("LDAP search failed: " + s);
                                 }
                             }
                         }
 
-                    var new_user_id = Core.User.copy_user(
-                        windows_username,
+                    var newUserId = Core.User.CopyUser(
+                        windowsUsername,
                         email,
-                        first_name,
-                        last_name,
+                        firstName,
+                        lastName,
                         signature,
                         0, // salt
                         Guid.NewGuid().ToString(), // random value for password
-                        template_user,
+                        templateUser,
                         false);
 
-                    if (new_user_id > 0) // automatically created the user
+                    if (newUserId > 0) // automatically created the user
                     {
                         // The user was created, so bake a cookie and redirect
-                        Security.create_session(
+                        Security.CreateSession(
                             Request,
                             Response,
-                            new_user_id,
-                            windows_username.Replace("'", "''"),
+                            newUserId,
+                            windowsUsername.Replace("'", "''"),
                             "1");
 
-                        Util.update_most_recent_login_datetime(new_user_id);
+                        Util.UpdateMostRecentLoginDateTime(newUserId);
 
-                        Util.redirect(Request, Response);
+                        Util.Redirect(Request, Response);
                     }
                 }
 
                 // Try fetching the guest user.
-                this.sql = @"select us_id, us_username
+                this.Sql = @"select us_id, us_username
 			from users
 			where us_username = 'guest'
 			and us_active = 1";
 
-                dr = DbUtil.get_datarow(this.sql);
+                dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
                 {
                     // The Guest user was found, so bake a cookie and redirect
                     var userid = (int) dr["us_id"];
-                    Security.create_session(
+                    Security.CreateSession(
                         Request,
                         Response,
                         userid,
                         (string) dr["us_username"],
                         "1");
 
-                    Util.update_most_recent_login_datetime(userid);
+                    Util.UpdateMostRecentLoginDateTime(userid);
 
-                    Util.redirect(Request, Response);
+                    Util.Redirect(Request, Response);
                 }
 
                 // If using mixed-mode authentication and we got this far,
                 // then we can't sign in using integrated security. Redirect
                 // to the manual screen.
-                if (auth_mode != "1") Util.redirect("default.aspx?msg=user+not+valid", Request, Response);
+                if (authMode != "1") Util.Redirect("default.aspx?msg=user+not+valid", Request, Response);
 
                 // If we are still here, then toss a 401 error.
                 Response.StatusCode = 401;

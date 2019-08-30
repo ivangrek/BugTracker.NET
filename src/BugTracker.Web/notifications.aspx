@@ -5,15 +5,15 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="notifications.aspx.cs" Inherits="BugTracker.Web.notifications" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Notifications.aspx.cs" Inherits="BugTracker.Web.Notifications" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "admin"); %>
+    <% this.Security.WriteMenu(Response, "admin"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -31,21 +31,21 @@
 
     <p>
         <div class="align">
-            <a href="edit_queued_notifications.aspx?actn=delete&ses=" <% Response.Write(this.ses); %>>Delete unsent notifications</a>
+            <a href="EditQueuedNotifications.aspx?actn=delete&ses=" <% Response.Write(this.Ses); %>>Delete unsent notifications</a>
             <br>
             <br>
-            <a href="edit_queued_notifications.aspx?actn=reset&ses=" <% Response.Write(this.ses); %>>Reset retry count to zero</a>
+            <a href="EditQueuedNotifications.aspx?actn=reset&ses=" <% Response.Write(this.Ses); %>>Reset retry count to zero</a>
             <br>
             <br>
-            <a href="edit_queued_notifications.aspx?actn=resend&ses=" <% Response.Write(this.ses); %>>Try to resend</a>
+            <a href="EditQueuedNotifications.aspx?actn=resend&ses=" <% Response.Write(this.Ses); %>>Try to resend</a>
             <br>
             <br>
 
             <%
 
-                if (this.ds.Tables[0].Rows.Count > 0)
-                    SortableHtmlTable.create_from_dataset(
-                        Response, this.ds, "", "");
+                if (this.Ds.Tables[0].Rows.Count > 0)
+                    SortableHtmlTable.CreateFromDataSet(
+                        Response, this.Ds, "", "");
                 else
                     Response.Write("No queued email notifications in the database.");
             %>

@@ -46,8 +46,8 @@
     <Reference Include="Highlighter.Net">
       <HintPath>App_Code\Highlighter.Net.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>App_Code\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net">
       <HintPath>App_Code\Lucene.Net.dll</HintPath>
@@ -79,611 +79,608 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="about.html" />
-    <Content Include="accept.png" />
-    <Content Include="add.png" />
-    <Content Include="add_attachment.aspx" />
-    <Content Include="add_customfield.aspx" />
-    <Content Include="admin.aspx" />
-    <Content Include="ajax.aspx" />
-    <Content Include="ajax2.aspx" />
-    <Content Include="apache_license.txt" />
+    <Content Include="Content\about.html" />
+    <Content Include="Content\btnet_screen_capture.exe" />
+    <Content Include="Content\custom\btnet_custom.css" />
+    <Content Include="Content\custom\btnet_edit_bug.css" />
+    <Content Include="Content\custom\btnet_search.css" />
+    <Content Include="Content\custom\custom_footer.html" />
+    <Content Include="Content\custom\custom_header.html" />
+    <Content Include="Content\custom\custom_logo.html" />
+    <Content Include="Content\custom\custom_welcome.html" />
+    <Content Include="Content\images\accept.png" />
+    <Content Include="Content\images\add.png" />
+    <Content Include="AddAttachment.aspx" />
+    <Content Include="AddCustomfield.aspx" />
+    <Content Include="Admin.aspx" />
+    <Content Include="Ajax.aspx" />
+    <Content Include="Ajax2.aspx" />
     <Content Include="App_Code\Highlighter.Net.dll" />
-    <Content Include="App_Code\log4net.dll" />
     <Content Include="App_Code\Lucene.Net.dll" />
     <Content Include="App_Code\SharpMimeTools.dll" />
-    <Content Include="arrow_down.png" />
-    <Content Include="arrow_up.png" />
-    <Content Include="attach.gif" />
-    <Content Include="backup_db.aspx" />
-    <Content Include="brick.png" />
-    <Content Include="btnet.css" />
-    <Content Include="btnet_base.css" />
-    <Content Include="btnet_screen_capture.exe" />
-    <Content Include="bugs.aspx" />
-    <Content Include="bugtracker_screen_capture.jpeg" />
-    <Content Include="bug_list.js" />
-    <Content Include="camera.png" />
-    <Content Include="categories.aspx" />
-    <Content Include="change_password.aspx" />
-    <Content Include="ckeditor\CHANGES.html" />
-    <Content Include="ckeditor\ckeditor.js" />
-    <Content Include="ckeditor\ckeditor_basic.js" />
-    <Content Include="ckeditor\ckeditor_basic_source.js" />
-    <Content Include="ckeditor\ckeditor_source.js" />
-    <Content Include="ckeditor\config.js" />
-    <Content Include="ckeditor\contents.css" />
-    <Content Include="ckeditor\images\spacer.gif" />
-    <Content Include="ckeditor\INSTALL.html" />
-    <Content Include="ckeditor\lang\af.js" />
-    <Content Include="ckeditor\lang\ar.js" />
-    <Content Include="ckeditor\lang\bg.js" />
-    <Content Include="ckeditor\lang\bn.js" />
-    <Content Include="ckeditor\lang\bs.js" />
-    <Content Include="ckeditor\lang\ca.js" />
-    <Content Include="ckeditor\lang\cs.js" />
-    <Content Include="ckeditor\lang\cy.js" />
-    <Content Include="ckeditor\lang\da.js" />
-    <Content Include="ckeditor\lang\de.js" />
-    <Content Include="ckeditor\lang\el.js" />
-    <Content Include="ckeditor\lang\en-au.js" />
-    <Content Include="ckeditor\lang\en-ca.js" />
-    <Content Include="ckeditor\lang\en-gb.js" />
-    <Content Include="ckeditor\lang\en-uk.js" />
-    <Content Include="ckeditor\lang\en.js" />
-    <Content Include="ckeditor\lang\eo.js" />
-    <Content Include="ckeditor\lang\es.js" />
-    <Content Include="ckeditor\lang\et.js" />
-    <Content Include="ckeditor\lang\eu.js" />
-    <Content Include="ckeditor\lang\fa.js" />
-    <Content Include="ckeditor\lang\fi.js" />
-    <Content Include="ckeditor\lang\fo.js" />
-    <Content Include="ckeditor\lang\fr-ca.js" />
-    <Content Include="ckeditor\lang\fr.js" />
-    <Content Include="ckeditor\lang\gl.js" />
-    <Content Include="ckeditor\lang\gu.js" />
-    <Content Include="ckeditor\lang\he.js" />
-    <Content Include="ckeditor\lang\hi.js" />
-    <Content Include="ckeditor\lang\hr.js" />
-    <Content Include="ckeditor\lang\hu.js" />
-    <Content Include="ckeditor\lang\is.js" />
-    <Content Include="ckeditor\lang\it.js" />
-    <Content Include="ckeditor\lang\ja.js" />
-    <Content Include="ckeditor\lang\km.js" />
-    <Content Include="ckeditor\lang\ko.js" />
-    <Content Include="ckeditor\lang\lt.js" />
-    <Content Include="ckeditor\lang\lv.js" />
-    <Content Include="ckeditor\lang\mn.js" />
-    <Content Include="ckeditor\lang\ms.js" />
-    <Content Include="ckeditor\lang\nb.js" />
-    <Content Include="ckeditor\lang\nl.js" />
-    <Content Include="ckeditor\lang\no.js" />
-    <Content Include="ckeditor\lang\pl.js" />
-    <Content Include="ckeditor\lang\pt-br.js" />
-    <Content Include="ckeditor\lang\pt.js" />
-    <Content Include="ckeditor\lang\ro.js" />
-    <Content Include="ckeditor\lang\ru.js" />
-    <Content Include="ckeditor\lang\sk.js" />
-    <Content Include="ckeditor\lang\sl.js" />
-    <Content Include="ckeditor\lang\sr-latn.js" />
-    <Content Include="ckeditor\lang\sr.js" />
-    <Content Include="ckeditor\lang\sv.js" />
-    <Content Include="ckeditor\lang\th.js" />
-    <Content Include="ckeditor\lang\tr.js" />
-    <Content Include="ckeditor\lang\uk.js" />
-    <Content Include="ckeditor\lang\vi.js" />
-    <Content Include="ckeditor\lang\zh-cn.js" />
-    <Content Include="ckeditor\lang\zh.js" />
-    <Content Include="ckeditor\lang\_languages.js" />
-    <Content Include="ckeditor\lang\_translationstatus.txt" />
-    <Content Include="ckeditor\LICENSE.html" />
-    <Content Include="ckeditor\plugins\a11yhelp\dialogs\a11yhelp.js" />
-    <Content Include="ckeditor\plugins\a11yhelp\lang\en.js" />
-    <Content Include="ckeditor\plugins\a11yhelp\lang\he.js" />
-    <Content Include="ckeditor\plugins\about\dialogs\about.js" />
-    <Content Include="ckeditor\plugins\about\dialogs\logo_ckeditor.png" />
-    <Content Include="ckeditor\plugins\about\plugin.js" />
-    <Content Include="ckeditor\plugins\autogrow\plugin.js" />
-    <Content Include="ckeditor\plugins\basicstyles\plugin.js" />
-    <Content Include="ckeditor\plugins\blockquote\plugin.js" />
-    <Content Include="ckeditor\plugins\button\plugin.js" />
-    <Content Include="ckeditor\plugins\clipboard\dialogs\paste.js" />
-    <Content Include="ckeditor\plugins\clipboard\plugin.js" />
-    <Content Include="ckeditor\plugins\colorbutton\plugin.js" />
-    <Content Include="ckeditor\plugins\colordialog\dialogs\colordialog.js" />
-    <Content Include="ckeditor\plugins\colordialog\plugin.js" />
-    <Content Include="ckeditor\plugins\contextmenu\plugin.js" />
-    <Content Include="ckeditor\plugins\dialogui\plugin.js" />
-    <Content Include="ckeditor\plugins\dialog\dialogDefinition.js" />
-    <Content Include="ckeditor\plugins\dialog\plugin.js" />
-    <Content Include="ckeditor\plugins\div\dialogs\div.js" />
-    <Content Include="ckeditor\plugins\domiterator\plugin.js" />
-    <Content Include="ckeditor\plugins\editingblock\plugin.js" />
-    <Content Include="ckeditor\plugins\elementspath\plugin.js" />
-    <Content Include="ckeditor\plugins\enterkey\plugin.js" />
-    <Content Include="ckeditor\plugins\entities\plugin.js" />
-    <Content Include="ckeditor\plugins\fakeobjects\plugin.js" />
-    <Content Include="ckeditor\plugins\filebrowser\plugin.js" />
-    <Content Include="ckeditor\plugins\find\dialogs\find.js" />
-    <Content Include="ckeditor\plugins\find\plugin.js" />
-    <Content Include="ckeditor\plugins\flash\dialogs\flash.js" />
-    <Content Include="ckeditor\plugins\flash\images\placeholder.png" />
-    <Content Include="ckeditor\plugins\flash\plugin.js" />
-    <Content Include="ckeditor\plugins\floatpanel\plugin.js" />
-    <Content Include="ckeditor\plugins\font\plugin.js" />
-    <Content Include="ckeditor\plugins\format\plugin.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\button.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\checkbox.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\form.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\hiddenfield.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\radio.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\select.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\textarea.js" />
-    <Content Include="ckeditor\plugins\forms\dialogs\textfield.js" />
-    <Content Include="ckeditor\plugins\forms\images\hiddenfield.gif" />
-    <Content Include="ckeditor\plugins\forms\plugin.js" />
-    <Content Include="ckeditor\plugins\horizontalrule\plugin.js" />
-    <Content Include="ckeditor\plugins\htmldataprocessor\plugin.js" />
-    <Content Include="ckeditor\plugins\htmlwriter\plugin.js" />
-    <Content Include="ckeditor\plugins\iframedialog\plugin.js" />
-    <Content Include="ckeditor\plugins\image\dialogs\image.js" />
-    <Content Include="ckeditor\plugins\image\plugin.js" />
-    <Content Include="ckeditor\plugins\indent\plugin.js" />
-    <Content Include="ckeditor\plugins\justify\plugin.js" />
-    <Content Include="ckeditor\plugins\keystrokes\plugin.js" />
-    <Content Include="ckeditor\plugins\link\dialogs\anchor.js" />
-    <Content Include="ckeditor\plugins\link\dialogs\link.js" />
-    <Content Include="ckeditor\plugins\link\images\anchor.gif" />
-    <Content Include="ckeditor\plugins\link\plugin.js" />
-    <Content Include="ckeditor\plugins\listblock\plugin.js" />
-    <Content Include="ckeditor\plugins\liststyle\dialogs\liststyle.js" />
-    <Content Include="ckeditor\plugins\list\plugin.js" />
-    <Content Include="ckeditor\plugins\maximize\plugin.js" />
-    <Content Include="ckeditor\plugins\menubutton\plugin.js" />
-    <Content Include="ckeditor\plugins\menu\plugin.js" />
-    <Content Include="ckeditor\plugins\newpage\plugin.js" />
-    <Content Include="ckeditor\plugins\pagebreak\images\pagebreak.gif" />
-    <Content Include="ckeditor\plugins\pagebreak\plugin.js" />
-    <Content Include="ckeditor\plugins\panelbutton\plugin.js" />
-    <Content Include="ckeditor\plugins\panel\plugin.js" />
-    <Content Include="ckeditor\plugins\pastefromword\dialogs\pastefromword.js" />
-    <Content Include="ckeditor\plugins\pastefromword\filter\default.js" />
-    <Content Include="ckeditor\plugins\pastefromword\plugin.js" />
-    <Content Include="ckeditor\plugins\pastetext\dialogs\pastetext.js" />
-    <Content Include="ckeditor\plugins\pastetext\plugin.js" />
-    <Content Include="ckeditor\plugins\popup\plugin.js" />
-    <Content Include="ckeditor\plugins\preview\plugin.js" />
-    <Content Include="ckeditor\plugins\print\plugin.js" />
-    <Content Include="ckeditor\plugins\removeformat\plugin.js" />
-    <Content Include="ckeditor\plugins\resize\plugin.js" />
-    <Content Include="ckeditor\plugins\richcombo\plugin.js" />
-    <Content Include="ckeditor\plugins\save\plugin.js" />
-    <Content Include="ckeditor\plugins\scayt\dialogs\options.js" />
-    <Content Include="ckeditor\plugins\scayt\dialogs\toolbar.css" />
-    <Content Include="ckeditor\plugins\scayt\plugin.js" />
-    <Content Include="ckeditor\plugins\selection\plugin.js" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_address.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_blockquote.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_div.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_h1.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_h2.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_h3.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_h4.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_h5.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_h6.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_p.png" />
-    <Content Include="ckeditor\plugins\showblocks\images\block_pre.png" />
-    <Content Include="ckeditor\plugins\showblocks\plugin.js" />
-    <Content Include="ckeditor\plugins\smiley\dialogs\smiley.js" />
-    <Content Include="ckeditor\plugins\smiley\images\angel_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\angry_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\broken_heart.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\confused_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\cry_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\devil_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\embaressed_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\envelope.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\heart.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\kiss.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\lightbulb.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\omg_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\regular_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\sad_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\shades_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\teeth_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\thumbs_down.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\thumbs_up.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\tounge_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\whatchutalkingabout_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\images\wink_smile.gif" />
-    <Content Include="ckeditor\plugins\smiley\plugin.js" />
-    <Content Include="ckeditor\plugins\sourcearea\plugin.js" />
-    <Content Include="ckeditor\plugins\specialchar\dialogs\specialchar.js" />
-    <Content Include="ckeditor\plugins\specialchar\plugin.js" />
-    <Content Include="ckeditor\plugins\stylescombo\plugin.js" />
-    <Content Include="ckeditor\plugins\stylescombo\styles\default.js" />
-    <Content Include="ckeditor\plugins\styles\plugin.js" />
-    <Content Include="ckeditor\plugins\styles\styles\default.js" />
-    <Content Include="ckeditor\plugins\tableresize\plugin.js" />
-    <Content Include="ckeditor\plugins\tabletools\dialogs\tableCell.js" />
-    <Content Include="ckeditor\plugins\tabletools\plugin.js" />
-    <Content Include="ckeditor\plugins\table\dialogs\table.js" />
-    <Content Include="ckeditor\plugins\table\plugin.js" />
-    <Content Include="ckeditor\plugins\tab\plugin.js" />
-    <Content Include="ckeditor\plugins\templates\dialogs\templates.js" />
-    <Content Include="ckeditor\plugins\templates\plugin.js" />
-    <Content Include="ckeditor\plugins\templates\templates\default.js" />
-    <Content Include="ckeditor\plugins\templates\templates\images\template1.gif" />
-    <Content Include="ckeditor\plugins\templates\templates\images\template2.gif" />
-    <Content Include="ckeditor\plugins\templates\templates\images\template3.gif" />
-    <Content Include="ckeditor\plugins\toolbar\plugin.js" />
-    <Content Include="ckeditor\plugins\uicolor\dialogs\uicolor.js" />
-    <Content Include="ckeditor\plugins\uicolor\lang\en.js" />
-    <Content Include="ckeditor\plugins\uicolor\lang\he.js" />
-    <Content Include="ckeditor\plugins\uicolor\plugin.js" />
-    <Content Include="ckeditor\plugins\uicolor\uicolor.gif" />
-    <Content Include="ckeditor\plugins\uicolor\yui\assets\hue_bg.png" />
-    <Content Include="ckeditor\plugins\uicolor\yui\assets\hue_thumb.png" />
-    <Content Include="ckeditor\plugins\uicolor\yui\assets\picker_mask.png" />
-    <Content Include="ckeditor\plugins\uicolor\yui\assets\picker_thumb.png" />
-    <Content Include="ckeditor\plugins\uicolor\yui\assets\yui.css" />
-    <Content Include="ckeditor\plugins\uicolor\yui\yui.js" />
-    <Content Include="ckeditor\plugins\undo\plugin.js" />
-    <Content Include="ckeditor\plugins\wsc\dialogs\ciframe.html" />
-    <Content Include="ckeditor\plugins\wsc\dialogs\tmpFrameset.html" />
-    <Content Include="ckeditor\plugins\wsc\dialogs\wsc.css" />
-    <Content Include="ckeditor\plugins\wsc\dialogs\wsc.js" />
-    <Content Include="ckeditor\plugins\wsc\plugin.js" />
-    <Content Include="ckeditor\plugins\wysiwygarea\plugin.js" />
-    <Content Include="ckeditor\skins\kama\dialog.css" />
-    <Content Include="ckeditor\skins\kama\editor.css" />
-    <Content Include="ckeditor\skins\kama\icons.png" />
-    <Content Include="ckeditor\skins\kama\icons_rtl.png" />
-    <Content Include="ckeditor\skins\kama\images\dialog_sides.gif" />
-    <Content Include="ckeditor\skins\kama\images\dialog_sides.png" />
-    <Content Include="ckeditor\skins\kama\images\dialog_sides_rtl.png" />
-    <Content Include="ckeditor\skins\kama\images\mini.gif" />
-    <Content Include="ckeditor\skins\kama\images\noimage.png" />
-    <Content Include="ckeditor\skins\kama\images\sprites.png" />
-    <Content Include="ckeditor\skins\kama\images\sprites_ie6.png" />
-    <Content Include="ckeditor\skins\kama\images\toolbar_start.gif" />
-    <Content Include="ckeditor\skins\kama\skin.js" />
-    <Content Include="ckeditor\skins\kama\templates.css" />
-    <Content Include="ckeditor\skins\office2003\dialog.css" />
-    <Content Include="ckeditor\skins\office2003\editor.css" />
-    <Content Include="ckeditor\skins\office2003\icons.png" />
-    <Content Include="ckeditor\skins\office2003\icons_rtl.png" />
-    <Content Include="ckeditor\skins\office2003\images\dialog_sides.gif" />
-    <Content Include="ckeditor\skins\office2003\images\dialog_sides.png" />
-    <Content Include="ckeditor\skins\office2003\images\dialog_sides_rtl.png" />
-    <Content Include="ckeditor\skins\office2003\images\mini.gif" />
-    <Content Include="ckeditor\skins\office2003\images\noimage.png" />
-    <Content Include="ckeditor\skins\office2003\images\sprites.png" />
-    <Content Include="ckeditor\skins\office2003\images\sprites_ie6.png" />
-    <Content Include="ckeditor\skins\office2003\skin.js" />
-    <Content Include="ckeditor\skins\office2003\templates.css" />
-    <Content Include="ckeditor\skins\v2\dialog.css" />
-    <Content Include="ckeditor\skins\v2\editor.css" />
-    <Content Include="ckeditor\skins\v2\icons.png" />
-    <Content Include="ckeditor\skins\v2\icons_rtl.png" />
-    <Content Include="ckeditor\skins\v2\images\dialog_sides.gif" />
-    <Content Include="ckeditor\skins\v2\images\dialog_sides.png" />
-    <Content Include="ckeditor\skins\v2\images\dialog_sides_rtl.png" />
-    <Content Include="ckeditor\skins\v2\images\mini.gif" />
-    <Content Include="ckeditor\skins\v2\images\noimage.png" />
-    <Content Include="ckeditor\skins\v2\images\sprites.png" />
-    <Content Include="ckeditor\skins\v2\images\sprites_ie6.png" />
-    <Content Include="ckeditor\skins\v2\images\toolbar_start.gif" />
-    <Content Include="ckeditor\skins\v2\skin.js" />
-    <Content Include="ckeditor\skins\v2\templates.css" />
-    <Content Include="ckeditor\themes\default\theme.js" />
-    <Content Include="clock.png" />
-    <Content Include="comment.png" />
-    <Content Include="complete_registration.aspx" />
-    <Content Include="customfields.aspx" />
-    <Content Include="custom\btnet_custom.css" />
-    <Content Include="custom\btnet_edit_bug.css" />
-    <Content Include="custom\btnet_search.css" />
-    <Content Include="custom\custom_footer.html" />
-    <Content Include="custom\custom_header.html" />
-    <Content Include="custom\custom_logo.html" />
-    <Content Include="custom\custom_welcome.html" />
-    <Content Include="dashboard.aspx" />
-    <Content Include="database.png" />
-    <Content Include="database_link.png" />
-    <Content Include="database_refresh.png" />
-    <Content Include="datejs\date-de-DE.js" />
-    <Content Include="datejs\date-fr-FR.js" />
-    <Content Include="datejs\date.js" />
-    <Content Include="default.aspx" />
-    <Content Include="delete.png" />
-    <Content Include="delete_attachment.aspx" />
-    <Content Include="delete_bug.aspx" />
-    <Content Include="delete_category.aspx" />
-    <Content Include="delete_comment.aspx" />
-    <Content Include="delete_customfield.aspx" />
-    <Content Include="delete_org.aspx" />
-    <Content Include="delete_priority.aspx" />
-    <Content Include="delete_project.aspx" />
-    <Content Include="delete_query.aspx" />
-    <Content Include="delete_report.aspx" />
-    <Content Include="delete_status.aspx" />
-    <Content Include="delete_subscriber.aspx" />
-    <Content Include="delete_task.aspx" />
-    <Content Include="delete_udf.aspx" />
-    <Content Include="delete_user.aspx" />
-    <Content Include="download_file.aspx" />
-    <Content Include="edit_area\autocompletion.js" />
-    <Content Include="edit_area\edit_area.css" />
-    <Content Include="edit_area\edit_area.js" />
-    <Content Include="edit_area\edit_area_compressor.php" />
-    <Content Include="edit_area\edit_area_full.js" />
-    <Content Include="edit_area\edit_area_functions.js" />
-    <Content Include="edit_area\edit_area_loader.js" />
-    <Content Include="edit_area\elements_functions.js" />
-    <Content Include="edit_area\highlight.js" />
-    <Content Include="edit_area\images\autocompletion.gif" />
-    <Content Include="edit_area\images\close.gif" />
-    <Content Include="edit_area\images\fullscreen.gif" />
-    <Content Include="edit_area\images\go_to_line.gif" />
-    <Content Include="edit_area\images\help.gif" />
-    <Content Include="edit_area\images\highlight.gif" />
-    <Content Include="edit_area\images\load.gif" />
-    <Content Include="edit_area\images\move.gif" />
-    <Content Include="edit_area\images\newdocument.gif" />
-    <Content Include="edit_area\images\opacity.png" />
-    <Content Include="edit_area\images\processing.gif" />
-    <Content Include="edit_area\images\redo.gif" />
-    <Content Include="edit_area\images\reset_highlight.gif" />
-    <Content Include="edit_area\images\save.gif" />
-    <Content Include="edit_area\images\search.gif" />
-    <Content Include="edit_area\images\smooth_selection.gif" />
-    <Content Include="edit_area\images\spacer.gif" />
-    <Content Include="edit_area\images\statusbar_resize.gif" />
-    <Content Include="edit_area\images\undo.gif" />
-    <Content Include="edit_area\images\word_wrap.gif" />
-    <Content Include="edit_area\keyboard.js" />
-    <Content Include="edit_area\langs\en.js" />
-    <Content Include="edit_area\license_apache.txt" />
-    <Content Include="edit_area\license_bsd.txt" />
-    <Content Include="edit_area\license_lgpl.txt" />
-    <Content Include="edit_area\manage_area.js" />
-    <Content Include="edit_area\plugins\charmap\charmap.js" />
-    <Content Include="edit_area\plugins\charmap\css\charmap.css" />
-    <Content Include="edit_area\plugins\charmap\images\charmap.gif" />
-    <Content Include="edit_area\plugins\charmap\jscripts\map.js" />
-    <Content Include="edit_area\plugins\charmap\langs\bg.js" />
-    <Content Include="edit_area\plugins\charmap\langs\cs.js" />
-    <Content Include="edit_area\plugins\charmap\langs\de.js" />
-    <Content Include="edit_area\plugins\charmap\langs\dk.js" />
-    <Content Include="edit_area\plugins\charmap\langs\en.js" />
-    <Content Include="edit_area\plugins\charmap\langs\eo.js" />
-    <Content Include="edit_area\plugins\charmap\langs\es.js" />
-    <Content Include="edit_area\plugins\charmap\langs\fr.js" />
-    <Content Include="edit_area\plugins\charmap\langs\hr.js" />
-    <Content Include="edit_area\plugins\charmap\langs\it.js" />
-    <Content Include="edit_area\plugins\charmap\langs\ja.js" />
-    <Content Include="edit_area\plugins\charmap\langs\mk.js" />
-    <Content Include="edit_area\plugins\charmap\langs\nl.js" />
-    <Content Include="edit_area\plugins\charmap\langs\pl.js" />
-    <Content Include="edit_area\plugins\charmap\langs\pt.js" />
-    <Content Include="edit_area\plugins\charmap\langs\ru.js" />
-    <Content Include="edit_area\plugins\charmap\langs\sk.js" />
-    <Content Include="edit_area\plugins\charmap\langs\zh.js" />
-    <Content Include="edit_area\plugins\charmap\popup.html" />
-    <Content Include="edit_area\regexp.js" />
-    <Content Include="edit_area\reg_syntax.js" />
-    <Content Include="edit_area\reg_syntax\sql.js" />
-    <Content Include="edit_area\resize_area.js" />
-    <Content Include="edit_area\search_replace.js" />
-    <Content Include="edit_area\template.html" />
-    <Content Include="edit_attachment.aspx" />
-    <Content Include="edit_bug.aspx" />
-    <Content Include="edit_bug.js" />
-    <Content Include="edit_category.aspx" />
-    <Content Include="edit_comment.aspx" />
-    <Content Include="edit_customfield.aspx" />
-    <Content Include="edit_custom_html.aspx" />
-    <Content Include="edit_dashboard.aspx" />
-    <Content Include="edit_org.aspx" />
-    <Content Include="edit_priority.aspx" />
-    <Content Include="edit_project.aspx" />
-    <Content Include="edit_query.aspx" />
-    <Content Include="edit_queued_notifications.aspx" />
-    <Content Include="edit_report.aspx" />
-    <Content Include="edit_self.aspx" />
-    <Content Include="edit_status.aspx" />
-    <Content Include="edit_styles.aspx" />
-    <Content Include="edit_task.aspx" />
-    <Content Include="edit_udf.aspx" />
-    <Content Include="edit_user.aspx" />
-    <Content Include="edit_user_permissions2.aspx" />
-    <Content Include="edit_web_config.aspx" />
-    <Content Include="email_edit.png" />
-    <Content Include="email_open.png" />
-    <Content Include="favicon.ico" />
-    <Content Include="flag.aspx" />
-    <Content Include="forgot.aspx" />
-    <Content Include="generate_btnetsc_reg.aspx" />
-    <Content Include="get_db_datetime.aspx" />
-    <Content Include="git.png" />
-    <Content Include="git_blame.aspx" />
-    <Content Include="git_diff.aspx" />
-    <Content Include="git_hook.aspx" />
-    <Content Include="git_log.aspx" />
-    <Content Include="git_view.aspx" />
-    <Content Include="git_view_revisions.aspx" />
+    <Content Include="Content\images\arrow_down.png" />
+    <Content Include="Content\images\arrow_up.png" />
+    <Content Include="Content\images\attach.gif" />
+    <Content Include="BackupDb.aspx" />
+    <Content Include="Content\images\brick.png" />
+    <Content Include="Content\btnet.css" />
+    <Content Include="Content\btnet_base.css" />
+    <Content Include="Bugs.aspx" />
+    <Content Include="Content\images\bugtracker_screen_capture.jpeg" />
+    <Content Include="Scripts\bug_list.js" />
+    <Content Include="Content\images\camera.png" />
+    <Content Include="Categories.aspx" />
+    <Content Include="ChangePassword.aspx" />
+    <Content Include="Scripts\ckeditor\CHANGES.html" />
+    <Content Include="Scripts\ckeditor\ckeditor.js" />
+    <Content Include="Scripts\ckeditor\ckeditor_basic.js" />
+    <Content Include="Scripts\ckeditor\ckeditor_basic_source.js" />
+    <Content Include="Scripts\ckeditor\ckeditor_source.js" />
+    <Content Include="Scripts\ckeditor\config.js" />
+    <Content Include="Scripts\ckeditor\contents.css" />
+    <Content Include="Scripts\ckeditor\images\spacer.gif" />
+    <Content Include="Scripts\ckeditor\INSTALL.html" />
+    <Content Include="Scripts\ckeditor\lang\af.js" />
+    <Content Include="Scripts\ckeditor\lang\ar.js" />
+    <Content Include="Scripts\ckeditor\lang\bg.js" />
+    <Content Include="Scripts\ckeditor\lang\bn.js" />
+    <Content Include="Scripts\ckeditor\lang\bs.js" />
+    <Content Include="Scripts\ckeditor\lang\ca.js" />
+    <Content Include="Scripts\ckeditor\lang\cs.js" />
+    <Content Include="Scripts\ckeditor\lang\cy.js" />
+    <Content Include="Scripts\ckeditor\lang\da.js" />
+    <Content Include="Scripts\ckeditor\lang\de.js" />
+    <Content Include="Scripts\ckeditor\lang\el.js" />
+    <Content Include="Scripts\ckeditor\lang\en-au.js" />
+    <Content Include="Scripts\ckeditor\lang\en-ca.js" />
+    <Content Include="Scripts\ckeditor\lang\en-gb.js" />
+    <Content Include="Scripts\ckeditor\lang\en-uk.js" />
+    <Content Include="Scripts\ckeditor\lang\en.js" />
+    <Content Include="Scripts\ckeditor\lang\eo.js" />
+    <Content Include="Scripts\ckeditor\lang\es.js" />
+    <Content Include="Scripts\ckeditor\lang\et.js" />
+    <Content Include="Scripts\ckeditor\lang\eu.js" />
+    <Content Include="Scripts\ckeditor\lang\fa.js" />
+    <Content Include="Scripts\ckeditor\lang\fi.js" />
+    <Content Include="Scripts\ckeditor\lang\fo.js" />
+    <Content Include="Scripts\ckeditor\lang\fr-ca.js" />
+    <Content Include="Scripts\ckeditor\lang\fr.js" />
+    <Content Include="Scripts\ckeditor\lang\gl.js" />
+    <Content Include="Scripts\ckeditor\lang\gu.js" />
+    <Content Include="Scripts\ckeditor\lang\he.js" />
+    <Content Include="Scripts\ckeditor\lang\hi.js" />
+    <Content Include="Scripts\ckeditor\lang\hr.js" />
+    <Content Include="Scripts\ckeditor\lang\hu.js" />
+    <Content Include="Scripts\ckeditor\lang\is.js" />
+    <Content Include="Scripts\ckeditor\lang\it.js" />
+    <Content Include="Scripts\ckeditor\lang\ja.js" />
+    <Content Include="Scripts\ckeditor\lang\km.js" />
+    <Content Include="Scripts\ckeditor\lang\ko.js" />
+    <Content Include="Scripts\ckeditor\lang\lt.js" />
+    <Content Include="Scripts\ckeditor\lang\lv.js" />
+    <Content Include="Scripts\ckeditor\lang\mn.js" />
+    <Content Include="Scripts\ckeditor\lang\ms.js" />
+    <Content Include="Scripts\ckeditor\lang\nb.js" />
+    <Content Include="Scripts\ckeditor\lang\nl.js" />
+    <Content Include="Scripts\ckeditor\lang\no.js" />
+    <Content Include="Scripts\ckeditor\lang\pl.js" />
+    <Content Include="Scripts\ckeditor\lang\pt-br.js" />
+    <Content Include="Scripts\ckeditor\lang\pt.js" />
+    <Content Include="Scripts\ckeditor\lang\ro.js" />
+    <Content Include="Scripts\ckeditor\lang\ru.js" />
+    <Content Include="Scripts\ckeditor\lang\sk.js" />
+    <Content Include="Scripts\ckeditor\lang\sl.js" />
+    <Content Include="Scripts\ckeditor\lang\sr-latn.js" />
+    <Content Include="Scripts\ckeditor\lang\sr.js" />
+    <Content Include="Scripts\ckeditor\lang\sv.js" />
+    <Content Include="Scripts\ckeditor\lang\th.js" />
+    <Content Include="Scripts\ckeditor\lang\tr.js" />
+    <Content Include="Scripts\ckeditor\lang\uk.js" />
+    <Content Include="Scripts\ckeditor\lang\vi.js" />
+    <Content Include="Scripts\ckeditor\lang\zh-cn.js" />
+    <Content Include="Scripts\ckeditor\lang\zh.js" />
+    <Content Include="Scripts\ckeditor\lang\_languages.js" />
+    <Content Include="Scripts\ckeditor\lang\_translationstatus.txt" />
+    <Content Include="Scripts\ckeditor\LICENSE.html" />
+    <Content Include="Scripts\ckeditor\plugins\a11yhelp\dialogs\a11yhelp.js" />
+    <Content Include="Scripts\ckeditor\plugins\a11yhelp\lang\en.js" />
+    <Content Include="Scripts\ckeditor\plugins\a11yhelp\lang\he.js" />
+    <Content Include="Scripts\ckeditor\plugins\about\dialogs\about.js" />
+    <Content Include="Scripts\ckeditor\plugins\about\dialogs\logo_ckeditor.png" />
+    <Content Include="Scripts\ckeditor\plugins\about\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\autogrow\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\basicstyles\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\blockquote\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\button\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\clipboard\dialogs\paste.js" />
+    <Content Include="Scripts\ckeditor\plugins\clipboard\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\colorbutton\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\colordialog\dialogs\colordialog.js" />
+    <Content Include="Scripts\ckeditor\plugins\colordialog\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\contextmenu\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\dialogui\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\dialog\dialogDefinition.js" />
+    <Content Include="Scripts\ckeditor\plugins\dialog\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\div\dialogs\div.js" />
+    <Content Include="Scripts\ckeditor\plugins\domiterator\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\editingblock\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\elementspath\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\enterkey\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\entities\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\fakeobjects\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\filebrowser\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\find\dialogs\find.js" />
+    <Content Include="Scripts\ckeditor\plugins\find\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\flash\dialogs\flash.js" />
+    <Content Include="Scripts\ckeditor\plugins\flash\images\placeholder.png" />
+    <Content Include="Scripts\ckeditor\plugins\flash\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\floatpanel\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\font\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\format\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\button.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\checkbox.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\form.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\hiddenfield.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\radio.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\select.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\textarea.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\dialogs\textfield.js" />
+    <Content Include="Scripts\ckeditor\plugins\forms\images\hiddenfield.gif" />
+    <Content Include="Scripts\ckeditor\plugins\forms\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\horizontalrule\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\htmldataprocessor\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\htmlwriter\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\iframedialog\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\image\dialogs\image.js" />
+    <Content Include="Scripts\ckeditor\plugins\image\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\indent\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\justify\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\keystrokes\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\link\dialogs\anchor.js" />
+    <Content Include="Scripts\ckeditor\plugins\link\dialogs\link.js" />
+    <Content Include="Scripts\ckeditor\plugins\link\images\anchor.gif" />
+    <Content Include="Scripts\ckeditor\plugins\link\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\listblock\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\liststyle\dialogs\liststyle.js" />
+    <Content Include="Scripts\ckeditor\plugins\list\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\maximize\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\menubutton\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\menu\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\newpage\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\pagebreak\images\pagebreak.gif" />
+    <Content Include="Scripts\ckeditor\plugins\pagebreak\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\panelbutton\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\panel\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\pastefromword\dialogs\pastefromword.js" />
+    <Content Include="Scripts\ckeditor\plugins\pastefromword\filter\default.js" />
+    <Content Include="Scripts\ckeditor\plugins\pastefromword\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\pastetext\dialogs\pastetext.js" />
+    <Content Include="Scripts\ckeditor\plugins\pastetext\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\popup\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\preview\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\print\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\removeformat\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\resize\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\richcombo\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\save\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\scayt\dialogs\options.js" />
+    <Content Include="Scripts\ckeditor\plugins\scayt\dialogs\toolbar.css" />
+    <Content Include="Scripts\ckeditor\plugins\scayt\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\selection\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_address.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_blockquote.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_div.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_h1.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_h2.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_h3.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_h4.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_h5.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_h6.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_p.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\images\block_pre.png" />
+    <Content Include="Scripts\ckeditor\plugins\showblocks\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\dialogs\smiley.js" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\angel_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\angry_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\broken_heart.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\confused_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\cry_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\devil_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\embaressed_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\envelope.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\heart.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\kiss.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\lightbulb.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\omg_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\regular_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\sad_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\shades_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\teeth_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\thumbs_down.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\thumbs_up.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\tounge_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\whatchutalkingabout_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\images\wink_smile.gif" />
+    <Content Include="Scripts\ckeditor\plugins\smiley\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\sourcearea\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\specialchar\dialogs\specialchar.js" />
+    <Content Include="Scripts\ckeditor\plugins\specialchar\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\stylescombo\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\stylescombo\styles\default.js" />
+    <Content Include="Scripts\ckeditor\plugins\styles\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\styles\styles\default.js" />
+    <Content Include="Scripts\ckeditor\plugins\tableresize\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\tabletools\dialogs\tableCell.js" />
+    <Content Include="Scripts\ckeditor\plugins\tabletools\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\table\dialogs\table.js" />
+    <Content Include="Scripts\ckeditor\plugins\table\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\tab\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\templates\dialogs\templates.js" />
+    <Content Include="Scripts\ckeditor\plugins\templates\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\templates\templates\default.js" />
+    <Content Include="Scripts\ckeditor\plugins\templates\templates\images\template1.gif" />
+    <Content Include="Scripts\ckeditor\plugins\templates\templates\images\template2.gif" />
+    <Content Include="Scripts\ckeditor\plugins\templates\templates\images\template3.gif" />
+    <Content Include="Scripts\ckeditor\plugins\toolbar\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\dialogs\uicolor.js" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\lang\en.js" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\lang\he.js" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\uicolor.gif" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\yui\assets\hue_bg.png" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\yui\assets\hue_thumb.png" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\yui\assets\picker_mask.png" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\yui\assets\picker_thumb.png" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\yui\assets\yui.css" />
+    <Content Include="Scripts\ckeditor\plugins\uicolor\yui\yui.js" />
+    <Content Include="Scripts\ckeditor\plugins\undo\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\wsc\dialogs\ciframe.html" />
+    <Content Include="Scripts\ckeditor\plugins\wsc\dialogs\tmpFrameset.html" />
+    <Content Include="Scripts\ckeditor\plugins\wsc\dialogs\wsc.css" />
+    <Content Include="Scripts\ckeditor\plugins\wsc\dialogs\wsc.js" />
+    <Content Include="Scripts\ckeditor\plugins\wsc\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\wysiwygarea\plugin.js" />
+    <Content Include="Scripts\ckeditor\skins\kama\dialog.css" />
+    <Content Include="Scripts\ckeditor\skins\kama\editor.css" />
+    <Content Include="Scripts\ckeditor\skins\kama\icons.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\icons_rtl.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\dialog_sides.gif" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\dialog_sides.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\dialog_sides_rtl.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\mini.gif" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\noimage.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\sprites.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\sprites_ie6.png" />
+    <Content Include="Scripts\ckeditor\skins\kama\images\toolbar_start.gif" />
+    <Content Include="Scripts\ckeditor\skins\kama\skin.js" />
+    <Content Include="Scripts\ckeditor\skins\kama\templates.css" />
+    <Content Include="Scripts\ckeditor\skins\office2003\dialog.css" />
+    <Content Include="Scripts\ckeditor\skins\office2003\editor.css" />
+    <Content Include="Scripts\ckeditor\skins\office2003\icons.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\icons_rtl.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\dialog_sides.gif" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\dialog_sides.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\dialog_sides_rtl.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\mini.gif" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\noimage.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\sprites.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\images\sprites_ie6.png" />
+    <Content Include="Scripts\ckeditor\skins\office2003\skin.js" />
+    <Content Include="Scripts\ckeditor\skins\office2003\templates.css" />
+    <Content Include="Scripts\ckeditor\skins\v2\dialog.css" />
+    <Content Include="Scripts\ckeditor\skins\v2\editor.css" />
+    <Content Include="Scripts\ckeditor\skins\v2\icons.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\icons_rtl.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\dialog_sides.gif" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\dialog_sides.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\dialog_sides_rtl.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\mini.gif" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\noimage.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\sprites.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\sprites_ie6.png" />
+    <Content Include="Scripts\ckeditor\skins\v2\images\toolbar_start.gif" />
+    <Content Include="Scripts\ckeditor\skins\v2\skin.js" />
+    <Content Include="Scripts\ckeditor\skins\v2\templates.css" />
+    <Content Include="Scripts\ckeditor\themes\default\theme.js" />
+    <Content Include="Content\images\clock.png" />
+    <Content Include="Content\images\comment.png" />
+    <Content Include="CompleteRegistration.aspx" />
+    <Content Include="CustomFields.aspx" />
+    <Content Include="Dashboard.aspx" />
+    <Content Include="Content\images\database.png" />
+    <Content Include="Content\images\database_link.png" />
+    <Content Include="Content\images\database_refresh.png" />
+    <Content Include="Scripts\datejs\date-de-DE.js" />
+    <Content Include="Scripts\datejs\date-fr-FR.js" />
+    <Content Include="Scripts\datejs\date.js" />
+    <Content Include="Default.aspx" />
+    <Content Include="Content\images\delete.png" />
+    <Content Include="DeleteAttachment.aspx" />
+    <Content Include="DeleteBug.aspx" />
+    <Content Include="DeleteCategory.aspx" />
+    <Content Include="DeleteComment.aspx" />
+    <Content Include="DeleteCustomField.aspx" />
+    <Content Include="DeleteOrg.aspx" />
+    <Content Include="DeletePriority.aspx" />
+    <Content Include="DeleteProject.aspx" />
+    <Content Include="DeleteQuery.aspx" />
+    <Content Include="DeleteReport.aspx" />
+    <Content Include="DeleteStatus.aspx" />
+    <Content Include="DeleteSubscriber.aspx" />
+    <Content Include="DeleteTask.aspx" />
+    <Content Include="DeleteUdf.aspx" />
+    <Content Include="DeleteUser.aspx" />
+    <Content Include="DownloadFile.aspx" />
+    <Content Include="Scripts\edit_area\autocompletion.js" />
+    <Content Include="Scripts\edit_area\edit_area.css" />
+    <Content Include="Scripts\edit_area\edit_area.js" />
+    <Content Include="Scripts\edit_area\edit_area_compressor.php" />
+    <Content Include="Scripts\edit_area\edit_area_full.js" />
+    <Content Include="Scripts\edit_area\edit_area_functions.js" />
+    <Content Include="Scripts\edit_area\edit_area_loader.js" />
+    <Content Include="Scripts\edit_area\elements_functions.js" />
+    <Content Include="Scripts\edit_area\highlight.js" />
+    <Content Include="Scripts\edit_area\images\autocompletion.gif" />
+    <Content Include="Scripts\edit_area\images\close.gif" />
+    <Content Include="Scripts\edit_area\images\fullscreen.gif" />
+    <Content Include="Scripts\edit_area\images\go_to_line.gif" />
+    <Content Include="Scripts\edit_area\images\help.gif" />
+    <Content Include="Scripts\edit_area\images\highlight.gif" />
+    <Content Include="Scripts\edit_area\images\load.gif" />
+    <Content Include="Scripts\edit_area\images\move.gif" />
+    <Content Include="Scripts\edit_area\images\newdocument.gif" />
+    <Content Include="Scripts\edit_area\images\opacity.png" />
+    <Content Include="Scripts\edit_area\images\processing.gif" />
+    <Content Include="Scripts\edit_area\images\redo.gif" />
+    <Content Include="Scripts\edit_area\images\reset_highlight.gif" />
+    <Content Include="Scripts\edit_area\images\save.gif" />
+    <Content Include="Scripts\edit_area\images\search.gif" />
+    <Content Include="Scripts\edit_area\images\smooth_selection.gif" />
+    <Content Include="Scripts\edit_area\images\spacer.gif" />
+    <Content Include="Scripts\edit_area\images\statusbar_resize.gif" />
+    <Content Include="Scripts\edit_area\images\undo.gif" />
+    <Content Include="Scripts\edit_area\images\word_wrap.gif" />
+    <Content Include="Scripts\edit_area\keyboard.js" />
+    <Content Include="Scripts\edit_area\langs\en.js" />
+    <Content Include="Scripts\edit_area\license_apache.txt" />
+    <Content Include="Scripts\edit_area\license_bsd.txt" />
+    <Content Include="Scripts\edit_area\license_lgpl.txt" />
+    <Content Include="Scripts\edit_area\manage_area.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\charmap.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\css\charmap.css" />
+    <Content Include="Scripts\edit_area\plugins\charmap\images\charmap.gif" />
+    <Content Include="Scripts\edit_area\plugins\charmap\jscripts\map.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\bg.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\cs.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\de.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\dk.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\en.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\eo.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\es.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\fr.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\hr.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\it.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\ja.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\mk.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\nl.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\pl.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\pt.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\ru.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\sk.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\langs\zh.js" />
+    <Content Include="Scripts\edit_area\plugins\charmap\popup.html" />
+    <Content Include="Scripts\edit_area\regexp.js" />
+    <Content Include="Scripts\edit_area\reg_syntax.js" />
+    <Content Include="Scripts\edit_area\reg_syntax\sql.js" />
+    <Content Include="Scripts\edit_area\resize_area.js" />
+    <Content Include="Scripts\edit_area\search_replace.js" />
+    <Content Include="Scripts\edit_area\template.html" />
+    <Content Include="EditAttachment.aspx" />
+    <Content Include="EditBug.aspx" />
+    <Content Include="Scripts\edit_bug.js" />
+    <Content Include="EditCategory.aspx" />
+    <Content Include="EditComment.aspx" />
+    <Content Include="EditCustomField.aspx" />
+    <Content Include="EditCustomHtml.aspx" />
+    <Content Include="EditDashboard.aspx" />
+    <Content Include="EditOrg.aspx" />
+    <Content Include="EditPriority.aspx" />
+    <Content Include="EditProject.aspx" />
+    <Content Include="EditQuery.aspx" />
+    <Content Include="EditQueuedNotifications.aspx" />
+    <Content Include="EditReport.aspx" />
+    <Content Include="EditSelf.aspx" />
+    <Content Include="EditStatus.aspx" />
+    <Content Include="EditStyles.aspx" />
+    <Content Include="EditTask.aspx" />
+    <Content Include="EditUdf.aspx" />
+    <Content Include="EditUser.aspx" />
+    <Content Include="EditUserPermissions2.aspx" />
+    <Content Include="EditWebConfig.aspx" />
+    <Content Include="Content\images\email_edit.png" />
+    <Content Include="Content\images\email_open.png" />
+    <Content Include="Content\favicon.ico" />
+    <Content Include="Flag.aspx" />
+    <Content Include="Forgot.aspx" />
+    <Content Include="GenerateBtnetscReg.aspx" />
+    <Content Include="GetDbDatetime.aspx" />
+    <Content Include="Content\images\git.png" />
+    <Content Include="GitBlame.aspx" />
+    <Content Include="GitDiff.aspx" />
+    <Content Include="GitHook.aspx" />
+    <Content Include="GitLog.aspx" />
+    <Content Include="GitView.aspx" />
+    <Content Include="GitViewRevisions.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="hello.aspx" />
-    <Content Include="hg.png" />
-    <Content Include="hg_blame.aspx" />
-    <Content Include="hg_diff.aspx" />
-    <Content Include="hg_hook.aspx" />
-    <Content Include="hg_log.aspx" />
-    <Content Include="hg_view.aspx" />
-    <Content Include="hg_view_revisions.aspx" />
-    <Content Include="insert_bug.aspx" />
-    <Content Include="install.aspx" />
-    <Content Include="jquery\grippie.png" />
-    <Content Include="jquery\images\ajax-loader.gif" />
-    <Content Include="jquery\images\icons-18-black.png" />
-    <Content Include="jquery\images\icons-18-white.png" />
-    <Content Include="jquery\images\icons-36-black.png" />
-    <Content Include="jquery\images\icons-36-white.png" />
-    <Content Include="jquery\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
-    <Content Include="jquery\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
-    <Content Include="jquery\images\ui-bg_flat_10_000000_40x100.png" />
-    <Content Include="jquery\images\ui-bg_glass_100_f6f6f6_1x400.png" />
-    <Content Include="jquery\images\ui-bg_glass_100_fdf5ce_1x400.png" />
-    <Content Include="jquery\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="jquery\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
-    <Content Include="jquery\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
-    <Content Include="jquery\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
-    <Content Include="jquery\images\ui-icons_222222_256x240.png" />
-    <Content Include="jquery\images\ui-icons_228ef1_256x240.png" />
-    <Content Include="jquery\images\ui-icons_ef8c08_256x240.png" />
-    <Content Include="jquery\images\ui-icons_ffd27a_256x240.png" />
-    <Content Include="jquery\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="jquery\jquery-1.3.2.min.js" />
-    <Content Include="jquery\jquery-1.8.2.min.js" />
-    <Content Include="jquery\jquery-1.9.0.min.js" />
-    <Content Include="jquery\jquery-ui-1.7.2.custom.css" />
-    <Content Include="jquery\jquery-ui-1.7.2.custom.min.js" />
-    <Content Include="jquery\jquery.mobile-1.2.0.min.css" />
-    <Content Include="jquery\jquery.mobile-1.2.0.min.js" />
-    <Content Include="jquery\jquery.textarearesizer.compressed.js" />
-    <Content Include="log4net-LICENSE.txt" />
-    <Content Include="login.htm" />
-    <Content Include="loginnt.aspx" />
-    <Content Include="logoff.aspx" />
-    <Content Include="lucene_syntax.html" />
-    <Content Include="manage_logs.aspx" />
-    <Content Include="massedit.aspx" />
-    <Content Include="mbtnet_base.css" />
-    <Content Include="mbug.aspx" />
-    <Content Include="mbugs.aspx" />
-    <Content Include="merge_bug.aspx" />
-    <Content Include="mlogin.aspx" />
-    <Content Include="notifications.aspx" />
-    <Content Include="orgs.aspx" />
-    <Content Include="paste_plain.png" />
-    <Content Include="printer.png" />
-    <Content Include="print_bug.aspx" />
-    <Content Include="print_bugs.aspx" />
-    <Content Include="print_bugs2.aspx" />
-    <Content Include="priorities.aspx" />
-    <Content Include="projects.aspx" />
-    <Content Include="queries.aspx" />
-    <Content Include="query.aspx" />
-    <Content Include="register.aspx" />
-    <Content Include="relationships.aspx" />
-    <Content Include="reports.aspx" />
-    <Content Include="search.aspx" />
-    <Content Include="search_text.aspx" />
-    <Content Include="seen.aspx" />
-    <Content Include="select_report.aspx" />
-    <Content Include="send_email.aspx" />
-    <Content Include="server_variables.aspx" />
+    <Content Include="Hello.aspx" />
+    <Content Include="Content\images\hg.png" />
+    <Content Include="HgBlame.aspx" />
+    <Content Include="HgDiff.aspx" />
+    <Content Include="HgHook.aspx" />
+    <Content Include="HgLog.aspx" />
+    <Content Include="HgView.aspx" />
+    <Content Include="HgViewRevisions.aspx" />
+    <Content Include="InsertBug.aspx" />
+    <Content Include="Install.aspx" />
+    <Content Include="Scripts\jquery\grippie.png" />
+    <Content Include="Scripts\jquery\images\ajax-loader.gif" />
+    <Content Include="Scripts\jquery\images\icons-18-black.png" />
+    <Content Include="Scripts\jquery\images\icons-18-white.png" />
+    <Content Include="Scripts\jquery\images\icons-36-black.png" />
+    <Content Include="Scripts\jquery\images\icons-36-white.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="Scripts\jquery\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="Scripts\jquery\images\ui-icons_222222_256x240.png" />
+    <Content Include="Scripts\jquery\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="Scripts\jquery\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="Scripts\jquery\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="Scripts\jquery\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Scripts\jquery\jquery-1.3.2.min.js" />
+    <Content Include="Scripts\jquery\jquery-1.8.2.min.js" />
+    <Content Include="Scripts\jquery\jquery-1.9.0.min.js" />
+    <Content Include="Scripts\jquery\jquery-ui-1.7.2.custom.css" />
+    <Content Include="Scripts\jquery\jquery-ui-1.7.2.custom.min.js" />
+    <Content Include="Scripts\jquery\jquery.mobile-1.2.0.min.css" />
+    <Content Include="Scripts\jquery\jquery.mobile-1.2.0.min.js" />
+    <Content Include="Scripts\jquery\jquery.textarearesizer.compressed.js" />
+    <Content Include="Content\login.htm" />
+    <Content Include="LoginNt.aspx" />
+    <Content Include="Logoff.aspx" />
+    <Content Include="Content\lucene_syntax.html" />
+    <Content Include="ManageLogs.aspx" />
+    <Content Include="MassEdit.aspx" />
+    <Content Include="Content\mbtnet_base.css" />
+    <Content Include="MBug.aspx" />
+    <Content Include="MBugs.aspx" />
+    <Content Include="MergeBug.aspx" />
+    <Content Include="MLogin.aspx" />
+    <Content Include="Notifications.aspx" />
+    <Content Include="Orgs.aspx" />
+    <Content Include="Content\images\paste_plain.png" />
+    <Content Include="Content\images\printer.png" />
+    <Content Include="PrintBug.aspx" />
+    <Content Include="PrintBugs.aspx" />
+    <Content Include="PrintBugs2.aspx" />
+    <Content Include="Priorities.aspx" />
+    <Content Include="Projects.aspx" />
+    <Content Include="Queries.aspx" />
+    <Content Include="Query.aspx" />
+    <Content Include="Register.aspx" />
+    <Content Include="Relationships.aspx" />
+    <Content Include="Reports.aspx" />
+    <Content Include="Search.aspx" />
+    <Content Include="SearchText.aspx" />
+    <Content Include="Seen.aspx" />
+    <Content Include="SelectReport.aspx" />
+    <Content Include="SendEmail.aspx" />
+    <Content Include="ServerVariables.aspx" />
     <Content Include="setup.sql" />
-    <Content Include="sortable.js" />
-    <Content Include="statuses.aspx" />
-    <Content Include="subscribe.aspx" />
-    <Content Include="suggest.js" />
-    <Content Include="svn.png" />
-    <Content Include="svn_blame.aspx" />
-    <Content Include="svn_diff.aspx" />
-    <Content Include="svn_hook.aspx" />
-    <Content Include="svn_log.aspx" />
-    <Content Include="svn_view.aspx" />
-    <Content Include="svn_view_revisions.aspx" />
-    <Content Include="tags.aspx" />
-    <Content Include="tasks.aspx" />
-    <Content Include="tasks_all.aspx" />
-    <Content Include="tasks_all_excel.aspx" />
-    <Content Include="tasks_frame.aspx" />
-    <Content Include="telephone.png" />
-    <Content Include="telephone_edit.png" />
-    <Content Include="translate.aspx" />
-    <Content Include="udfs.aspx" />
-    <Content Include="update_dashboard.aspx" />
-    <Content Include="upgrade_273_to_274.aspx" />
-    <Content Include="users.aspx" />
-    <Content Include="version_control_sel_rev.js" />
-    <Content Include="view_attachment.aspx" />
-    <Content Include="view_memory_log.aspx" />
-    <Content Include="view_report.aspx" />
-    <Content Include="view_subscribers.aspx" />
-    <Content Include="view_web_config.aspx" />
-    <Content Include="view_whatsnew.aspx" />
-    <Content Include="vote.aspx" />
-    <Content Include="vote_up.png" />
+    <Content Include="Scripts\sortable.js" />
+    <Content Include="Statuses.aspx" />
+    <Content Include="Subscribe.aspx" />
+    <Content Include="Scripts\suggest.js" />
+    <Content Include="Content\images\svn.png" />
+    <Content Include="SvnBlame.aspx" />
+    <Content Include="SvnDiff.aspx" />
+    <Content Include="SvnHook.aspx" />
+    <Content Include="SvnLog.aspx" />
+    <Content Include="SvnView.aspx" />
+    <Content Include="SvnViewRevisions.aspx" />
+    <Content Include="Tags.aspx" />
+    <Content Include="Tasks.aspx" />
+    <Content Include="TasksAll.aspx" />
+    <Content Include="TasksAllExcel.aspx" />
+    <Content Include="TasksFrame.aspx" />
+    <Content Include="Content\images\telephone.png" />
+    <Content Include="Content\images\telephone_edit.png" />
+    <Content Include="Translate.aspx" />
+    <Content Include="Udfs.aspx" />
+    <Content Include="UpdateDashboard.aspx" />
+    <Content Include="Upgrade273To274.aspx" />
+    <Content Include="Users.aspx" />
+    <Content Include="Scripts\version_control_sel_rev.js" />
+    <Content Include="ViewAttachment.aspx" />
+    <Content Include="ViewMemoryLog.aspx" />
+    <Content Include="ViewReport.aspx" />
+    <Content Include="ViewSubscribers.aspx" />
+    <Content Include="ViewWebConfig.aspx" />
+    <Content Include="ViewWhatsNew.aspx" />
+    <Content Include="Vote.aspx" />
+    <Content Include="Content\images\vote_up.png" />
     <Content Include="Web.config" />
-    <Content Include="whatsnew.aspx" />
-    <Content Include="write_posts.aspx" />
+    <Content Include="WhatsNew.aspx" />
+    <Content Include="WritePosts.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="add_attachment.aspx.cs">
-      <DependentUpon>add_attachment.aspx</DependentUpon>
+    <Compile Include="AddAttachment.aspx.cs">
+      <DependentUpon>AddAttachment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="add_attachment.aspx.designer.cs">
-      <DependentUpon>add_attachment.aspx</DependentUpon>
+    <Compile Include="AddAttachment.aspx.designer.cs">
+      <DependentUpon>AddAttachment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="add_customfield.aspx.cs">
-      <DependentUpon>add_customfield.aspx</DependentUpon>
+    <Compile Include="AddCustomfield.aspx.cs">
+      <DependentUpon>AddCustomfield.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="add_customfield.aspx.designer.cs">
-      <DependentUpon>add_customfield.aspx</DependentUpon>
+    <Compile Include="AddCustomfield.aspx.designer.cs">
+      <DependentUpon>AddCustomfield.aspx</DependentUpon>
     </Compile>
-    <Compile Include="admin.aspx.cs">
-      <DependentUpon>admin.aspx</DependentUpon>
+    <Compile Include="Admin.aspx.cs">
+      <DependentUpon>Admin.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="admin.aspx.designer.cs">
-      <DependentUpon>admin.aspx</DependentUpon>
+    <Compile Include="Admin.aspx.designer.cs">
+      <DependentUpon>Admin.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ajax.aspx.cs">
-      <DependentUpon>ajax.aspx</DependentUpon>
+    <Compile Include="Ajax.aspx.cs">
+      <DependentUpon>Ajax.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ajax.aspx.designer.cs">
-      <DependentUpon>ajax.aspx</DependentUpon>
+    <Compile Include="Ajax.aspx.designer.cs">
+      <DependentUpon>Ajax.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ajax2.aspx.cs">
-      <DependentUpon>ajax2.aspx</DependentUpon>
+    <Compile Include="Ajax2.aspx.cs">
+      <DependentUpon>Ajax2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ajax2.aspx.designer.cs">
-      <DependentUpon>ajax2.aspx</DependentUpon>
+    <Compile Include="Ajax2.aspx.designer.cs">
+      <DependentUpon>Ajax2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="backup_db.aspx.cs">
-      <DependentUpon>backup_db.aspx</DependentUpon>
+    <Compile Include="BackupDb.aspx.cs">
+      <DependentUpon>BackupDb.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="backup_db.aspx.designer.cs">
-      <DependentUpon>backup_db.aspx</DependentUpon>
+    <Compile Include="BackupDb.aspx.designer.cs">
+      <DependentUpon>BackupDb.aspx</DependentUpon>
     </Compile>
-    <Compile Include="bugs.aspx.cs">
-      <DependentUpon>bugs.aspx</DependentUpon>
+    <Compile Include="Bugs.aspx.cs">
+      <DependentUpon>Bugs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="bugs.aspx.designer.cs">
-      <DependentUpon>bugs.aspx</DependentUpon>
+    <Compile Include="Bugs.aspx.designer.cs">
+      <DependentUpon>Bugs.aspx</DependentUpon>
     </Compile>
-    <Compile Include="categories.aspx.cs">
-      <DependentUpon>categories.aspx</DependentUpon>
+    <Compile Include="Categories.aspx.cs">
+      <DependentUpon>Categories.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="categories.aspx.designer.cs">
-      <DependentUpon>categories.aspx</DependentUpon>
+    <Compile Include="Categories.aspx.designer.cs">
+      <DependentUpon>Categories.aspx</DependentUpon>
     </Compile>
-    <Compile Include="change_password.aspx.cs">
-      <DependentUpon>change_password.aspx</DependentUpon>
+    <Compile Include="ChangePassword.aspx.cs">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="change_password.aspx.designer.cs">
-      <DependentUpon>change_password.aspx</DependentUpon>
+    <Compile Include="ChangePassword.aspx.designer.cs">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
     </Compile>
     <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
@@ -691,7 +688,7 @@
     <Compile Include="Core\DbUtil.cs" />
     <Compile Include="Core\Email.cs" />
     <Compile Include="Core\MyLucene.cs" />
-    <Compile Include="Core\my_mime.cs" />
+    <Compile Include="Core\MyMime.cs" />
     <Compile Include="Core\MyPop3.cs" />
     <Compile Include="Core\Pop3Client.cs" />
     <Compile Include="Core\PrintBug.cs" />
@@ -704,611 +701,611 @@
     <Compile Include="Core\VersionControl.cs" />
     <Compile Include="Core\WhatsNew.cs" />
     <Compile Include="Core\Workflow.cs" />
-    <Compile Include="complete_registration.aspx.cs">
-      <DependentUpon>complete_registration.aspx</DependentUpon>
+    <Compile Include="CompleteRegistration.aspx.cs">
+      <DependentUpon>CompleteRegistration.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="complete_registration.aspx.designer.cs">
-      <DependentUpon>complete_registration.aspx</DependentUpon>
+    <Compile Include="CompleteRegistration.aspx.designer.cs">
+      <DependentUpon>CompleteRegistration.aspx</DependentUpon>
     </Compile>
-    <Compile Include="customfields.aspx.cs">
-      <DependentUpon>customfields.aspx</DependentUpon>
+    <Compile Include="CustomFields.aspx.cs">
+      <DependentUpon>CustomFields.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="customfields.aspx.designer.cs">
-      <DependentUpon>customfields.aspx</DependentUpon>
+    <Compile Include="CustomFields.aspx.designer.cs">
+      <DependentUpon>CustomFields.aspx</DependentUpon>
     </Compile>
-    <Compile Include="dashboard.aspx.cs">
-      <DependentUpon>dashboard.aspx</DependentUpon>
+    <Compile Include="Dashboard.aspx.cs">
+      <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="dashboard.aspx.designer.cs">
-      <DependentUpon>dashboard.aspx</DependentUpon>
+    <Compile Include="Dashboard.aspx.designer.cs">
+      <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
-    <Compile Include="default.aspx.cs">
-      <DependentUpon>default.aspx</DependentUpon>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="default.aspx.designer.cs">
-      <DependentUpon>default.aspx</DependentUpon>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_attachment.aspx.cs">
-      <DependentUpon>delete_attachment.aspx</DependentUpon>
+    <Compile Include="DeleteAttachment.aspx.cs">
+      <DependentUpon>DeleteAttachment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_attachment.aspx.designer.cs">
-      <DependentUpon>delete_attachment.aspx</DependentUpon>
+    <Compile Include="DeleteAttachment.aspx.designer.cs">
+      <DependentUpon>DeleteAttachment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_bug.aspx.cs">
-      <DependentUpon>delete_bug.aspx</DependentUpon>
+    <Compile Include="DeleteBug.aspx.cs">
+      <DependentUpon>DeleteBug.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_bug.aspx.designer.cs">
-      <DependentUpon>delete_bug.aspx</DependentUpon>
+    <Compile Include="DeleteBug.aspx.designer.cs">
+      <DependentUpon>DeleteBug.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_category.aspx.cs">
-      <DependentUpon>delete_category.aspx</DependentUpon>
+    <Compile Include="DeleteCategory.aspx.cs">
+      <DependentUpon>DeleteCategory.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_category.aspx.designer.cs">
-      <DependentUpon>delete_category.aspx</DependentUpon>
+    <Compile Include="DeleteCategory.aspx.designer.cs">
+      <DependentUpon>DeleteCategory.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_comment.aspx.cs">
-      <DependentUpon>delete_comment.aspx</DependentUpon>
+    <Compile Include="DeleteComment.aspx.cs">
+      <DependentUpon>DeleteComment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_comment.aspx.designer.cs">
-      <DependentUpon>delete_comment.aspx</DependentUpon>
+    <Compile Include="DeleteComment.aspx.designer.cs">
+      <DependentUpon>DeleteComment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_customfield.aspx.cs">
-      <DependentUpon>delete_customfield.aspx</DependentUpon>
+    <Compile Include="DeleteCustomField.aspx.cs">
+      <DependentUpon>DeleteCustomField.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_customfield.aspx.designer.cs">
-      <DependentUpon>delete_customfield.aspx</DependentUpon>
+    <Compile Include="DeleteCustomField.aspx.designer.cs">
+      <DependentUpon>DeleteCustomField.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_org.aspx.cs">
-      <DependentUpon>delete_org.aspx</DependentUpon>
+    <Compile Include="DeleteOrg.aspx.cs">
+      <DependentUpon>DeleteOrg.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_org.aspx.designer.cs">
-      <DependentUpon>delete_org.aspx</DependentUpon>
+    <Compile Include="DeleteOrg.aspx.designer.cs">
+      <DependentUpon>DeleteOrg.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_priority.aspx.cs">
-      <DependentUpon>delete_priority.aspx</DependentUpon>
+    <Compile Include="DeletePriority.aspx.cs">
+      <DependentUpon>DeletePriority.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_priority.aspx.designer.cs">
-      <DependentUpon>delete_priority.aspx</DependentUpon>
+    <Compile Include="DeletePriority.aspx.designer.cs">
+      <DependentUpon>DeletePriority.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_project.aspx.cs">
-      <DependentUpon>delete_project.aspx</DependentUpon>
+    <Compile Include="DeleteProject.aspx.cs">
+      <DependentUpon>DeleteProject.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_project.aspx.designer.cs">
-      <DependentUpon>delete_project.aspx</DependentUpon>
+    <Compile Include="DeleteProject.aspx.designer.cs">
+      <DependentUpon>DeleteProject.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_query.aspx.cs">
-      <DependentUpon>delete_query.aspx</DependentUpon>
+    <Compile Include="DeleteQuery.aspx.cs">
+      <DependentUpon>DeleteQuery.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_query.aspx.designer.cs">
-      <DependentUpon>delete_query.aspx</DependentUpon>
+    <Compile Include="DeleteQuery.aspx.designer.cs">
+      <DependentUpon>DeleteQuery.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_report.aspx.cs">
-      <DependentUpon>delete_report.aspx</DependentUpon>
+    <Compile Include="DeleteReport.aspx.cs">
+      <DependentUpon>DeleteReport.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_report.aspx.designer.cs">
-      <DependentUpon>delete_report.aspx</DependentUpon>
+    <Compile Include="DeleteReport.aspx.designer.cs">
+      <DependentUpon>DeleteReport.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_status.aspx.cs">
-      <DependentUpon>delete_status.aspx</DependentUpon>
+    <Compile Include="DeleteStatus.aspx.cs">
+      <DependentUpon>DeleteStatus.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_status.aspx.designer.cs">
-      <DependentUpon>delete_status.aspx</DependentUpon>
+    <Compile Include="DeleteStatus.aspx.designer.cs">
+      <DependentUpon>DeleteStatus.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_subscriber.aspx.cs">
-      <DependentUpon>delete_subscriber.aspx</DependentUpon>
+    <Compile Include="DeleteSubscriber.aspx.cs">
+      <DependentUpon>DeleteSubscriber.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_subscriber.aspx.designer.cs">
-      <DependentUpon>delete_subscriber.aspx</DependentUpon>
+    <Compile Include="DeleteSubscriber.aspx.designer.cs">
+      <DependentUpon>DeleteSubscriber.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_task.aspx.cs">
-      <DependentUpon>delete_task.aspx</DependentUpon>
+    <Compile Include="DeleteTask.aspx.cs">
+      <DependentUpon>DeleteTask.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_task.aspx.designer.cs">
-      <DependentUpon>delete_task.aspx</DependentUpon>
+    <Compile Include="DeleteTask.aspx.designer.cs">
+      <DependentUpon>DeleteTask.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_udf.aspx.cs">
-      <DependentUpon>delete_udf.aspx</DependentUpon>
+    <Compile Include="DeleteUdf.aspx.cs">
+      <DependentUpon>DeleteUdf.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_udf.aspx.designer.cs">
-      <DependentUpon>delete_udf.aspx</DependentUpon>
+    <Compile Include="DeleteUdf.aspx.designer.cs">
+      <DependentUpon>DeleteUdf.aspx</DependentUpon>
     </Compile>
-    <Compile Include="delete_user.aspx.cs">
-      <DependentUpon>delete_user.aspx</DependentUpon>
+    <Compile Include="DeleteUser.aspx.cs">
+      <DependentUpon>DeleteUser.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="delete_user.aspx.designer.cs">
-      <DependentUpon>delete_user.aspx</DependentUpon>
+    <Compile Include="DeleteUser.aspx.designer.cs">
+      <DependentUpon>DeleteUser.aspx</DependentUpon>
     </Compile>
-    <Compile Include="download_file.aspx.cs">
-      <DependentUpon>download_file.aspx</DependentUpon>
+    <Compile Include="DownloadFile.aspx.cs">
+      <DependentUpon>DownloadFile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="download_file.aspx.designer.cs">
-      <DependentUpon>download_file.aspx</DependentUpon>
+    <Compile Include="DownloadFile.aspx.designer.cs">
+      <DependentUpon>DownloadFile.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_attachment.aspx.cs">
-      <DependentUpon>edit_attachment.aspx</DependentUpon>
+    <Compile Include="EditAttachment.aspx.cs">
+      <DependentUpon>EditAttachment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_attachment.aspx.designer.cs">
-      <DependentUpon>edit_attachment.aspx</DependentUpon>
+    <Compile Include="EditAttachment.aspx.designer.cs">
+      <DependentUpon>EditAttachment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_bug.aspx.cs">
-      <DependentUpon>edit_bug.aspx</DependentUpon>
+    <Compile Include="EditBug.aspx.cs">
+      <DependentUpon>EditBug.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_bug.aspx.designer.cs">
-      <DependentUpon>edit_bug.aspx</DependentUpon>
+    <Compile Include="EditBug.aspx.designer.cs">
+      <DependentUpon>EditBug.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_category.aspx.cs">
-      <DependentUpon>edit_category.aspx</DependentUpon>
+    <Compile Include="EditCategory.aspx.cs">
+      <DependentUpon>EditCategory.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_category.aspx.designer.cs">
-      <DependentUpon>edit_category.aspx</DependentUpon>
+    <Compile Include="EditCategory.aspx.designer.cs">
+      <DependentUpon>EditCategory.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_comment.aspx.cs">
-      <DependentUpon>edit_comment.aspx</DependentUpon>
+    <Compile Include="EditComment.aspx.cs">
+      <DependentUpon>EditComment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_comment.aspx.designer.cs">
-      <DependentUpon>edit_comment.aspx</DependentUpon>
+    <Compile Include="EditComment.aspx.designer.cs">
+      <DependentUpon>EditComment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_customfield.aspx.cs">
-      <DependentUpon>edit_customfield.aspx</DependentUpon>
+    <Compile Include="EditCustomField.aspx.cs">
+      <DependentUpon>EditCustomField.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_customfield.aspx.designer.cs">
-      <DependentUpon>edit_customfield.aspx</DependentUpon>
+    <Compile Include="EditCustomField.aspx.designer.cs">
+      <DependentUpon>EditCustomField.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_custom_html.aspx.cs">
-      <DependentUpon>edit_custom_html.aspx</DependentUpon>
+    <Compile Include="EditCustomHtml.aspx.cs">
+      <DependentUpon>EditCustomHtml.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_custom_html.aspx.designer.cs">
-      <DependentUpon>edit_custom_html.aspx</DependentUpon>
+    <Compile Include="EditCustomHtml.aspx.designer.cs">
+      <DependentUpon>EditCustomHtml.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_dashboard.aspx.cs">
-      <DependentUpon>edit_dashboard.aspx</DependentUpon>
+    <Compile Include="EditDashboard.aspx.cs">
+      <DependentUpon>EditDashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_dashboard.aspx.designer.cs">
-      <DependentUpon>edit_dashboard.aspx</DependentUpon>
+    <Compile Include="EditDashboard.aspx.designer.cs">
+      <DependentUpon>EditDashboard.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_org.aspx.cs">
-      <DependentUpon>edit_org.aspx</DependentUpon>
+    <Compile Include="EditOrg.aspx.cs">
+      <DependentUpon>EditOrg.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_org.aspx.designer.cs">
-      <DependentUpon>edit_org.aspx</DependentUpon>
+    <Compile Include="EditOrg.aspx.designer.cs">
+      <DependentUpon>EditOrg.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_priority.aspx.cs">
-      <DependentUpon>edit_priority.aspx</DependentUpon>
+    <Compile Include="EditPriority.aspx.cs">
+      <DependentUpon>EditPriority.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_priority.aspx.designer.cs">
-      <DependentUpon>edit_priority.aspx</DependentUpon>
+    <Compile Include="EditPriority.aspx.designer.cs">
+      <DependentUpon>EditPriority.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_project.aspx.cs">
-      <DependentUpon>edit_project.aspx</DependentUpon>
+    <Compile Include="EditProject.aspx.cs">
+      <DependentUpon>EditProject.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_project.aspx.designer.cs">
-      <DependentUpon>edit_project.aspx</DependentUpon>
+    <Compile Include="EditProject.aspx.designer.cs">
+      <DependentUpon>EditProject.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_query.aspx.cs">
-      <DependentUpon>edit_query.aspx</DependentUpon>
+    <Compile Include="EditQuery.aspx.cs">
+      <DependentUpon>EditQuery.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_query.aspx.designer.cs">
-      <DependentUpon>edit_query.aspx</DependentUpon>
+    <Compile Include="EditQuery.aspx.designer.cs">
+      <DependentUpon>EditQuery.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_queued_notifications.aspx.cs">
-      <DependentUpon>edit_queued_notifications.aspx</DependentUpon>
+    <Compile Include="EditQueuedNotifications.aspx.cs">
+      <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_queued_notifications.aspx.designer.cs">
-      <DependentUpon>edit_queued_notifications.aspx</DependentUpon>
+    <Compile Include="EditQueuedNotifications.aspx.designer.cs">
+      <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_report.aspx.cs">
-      <DependentUpon>edit_report.aspx</DependentUpon>
+    <Compile Include="EditReport.aspx.cs">
+      <DependentUpon>EditReport.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_report.aspx.designer.cs">
-      <DependentUpon>edit_report.aspx</DependentUpon>
+    <Compile Include="EditReport.aspx.designer.cs">
+      <DependentUpon>EditReport.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_self.aspx.cs">
-      <DependentUpon>edit_self.aspx</DependentUpon>
+    <Compile Include="EditSelf.aspx.cs">
+      <DependentUpon>EditSelf.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_self.aspx.designer.cs">
-      <DependentUpon>edit_self.aspx</DependentUpon>
+    <Compile Include="EditSelf.aspx.designer.cs">
+      <DependentUpon>EditSelf.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_status.aspx.cs">
-      <DependentUpon>edit_status.aspx</DependentUpon>
+    <Compile Include="EditStatus.aspx.cs">
+      <DependentUpon>EditStatus.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_status.aspx.designer.cs">
-      <DependentUpon>edit_status.aspx</DependentUpon>
+    <Compile Include="EditStatus.aspx.designer.cs">
+      <DependentUpon>EditStatus.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_styles.aspx.cs">
-      <DependentUpon>edit_styles.aspx</DependentUpon>
+    <Compile Include="EditStyles.aspx.cs">
+      <DependentUpon>EditStyles.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_styles.aspx.designer.cs">
-      <DependentUpon>edit_styles.aspx</DependentUpon>
+    <Compile Include="EditStyles.aspx.designer.cs">
+      <DependentUpon>EditStyles.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_task.aspx.cs">
-      <DependentUpon>edit_task.aspx</DependentUpon>
+    <Compile Include="EditTask.aspx.cs">
+      <DependentUpon>EditTask.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_task.aspx.designer.cs">
-      <DependentUpon>edit_task.aspx</DependentUpon>
+    <Compile Include="EditTask.aspx.designer.cs">
+      <DependentUpon>EditTask.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_udf.aspx.cs">
-      <DependentUpon>edit_udf.aspx</DependentUpon>
+    <Compile Include="EditUdf.aspx.cs">
+      <DependentUpon>EditUdf.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_udf.aspx.designer.cs">
-      <DependentUpon>edit_udf.aspx</DependentUpon>
+    <Compile Include="EditUdf.aspx.designer.cs">
+      <DependentUpon>EditUdf.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_user.aspx.cs">
-      <DependentUpon>edit_user.aspx</DependentUpon>
+    <Compile Include="EditUser.aspx.cs">
+      <DependentUpon>EditUser.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_user.aspx.designer.cs">
-      <DependentUpon>edit_user.aspx</DependentUpon>
+    <Compile Include="EditUser.aspx.designer.cs">
+      <DependentUpon>EditUser.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_user_permissions2.aspx.cs">
-      <DependentUpon>edit_user_permissions2.aspx</DependentUpon>
+    <Compile Include="EditUserPermissions2.aspx.cs">
+      <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_user_permissions2.aspx.designer.cs">
-      <DependentUpon>edit_user_permissions2.aspx</DependentUpon>
+    <Compile Include="EditUserPermissions2.aspx.designer.cs">
+      <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="edit_web_config.aspx.cs">
-      <DependentUpon>edit_web_config.aspx</DependentUpon>
+    <Compile Include="EditWebConfig.aspx.cs">
+      <DependentUpon>EditWebConfig.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="edit_web_config.aspx.designer.cs">
-      <DependentUpon>edit_web_config.aspx</DependentUpon>
+    <Compile Include="EditWebConfig.aspx.designer.cs">
+      <DependentUpon>EditWebConfig.aspx</DependentUpon>
     </Compile>
-    <Compile Include="flag.aspx.cs">
-      <DependentUpon>flag.aspx</DependentUpon>
+    <Compile Include="Flag.aspx.cs">
+      <DependentUpon>Flag.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="flag.aspx.designer.cs">
-      <DependentUpon>flag.aspx</DependentUpon>
+    <Compile Include="Flag.aspx.designer.cs">
+      <DependentUpon>Flag.aspx</DependentUpon>
     </Compile>
-    <Compile Include="forgot.aspx.cs">
-      <DependentUpon>forgot.aspx</DependentUpon>
+    <Compile Include="Forgot.aspx.cs">
+      <DependentUpon>Forgot.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="forgot.aspx.designer.cs">
-      <DependentUpon>forgot.aspx</DependentUpon>
+    <Compile Include="Forgot.aspx.designer.cs">
+      <DependentUpon>Forgot.aspx</DependentUpon>
     </Compile>
-    <Compile Include="generate_btnetsc_reg.aspx.cs">
-      <DependentUpon>generate_btnetsc_reg.aspx</DependentUpon>
+    <Compile Include="GenerateBtnetscReg.aspx.cs">
+      <DependentUpon>GenerateBtnetscReg.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="generate_btnetsc_reg.aspx.designer.cs">
-      <DependentUpon>generate_btnetsc_reg.aspx</DependentUpon>
+    <Compile Include="GenerateBtnetscReg.aspx.designer.cs">
+      <DependentUpon>GenerateBtnetscReg.aspx</DependentUpon>
     </Compile>
-    <Compile Include="get_db_datetime.aspx.cs">
-      <DependentUpon>get_db_datetime.aspx</DependentUpon>
+    <Compile Include="GetDbDatetime.aspx.cs">
+      <DependentUpon>GetDbDatetime.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="get_db_datetime.aspx.designer.cs">
-      <DependentUpon>get_db_datetime.aspx</DependentUpon>
+    <Compile Include="GetDbDatetime.aspx.designer.cs">
+      <DependentUpon>GetDbDatetime.aspx</DependentUpon>
     </Compile>
-    <Compile Include="git_blame.aspx.cs">
-      <DependentUpon>git_blame.aspx</DependentUpon>
+    <Compile Include="GitBlame.aspx.cs">
+      <DependentUpon>GitBlame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="git_blame.aspx.designer.cs">
-      <DependentUpon>git_blame.aspx</DependentUpon>
+    <Compile Include="GitBlame.aspx.designer.cs">
+      <DependentUpon>GitBlame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="git_diff.aspx.cs">
-      <DependentUpon>git_diff.aspx</DependentUpon>
+    <Compile Include="GitDiff.aspx.cs">
+      <DependentUpon>GitDiff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="git_diff.aspx.designer.cs">
-      <DependentUpon>git_diff.aspx</DependentUpon>
+    <Compile Include="GitDiff.aspx.designer.cs">
+      <DependentUpon>GitDiff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="git_hook.aspx.cs">
-      <DependentUpon>git_hook.aspx</DependentUpon>
+    <Compile Include="GitHook.aspx.cs">
+      <DependentUpon>GitHook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="git_hook.aspx.designer.cs">
-      <DependentUpon>git_hook.aspx</DependentUpon>
+    <Compile Include="GitHook.aspx.designer.cs">
+      <DependentUpon>GitHook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="git_log.aspx.cs">
-      <DependentUpon>git_log.aspx</DependentUpon>
+    <Compile Include="GitLog.aspx.cs">
+      <DependentUpon>GitLog.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="git_log.aspx.designer.cs">
-      <DependentUpon>git_log.aspx</DependentUpon>
+    <Compile Include="GitLog.aspx.designer.cs">
+      <DependentUpon>GitLog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="git_view.aspx.cs">
-      <DependentUpon>git_view.aspx</DependentUpon>
+    <Compile Include="GitView.aspx.cs">
+      <DependentUpon>GitView.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="git_view.aspx.designer.cs">
-      <DependentUpon>git_view.aspx</DependentUpon>
+    <Compile Include="GitView.aspx.designer.cs">
+      <DependentUpon>GitView.aspx</DependentUpon>
     </Compile>
-    <Compile Include="git_view_revisions.aspx.cs">
-      <DependentUpon>git_view_revisions.aspx</DependentUpon>
+    <Compile Include="GitViewRevisions.aspx.cs">
+      <DependentUpon>GitViewRevisions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="git_view_revisions.aspx.designer.cs">
-      <DependentUpon>git_view_revisions.aspx</DependentUpon>
+    <Compile Include="GitViewRevisions.aspx.designer.cs">
+      <DependentUpon>GitViewRevisions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="hello.aspx.cs">
-      <DependentUpon>hello.aspx</DependentUpon>
+    <Compile Include="Hello.aspx.cs">
+      <DependentUpon>Hello.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hello.aspx.designer.cs">
-      <DependentUpon>hello.aspx</DependentUpon>
+    <Compile Include="Hello.aspx.designer.cs">
+      <DependentUpon>Hello.aspx</DependentUpon>
     </Compile>
-    <Compile Include="hg_blame.aspx.cs">
-      <DependentUpon>hg_blame.aspx</DependentUpon>
+    <Compile Include="HgBlame.aspx.cs">
+      <DependentUpon>HgBlame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hg_blame.aspx.designer.cs">
-      <DependentUpon>hg_blame.aspx</DependentUpon>
+    <Compile Include="HgBlame.aspx.designer.cs">
+      <DependentUpon>HgBlame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="hg_diff.aspx.cs">
-      <DependentUpon>hg_diff.aspx</DependentUpon>
+    <Compile Include="HgDiff.aspx.cs">
+      <DependentUpon>HgDiff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hg_diff.aspx.designer.cs">
-      <DependentUpon>hg_diff.aspx</DependentUpon>
+    <Compile Include="HgDiff.aspx.designer.cs">
+      <DependentUpon>HgDiff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="hg_hook.aspx.cs">
-      <DependentUpon>hg_hook.aspx</DependentUpon>
+    <Compile Include="HgHook.aspx.cs">
+      <DependentUpon>HgHook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hg_hook.aspx.designer.cs">
-      <DependentUpon>hg_hook.aspx</DependentUpon>
+    <Compile Include="HgHook.aspx.designer.cs">
+      <DependentUpon>HgHook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="hg_log.aspx.cs">
-      <DependentUpon>hg_log.aspx</DependentUpon>
+    <Compile Include="HgLog.aspx.cs">
+      <DependentUpon>HgLog.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hg_log.aspx.designer.cs">
-      <DependentUpon>hg_log.aspx</DependentUpon>
+    <Compile Include="HgLog.aspx.designer.cs">
+      <DependentUpon>HgLog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="hg_view.aspx.cs">
-      <DependentUpon>hg_view.aspx</DependentUpon>
+    <Compile Include="HgView.aspx.cs">
+      <DependentUpon>HgView.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hg_view.aspx.designer.cs">
-      <DependentUpon>hg_view.aspx</DependentUpon>
+    <Compile Include="HgView.aspx.designer.cs">
+      <DependentUpon>HgView.aspx</DependentUpon>
     </Compile>
-    <Compile Include="hg_view_revisions.aspx.cs">
-      <DependentUpon>hg_view_revisions.aspx</DependentUpon>
+    <Compile Include="HgViewRevisions.aspx.cs">
+      <DependentUpon>HgViewRevisions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="hg_view_revisions.aspx.designer.cs">
-      <DependentUpon>hg_view_revisions.aspx</DependentUpon>
+    <Compile Include="HgViewRevisions.aspx.designer.cs">
+      <DependentUpon>HgViewRevisions.aspx</DependentUpon>
     </Compile>
-    <Compile Include="insert_bug.aspx.cs">
-      <DependentUpon>insert_bug.aspx</DependentUpon>
+    <Compile Include="InsertBug.aspx.cs">
+      <DependentUpon>InsertBug.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="insert_bug.aspx.designer.cs">
-      <DependentUpon>insert_bug.aspx</DependentUpon>
+    <Compile Include="InsertBug.aspx.designer.cs">
+      <DependentUpon>InsertBug.aspx</DependentUpon>
     </Compile>
-    <Compile Include="install.aspx.cs">
-      <DependentUpon>install.aspx</DependentUpon>
+    <Compile Include="Install.aspx.cs">
+      <DependentUpon>Install.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="install.aspx.designer.cs">
-      <DependentUpon>install.aspx</DependentUpon>
+    <Compile Include="Install.aspx.designer.cs">
+      <DependentUpon>Install.aspx</DependentUpon>
     </Compile>
-    <Compile Include="loginnt.aspx.cs">
-      <DependentUpon>loginnt.aspx</DependentUpon>
+    <Compile Include="LoginNt.aspx.cs">
+      <DependentUpon>LoginNt.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="loginnt.aspx.designer.cs">
-      <DependentUpon>loginnt.aspx</DependentUpon>
+    <Compile Include="LoginNt.aspx.designer.cs">
+      <DependentUpon>LoginNt.aspx</DependentUpon>
     </Compile>
-    <Compile Include="logoff.aspx.cs">
-      <DependentUpon>logoff.aspx</DependentUpon>
+    <Compile Include="Logoff.aspx.cs">
+      <DependentUpon>Logoff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="logoff.aspx.designer.cs">
-      <DependentUpon>logoff.aspx</DependentUpon>
+    <Compile Include="Logoff.aspx.designer.cs">
+      <DependentUpon>Logoff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="manage_logs.aspx.cs">
-      <DependentUpon>manage_logs.aspx</DependentUpon>
+    <Compile Include="ManageLogs.aspx.cs">
+      <DependentUpon>ManageLogs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="manage_logs.aspx.designer.cs">
-      <DependentUpon>manage_logs.aspx</DependentUpon>
+    <Compile Include="ManageLogs.aspx.designer.cs">
+      <DependentUpon>ManageLogs.aspx</DependentUpon>
     </Compile>
-    <Compile Include="massedit.aspx.cs">
-      <DependentUpon>massedit.aspx</DependentUpon>
+    <Compile Include="MassEdit.aspx.cs">
+      <DependentUpon>MassEdit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="massedit.aspx.designer.cs">
-      <DependentUpon>massedit.aspx</DependentUpon>
+    <Compile Include="MassEdit.aspx.designer.cs">
+      <DependentUpon>MassEdit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="mbug.aspx.cs">
-      <DependentUpon>mbug.aspx</DependentUpon>
+    <Compile Include="MBug.aspx.cs">
+      <DependentUpon>MBug.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="mbug.aspx.designer.cs">
-      <DependentUpon>mbug.aspx</DependentUpon>
+    <Compile Include="MBug.aspx.designer.cs">
+      <DependentUpon>MBug.aspx</DependentUpon>
     </Compile>
-    <Compile Include="mbugs.aspx.cs">
-      <DependentUpon>mbugs.aspx</DependentUpon>
+    <Compile Include="MBugs.aspx.cs">
+      <DependentUpon>MBugs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="mbugs.aspx.designer.cs">
-      <DependentUpon>mbugs.aspx</DependentUpon>
+    <Compile Include="MBugs.aspx.designer.cs">
+      <DependentUpon>MBugs.aspx</DependentUpon>
     </Compile>
-    <Compile Include="merge_bug.aspx.cs">
-      <DependentUpon>merge_bug.aspx</DependentUpon>
+    <Compile Include="MergeBug.aspx.cs">
+      <DependentUpon>MergeBug.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="merge_bug.aspx.designer.cs">
-      <DependentUpon>merge_bug.aspx</DependentUpon>
+    <Compile Include="MergeBug.aspx.designer.cs">
+      <DependentUpon>MergeBug.aspx</DependentUpon>
     </Compile>
-    <Compile Include="mlogin.aspx.cs">
-      <DependentUpon>mlogin.aspx</DependentUpon>
+    <Compile Include="MLogin.aspx.cs">
+      <DependentUpon>MLogin.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="mlogin.aspx.designer.cs">
-      <DependentUpon>mlogin.aspx</DependentUpon>
+    <Compile Include="MLogin.aspx.designer.cs">
+      <DependentUpon>MLogin.aspx</DependentUpon>
     </Compile>
-    <Compile Include="notifications.aspx.cs">
-      <DependentUpon>notifications.aspx</DependentUpon>
+    <Compile Include="Notifications.aspx.cs">
+      <DependentUpon>Notifications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="notifications.aspx.designer.cs">
-      <DependentUpon>notifications.aspx</DependentUpon>
+    <Compile Include="Notifications.aspx.designer.cs">
+      <DependentUpon>Notifications.aspx</DependentUpon>
     </Compile>
-    <Compile Include="orgs.aspx.cs">
-      <DependentUpon>orgs.aspx</DependentUpon>
+    <Compile Include="Orgs.aspx.cs">
+      <DependentUpon>Orgs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="orgs.aspx.designer.cs">
-      <DependentUpon>orgs.aspx</DependentUpon>
+    <Compile Include="Orgs.aspx.designer.cs">
+      <DependentUpon>Orgs.aspx</DependentUpon>
     </Compile>
-    <Compile Include="print_bug.aspx.cs">
-      <DependentUpon>print_bug.aspx</DependentUpon>
+    <Compile Include="PrintBug.aspx.cs">
+      <DependentUpon>PrintBug.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="print_bug.aspx.designer.cs">
-      <DependentUpon>print_bug.aspx</DependentUpon>
+    <Compile Include="PrintBug.aspx.designer.cs">
+      <DependentUpon>PrintBug.aspx</DependentUpon>
     </Compile>
-    <Compile Include="print_bugs.aspx.cs">
-      <DependentUpon>print_bugs.aspx</DependentUpon>
+    <Compile Include="PrintBugs.aspx.cs">
+      <DependentUpon>PrintBugs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="print_bugs.aspx.designer.cs">
-      <DependentUpon>print_bugs.aspx</DependentUpon>
+    <Compile Include="PrintBugs.aspx.designer.cs">
+      <DependentUpon>PrintBugs.aspx</DependentUpon>
     </Compile>
-    <Compile Include="print_bugs2.aspx.cs">
-      <DependentUpon>print_bugs2.aspx</DependentUpon>
+    <Compile Include="PrintBugs2.aspx.cs">
+      <DependentUpon>PrintBugs2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="print_bugs2.aspx.designer.cs">
-      <DependentUpon>print_bugs2.aspx</DependentUpon>
+    <Compile Include="PrintBugs2.aspx.designer.cs">
+      <DependentUpon>PrintBugs2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="priorities.aspx.cs">
-      <DependentUpon>priorities.aspx</DependentUpon>
+    <Compile Include="Priorities.aspx.cs">
+      <DependentUpon>Priorities.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="priorities.aspx.designer.cs">
-      <DependentUpon>priorities.aspx</DependentUpon>
+    <Compile Include="Priorities.aspx.designer.cs">
+      <DependentUpon>Priorities.aspx</DependentUpon>
     </Compile>
-    <Compile Include="projects.aspx.cs">
-      <DependentUpon>projects.aspx</DependentUpon>
+    <Compile Include="Projects.aspx.cs">
+      <DependentUpon>Projects.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="projects.aspx.designer.cs">
-      <DependentUpon>projects.aspx</DependentUpon>
+    <Compile Include="Projects.aspx.designer.cs">
+      <DependentUpon>Projects.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="queries.aspx.cs">
-      <DependentUpon>queries.aspx</DependentUpon>
+    <Compile Include="Queries.aspx.cs">
+      <DependentUpon>Queries.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="queries.aspx.designer.cs">
-      <DependentUpon>queries.aspx</DependentUpon>
+    <Compile Include="Queries.aspx.designer.cs">
+      <DependentUpon>Queries.aspx</DependentUpon>
     </Compile>
-    <Compile Include="query.aspx.cs">
-      <DependentUpon>query.aspx</DependentUpon>
+    <Compile Include="Query.aspx.cs">
+      <DependentUpon>Query.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="query.aspx.designer.cs">
-      <DependentUpon>query.aspx</DependentUpon>
+    <Compile Include="Query.aspx.designer.cs">
+      <DependentUpon>Query.aspx</DependentUpon>
     </Compile>
-    <Compile Include="register.aspx.cs">
-      <DependentUpon>register.aspx</DependentUpon>
+    <Compile Include="Register.aspx.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="register.aspx.designer.cs">
-      <DependentUpon>register.aspx</DependentUpon>
+    <Compile Include="Register.aspx.designer.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
     </Compile>
-    <Compile Include="relationships.aspx.cs">
-      <DependentUpon>relationships.aspx</DependentUpon>
+    <Compile Include="Relationships.aspx.cs">
+      <DependentUpon>Relationships.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="relationships.aspx.designer.cs">
-      <DependentUpon>relationships.aspx</DependentUpon>
+    <Compile Include="Relationships.aspx.designer.cs">
+      <DependentUpon>Relationships.aspx</DependentUpon>
     </Compile>
-    <Compile Include="reports.aspx.cs">
-      <DependentUpon>reports.aspx</DependentUpon>
+    <Compile Include="Reports.aspx.cs">
+      <DependentUpon>Reports.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="reports.aspx.designer.cs">
-      <DependentUpon>reports.aspx</DependentUpon>
+    <Compile Include="Reports.aspx.designer.cs">
+      <DependentUpon>Reports.aspx</DependentUpon>
     </Compile>
-    <Compile Include="search.aspx.cs">
-      <DependentUpon>search.aspx</DependentUpon>
+    <Compile Include="Search.aspx.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="search.aspx.designer.cs">
-      <DependentUpon>search.aspx</DependentUpon>
+    <Compile Include="Search.aspx.designer.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
     </Compile>
-    <Compile Include="search_text.aspx.cs">
-      <DependentUpon>search_text.aspx</DependentUpon>
+    <Compile Include="SearchText.aspx.cs">
+      <DependentUpon>SearchText.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="search_text.aspx.designer.cs">
-      <DependentUpon>search_text.aspx</DependentUpon>
+    <Compile Include="SearchText.aspx.designer.cs">
+      <DependentUpon>SearchText.aspx</DependentUpon>
     </Compile>
-    <Compile Include="seen.aspx.cs">
-      <DependentUpon>seen.aspx</DependentUpon>
+    <Compile Include="Seen.aspx.cs">
+      <DependentUpon>Seen.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="seen.aspx.designer.cs">
-      <DependentUpon>seen.aspx</DependentUpon>
+    <Compile Include="Seen.aspx.designer.cs">
+      <DependentUpon>Seen.aspx</DependentUpon>
     </Compile>
-    <Compile Include="select_report.aspx.cs">
-      <DependentUpon>select_report.aspx</DependentUpon>
+    <Compile Include="SelectReport.aspx.cs">
+      <DependentUpon>SelectReport.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="select_report.aspx.designer.cs">
-      <DependentUpon>select_report.aspx</DependentUpon>
+    <Compile Include="SelectReport.aspx.designer.cs">
+      <DependentUpon>SelectReport.aspx</DependentUpon>
     </Compile>
-    <Compile Include="send_email.aspx.cs">
-      <DependentUpon>send_email.aspx</DependentUpon>
+    <Compile Include="SendEmail.aspx.cs">
+      <DependentUpon>SendEmail.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="send_email.aspx.designer.cs">
-      <DependentUpon>send_email.aspx</DependentUpon>
+    <Compile Include="SendEmail.aspx.designer.cs">
+      <DependentUpon>SendEmail.aspx</DependentUpon>
     </Compile>
-    <Compile Include="server_variables.aspx.cs">
-      <DependentUpon>server_variables.aspx</DependentUpon>
+    <Compile Include="ServerVariables.aspx.cs">
+      <DependentUpon>ServerVariables.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="server_variables.aspx.designer.cs">
-      <DependentUpon>server_variables.aspx</DependentUpon>
+    <Compile Include="ServerVariables.aspx.designer.cs">
+      <DependentUpon>ServerVariables.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
@@ -1317,201 +1314,201 @@
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
     </Compile>
-    <Compile Include="statuses.aspx.cs">
-      <DependentUpon>statuses.aspx</DependentUpon>
+    <Compile Include="Statuses.aspx.cs">
+      <DependentUpon>Statuses.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="statuses.aspx.designer.cs">
-      <DependentUpon>statuses.aspx</DependentUpon>
+    <Compile Include="Statuses.aspx.designer.cs">
+      <DependentUpon>Statuses.aspx</DependentUpon>
     </Compile>
-    <Compile Include="subscribe.aspx.cs">
-      <DependentUpon>subscribe.aspx</DependentUpon>
+    <Compile Include="Subscribe.aspx.cs">
+      <DependentUpon>Subscribe.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="subscribe.aspx.designer.cs">
-      <DependentUpon>subscribe.aspx</DependentUpon>
+    <Compile Include="Subscribe.aspx.designer.cs">
+      <DependentUpon>Subscribe.aspx</DependentUpon>
     </Compile>
-    <Compile Include="svn_blame.aspx.cs">
-      <DependentUpon>svn_blame.aspx</DependentUpon>
+    <Compile Include="SvnBlame.aspx.cs">
+      <DependentUpon>SvnBlame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="svn_blame.aspx.designer.cs">
-      <DependentUpon>svn_blame.aspx</DependentUpon>
+    <Compile Include="SvnBlame.aspx.designer.cs">
+      <DependentUpon>SvnBlame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="svn_diff.aspx.cs">
-      <DependentUpon>svn_diff.aspx</DependentUpon>
+    <Compile Include="SvnDiff.aspx.cs">
+      <DependentUpon>SvnDiff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="svn_diff.aspx.designer.cs">
-      <DependentUpon>svn_diff.aspx</DependentUpon>
+    <Compile Include="SvnDiff.aspx.designer.cs">
+      <DependentUpon>SvnDiff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="svn_hook.aspx.cs">
-      <DependentUpon>svn_hook.aspx</DependentUpon>
+    <Compile Include="SvnHook.aspx.cs">
+      <DependentUpon>SvnHook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="svn_hook.aspx.designer.cs">
-      <DependentUpon>svn_hook.aspx</DependentUpon>
+    <Compile Include="SvnHook.aspx.designer.cs">
+      <DependentUpon>SvnHook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="svn_log.aspx.cs">
-      <DependentUpon>svn_log.aspx</DependentUpon>
+    <Compile Include="SvnLog.aspx.cs">
+      <DependentUpon>SvnLog.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="svn_log.aspx.designer.cs">
-      <DependentUpon>svn_log.aspx</DependentUpon>
+    <Compile Include="SvnLog.aspx.designer.cs">
+      <DependentUpon>SvnLog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="svn_view.aspx.cs">
-      <DependentUpon>svn_view.aspx</DependentUpon>
+    <Compile Include="SvnView.aspx.cs">
+      <DependentUpon>SvnView.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="svn_view.aspx.designer.cs">
-      <DependentUpon>svn_view.aspx</DependentUpon>
+    <Compile Include="SvnView.aspx.designer.cs">
+      <DependentUpon>SvnView.aspx</DependentUpon>
     </Compile>
-    <Compile Include="svn_view_revisions.aspx.cs">
-      <DependentUpon>svn_view_revisions.aspx</DependentUpon>
+    <Compile Include="SvnViewRevisions.aspx.cs">
+      <DependentUpon>SvnViewRevisions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="svn_view_revisions.aspx.designer.cs">
-      <DependentUpon>svn_view_revisions.aspx</DependentUpon>
+    <Compile Include="SvnViewRevisions.aspx.designer.cs">
+      <DependentUpon>SvnViewRevisions.aspx</DependentUpon>
     </Compile>
-    <Compile Include="tags.aspx.cs">
-      <DependentUpon>tags.aspx</DependentUpon>
+    <Compile Include="Tags.aspx.cs">
+      <DependentUpon>Tags.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="tags.aspx.designer.cs">
-      <DependentUpon>tags.aspx</DependentUpon>
+    <Compile Include="Tags.aspx.designer.cs">
+      <DependentUpon>Tags.aspx</DependentUpon>
     </Compile>
-    <Compile Include="tasks.aspx.cs">
-      <DependentUpon>tasks.aspx</DependentUpon>
+    <Compile Include="Tasks.aspx.cs">
+      <DependentUpon>Tasks.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="tasks.aspx.designer.cs">
-      <DependentUpon>tasks.aspx</DependentUpon>
+    <Compile Include="Tasks.aspx.designer.cs">
+      <DependentUpon>Tasks.aspx</DependentUpon>
     </Compile>
-    <Compile Include="tasks_all.aspx.cs">
-      <DependentUpon>tasks_all.aspx</DependentUpon>
+    <Compile Include="TasksAll.aspx.cs">
+      <DependentUpon>TasksAll.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="tasks_all.aspx.designer.cs">
-      <DependentUpon>tasks_all.aspx</DependentUpon>
+    <Compile Include="TasksAll.aspx.designer.cs">
+      <DependentUpon>TasksAll.aspx</DependentUpon>
     </Compile>
-    <Compile Include="tasks_all_excel.aspx.cs">
-      <DependentUpon>tasks_all_excel.aspx</DependentUpon>
+    <Compile Include="TasksAllExcel.aspx.cs">
+      <DependentUpon>TasksAllExcel.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="tasks_all_excel.aspx.designer.cs">
-      <DependentUpon>tasks_all_excel.aspx</DependentUpon>
+    <Compile Include="TasksAllExcel.aspx.designer.cs">
+      <DependentUpon>TasksAllExcel.aspx</DependentUpon>
     </Compile>
-    <Compile Include="tasks_frame.aspx.cs">
-      <DependentUpon>tasks_frame.aspx</DependentUpon>
+    <Compile Include="TasksFrame.aspx.cs">
+      <DependentUpon>TasksFrame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="tasks_frame.aspx.designer.cs">
-      <DependentUpon>tasks_frame.aspx</DependentUpon>
+    <Compile Include="TasksFrame.aspx.designer.cs">
+      <DependentUpon>TasksFrame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="translate.aspx.cs">
-      <DependentUpon>translate.aspx</DependentUpon>
+    <Compile Include="Translate.aspx.cs">
+      <DependentUpon>Translate.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="translate.aspx.designer.cs">
-      <DependentUpon>translate.aspx</DependentUpon>
+    <Compile Include="Translate.aspx.designer.cs">
+      <DependentUpon>Translate.aspx</DependentUpon>
     </Compile>
-    <Compile Include="udfs.aspx.cs">
-      <DependentUpon>udfs.aspx</DependentUpon>
+    <Compile Include="Udfs.aspx.cs">
+      <DependentUpon>Udfs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="udfs.aspx.designer.cs">
-      <DependentUpon>udfs.aspx</DependentUpon>
+    <Compile Include="Udfs.aspx.designer.cs">
+      <DependentUpon>Udfs.aspx</DependentUpon>
     </Compile>
-    <Compile Include="update_dashboard.aspx.cs">
-      <DependentUpon>update_dashboard.aspx</DependentUpon>
+    <Compile Include="UpdateDashboard.aspx.cs">
+      <DependentUpon>UpdateDashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="update_dashboard.aspx.designer.cs">
-      <DependentUpon>update_dashboard.aspx</DependentUpon>
+    <Compile Include="UpdateDashboard.aspx.designer.cs">
+      <DependentUpon>UpdateDashboard.aspx</DependentUpon>
     </Compile>
-    <Compile Include="upgrade_273_to_274.aspx.cs">
-      <DependentUpon>upgrade_273_to_274.aspx</DependentUpon>
+    <Compile Include="Upgrade273To274.aspx.cs">
+      <DependentUpon>Upgrade273To274.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="upgrade_273_to_274.aspx.designer.cs">
-      <DependentUpon>upgrade_273_to_274.aspx</DependentUpon>
+    <Compile Include="Upgrade273To274.aspx.designer.cs">
+      <DependentUpon>Upgrade273To274.aspx</DependentUpon>
     </Compile>
-    <Compile Include="users.aspx.cs">
-      <DependentUpon>users.aspx</DependentUpon>
+    <Compile Include="Users.aspx.cs">
+      <DependentUpon>Users.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="users.aspx.designer.cs">
-      <DependentUpon>users.aspx</DependentUpon>
+    <Compile Include="Users.aspx.designer.cs">
+      <DependentUpon>Users.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view_attachment.aspx.cs">
-      <DependentUpon>view_attachment.aspx</DependentUpon>
+    <Compile Include="ViewAttachment.aspx.cs">
+      <DependentUpon>ViewAttachment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view_attachment.aspx.designer.cs">
-      <DependentUpon>view_attachment.aspx</DependentUpon>
+    <Compile Include="ViewAttachment.aspx.designer.cs">
+      <DependentUpon>ViewAttachment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view_memory_log.aspx.cs">
-      <DependentUpon>view_memory_log.aspx</DependentUpon>
+    <Compile Include="ViewMemoryLog.aspx.cs">
+      <DependentUpon>ViewMemoryLog.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view_memory_log.aspx.designer.cs">
-      <DependentUpon>view_memory_log.aspx</DependentUpon>
+    <Compile Include="ViewMemoryLog.aspx.designer.cs">
+      <DependentUpon>ViewMemoryLog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view_report.aspx.cs">
-      <DependentUpon>view_report.aspx</DependentUpon>
+    <Compile Include="ViewReport.aspx.cs">
+      <DependentUpon>ViewReport.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view_report.aspx.designer.cs">
-      <DependentUpon>view_report.aspx</DependentUpon>
+    <Compile Include="ViewReport.aspx.designer.cs">
+      <DependentUpon>ViewReport.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view_subscribers.aspx.cs">
-      <DependentUpon>view_subscribers.aspx</DependentUpon>
+    <Compile Include="ViewSubscribers.aspx.cs">
+      <DependentUpon>ViewSubscribers.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view_subscribers.aspx.designer.cs">
-      <DependentUpon>view_subscribers.aspx</DependentUpon>
+    <Compile Include="ViewSubscribers.aspx.designer.cs">
+      <DependentUpon>ViewSubscribers.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view_web_config.aspx.cs">
-      <DependentUpon>view_web_config.aspx</DependentUpon>
+    <Compile Include="ViewWebConfig.aspx.cs">
+      <DependentUpon>ViewWebConfig.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view_web_config.aspx.designer.cs">
-      <DependentUpon>view_web_config.aspx</DependentUpon>
+    <Compile Include="ViewWebConfig.aspx.designer.cs">
+      <DependentUpon>ViewWebConfig.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view_whatsnew.aspx.cs">
-      <DependentUpon>view_whatsnew.aspx</DependentUpon>
+    <Compile Include="ViewWhatsNew.aspx.cs">
+      <DependentUpon>ViewWhatsNew.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view_whatsnew.aspx.designer.cs">
-      <DependentUpon>view_whatsnew.aspx</DependentUpon>
+    <Compile Include="ViewWhatsNew.aspx.designer.cs">
+      <DependentUpon>ViewWhatsNew.aspx</DependentUpon>
     </Compile>
-    <Compile Include="vote.aspx.cs">
-      <DependentUpon>vote.aspx</DependentUpon>
+    <Compile Include="Vote.aspx.cs">
+      <DependentUpon>Vote.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="vote.aspx.designer.cs">
-      <DependentUpon>vote.aspx</DependentUpon>
+    <Compile Include="Vote.aspx.designer.cs">
+      <DependentUpon>Vote.aspx</DependentUpon>
     </Compile>
-    <Compile Include="whatsnew.aspx.cs">
-      <DependentUpon>whatsnew.aspx</DependentUpon>
+    <Compile Include="WhatsNew.aspx.cs">
+      <DependentUpon>WhatsNew.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="whatsnew.aspx.designer.cs">
-      <DependentUpon>whatsnew.aspx</DependentUpon>
+    <Compile Include="WhatsNew.aspx.designer.cs">
+      <DependentUpon>WhatsNew.aspx</DependentUpon>
     </Compile>
-    <Compile Include="write_posts.aspx.cs">
-      <DependentUpon>write_posts.aspx</DependentUpon>
+    <Compile Include="WritePosts.aspx.cs">
+      <DependentUpon>WritePosts.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="write_posts.aspx.designer.cs">
-      <DependentUpon>write_posts.aspx</DependentUpon>
+    <Compile Include="WritePosts.aspx.designer.cs">
+      <DependentUpon>WritePosts.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ckeditor\.htaccess" />
-    <Content Include="ckeditor\ckeditor.pack" />
-    <Content Include="edit_area\edit_area_full.gz" />
-    <Content Include="btnet_css_for_email.css.renamed" />
+    <Content Include="Scripts\ckeditor\.htaccess" />
+    <Content Include="Scripts\ckeditor\ckeditor.pack" />
+    <Content Include="Scripts\edit_area\edit_area_full.gz" />
+    <Content Include="Content\btnet_css_for_email.css.renamed" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\logs\" />

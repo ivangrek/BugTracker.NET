@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class search {
+    public partial class Search {
         
         /// <summary>
         /// reported_by control.

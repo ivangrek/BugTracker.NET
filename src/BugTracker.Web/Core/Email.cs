@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -38,18 +39,18 @@ namespace BugTracker.Web.Core
     {
         public enum AddrType
         {
-            to,
-            cc
+            To,
+            Cc
         }
 
-        public static string send_email( // 5 args
+        public static string SendEmail( // 5 args
             string to,
             string from,
             string cc,
             string subject,
             string body)
         {
-            return send_email(
+            return SendEmail(
                 to,
                 from,
                 cc,
@@ -61,92 +62,92 @@ namespace BugTracker.Web.Core
                 false);
         }
 
-        public static string send_email( // 6 args
+        public static string SendEmail( // 6 args
             string to,
             string from,
             string cc,
             string subject,
             string body,
-            BtnetMailFormat body_format)
+            BtnetMailFormat bodyFormat)
         {
-            return send_email(
+            return SendEmail(
                 to,
                 from,
                 cc,
                 subject,
                 body,
-                body_format,
+                bodyFormat,
                 BtnetMailPriority.Normal,
                 null,
                 false);
         }
 
-        private static string convert_uploaded_blob_to_flat_file(string upload_folder, int attachment_bpid,
-            Dictionary<string, int> files_to_delete)
+        private static string ConvertUploadedBlobToFlatFile(string uploadFolder, int attachmentBpid,
+            Dictionary<string, int> filesToDelete)
         {
             var buffer = new byte[16 * 1024];
-            string dest_path_and_filename;
-            var bpa = Bug.get_bug_post_attachment(attachment_bpid);
-            using (bpa.content)
+            string destPathAndFilename;
+            var bpa = Bug.get_bug_post_attachment(attachmentBpid);
+            using (bpa.Content)
             {
-                dest_path_and_filename = Path.Combine(upload_folder, bpa.file);
+                destPathAndFilename = Path.Combine(uploadFolder, bpa.File);
 
                 // logic to rename in case of dupes.  MS Outlook embeds images all with the same filename
                 var suffix = 0;
-                var renamed_to_prevent_dupe = dest_path_and_filename;
-                while (files_to_delete.ContainsKey(renamed_to_prevent_dupe))
+                var renamedToPreventDupe = destPathAndFilename;
+                while (filesToDelete.ContainsKey(renamedToPreventDupe))
                 {
                     suffix++;
-                    renamed_to_prevent_dupe = Path.Combine(upload_folder,
-                        Path.GetFileNameWithoutExtension(bpa.file)
+                    renamedToPreventDupe = Path.Combine(uploadFolder,
+                        Path.GetFileNameWithoutExtension(bpa.File)
                         + Convert.ToString(suffix)
-                        + Path.GetExtension(bpa.file));
+                        + Path.GetExtension(bpa.File));
                 }
 
-                dest_path_and_filename = renamed_to_prevent_dupe;
+                destPathAndFilename = renamedToPreventDupe;
 
                 // Save to disk
-                using (var out_stream = new FileStream(
-                    dest_path_and_filename,
+                using (var outStream = new FileStream(
+                    destPathAndFilename,
                     FileMode.CreateNew,
                     FileAccess.Write,
                     FileShare.Delete))
                 {
-                    var bytes_read = bpa.content.Read(buffer, 0, buffer.Length);
-                    while (bytes_read != 0)
+                    var bytesRead = bpa.Content.Read(buffer, 0, buffer.Length);
+                    while (bytesRead != 0)
                     {
-                        out_stream.Write(buffer, 0, bytes_read);
+                        outStream.Write(buffer, 0, bytesRead);
 
-                        bytes_read = bpa.content.Read(buffer, 0, buffer.Length);
+                        bytesRead = bpa.Content.Read(buffer, 0, buffer.Length);
                     }
 
-                    out_stream.Close();
+                    outStream.Close();
                 }
             }
 
-            files_to_delete[dest_path_and_filename] = 1;
+            filesToDelete[destPathAndFilename] = 1;
 
-            return dest_path_and_filename;
+            return destPathAndFilename;
         }
 
-        public static string send_email(
+        public static string SendEmail(
             string to,
             string from,
             string cc,
             string subject,
             string body,
-            BtnetMailFormat body_format,
+            BtnetMailFormat bodyFormat,
             BtnetMailPriority priority,
-            int[] attachment_bpids,
-            bool return_receipt)
+            int[] attachmentBpids,
+            bool returnReceipt)
         {
             var msg = new MailMessage();
 
             msg.From = new MailAddress(from);
 
-            add_addresses_to_email(msg, to, AddrType.to);
+            AddAddressesToEmail(msg, to, AddrType.To);
 
-            if (!string.IsNullOrEmpty(cc.Trim())) add_addresses_to_email(msg, cc, AddrType.cc);
+            if (!string.IsNullOrEmpty(cc.Trim())) AddAddressesToEmail(msg, cc, AddrType.Cc);
 
             msg.Subject = subject;
 
@@ -158,41 +159,41 @@ namespace BugTracker.Web.Core
                 priority = BtnetMailPriority.Low;
 
             // This fixes a bug for a couple people, but make it configurable, just in case.
-            if (Util.get_setting("BodyEncodingUTF8", "1") == "1") msg.BodyEncoding = Encoding.UTF8;
+            if (Util.GetSetting("BodyEncodingUTF8", "1") == "1") msg.BodyEncoding = Encoding.UTF8;
 
-            if (return_receipt) msg.Headers.Add("Disposition-Notification-To", from);
+            if (returnReceipt) msg.Headers.Add("Disposition-Notification-To", from);
 
             // workaround for a bug I don't understand...
-            if (Util.get_setting("SmtpForceReplaceOfBareLineFeeds", "0") == "1") body = body.Replace("\n", "\r\n");
+            if (Util.GetSetting("SmtpForceReplaceOfBareLineFeeds", "0") == "1") body = body.Replace("\n", "\r\n");
 
             msg.Body = body;
-            msg.IsBodyHtml = body_format == BtnetMailFormat.Html;
+            msg.IsBodyHtml = bodyFormat == BtnetMailFormat.Html;
 
-            StuffToDelete stuff_to_delete = null;
+            StuffToDelete stuffToDelete = null;
 
-            if (attachment_bpids != null && attachment_bpids.Length > 0)
+            if (attachmentBpids != null && attachmentBpids.Length > 0)
             {
-                stuff_to_delete = new StuffToDelete();
+                stuffToDelete = new StuffToDelete();
 
-                var upload_folder = Util.get_upload_folder();
+                var uploadFolder = Util.GetUploadFolder();
 
-                if (string.IsNullOrEmpty(upload_folder))
+                if (string.IsNullOrEmpty(uploadFolder))
                 {
-                    upload_folder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-                    Directory.CreateDirectory(upload_folder);
-                    stuff_to_delete.directories_to_delete.Add(upload_folder);
+                    uploadFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                    Directory.CreateDirectory(uploadFolder);
+                    stuffToDelete.DirectoriesToDelete.Add(uploadFolder);
                 }
 
-                foreach (var attachment_bpid in attachment_bpids)
+                foreach (var attachmentBpid in attachmentBpids)
                 {
-                    var dest_path_and_filename = convert_uploaded_blob_to_flat_file(upload_folder, attachment_bpid,
-                        stuff_to_delete.files_to_delete);
+                    var destPathAndFilename = ConvertUploadedBlobToFlatFile(uploadFolder, attachmentBpid,
+                        stuffToDelete.FilesToDelete);
 
                     // Add saved file as attachment
-                    var mail_attachment = new Attachment(
-                        dest_path_and_filename);
+                    var mailAttachment = new Attachment(
+                        destPathAndFilename);
 
-                    msg.Attachments.Add(mail_attachment);
+                    msg.Attachments.Add(mailAttachment);
                 }
             }
 
@@ -204,9 +205,9 @@ namespace BugTracker.Web.Core
                 var smtpClient = new SmtpClient();
 
                 // SSL or not
-                var force_ssl = Util.get_setting("SmtpForceSsl", "");
+                var forceSsl = Util.GetSetting("SmtpForceSsl", "");
 
-                if (force_ssl == "")
+                if (forceSsl == "")
                 {
                     // get the port so that we can guess whether SSL or not
                     var smtpSec = (SmtpSection)
@@ -220,7 +221,7 @@ namespace BugTracker.Web.Core
                 }
                 else
                 {
-                    if (force_ssl == "1")
+                    if (forceSsl == "1")
                         smtpClient.EnableSsl = true;
                     else
                         smtpClient.EnableSsl = false;
@@ -232,80 +233,80 @@ namespace BugTracker.Web.Core
 
                 smtpClient.Send(msg);
 
-                if (stuff_to_delete != null)
+                if (stuffToDelete != null)
                 {
-                    stuff_to_delete.msg = msg;
-                    delete_stuff(stuff_to_delete);
+                    stuffToDelete.Msg = msg;
+                    DeleteStuff(stuffToDelete);
                 }
 
                 return "";
             }
             catch (Exception e)
             {
-                Util.write_to_log("There was a problem sending email.   Check settings in Web.config.");
-                Util.write_to_log("TO:" + to);
-                Util.write_to_log("FROM:" + from);
-                Util.write_to_log("SUBJECT:" + subject);
-                Util.write_to_log(e.GetBaseException().Message);
+                Util.WriteToLog("There was a problem sending email.   Check settings in Web.config.");
+                Util.WriteToLog("TO:" + to);
+                Util.WriteToLog("FROM:" + from);
+                Util.WriteToLog("SUBJECT:" + subject);
+                Util.WriteToLog(e.GetBaseException().Message);
 
-                delete_stuff(stuff_to_delete);
+                DeleteStuff(stuffToDelete);
 
                 return e.GetBaseException().Message;
             }
         }
 
-        protected static void delete_stuff(StuffToDelete stuff_to_delete)
+        protected static void DeleteStuff(StuffToDelete stuffToDelete)
         {
-            var thread = new Thread(threadproc_delete_stuff);
-            thread.Start(stuff_to_delete);
+            var thread = new Thread(ThreadProcDeleteStuff);
+            thread.Start(stuffToDelete);
         }
 
-        protected static void actually_delete_stuff(StuffToDelete stuff_to_delete)
+        protected static void ActuallyDeleteStuff(StuffToDelete stuffToDelete)
         {
-            if (stuff_to_delete == null) // not sure how this could happen, but it fixed a bug for one guy
+            if (stuffToDelete == null) // not sure how this could happen, but it fixed a bug for one guy
                 return;
 
-            stuff_to_delete.msg.Dispose(); // if we don't do this, the delete tends not to work.
+            stuffToDelete.Msg.Dispose(); // if we don't do this, the delete tends not to work.
 
-            foreach (var file in stuff_to_delete.files_to_delete.Keys) File.Delete(file);
+            foreach (var file in stuffToDelete.FilesToDelete.Keys) File.Delete(file);
 
-            foreach (string directory in stuff_to_delete.directories_to_delete) Directory.Delete(directory);
+            foreach (string directory in stuffToDelete.DirectoriesToDelete) Directory.Delete(directory);
         }
 
-        public static void threadproc_delete_stuff(object obj)
+        public static void ThreadProcDeleteStuff(object obj)
         {
             // Allow time for SMTP to be done with these files.
             try
             {
                 Thread.Sleep(60 * 1000);
-                actually_delete_stuff((StuffToDelete) obj);
+                ActuallyDeleteStuff((StuffToDelete)obj);
             }
             catch (ThreadAbortException)
             {
-                actually_delete_stuff((StuffToDelete) obj);
+                ActuallyDeleteStuff((StuffToDelete)obj);
             }
         }
 
-        public static void add_addresses_to_email(MailMessage msg, string addrs, AddrType addr_type)
+        public static void AddAddressesToEmail(MailMessage msg, string addrs, AddrType addrType)
         {
-            Util.write_to_log("to email addr: " + addrs);
+            Util.WriteToLog("to email addr: " + addrs);
 
-            var separator_char = Util.get_setting("EmailAddressSeparatorCharacter", ",");
+            var separatorChar = Util.GetSetting("EmailAddressSeparatorCharacter", ",");
 
-            var addr_array = addrs.Replace(separator_char + " ", separator_char).Split(separator_char[0]);
+            var addrArray = addrs.Replace(separatorChar + " ", separatorChar).Split(separatorChar[0]);
 
-            for (var i = 0; i < addr_array.Length; i++)
+            for (var i = 0; i < addrArray.Length; i++)
             {
-                var just_address = simplify_email_address(addr_array[i]);
-                var just_display_name = addr_array[i].Replace(just_address, "").Replace("<>", "");
-                if (addr_type == AddrType.to)
-                    msg.To.Add(new MailAddress(just_address, just_display_name, Encoding.UTF8));
+                var justAddress = SimplifyEmailAddress(addrArray[i]);
+                var justDisplayName = addrArray[i].Replace(justAddress, "").Replace("<>", "");
+                if (addrType == AddrType.To)
+                    msg.To.Add(new MailAddress(justAddress, justDisplayName, Encoding.UTF8));
                 else
-                    msg.CC.Add(new MailAddress(just_address, just_display_name, Encoding.UTF8));
+                    msg.CC.Add(new MailAddress(justAddress, justDisplayName, Encoding.UTF8));
             }
         }
 
-        public static string simplify_email_address(string email)
+        public static string SimplifyEmailAddress(string email)
         {
             // convert "Corey Trager <ctrager@yahoo.com>" to just "ctrager@yahoo.com"
 
@@ -319,9 +320,9 @@ namespace BugTracker.Web.Core
 
         public class StuffToDelete
         {
-            public ArrayList directories_to_delete = new ArrayList();
-            public Dictionary<string, int> files_to_delete = new Dictionary<string, int>();
-            public MailMessage msg;
+            public ArrayList DirectoriesToDelete = new ArrayList();
+            public Dictionary<string, int> FilesToDelete = new Dictionary<string, int>();
+            public MailMessage Msg;
         }
-    } // end Email
-} // end namespace
+    }
+}

@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -17,11 +18,11 @@ namespace BugTracker.Web.Core
 
     public class Bug
     {
-        public const int INSERT = 1;
-        public const int UPDATE = 2;
-        private static readonly object dummy = new object(); // for a lock
+        public const int Insert = 1;
+        public const int Update = 2;
+        private static readonly object Dummy = new object(); // for a lock
 
-        public static void auto_subscribe(int bugid)
+        public static void AutoSubscribe(int bugid)
         {
             // clean up bug subscriptions that no longer fit security rules
             // subscribe per auto_subscribe
@@ -59,13 +60,13 @@ left outer join project_user_xref on pu_project = @pj and pu_user = us_id
 where us_auto_subscribe = 1
 and
 case
-	when
-		us_org <> bg_org
-		and og_other_orgs_permission_level < 2
-		and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-			then og_other_orgs_permission_level
-	else
-		isnull(pu_permission_level,$dpl)
+    when
+        us_org <> bg_org
+        and og_other_orgs_permission_level < 2
+        and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
+            then og_other_orgs_permission_level
+    else
+        isnull(pu_permission_level,$dpl)
 end <> 0
 and us_active = 1
 and us_id not in
@@ -92,13 +93,13 @@ inner join bugs on bg_id = $id
 where pu_auto_subscribe = 1
 and
 case
-	when
-		us_org <> bg_org
-		and og_other_orgs_permission_level < 2
-		and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-			then og_other_orgs_permission_level
-	else
-		isnull(pu_permission_level,$dpl)
+    when
+        us_org <> bg_org
+        and og_other_orgs_permission_level < 2
+        and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
+            then og_other_orgs_permission_level
+    else
+        isnull(pu_permission_level,$dpl)
 end <> 0
 and us_active = 1
 and pu_project = @pj
@@ -117,13 +118,13 @@ or
 (us_auto_subscribe_reported_bugs = 1 and bg_reported_user = us_id))
 and
 case
-	when
-		us_org <> bg_org
-		and og_other_orgs_permission_level < 2
-		and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-			then og_other_orgs_permission_level
-	else
-		isnull(pu_permission_level,$dpl)
+    when
+        us_org <> bg_org
+        and og_other_orgs_permission_level < 2
+        and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
+            then og_other_orgs_permission_level
+    else
+        isnull(pu_permission_level,$dpl)
 end <> 0
 and us_active = 1
 and us_id not in
@@ -131,27 +132,27 @@ and us_id not in
 where bs_bug = $id)";
 
             sql = sql.Replace("$id", Convert.ToString(bugid));
-            sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
 
-            DbUtil.execute_nonquery(sql);
+            DbUtil.ExecuteNonQuery(sql);
         }
 
-        public static void delete_bug(int bugid)
+        public static void DeleteBug(int bugid)
         {
             // delete attachements
 
             var id = Convert.ToString(bugid);
 
-            var upload_folder = Util.get_upload_folder();
+            var uploadFolder = Util.GetUploadFolder();
             var sql = @"select bp_id, bp_file from bug_posts where bp_type = 'file' and bp_bug = $bg";
             sql = sql.Replace("$bg", id);
 
-            var ds = DbUtil.get_dataset(sql);
-            if (upload_folder != null && upload_folder != "")
+            var ds = DbUtil.GetDataSet(sql);
+            if (uploadFolder != null && uploadFolder != "")
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     // create path
-                    var path = new StringBuilder(upload_folder);
+                    var path = new StringBuilder(uploadFolder);
                     path.Append("\\");
                     path.Append(id);
                     path.Append("_");
@@ -174,103 +175,103 @@ delete from bug_tasks where tsk_bug = $bg
 delete from bugs where bg_id = $bg";
 
             sql = sql.Replace("$bg", id);
-            DbUtil.execute_nonquery(sql);
+            DbUtil.ExecuteNonQuery(sql);
         }
 
-        public static int insert_post_attachment_copy(
+        public static int InsertPostAttachmentCopy(
             Security security,
             int bugid,
-            int copy_bpid,
+            int copyBpid,
             string comment,
             int parent,
-            bool hidden_from_external_users,
-            bool send_notifications)
+            bool hiddenFromExternalUsers,
+            bool sendNotifications)
         {
-            return insert_post_attachment_impl(
+            return InsertPostAttachmentImpl(
                 security,
                 bugid,
                 null,
                 -1,
-                copy_bpid,
+                copyBpid,
                 null,
                 comment,
                 null,
                 parent,
-                hidden_from_external_users,
-                send_notifications);
+                hiddenFromExternalUsers,
+                sendNotifications);
         }
 
-        public static int insert_post_attachment(
+        public static int InsertPostAttachment(
             Security security,
             int bugid,
             Stream content,
-            int content_length,
+            int contentLength,
             string file,
             string comment,
-            string content_type,
+            string contentType,
             int parent,
-            bool hidden_from_external_users,
-            bool send_notifications)
+            bool hiddenFromExternalUsers,
+            bool sendNotifications)
         {
-            return insert_post_attachment_impl(
+            return InsertPostAttachmentImpl(
                 security,
                 bugid,
                 content,
-                content_length,
+                contentLength,
                 -1, // copy_bpid
                 file,
                 comment,
-                content_type,
+                contentType,
                 parent,
-                hidden_from_external_users,
-                send_notifications);
+                hiddenFromExternalUsers,
+                sendNotifications);
         }
 
-        private static int insert_post_attachment_impl(
+        private static int InsertPostAttachmentImpl(
             Security security,
             int bugid,
             Stream content,
-            int content_length,
-            int copy_bpid,
+            int contentLength,
+            int copyBpid,
             string file,
             string comment,
-            string content_type,
+            string contentType,
             int parent,
-            bool hidden_from_external_users,
-            bool send_notifications)
+            bool hiddenFromExternalUsers,
+            bool sendNotifications)
         {
             // Note that this method does not perform any security check nor does
             // it check that content_length is less than MaxUploadSize.
             // These are left up to the caller.
 
-            var upload_folder = Util.get_upload_folder();
+            var uploadFolder = Util.GetUploadFolder();
             string sql;
-            var store_attachments_in_database = Util.get_setting("StoreAttachmentsInDatabase", "0") == "1";
-            var effective_file = file;
-            var effective_content_length = content_length;
-            var effective_content_type = content_type;
-            Stream effective_content = null;
+            var storeAttachmentsInDatabase = Util.GetSetting("StoreAttachmentsInDatabase", "0") == "1";
+            var effectiveFile = file;
+            var effectiveContentLength = contentLength;
+            var effectiveContentType = contentType;
+            Stream effectiveContent = null;
 
             try
             {
                 // Determine the content. We may be instructed to copy an existing
                 // attachment via copy_bpid, or a Stream may be provided as the content parameter.
 
-                if (copy_bpid != -1)
+                if (copyBpid != -1)
                 {
-                    var bpa = get_bug_post_attachment(copy_bpid);
+                    var bpa = get_bug_post_attachment(copyBpid);
 
-                    effective_content = bpa.content;
-                    effective_file = bpa.file;
-                    effective_content_length = bpa.content_length;
-                    effective_content_type = bpa.content_type;
+                    effectiveContent = bpa.Content;
+                    effectiveFile = bpa.File;
+                    effectiveContentLength = bpa.ContentLength;
+                    effectiveContentType = bpa.ContentType;
                 }
                 else
                 {
-                    effective_content = content;
-                    effective_file = file;
-                    effective_content_length = content_length;
-                    effective_content_type = content_type;
+                    effectiveContent = content;
+                    effectiveFile = file;
+                    effectiveContentLength = contentLength;
+                    effectiveContentType = contentType;
                 }
 
                 // Insert a new post into bug_posts.
@@ -281,88 +282,88 @@ declare @now datetime
 set @now = getdate()
 
 update bugs
-	set bg_last_updated_date = @now,
-	bg_last_updated_user = $us
-	where bg_id = $bg
+    set bg_last_updated_date = @now,
+    bg_last_updated_user = $us
+    where bg_id = $bg
 
 insert into bug_posts
-	(bp_type, bp_bug, bp_file, bp_comment, bp_size, bp_date, bp_user, bp_content_type, bp_parent, bp_hidden_from_external_users)
-	values ('file', $bg, N'$fi', N'$de', $si, @now, $us, N'$ct', $pa, $internal)
-	select scope_identity()";
+    (bp_type, bp_bug, bp_file, bp_comment, bp_size, bp_date, bp_user, bp_content_type, bp_parent, bp_hidden_from_external_users)
+    values ('file', $bg, N'$fi', N'$de', $si, @now, $us, N'$ct', $pa, $internal)
+    select scope_identity()";
 
                 sql = sql.Replace("$bg", Convert.ToString(bugid));
-                sql = sql.Replace("$fi", effective_file.Replace("'", "''"));
+                sql = sql.Replace("$fi", effectiveFile.Replace("'", "''"));
                 sql = sql.Replace("$de", comment.Replace("'", "''"));
-                sql = sql.Replace("$si", Convert.ToString(effective_content_length));
-                sql = sql.Replace("$us", Convert.ToString(security.user.usid));
+                sql = sql.Replace("$si", Convert.ToString(effectiveContentLength));
+                sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
 
                 // Sometimes, somehow, content type is null.  Not sure how.
                 sql = sql.Replace("$ct",
-                    effective_content_type != null
-                        ? effective_content_type.Replace("'", "''")
+                    effectiveContentType != null
+                        ? effectiveContentType.Replace("'", "''")
                         : string.Empty);
 
                 if (parent == -1)
                     sql = sql.Replace("$pa", "null");
                 else
                     sql = sql.Replace("$pa", Convert.ToString(parent));
-                sql = sql.Replace("$internal", Util.bool_to_string(hidden_from_external_users));
+                sql = sql.Replace("$internal", Util.BoolToString(hiddenFromExternalUsers));
 
-                var bp_id = Convert.ToInt32(DbUtil.execute_scalar(sql));
+                var bpId = Convert.ToInt32(DbUtil.ExecuteScalar(sql));
 
                 try
                 {
                     // Store attachment in bug_post_attachments table.
 
-                    if (store_attachments_in_database)
+                    if (storeAttachmentsInDatabase)
                     {
-                        var data = new byte[effective_content_length];
-                        var bytes_read = 0;
+                        var data = new byte[effectiveContentLength];
+                        var bytesRead = 0;
 
-                        while (bytes_read < effective_content_length)
+                        while (bytesRead < effectiveContentLength)
                         {
-                            var bytes_read_this_iteration = effective_content.Read(data, bytes_read,
-                                effective_content_length - bytes_read);
-                            if (bytes_read_this_iteration == 0)
+                            var bytesReadThisIteration = effectiveContent.Read(data, bytesRead,
+                                effectiveContentLength - bytesRead);
+                            if (bytesReadThisIteration == 0)
                                 throw new Exception(
                                     "Unexpectedly reached the end of the stream before all data was read.");
-                            bytes_read += bytes_read_this_iteration;
+                            bytesRead += bytesReadThisIteration;
                         }
 
                         sql = @"insert into bug_post_attachments
-								(bpa_post, bpa_content)
-								values (@bp, @bc)";
+                                (bpa_post, bpa_content)
+                                values (@bp, @bc)";
                         using (var cmd = new SqlCommand(sql))
                         {
-                            cmd.Parameters.AddWithValue("@bp", bp_id);
+                            cmd.Parameters.AddWithValue("@bp", bpId);
                             cmd.Parameters.Add("@bc", SqlDbType.Image).Value = data;
-                            cmd.CommandTimeout = Convert.ToInt32(Util.get_setting("SqlCommand.CommandTimeout", "30"));
-                            DbUtil.execute_nonquery(cmd);
+                            cmd.CommandTimeout = Convert.ToInt32(Util.GetSetting("SqlCommand.CommandTimeout", "30"));
+                            DbUtil.ExecuteNonQuery(cmd);
                         }
                     }
                     else
                     {
                         // Store attachment in UploadFolder.
 
-                        if (upload_folder == null)
+                        if (uploadFolder == null)
                             throw new Exception(
                                 "StoreAttachmentsInDatabase is false and UploadFolder is not set in web.config.");
 
                         // Copy the content Stream to a file in the upload_folder.
                         var buffer = new byte[16384];
-                        var bytes_read = 0;
+                        var bytesRead = 0;
                         using (var fs =
-                            new FileStream(upload_folder + "\\" + bugid + "_" + bp_id + "_" + effective_file,
+                            new FileStream(uploadFolder + "\\" + bugid + "_" + bpId + "_" + effectiveFile,
                                 FileMode.CreateNew, FileAccess.Write))
                         {
-                            while (bytes_read < effective_content_length)
+                            while (bytesRead < effectiveContentLength)
                             {
-                                var bytes_read_this_iteration = effective_content.Read(buffer, 0, buffer.Length);
-                                if (bytes_read_this_iteration == 0)
+                                var bytesReadThisIteration = effectiveContent.Read(buffer, 0, buffer.Length);
+                                if (bytesReadThisIteration == 0)
                                     throw new Exception(
                                         "Unexpectedly reached the end of the stream before all data was read.");
-                                fs.Write(buffer, 0, bytes_read_this_iteration);
-                                bytes_read += bytes_read_this_iteration;
+                                fs.Write(buffer, 0, bytesReadThisIteration);
+                                bytesRead += bytesReadThisIteration;
                             }
                         }
                     }
@@ -372,52 +373,52 @@ insert into bug_posts
                     // clean up
                     sql = @"delete from bug_posts where bp_id = $bp";
 
-                    sql = sql.Replace("$bp", Convert.ToString(bp_id));
+                    sql = sql.Replace("$bp", Convert.ToString(bpId));
 
-                    DbUtil.execute_nonquery(sql);
+                    DbUtil.ExecuteNonQuery(sql);
 
                     throw;
                 }
 
-                if (send_notifications) Bug.send_notifications(UPDATE, bugid, security);
-                return bp_id;
+                if (sendNotifications) SendNotifications(Update, bugid, security);
+                return bpId;
             }
             finally
             {
                 // If this procedure "owns" the content (instead of our caller owning it), dispose it.
-                if (effective_content != null && effective_content != content) effective_content.Dispose();
+                if (effectiveContent != null && effectiveContent != content) effectiveContent.Dispose();
             }
         }
 
-        public static BugPostAttachment get_bug_post_attachment(int bp_id)
+        public static BugPostAttachment get_bug_post_attachment(int bpId)
         {
             // Note that this method does not perform any security check.
             // This is left up to the caller.
 
-            var upload_folder = Util.get_upload_folder();
+            var uploadFolder = Util.GetUploadFolder();
             string sql;
-            var store_attachments_in_database = Util.get_setting("StoreAttachmentsInDatabase", "0") == "1";
+            var storeAttachmentsInDatabase = Util.GetSetting("StoreAttachmentsInDatabase", "0") == "1";
             int bugid;
             string file;
-            int content_length;
-            string content_type;
+            int contentLength;
+            string contentType;
             Stream content = null;
 
             try
             {
                 sql = @"select bp_bug, bp_file, bp_size, bp_content_type
-						from bug_posts
-						where bp_id = $bp";
+                        from bug_posts
+                        where bp_id = $bp";
 
-                sql = sql.Replace("$bp", Convert.ToString(bp_id));
-                using (var reader = DbUtil.execute_reader(sql, CommandBehavior.CloseConnection))
+                sql = sql.Replace("$bp", Convert.ToString(bpId));
+                using (var reader = DbUtil.ExecuteReader(sql, CommandBehavior.CloseConnection))
                 {
                     if (reader.Read())
                     {
                         bugid = reader.GetInt32(reader.GetOrdinal("bp_bug"));
                         file = reader.GetString(reader.GetOrdinal("bp_file"));
-                        content_length = reader.GetInt32(reader.GetOrdinal("bp_size"));
-                        content_type = reader.GetString(reader.GetOrdinal("bp_content_type"));
+                        contentLength = reader.GetInt32(reader.GetOrdinal("bp_size"));
+                        contentType = reader.GetString(reader.GetOrdinal("bp_content_type"));
                     }
                     else
                     {
@@ -426,34 +427,34 @@ insert into bug_posts
                 }
 
                 sql = @"select bpa_content
-							from bug_post_attachments
-							where bpa_post = $bp";
+                            from bug_post_attachments
+                            where bpa_post = $bp";
 
-                sql = sql.Replace("$bp", Convert.ToString(bp_id));
+                sql = sql.Replace("$bp", Convert.ToString(bpId));
 
-                object content_object;
-                content_object = DbUtil.execute_scalar(sql);
+                object contentObject;
+                contentObject = DbUtil.ExecuteScalar(sql);
 
-                if (content_object != null && !Convert.IsDBNull(content_object))
+                if (contentObject != null && !Convert.IsDBNull(contentObject))
                 {
-                    content = new MemoryStream((byte[]) content_object);
+                    content = new MemoryStream((byte[])contentObject);
                 }
                 else
                 {
                     // Could not find in bug_post_attachments. Try the upload_folder.
-                    if (upload_folder == null)
+                    if (uploadFolder == null)
                         throw new Exception(
                             "The attachment could not be found in the database and UploadFolder is not set in web.config.");
 
-                    var upload_folder_filename = upload_folder + "\\" + bugid + "_" + bp_id + "_" + file;
-                    if (File.Exists(upload_folder_filename))
-                        content = new FileStream(upload_folder_filename, FileMode.Open, FileAccess.Read,
+                    var uploadFolderFilename = uploadFolder + "\\" + bugid + "_" + bpId + "_" + file;
+                    if (File.Exists(uploadFolderFilename))
+                        content = new FileStream(uploadFolderFilename, FileMode.Open, FileAccess.Read,
                             FileShare.Read);
                     else
                         throw new Exception("Attachment not found in database or UploadFolder.");
                 }
 
-                return new BugPostAttachment(file, content, content_length, content_type);
+                return new BugPostAttachment(file, content, contentLength, contentType);
             }
             catch
             {
@@ -464,25 +465,25 @@ insert into bug_posts
             }
         }
 
-        public static DataRow get_bug_datarow(
+        public static DataRow GetBugDataRow(
             int bugid,
             Security security)
         {
-            var ds_custom_cols = Util.get_custom_columns();
-            return get_bug_datarow(bugid, security, ds_custom_cols);
+            var dsCustomCols = Util.GetCustomColumns();
+            return GetBugDataRow(bugid, security, dsCustomCols);
         }
 
-        public static DataRow get_bug_datarow(
+        public static DataRow GetBugDataRow(
             int bugid,
             Security security,
-            DataSet ds_custom_cols)
+            DataSet dsCustomCols)
         {
             var sql = @" /* get_bug_datarow */";
 
-            if (Util.get_setting("EnableSeen", "0") == "1")
+            if (Util.GetSetting("EnableSeen", "0") == "1")
                 sql += @"
 if not exists (select bu_bug from bug_user where bu_bug = $id and bu_user = $this_usid)
-	insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($id, $this_usid, 0, 1, 0) 
+    insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($id, $this_usid, 0, 1, 0) 
 update bug_user set bu_seen = 1, bu_seen_datetime = getdate() where bu_bug = $id and bu_user = $this_usid and bu_seen <> 1";
 
             sql += @"
@@ -497,34 +498,34 @@ set @hg_revisions = 0
 set @tasks = 0
 set @related = 0";
 
-            if (Util.get_setting("EnableSubversionIntegration", "0") == "1")
+            if (Util.GetSetting("EnableSubversionIntegration", "0") == "1")
                 sql += @"
 select @svn_revisions = count(1)
 from svn_affected_paths
 inner join svn_revisions on svnap_svnrev_id = svnrev_id
 where svnrev_bug = $id;";
 
-            if (Util.get_setting("EnableGitIntegration", "0") == "1")
+            if (Util.GetSetting("EnableGitIntegration", "0") == "1")
                 sql += @"
 select @git_commits = count(1)
 from git_affected_paths
 inner join git_commits on gitap_gitcom_id = gitcom_id
 where gitcom_bug = $id;";
 
-            if (Util.get_setting("EnableMercurialIntegration", "0") == "1")
+            if (Util.GetSetting("EnableMercurialIntegration", "0") == "1")
                 sql += @"
 select @hg_revisions = count(1)
 from hg_affected_paths
 inner join hg_revisions on hgap_hgrev_id = hgrev_id
 where hgrev_bug = $id;";
 
-            if (Util.get_setting("EnableTasks", "0") == "1")
+            if (Util.GetSetting("EnableTasks", "0") == "1")
                 sql += @"
 select @tasks = count(1)
 from bug_tasks
 where tsk_bug = $id;";
 
-            if (Util.get_setting("EnableRelationships", "0") == "1")
+            if (Util.GetSetting("EnableRelationships", "0") == "1")
                 sql += @"
 select @related = count(1)
 from bug_relationships
@@ -538,18 +539,18 @@ isnull(bg_tags,'') [bg_tags],
 isnull(ru.us_username,'[deleted user]') [reporter],
 isnull(ru.us_email,'') [reporter_email],
 case rtrim(ru.us_firstname)
-	when null then isnull(ru.us_lastname, '')
-	when '' then isnull(ru.us_lastname, '')
-	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
-	end [reporter_fullname],
+    when null then isnull(ru.us_lastname, '')
+    when '' then isnull(ru.us_lastname, '')
+    else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+    end [reporter_fullname],
 bg_reported_date [reported_date],
 datediff(s,bg_reported_date,getdate()) [seconds_ago],
 isnull(lu.us_username,'') [last_updated_user],
 case rtrim(lu.us_firstname)
-	when null then isnull(lu.us_lastname, '')
-	when '' then isnull(lu.us_lastname, '')
-	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
-	end [last_updated_fullname],
+    when null then isnull(lu.us_lastname, '')
+    when '' then isnull(lu.us_lastname, '')
+    else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+    end [last_updated_fullname],
 
 
 bg_last_updated_date [last_updated_date],
@@ -583,12 +584,12 @@ isnull(bs_user,0) [subscribed],
 
 case
 when
-	$this_org <> bg_org
-	and userorg.og_other_orgs_permission_level < 2
-	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-		then userorg.og_other_orgs_permission_level
+    $this_org <> bg_org
+    and userorg.og_other_orgs_permission_level < 2
+    and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
+        then userorg.og_other_orgs_permission_level
 else
-	isnull(pu_permission_level,$dpl)
+    isnull(pu_permission_level,$dpl)
 end [pu_permission_level],
 
 isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
@@ -618,38 +619,38 @@ left outer join project_user_xref on pj_id = pu_project
 and pu_user = $this_usid
 where bg_id = $id";
 
-            if (ds_custom_cols.Tables[0].Rows.Count == 0)
+            if (dsCustomCols.Tables[0].Rows.Count == 0)
             {
                 sql = sql.Replace("$custom_cols_placeholder", "");
             }
             else
             {
-                var custom_cols_sql = "";
+                var customColsSql = "";
 
-                foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows) custom_cols_sql += ",[" + drcc["name"] + "]";
-                sql = sql.Replace("$custom_cols_placeholder", custom_cols_sql);
+                foreach (DataRow drcc in dsCustomCols.Tables[0].Rows) customColsSql += ",[" + drcc["name"] + "]";
+                sql = sql.Replace("$custom_cols_placeholder", customColsSql);
             }
 
             sql = sql.Replace("$id", Convert.ToString(bugid));
-            sql = sql.Replace("$this_usid", Convert.ToString(security.user.usid));
-            sql = sql.Replace("$this_org", Convert.ToString(security.user.org));
-            sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$this_usid", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$this_org", Convert.ToString(security.User.Org));
+            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
 
-            return DbUtil.get_datarow(sql);
+            return DbUtil.GetDataRow(sql);
         }
 
-        public static void apply_post_insert_rules(int bugid)
+        public static void ApplyPostInsertRules(int bugid)
         {
-            var sql = Util.get_setting("UpdateBugAfterInsertBugAspxSql", "");
+            var sql = Util.GetSetting("UpdateBugAfterInsertBugAspxSql", "");
 
             if (sql != "")
             {
                 sql = sql.Replace("$BUGID$", Convert.ToString(bugid));
-                DbUtil.execute_nonquery(sql);
+                DbUtil.ExecuteNonQuery(sql);
             }
         }
 
-        public static DataRow get_bug_defaults()
+        public static DataRow GetBugDefaults()
         {
             var sql = @"/*fetch defaults*/
 declare @pj int
@@ -669,17 +670,17 @@ select @st = st_id from statuses where st_default = 1 order by st_name
 select @udf = udf_id from user_defined_attribute where udf_default = 1 order by udf_name
 select @pj pj, @ct ct, @pr pr, @st st, @udf udf";
 
-            return DbUtil.get_datarow(sql);
+            return DbUtil.GetDataRow(sql);
         }
 
-        public static int get_bug_permission_level(int bugid, Security security)
+        public static int GetBugPermissionLevel(int bugid, Security security)
         {
             /*
-					public const int PERMISSION_NONE = 0;
-					public const int PERMISSION_READONLY = 1;
-					public const int PERMISSION_REPORTER = 3;
-					public const int PERMISSION_ALL = 2;
-			*/
+                    public const int PERMISSION_NONE = 0;
+                    public const int PERMISSION_READONLY = 1;
+                    public const int PERMISSION_REPORTER = 3;
+                    public const int PERMISSION_ALL = 2;
+            */
 
             // fetch the revised permission level
             var sql = @"
@@ -694,29 +695,29 @@ and pu_user = $us
 where bg_id = $bg";
             ;
 
-            sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
             sql = sql.Replace("$bg", Convert.ToString(bugid));
-            sql = sql.Replace("$us", Convert.ToString(security.user.usid));
+            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
 
-            var dr = DbUtil.get_datarow(sql);
+            var dr = DbUtil.GetDataRow(sql);
 
-            if (dr == null) return Security.PERMISSION_NONE;
+            if (dr == null) return Security.PermissionNone;
 
-            var pl = (int) dr[0];
-            var bg_org = (int) dr[1];
+            var pl = (int)dr[0];
+            var bgOrg = (int)dr[1];
 
             // maybe reduce permissions
-            if (bg_org != security.user.org)
-                if (security.user.other_orgs_permission_level == Security.PERMISSION_NONE
-                    || security.user.other_orgs_permission_level == Security.PERMISSION_READONLY)
-                    if (security.user.other_orgs_permission_level < pl)
-                        pl = security.user.other_orgs_permission_level;
+            if (bgOrg != security.User.Org)
+                if (security.User.OtherOrgsPermissionLevel == Security.PermissionNone
+                    || security.User.OtherOrgsPermissionLevel == Security.PermissionReadonly)
+                    if (security.User.OtherOrgsPermissionLevel < pl)
+                        pl = security.User.OtherOrgsPermissionLevel;
 
             return pl;
         }
 
-        public static NewIds insert_bug(
-            string short_desc,
+        public static NewIds InsertBug(
+            string shortDesc,
             Security security,
             string tags,
             int projectid,
@@ -724,127 +725,127 @@ where bg_id = $bg";
             int categoryid,
             int priorityid,
             int statusid,
-            int assigned_to_userid,
+            int assignedToUserid,
             int udfid,
-            string project_custom_dropdown_value1,
-            string project_custom_dropdown_value2,
-            string project_custom_dropdown_value3,
-            string comment_formated,
-            string comment_search,
+            string projectCustomDropdownValue1,
+            string projectCustomDropdownValue2,
+            string projectCustomDropdownValue3,
+            string commentFormated,
+            string commentSearch,
             string from,
             string cc,
-            string content_type,
-            bool internal_only,
-            SortedDictionary<string, string> hash_custom_cols,
-            bool send_notifications)
+            string contentType,
+            bool internalOnly,
+            SortedDictionary<string, string> hashCustomCols,
+            bool sendNotifications)
         {
-            if (short_desc.Trim() == "") short_desc = "[No Description]";
+            if (shortDesc.Trim() == "") shortDesc = "[No Description]";
 
-            if (assigned_to_userid == 0) assigned_to_userid = Util.get_default_user(projectid);
+            if (assignedToUserid == 0) assignedToUserid = Util.GetDefaultUser(projectid);
 
             var sql = @"insert into bugs
-					(bg_short_desc,
-					bg_tags,
-					bg_reported_user,
-					bg_last_updated_user,
-					bg_reported_date,
-					bg_last_updated_date,
-					bg_project,
-					bg_org,
-					bg_category,
-					bg_priority,
-					bg_status,
-					bg_assigned_to_user,
-					bg_user_defined_attribute,
-					bg_project_custom_dropdown_value1,
-					bg_project_custom_dropdown_value2,
-					bg_project_custom_dropdown_value3
-					$custom_cols_placeholder1)
-					values (N'$short_desc', N'$tags', $reported_user,  $reported_user, getdate(), getdate(),
-					$project, $org,
-					$category, $priority, $status, $assigned_user, $udf,
-					N'$pcd1',N'$pcd2',N'$pcd3' $custom_cols_placeholder2)";
+                    (bg_short_desc,
+                    bg_tags,
+                    bg_reported_user,
+                    bg_last_updated_user,
+                    bg_reported_date,
+                    bg_last_updated_date,
+                    bg_project,
+                    bg_org,
+                    bg_category,
+                    bg_priority,
+                    bg_status,
+                    bg_assigned_to_user,
+                    bg_user_defined_attribute,
+                    bg_project_custom_dropdown_value1,
+                    bg_project_custom_dropdown_value2,
+                    bg_project_custom_dropdown_value3
+                    $custom_cols_placeholder1)
+                    values (N'$short_desc', N'$tags', $reported_user,  $reported_user, getdate(), getdate(),
+                    $project, $org,
+                    $category, $priority, $status, $assigned_user, $udf,
+                    N'$pcd1',N'$pcd2',N'$pcd3' $custom_cols_placeholder2)";
 
-            sql = sql.Replace("$short_desc", short_desc.Replace("'", "''"));
+            sql = sql.Replace("$short_desc", shortDesc.Replace("'", "''"));
             sql = sql.Replace("$tags", tags.Replace("'", "''"));
-            sql = sql.Replace("$reported_user", Convert.ToString(security.user.usid));
+            sql = sql.Replace("$reported_user", Convert.ToString(security.User.Usid));
             sql = sql.Replace("$project", Convert.ToString(projectid));
             sql = sql.Replace("$org", Convert.ToString(orgid));
             sql = sql.Replace("$category", Convert.ToString(categoryid));
             sql = sql.Replace("$priority", Convert.ToString(priorityid));
             sql = sql.Replace("$status", Convert.ToString(statusid));
-            sql = sql.Replace("$assigned_user", Convert.ToString(assigned_to_userid));
+            sql = sql.Replace("$assigned_user", Convert.ToString(assignedToUserid));
             sql = sql.Replace("$udf", Convert.ToString(udfid));
-            sql = sql.Replace("$pcd1", project_custom_dropdown_value1);
-            sql = sql.Replace("$pcd2", project_custom_dropdown_value2);
-            sql = sql.Replace("$pcd3", project_custom_dropdown_value3);
+            sql = sql.Replace("$pcd1", projectCustomDropdownValue1);
+            sql = sql.Replace("$pcd2", projectCustomDropdownValue2);
+            sql = sql.Replace("$pcd3", projectCustomDropdownValue3);
 
-            if (hash_custom_cols == null)
+            if (hashCustomCols == null)
             {
                 sql = sql.Replace("$custom_cols_placeholder1", "");
                 sql = sql.Replace("$custom_cols_placeholder2", "");
             }
             else
             {
-                var custom_cols_sql1 = "";
-                var custom_cols_sql2 = "";
+                var customColsSql1 = "";
+                var customColsSql2 = "";
 
-                var ds_custom_cols = Util.get_custom_columns();
+                var dsCustomCols = Util.GetCustomColumns();
 
-                foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+                foreach (DataRow drcc in dsCustomCols.Tables[0].Rows)
                 {
-                    var column_name = (string) drcc["name"];
+                    var columnName = (string)drcc["name"];
 
                     // skip if no permission to update
-                    if (security.user.dict_custom_field_permission_level[column_name] !=
-                        Security.PERMISSION_ALL) continue;
+                    if (security.User.DictCustomFieldPermissionLevel[columnName] !=
+                        Security.PermissionAll) continue;
 
-                    custom_cols_sql1 += ",[" + column_name + "]";
+                    customColsSql1 += ",[" + columnName + "]";
 
-                    var datatype = (string) drcc["datatype"];
+                    var datatype = (string)drcc["datatype"];
 
-                    var custom_col_val = Util.request_to_string_for_sql(
-                        hash_custom_cols[column_name],
+                    var customColVal = Util.RequestToStringForSql(
+                        hashCustomCols[columnName],
                         datatype);
 
-                    custom_cols_sql2 += "," + custom_col_val;
+                    customColsSql2 += "," + customColVal;
                 }
 
-                sql = sql.Replace("$custom_cols_placeholder1", custom_cols_sql1);
-                sql = sql.Replace("$custom_cols_placeholder2", custom_cols_sql2);
+                sql = sql.Replace("$custom_cols_placeholder1", customColsSql1);
+                sql = sql.Replace("$custom_cols_placeholder2", customColsSql2);
             }
 
             sql += "\nselect scope_identity()";
 
-            var bugid = Convert.ToInt32(DbUtil.execute_scalar(sql));
-            var postid = insert_comment(
+            var bugid = Convert.ToInt32(DbUtil.ExecuteScalar(sql));
+            var postid = InsertComment(
                 bugid,
-                security.user.usid,
-                comment_formated,
-                comment_search,
+                security.User.Usid,
+                commentFormated,
+                commentSearch,
                 from,
                 cc,
-                content_type,
-                internal_only);
+                contentType,
+                internalOnly);
 
-            auto_subscribe(bugid);
+            AutoSubscribe(bugid);
 
-            if (send_notifications) Bug.send_notifications(INSERT, bugid, security);
+            if (sendNotifications) SendNotifications(Insert, bugid, security);
 
             return new NewIds(bugid, postid);
         }
 
-        public static int insert_comment(
+        public static int InsertComment(
             int bugid,
-            int this_usid,
-            string comment_formated,
-            string comment_search,
+            int thisUsid,
+            string commentFormated,
+            string commentSearch,
             string from,
             string cc,
-            string content_type,
-            bool internal_only)
+            string contentType,
+            bool internalOnly)
         {
-            if (comment_formated != "")
+            if (commentFormated != "")
             {
                 var sql = @"
 declare @now datetime
@@ -870,12 +871,12 @@ select scope_identity();";
                 {
                     // Update the bugs timestamp here.
                     // We don't do it unconditionally because it would mess up the locking.
-                    // The edit_bug.aspx page gets its snapshot timestamp from the update of the bug
+                    // The EditBug.aspx page gets its snapshot timestamp from the update of the bug
                     // row, not the comment row, so updating the bug again would confuse it.
                     sql += @"update bugs
-						set bg_last_updated_date = @now,
-						bg_last_updated_user = $us
-						where bg_id = $id";
+                        set bg_last_updated_date = @now,
+                        bg_last_updated_user = $us
+                        where bg_id = $id";
 
                     sql = sql.Replace("$from", from.Replace("'", "''"));
                     sql = sql.Replace("$type", "received"); // received email
@@ -887,35 +888,35 @@ select scope_identity();";
                 }
 
                 sql = sql.Replace("$id", Convert.ToString(bugid));
-                sql = sql.Replace("$us", Convert.ToString(this_usid));
-                sql = sql.Replace("$comment_formatted", comment_formated.Replace("'", "''"));
-                sql = sql.Replace("$comment_search", comment_search.Replace("'", "''"));
-                sql = sql.Replace("$content_type", content_type);
+                sql = sql.Replace("$us", Convert.ToString(thisUsid));
+                sql = sql.Replace("$comment_formatted", commentFormated.Replace("'", "''"));
+                sql = sql.Replace("$comment_search", commentSearch.Replace("'", "''"));
+                sql = sql.Replace("$content_type", contentType);
                 if (cc == null) cc = "";
                 sql = sql.Replace("$cc", cc.Replace("'", "''"));
-                sql = sql.Replace("$internal", Util.bool_to_string(internal_only));
+                sql = sql.Replace("$internal", Util.BoolToString(internalOnly));
 
-                return Convert.ToInt32(DbUtil.execute_scalar(sql));
+                return Convert.ToInt32(DbUtil.ExecuteScalar(sql));
             }
 
             return 0;
         }
 
-        public static void send_notifications(int insert_or_update, int bugid, Security security,
-            int just_to_this_user_id)
+        public static void SendNotifications(int insertOrUpdate, int bugid, Security security,
+            int justToThisUserId)
         {
-            send_notifications(insert_or_update,
+            SendNotifications(insertOrUpdate,
                 bugid,
                 security,
-                just_to_this_user_id,
+                justToThisUserId,
                 false, // status changed
                 false, // assigend to changed
                 0); // prev assigned to
         }
 
-        public static void send_notifications(int insert_or_update, int bugid, Security security)
+        public static void SendNotifications(int insertOrUpdate, int bugid, Security security)
         {
-            send_notifications(insert_or_update,
+            SendNotifications(insertOrUpdate,
                 bugid,
                 security,
                 0, // just to this
@@ -926,37 +927,37 @@ select scope_identity();";
 
         // This used to send the emails, but not now.  Now it just queues
         // the emails to be sent, then spawns a thread to send them.
-        public static void send_notifications(int insert_or_update, // The implementation
+        public static void SendNotifications(int insertOrUpdate, // The implementation
             int bugid,
             Security security,
-            int just_to_this_userid,
-            bool status_changed,
-            bool assigned_to_changed,
-            int prev_assigned_to_user)
+            int justToThisUserid,
+            bool statusChanged,
+            bool assignedToChanged,
+            int prevAssignedToUser)
         {
             // If there's something worth emailing about, then there's 
             // probably something worth updating the index about.
             // Really, though, we wouldn't want to update the index if it were
             // just the status that were changing...
-            if (Util.get_setting("EnableLucene", "1") == "1") MyLucene.update_lucene_index(bugid);
+            if (Util.GetSetting("EnableLucene", "1") == "1") MyLucene.UpdateLuceneIndex(bugid);
 
-            var notification_email_enabled = Util.get_setting("NotificationEmailEnabled", "1") == "1";
+            var notificationEmailEnabled = Util.GetSetting("NotificationEmailEnabled", "1") == "1";
 
-            if (!notification_email_enabled) return;
+            if (!notificationEmailEnabled) return;
             // MAW -- 2006/01/27 -- Determine level of change detected
             var changeLevel = 0;
-            if (insert_or_update == INSERT)
+            if (insertOrUpdate == Insert)
                 changeLevel = 1;
-            else if (status_changed)
+            else if (statusChanged)
                 changeLevel = 2;
-            else if (assigned_to_changed)
+            else if (assignedToChanged)
                 changeLevel = 3;
             else
                 changeLevel = 4;
 
             string sql;
 
-            if (just_to_this_userid > 0)
+            if (justToThisUserid > 0)
             {
                 sql = @"
 /* get notification email for just one user  */
@@ -974,17 +975,17 @@ and us_email <> ''
 and
 case
 when
-	us_org <> bg_org
-	and og_other_orgs_permission_level < 2
-	and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-		then og_other_orgs_permission_level
+    us_org <> bg_org
+    and og_other_orgs_permission_level < 2
+    and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
+        then og_other_orgs_permission_level
 else
-	isnull(pu_permission_level,$dpl)
+    isnull(pu_permission_level,$dpl)
 end <> 0
 and bs_bug = $id
 and us_id = $just_this_usid";
 
-                sql = sql.Replace("$just_this_usid", Convert.ToString(just_to_this_userid));
+                sql = sql.Replace("$just_this_usid", Convert.ToString(justToThisUserid));
             }
             else
             {
@@ -1012,7 +1013,7 @@ when
 us_org <> bg_org
 and og_other_orgs_permission_level < 2
 and og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-	then og_other_orgs_permission_level
+    then og_other_orgs_permission_level
 else
 isnull(pu_permission_level,$dpl)
 end <> 0
@@ -1021,98 +1022,98 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
             }
 
             sql = sql.Replace("$cl", changeLevel.ToString());
-            sql = sql.Replace("$pau", prev_assigned_to_user.ToString());
+            sql = sql.Replace("$pau", prevAssignedToUser.ToString());
             sql = sql.Replace("$id", Convert.ToString(bugid));
-            sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
-            sql = sql.Replace("$us", Convert.ToString(security.user.usid));
+            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
 
-            var ds_subscribers = DbUtil.get_dataset(sql);
+            var dsSubscribers = DbUtil.GetDataSet(sql);
 
-            if (ds_subscribers.Tables[0].Rows.Count > 0)
+            if (dsSubscribers.Tables[0].Rows.Count > 0)
             {
-                var added_to_queue = false;
+                var addedToQueue = false;
 
                 // Get bug html
-                var bug_dr = get_bug_datarow(bugid, security);
+                var bugDr = GetBugDataRow(bugid, security);
 
-                var from = Util.get_setting("NotificationEmailFrom", "");
+                var from = Util.GetSetting("NotificationEmailFrom", "");
 
                 // Format the subject line
-                var subject = Util.get_setting("NotificationSubjectFormat",
+                var subject = Util.GetSetting("NotificationSubjectFormat",
                     "$THING$:$BUGID$ was $ACTION$ - $SHORTDESC$ $TRACKINGID$");
 
                 subject = subject.Replace("$THING$",
-                    Util.capitalize_first_letter(Util.get_setting("SingularBugLabel", "bug")));
+                    Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")));
 
                 var action = "";
-                if (insert_or_update == INSERT)
+                if (insertOrUpdate == Insert)
                     action = "added";
                 else
                     action = "updated";
 
                 subject = subject.Replace("$ACTION$", action);
                 subject = subject.Replace("$BUGID$", Convert.ToString(bugid));
-                subject = subject.Replace("$SHORTDESC$", (string) bug_dr["short_desc"]);
+                subject = subject.Replace("$SHORTDESC$", (string)bugDr["short_desc"]);
 
-                var tracking_id = " (";
-                tracking_id += Util.get_setting("TrackingIdString", "DO NOT EDIT THIS:");
-                tracking_id += Convert.ToString(bugid);
-                tracking_id += ")";
-                subject = subject.Replace("$TRACKINGID$", tracking_id);
+                var trackingId = " (";
+                trackingId += Util.GetSetting("TrackingIdString", "DO NOT EDIT THIS:");
+                trackingId += Convert.ToString(bugid);
+                trackingId += ")";
+                subject = subject.Replace("$TRACKINGID$", trackingId);
 
-                subject = subject.Replace("$PROJECT$", (string) bug_dr["current_project"]);
-                subject = subject.Replace("$ORGANIZATION$", (string) bug_dr["og_name"]);
-                subject = subject.Replace("$CATEGORY$", (string) bug_dr["category_name"]);
-                subject = subject.Replace("$PRIORITY$", (string) bug_dr["priority_name"]);
-                subject = subject.Replace("$STATUS$", (string) bug_dr["status_name"]);
-                subject = subject.Replace("$ASSIGNED_TO$", (string) bug_dr["assigned_to_username"]);
+                subject = subject.Replace("$PROJECT$", (string)bugDr["current_project"]);
+                subject = subject.Replace("$ORGANIZATION$", (string)bugDr["og_name"]);
+                subject = subject.Replace("$CATEGORY$", (string)bugDr["category_name"]);
+                subject = subject.Replace("$PRIORITY$", (string)bugDr["priority_name"]);
+                subject = subject.Replace("$STATUS$", (string)bugDr["status_name"]);
+                subject = subject.Replace("$ASSIGNED_TO$", (string)bugDr["assigned_to_username"]);
 
                 // send a separate email to each subscriber
-                foreach (DataRow dr in ds_subscribers.Tables[0].Rows)
+                foreach (DataRow dr in dsSubscribers.Tables[0].Rows)
                 {
-                    var to = (string) dr["us_email"];
+                    var to = (string)dr["us_email"];
 
                     // Create a fake response and let the code
                     // write the html to that response
                     var writer = new StringWriter();
-                    var my_response = new HttpResponse(writer);
-                    my_response.Write("<html>");
-                    my_response.Write("<base href=\"" +
-                                      Util.get_setting("AbsoluteUrlPrefix", "http://127.0.0.1/") + "\"/>");
+                    var myResponse = new HttpResponse(writer);
+                    myResponse.Write("<html>");
+                    myResponse.Write("<base href=\"" +
+                                      Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/") + "\"/>");
 
                     // create a security rec for the user receiving the email
                     var sec2 = new Security();
 
                     // fill in what we know is needed downstream
-                    sec2.user.is_admin = Convert.ToBoolean(dr["us_admin"]);
-                    sec2.user.external_user = Convert.ToBoolean(dr["og_external_user"]);
-                    sec2.user.tags_field_permission_level = (int) dr["og_tags_field_permission_level"];
-                    sec2.user.category_field_permission_level = (int) dr["og_category_field_permission_level"];
-                    sec2.user.priority_field_permission_level = (int) dr["og_priority_field_permission_level"];
-                    sec2.user.assigned_to_field_permission_level = (int) dr["og_assigned_to_field_permission_level"];
-                    sec2.user.status_field_permission_level = (int) dr["og_status_field_permission_level"];
-                    sec2.user.project_field_permission_level = (int) dr["og_project_field_permission_level"];
-                    sec2.user.org_field_permission_level = (int) dr["og_org_field_permission_level"];
-                    sec2.user.udf_field_permission_level = (int) dr["og_udf_field_permission_level"];
+                    sec2.User.IsAdmin = Convert.ToBoolean(dr["us_admin"]);
+                    sec2.User.ExternalUser = Convert.ToBoolean(dr["og_external_user"]);
+                    sec2.User.TagsFieldPermissionLevel = (int)dr["og_tags_field_permission_level"];
+                    sec2.User.CategoryFieldPermissionLevel = (int)dr["og_category_field_permission_level"];
+                    sec2.User.PriorityFieldPermissionLevel = (int)dr["og_priority_field_permission_level"];
+                    sec2.User.AssignedToFieldPermissionLevel = (int)dr["og_assigned_to_field_permission_level"];
+                    sec2.User.StatusFieldPermissionLevel = (int)dr["og_status_field_permission_level"];
+                    sec2.User.ProjectFieldPermissionLevel = (int)dr["og_project_field_permission_level"];
+                    sec2.User.OrgFieldPermissionLevel = (int)dr["og_org_field_permission_level"];
+                    sec2.User.UdfFieldPermissionLevel = (int)dr["og_udf_field_permission_level"];
 
-                    var ds_custom = Util.get_custom_columns();
-                    foreach (DataRow dr_custom in ds_custom.Tables[0].Rows)
+                    var dsCustom = Util.GetCustomColumns();
+                    foreach (DataRow drCustom in dsCustom.Tables[0].Rows)
                     {
-                        var bg_name = (string) dr_custom["name"];
-                        var og_name = "og_"
-                                      + (string) dr_custom["name"]
+                        var bgName = (string)drCustom["name"];
+                        var ogName = "og_"
+                                      + (string)drCustom["name"]
                                       + "_field_permission_level";
 
-                        var obj = dr[og_name];
+                        var obj = dr[ogName];
                         if (Convert.IsDBNull(obj))
-                            sec2.user.dict_custom_field_permission_level[bg_name] = Security.PERMISSION_ALL;
+                            sec2.User.DictCustomFieldPermissionLevel[bgName] = Security.PermissionAll;
                         else
-                            sec2.user.dict_custom_field_permission_level[bg_name] = (int) dr[og_name];
+                            sec2.User.DictCustomFieldPermissionLevel[bgName] = (int)dr[ogName];
                     }
 
                     PrintBug.print_bug(
-                        my_response,
-                        bug_dr,
+                        myResponse,
+                        bugDr,
                         sec2,
                         true, // include style 
                         false, // images_inline 
@@ -1135,47 +1136,47 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
                     sql = sql.Replace("$subject", subject.Replace("'", "''"));
                     sql = sql.Replace("$body", writer.ToString().Replace("'", "''"));
 
-                    DbUtil.execute_nonquery_without_logging(sql);
+                    DbUtil.ExecuteNonQueryWithoutLogging(sql);
 
-                    added_to_queue = true;
+                    addedToQueue = true;
                 } // end loop through ds_subscribers
 
-                if (added_to_queue)
+                if (addedToQueue)
                 {
                     // spawn a worker thread to send the emails
-                    var thread = new Thread(threadproc_notifications);
+                    var thread = new Thread(ThreadProcNotifications);
                     thread.Start();
                 }
             } // if there are any subscribers
         }
 
         // Send the emails in the queue
-        protected static void actually_send_the_emails()
+        protected static void ActuallySendTheEmails()
         {
-            Util.write_to_log("actually_send_the_emails");
+            Util.WriteToLog("actually_send_the_emails");
 
             var sql = @"select * from queued_notifications where qn_status = N'not sent' and qn_retries < 3";
             // create a new one, just in case there would be multithreading issues...
 
             // get the pending notifications
-            var ds = DbUtil.get_dataset(sql);
+            var ds = DbUtil.GetDataSet(sql);
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
                 var err = "";
 
                 try
                 {
-                    var to = (string) dr["qn_to"];
+                    var to = (string)dr["qn_to"];
 
-                    Util.write_to_log("sending email to " + to);
+                    Util.WriteToLog("sending email to " + to);
 
                     // try to send it
-                    err = Email.send_email(
-                        (string) dr["qn_to"],
-                        (string) dr["qn_from"],
+                    err = Email.SendEmail(
+                        (string)dr["qn_to"],
+                        (string)dr["qn_from"],
                         "", // cc
-                        (string) dr["qn_subject"],
-                        (string) dr["qn_body"],
+                        (string)dr["qn_subject"],
+                        (string)dr["qn_body"],
                         BtnetMailFormat.Html);
 
                     if (err == "") sql = "delete from queued_notifications where qn_id = $qn_id";
@@ -1200,57 +1201,57 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
                 sql = sql.Replace("$qn_id", Convert.ToString(dr["qn_id"]));
 
                 // update the row or delete the row
-                DbUtil.execute_nonquery(sql);
+                DbUtil.ExecuteNonQuery(sql);
             }
         }
 
         // Send the emails in the queue
-        public static void threadproc_notifications()
+        public static void ThreadProcNotifications()
         {
             // just to be safe, make the worker threads wait for each other
-            lock (dummy)
+            lock (Dummy)
             {
                 try
                 {
                     // Don't send emails right away, in case the guy is making a bunch of changes.
                     // Let's consolidate the notifications to one.
                     Thread.Sleep(1000 * 60);
-                    actually_send_the_emails();
+                    ActuallySendTheEmails();
                 }
                 catch (ThreadAbortException)
                 {
-                    Util.write_to_log("caught ThreadAbortException in threadproc_notifications");
-                    actually_send_the_emails();
+                    Util.WriteToLog("caught ThreadAbortException in threadproc_notifications");
+                    ActuallySendTheEmails();
                 }
             }
         } // end of notification thread proc
 
         public class BugPostAttachment
         {
-            public Stream content;
-            public int content_length;
-            public string content_type;
+            public Stream Content;
+            public int ContentLength;
+            public string ContentType;
 
-            public string file;
+            public string File;
 
-            public BugPostAttachment(string file, Stream content, int content_length, string content_type)
+            public BugPostAttachment(string file, Stream content, int contentLength, string contentType)
             {
-                this.file = file;
-                this.content = content;
-                this.content_length = content_length;
-                this.content_type = content_type;
+                this.File = file;
+                this.Content = content;
+                this.ContentLength = contentLength;
+                this.ContentType = contentType;
             }
         }
 
         public class NewIds
         {
-            public int bugid;
-            public int postid;
+            public int Bugid;
+            public int Postid;
 
             public NewIds(int b, int p)
             {
-                this.bugid = b;
-                this.postid = p;
+                this.Bugid = b;
+                this.Postid = p;
             }
         }
     }

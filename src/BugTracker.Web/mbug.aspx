@@ -5,16 +5,16 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="mbug.aspx.cs" Inherits="BugTracker.Web.mbug" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="MBug.aspx.cs" Inherits="BugTracker.Web.MBug" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="jquery/jquery.mobile-1.2.0.min.css" />
-    <link rel="stylesheet" href="mbtnet_base.css" />
+    <link rel="stylesheet" href="Scripts/jquery/jquery.mobile-1.2.0.min.css" />
+    <link rel="stylesheet" href="Content/mbtnet_base.css" />
 
-    <script src="jquery/jquery-1.8.2.min.js"></script>
-    <script src="jquery/jquery.mobile-1.2.0.min.js"></script>
+    <script src="Scripts/jquery/jquery-1.8.2.min.js"></script>
+    <script src="Scripts/jquery/jquery.mobile-1.2.0.min.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
@@ -28,7 +28,7 @@
         <!-- /header -->
 
         <div data-role="content">
-            <a class="ui-submit" data-ajax="false" href="mbugs.aspx" data-role="button" data-icon="arrow-l" data-iconpos="left">Back to List</a>
+            <a class="ui-submit" data-ajax="false" href="MBugs.aspx" data-role="button" data-icon="arrow-l" data-iconpos="left">Back to List</a>
 
             <form data-ajax="false" id="Form1" class="frm" runat="server">
                 <div class="err" runat="server" id="msg">&nbsp;</div>
@@ -49,7 +49,7 @@
                 <textarea id="comment" runat="server"></textarea>
                 <input data-role="button" id="submit_button" type="submit" value="Button" runat="server">
 
-                <% if (this.id != 0)
+                <% if (this.Id != 0)
                     { %>
                 <br />
                 <div>Reported by <span id="created_by" runat="server"></span></div>
@@ -67,14 +67,14 @@
 
                 <%
                     // COMMENTS
-                    if (this.id != 0)
-                        PrintBug.write_posts(this.ds_posts,
-                            Response, this.id, this.permission_level,
+                    if (this.Id != 0)
+                        PrintBug.WritePosts(this.DsPosts,
+                            Response, this.Id, this.PermissionLevel,
                             false, // write links
                             false, // images inline
                             true, // history inline
                             false, // internal_posts
-                            this.security.user);
+                            this.Security.User);
                 %>
             </div>
 

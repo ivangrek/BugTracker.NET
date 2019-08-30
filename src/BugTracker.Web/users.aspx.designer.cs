@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class users {
+    public partial class Users {
         
         /// <summary>
         /// filter_users control.

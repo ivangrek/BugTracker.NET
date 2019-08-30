@@ -5,25 +5,25 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="customfields.aspx.cs" Inherits="BugTracker.Web.customfields" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="CustomFields.aspx.cs" Inherits="BugTracker.Web.CustomFields" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "admin"); %>
+    <% this.Security.WriteMenu(Response, "admin"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="add_customfield.aspx">add new custom field</a>
+        <a href="AddCustomfield.aspx">add new custom field</a>
         <p/>
         <%
-            if (this.ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.create_from_dataset(
-                    Response, this.ds, "edit_customfield.aspx?id=", "delete_customfield.aspx?id=");
+            if (this.Ds.Tables[0].Rows.Count > 0)
+                SortableHtmlTable.CreateFromDataSet(
+                    Response, this.Ds, "EditCustomField.aspx?id=", "DeleteCustomField.aspx?id=");
             else
                 Response.Write("No custom fields.");
         %>

@@ -14,7 +14,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class whatsnew : Page
+    public partial class WhatsNew : Page
     {
         /*
 
@@ -48,18 +48,18 @@ bugs since the "since" value.   The data is formated as JSON.
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            if (Util.get_setting("EnableWhatsNewPage", "0") == "0")
+            if (Util.GetSetting("EnableWhatsNewPage", "0") == "0")
             {
                 Response.Write("Sorry, Web.config EnableWhatsNewPage is set to 0");
                 Response.End();
             }
 
-            var since_string = Request["since"];
-            if (string.IsNullOrEmpty(since_string)) since_string = "0";
+            var sinceString = Request["since"];
+            if (string.IsNullOrEmpty(sinceString)) sinceString = "0";
 
-            var since = Convert.ToInt64(since_string);
+            var since = Convert.ToInt64(sinceString);
 
             Response.ContentType = "application/json";
 
@@ -68,36 +68,36 @@ bugs since the "since" value.   The data is formated as JSON.
             json.Append("{");
 
             // The web server's time.  The client javascript will use this a a reference point.
-            append_json_var_val(json, "now", Convert.ToString(DateTime.Now.Ticks / WhatsNew.ten_million));
+            append_json_var_val(json, "now", Convert.ToString(DateTime.Now.Ticks / Core.WhatsNew.TenMillion));
 
             // Serialize an array of BugNews objects
             json.Append(",\"news_list\":[");
 
             var list = (List<BugNews>) Application["whatsnew"];
 
-            var first_news = true;
+            var firstNews = true;
             if (list != null)
                 for (var i = 0; i < list.Count; i++)
                 {
                     var news = list[i];
-                    if (news.seconds > since)
+                    if (news.Seconds > since)
                     {
-                        if (first_news)
-                            first_news = false;
+                        if (firstNews)
+                            firstNews = false;
                         else
                             json.Append(",");
 
                         // Serialize BugNews object
                         json.Append("{");
-                        append_json_var_val(json, "seconds", news.seconds_string);
+                        append_json_var_val(json, "seconds", news.SecondsString);
                         json.Append(",");
-                        append_json_var_val(json, "bugid", news.bugid);
+                        append_json_var_val(json, "bugid", news.Bugid);
                         json.Append(",");
-                        append_json_var_val(json, "desc", HttpUtility.HtmlEncode(news.desc));
+                        append_json_var_val(json, "desc", HttpUtility.HtmlEncode(news.Desc));
                         json.Append(",");
-                        append_json_var_val(json, "action", news.action);
+                        append_json_var_val(json, "action", news.Action);
                         json.Append(",");
-                        append_json_var_val(json, "who", news.who);
+                        append_json_var_val(json, "who", news.Who);
                         json.Append("}");
                     }
                 }

@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class udfs {
+    public partial class Udfs {
     }
 }

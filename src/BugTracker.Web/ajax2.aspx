@@ -5,4 +5,4 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ajax2.aspx.cs" Inherits="BugTracker.Web.ajax2" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Ajax2.aspx.cs" Inherits="BugTracker.Web.Ajax2" %>

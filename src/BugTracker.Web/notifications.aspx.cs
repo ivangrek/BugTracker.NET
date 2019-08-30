@@ -13,24 +13,24 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class notifications : Page
+    public partial class Notifications : Page
     {
-        public DataSet ds;
+        public DataSet Ds;
 
-        public Security security;
-        public string ses;
+        public Security Security;
+        public string Ses;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.MUST_BE_ADMIN);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "queued notifications";
 
-            this.ds = DbUtil.get_dataset(
+            this.Ds = DbUtil.GetDataSet(
                 @"select
 		qn_id [id],
 		qn_date_created [date created],
@@ -42,7 +42,7 @@ namespace BugTracker.Web
 		from queued_notifications
 		order by id;");
 
-            this.ses = (string) Session["session_cookie"];
+            this.Ses = (string) Session["session_cookie"];
         }
     }
 }

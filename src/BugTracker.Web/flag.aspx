@@ -5,4 +5,4 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="flag.aspx.cs" Inherits="BugTracker.Web.flag" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Flag.aspx.cs" Inherits="BugTracker.Web.Flag" %>

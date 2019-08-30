@@ -13,20 +13,20 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class reports : Page
+    public partial class Reports : Page
     {
-        public DataSet ds;
-        public Security security;
+        public DataSet Ds;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            if (this.security.user.is_admin || this.security.user.can_use_reports ||
-                this.security.user.can_edit_reports)
+            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports ||
+                this.Security.User.CanEditReports)
             {
                 //
             }
@@ -36,7 +36,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "reports";
 
             var sql = @"
@@ -44,25 +44,25 @@ select
 rp_desc [report],
 case
 	when rp_chart_type = 'pie' then
-		'<a target=''_blank'' href=''view_report.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>pie</a>'
+		'<a target=''_blank'' href=''ViewReport.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>pie</a>'
 	when rp_chart_type = 'line' then
-		'<a target=''_blank'' href=''view_report.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>line</a>'
+		'<a target=''_blank'' href=''ViewReport.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>line</a>'
 	when rp_chart_type = 'bar' then
-		'<a target=''_blank'' href=''view_report.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>bar</a>'
+		'<a target=''_blank'' href=''ViewReport.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>bar</a>'
 	else
 		'&nbsp;' end [view<br>chart],
-'<a target=''_blank'' href=''view_report.aspx?view=data&id=' + convert(varchar, rp_id) + '''>data</a>' [view<br>data]
+'<a target=''_blank'' href=''ViewReport.aspx?view=data&id=' + convert(varchar, rp_id) + '''>data</a>' [view<br>data]
 $adm
 from reports order by rp_desc";
 
-            if (this.security.user.is_admin || this.security.user.can_edit_reports)
+            if (this.Security.User.IsAdmin || this.Security.User.CanEditReports)
                 sql = sql.Replace("$adm", ", " +
-                                          "'<a href=''edit_report.aspx?id=' + convert(varchar, rp_id) + '''>edit</a>' [edit], " +
-                                          "'<a href=''delete_report.aspx?id=' + convert(varchar, rp_id) + '''>delete</a>' [delete] ");
+                                          "'<a href=''EditReport.aspx?id=' + convert(varchar, rp_id) + '''>edit</a>' [edit], " +
+                                          "'<a href=''DeleteReport.aspx?id=' + convert(varchar, rp_id) + '''>delete</a>' [delete] ");
             else
                 sql = sql.Replace("$adm", "");
 
-            this.ds = DbUtil.get_dataset(sql);
+            this.Ds = DbUtil.GetDataSet(sql);
         }
     }
 }

@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class loginnt {
+    public partial class LoginNt {
     }
 }

@@ -5,26 +5,26 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="categories.aspx.cs" Inherits="BugTracker.Web.categories" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Categories.aspx.cs" Inherits="BugTracker.Web.Categories" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "admin"); %>
+    <% this.Security.WriteMenu(Response, "admin"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="edit_category.aspx">add new category</a>
+        <a href="EditCategory.aspx">add new category</a>
         <p/>
         <%
 
-            if (this.ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.create_from_dataset(
-                    Response, this.ds, "edit_category.aspx?id=", "delete_category.aspx?id=");
+            if (this.Ds.Tables[0].Rows.Count > 0)
+                SortableHtmlTable.CreateFromDataSet(
+                    Response, this.Ds, "EditCategory.aspx?id=", "DeleteCategory.aspx?id=");
             else
                 Response.Write("No categories in the database.");
         %>

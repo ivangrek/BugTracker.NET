@@ -5,17 +5,17 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="query.aspx.cs" Inherits="BugTracker.Web.query" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Query.aspx.cs" Inherits="BugTracker.Web.Query" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="sortable.js"></script>
+    <script type="text/javascript" src="Scripts/sortable.js"></script>
 
     <script>
         var shown = true;
 
         function showhide_form() {
-            var frm = document.getElementById("<% Response.Write(Util.get_form_name()); %>");
+            var frm = document.getElementById("<% Response.Write(Util.GetFormName()); %>");
             if (shown) {
                 frm.style.display = "none";
                 shown = false;
@@ -28,8 +28,8 @@
         }
 
         function on_dbtables_changed() {
-            var tables_sel = document.getElementById("dbtables_select");
-            selected_text = tables_sel.options[tables_sel.selectedIndex].text;
+            var tablesSel = document.getElementById("dbtables_select");
+            selected_text = tablesSel.options[tablesSel.selectedIndex].text;
             if (selected_text != "Select Table") {
                 document.getElementById("queryText").value = "select * from " + selected_text;
             }
@@ -60,7 +60,7 @@
             <tr>
                 <td>
 
-                    <form class="frm" action="query.aspx" method="POST" runat="server">
+                    <form class="frm" action="Query.aspx" method="POST" runat="server">
                         Or enter SQL:
                 <br>
                         <textarea rows="15" cols="70" runat="server" id="queryText"></textarea>
@@ -73,12 +73,12 @@
 
     <%
 
-        if (this.exception_message != "")
-            Response.Write("<span class=err>" + this.exception_message + "</span><br>");
+        if (this.ExceptionMessage != "")
+            Response.Write("<span class=err>" + this.ExceptionMessage + "</span><br>");
 
-        if (this.ds != null && this.ds.Tables.Count > 0 && this.ds.Tables[0].Rows.Count > 0)
-            SortableHtmlTable.create_from_dataset(
-                Response, this.ds, "", "");
+        if (this.Ds != null && this.Ds.Tables.Count > 0 && this.Ds.Tables[0].Rows.Count > 0)
+            SortableHtmlTable.CreateFromDataSet(
+                Response, this.Ds, "", "");
         else
             Response.Write("No Rows");
     %>

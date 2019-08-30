@@ -13,19 +13,19 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class flag : Page
+    public partial class Flag : Page
     {
-        public Security security;
-        public string sql;
+        public Security Security;
+        public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            if (!this.security.user.is_guest)
+            if (!this.Security.User.IsGuest)
                 if (Request.QueryString["ses"] != (string) Session["session_cookie"])
                 {
                     Response.Write("session in URL doesn't match session cookie");
@@ -35,27 +35,27 @@ namespace BugTracker.Web
             var dv = (DataView) Session["bugs"];
             if (dv == null) Response.End();
 
-            var bugid = Convert.ToInt32(Util.sanitize_integer(Request["bugid"]));
+            var bugid = Convert.ToInt32(Util.SanitizeInteger(Request["bugid"]));
 
-            var permission_level = Bug.get_bug_permission_level(bugid, this.security);
-            if (permission_level == Security.PERMISSION_NONE) Response.End();
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.Security);
+            if (permissionLevel == Security.PermissionNone) Response.End();
 
             for (var i = 0; i < dv.Count; i++)
                 if ((int) dv[i][1] == bugid)
                 {
-                    var flag = Convert.ToInt32(Util.sanitize_integer(Request["flag"]));
+                    var flag = Convert.ToInt32(Util.SanitizeInteger(Request["flag"]));
                     dv[i]["$FLAG"] = flag;
 
-                    this.sql = @"
+                    this.Sql = @"
 if not exists (select bu_bug from bug_user where bu_bug = $bg and bu_user = $us)
 	insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($bg, $us, 1, 0, 0) 
 update bug_user set bu_flag = $fl, bu_flag_datetime = getdate() where bu_bug = $bg and bu_user = $us and bu_flag <> $fl";
 
-                    this.sql = this.sql.Replace("$bg", Convert.ToString(bugid));
-                    this.sql = this.sql.Replace("$us", Convert.ToString(this.security.user.usid));
-                    this.sql = this.sql.Replace("$fl", Convert.ToString(flag));
+                    this.Sql = this.Sql.Replace("$bg", Convert.ToString(bugid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                    this.Sql = this.Sql.Replace("$fl", Convert.ToString(flag));
 
-                    DbUtil.execute_nonquery(this.sql);
+                    DbUtil.ExecuteNonQuery(this.Sql);
                     break;
                 }
         }

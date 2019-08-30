@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class flag {
+    public partial class Flag {
     }
 }

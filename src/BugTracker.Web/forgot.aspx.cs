@@ -12,14 +12,14 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class forgot : Page
+    public partial class Forgot : Page
     {
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.set_context(HttpContext.Current);
-            Util.do_not_cache(Response);
+            Util.SetContext(HttpContext.Current);
+            Util.DoNotCache(Response);
 
-            if (Util.get_setting("ShowForgotPasswordLink", "0") == "0")
+            if (Util.GetSetting("ShowForgotPasswordLink", "0") == "0")
             {
                 Response.Write("Sorry, Web.config ShowForgotPasswordLink is set to 0");
                 Response.End();
@@ -27,7 +27,7 @@ namespace BugTracker.Web
 
             if (!IsPostBack)
             {
-                Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                             + "forgot password";
             }
             else
@@ -38,36 +38,36 @@ namespace BugTracker.Web
                 {
                     this.msg.InnerHtml = "Enter either your Username or your Email address.";
                 }
-                else if (this.email.Value != "" && !Util.validate_email(this.email.Value))
+                else if (this.email.Value != "" && !Util.ValidateEmail(this.email.Value))
                 {
                     this.msg.InnerHtml = "Format of email address is invalid.";
                 }
                 else
                 {
-                    var user_count = 0;
-                    var user_id = 0;
+                    var userCount = 0;
+                    var userId = 0;
 
                     if (this.email.Value != "" && this.username.Value == "")
                     {
                         // check if email exists
-                        user_count = (int) DbUtil.execute_scalar(
+                        userCount = (int) DbUtil.ExecuteScalar(
                             "select count(1) from users where us_email = N'" + this.email.Value.Replace("'", "''") +
                             "'");
 
-                        if (user_count == 1)
-                            user_id = (int) DbUtil.execute_scalar(
+                        if (userCount == 1)
+                            userId = (int) DbUtil.ExecuteScalar(
                                 "select us_id from users where us_email = N'" + this.email.Value.Replace("'", "''") +
                                 "'");
                     }
                     else if (this.email.Value == "" && this.username.Value != "")
                     {
                         // check if email exists
-                        user_count = (int) DbUtil.execute_scalar(
+                        userCount = (int) DbUtil.ExecuteScalar(
                             "select count(1) from users where isnull(us_email,'') != '' and  us_username = N'" +
                             this.username.Value.Replace("'", "''") + "'");
 
-                        if (user_count == 1)
-                            user_id = (int) DbUtil.execute_scalar(
+                        if (userCount == 1)
+                            userId = (int) DbUtil.ExecuteScalar(
                                 "select us_id from users where us_username = N'" +
                                 this.username.Value.Replace("'", "''") +
                                 "'");
@@ -75,21 +75,21 @@ namespace BugTracker.Web
                     else if (this.email.Value != "" && this.username.Value != "")
                     {
                         // check if email exists
-                        user_count = (int) DbUtil.execute_scalar(
+                        userCount = (int) DbUtil.ExecuteScalar(
                             "select count(1) from users where us_username = N'" +
                             this.username.Value.Replace("'", "''") +
                             "' and us_email = N'"
                             + this.email.Value.Replace("'", "''") + "'");
 
-                        if (user_count == 1)
-                            user_id = (int) DbUtil.execute_scalar(
+                        if (userCount == 1)
+                            userId = (int) DbUtil.ExecuteScalar(
                                 "select us_id from users where us_username = N'" +
                                 this.username.Value.Replace("'", "''") +
                                 "' and us_email = N'"
                                 + this.email.Value.Replace("'", "''") + "'");
                     }
 
-                    if (user_count == 1)
+                    if (userCount == 1)
                     {
                         var guid = Guid.NewGuid().ToString();
                         var sql = @"
@@ -106,18 +106,18 @@ insert into emailed_links
 select @username us_username, @email us_email";
 
                         sql = sql.Replace("$guid", guid);
-                        sql = sql.Replace("$user_id", Convert.ToString(user_id));
+                        sql = sql.Replace("$user_id", Convert.ToString(userId));
 
-                        var dr = DbUtil.get_datarow(sql);
+                        var dr = DbUtil.GetDataRow(sql);
 
-                        var result = Email.send_email(
+                        var result = Email.SendEmail(
                             (string) dr["us_email"],
-                            Util.get_setting("NotificationEmailFrom", ""),
+                            Util.GetSetting("NotificationEmailFrom", ""),
                             "", // cc
                             "reset password",
                             "Click to <a href='"
-                            + Util.get_setting("AbsoluteUrlPrefix", "")
-                            + "change_password.aspx?id="
+                            + Util.GetSetting("AbsoluteUrlPrefix", "")
+                            + "ChangePassword.aspx?id="
                             + guid
                             + "'>reset password</a> for user \""
                             + (string) dr["us_username"]

@@ -12,7 +12,7 @@ namespace BugTracker.Web
     using System.Threading;
     using System.Web.UI;
 
-    public partial class hello : Page
+    public partial class Hello : Page
     {
         public void Page_Load(object sender, EventArgs e)
         {

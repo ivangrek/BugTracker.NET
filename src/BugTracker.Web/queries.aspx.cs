@@ -13,25 +13,25 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class queries : Page
+    public partial class Queries : Page
     {
-        public DataSet ds;
-        public Security security;
+        public DataSet Ds;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
+            this.Security = new Security();
 
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK_EXCEPT_GUEST);
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "queries";
 
             var sql = "";
 
-            if (this.security.user.is_admin || this.security.user.can_edit_sql)
+            if (this.Security.User.IsAdmin || this.Security.User.CanEditSql)
             {
                 // allow admin to edit all queries
 
@@ -43,12 +43,12 @@ namespace BugTracker.Web
 				when isnull(qu_org,0) <> 0 then 'org:' + og_name
 				else ' '
 				end [visibility],
-			'<a href=bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
-			'<a target=_blank href=print_bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
-			'<a target=_blank href=print_bugs.aspx?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
-			'<a target=_blank href=print_bugs2.aspx?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
-			'<a href=edit_query.aspx?id=' + convert(varchar,qu_id) + '>edit</a>' [edit],
-			'<a href=delete_query.aspx?id=' + convert(varchar,qu_id) + '>delete</a>' [delete],
+			'<a href=Bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
+			'<a target=_blank href=PrintBugs.aspx?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
+			'<a target=_blank href=PrintBugs.aspx?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
+			'<a target=_blank href=PrintBugs2.aspx?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
+			'<a href=EditQuery.aspx?id=' + convert(varchar,qu_id) + '>edit</a>' [edit],
+			'<a href=DeleteQuery.aspx?id=' + convert(varchar,qu_id) + '>delete</a>' [delete],
 			replace(convert(nvarchar(4000),qu_sql), char(10),'<br>') [sql]
 			from queries
 			left outer join users on qu_user = us_id
@@ -67,19 +67,19 @@ namespace BugTracker.Web
                 sql = @"select
 			qu_desc [query],
 			'<a href=bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
-			'<a target=_blank href=print_bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
-			'<a target=_blank href=print_bugs.aspx?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
-			'<a target=_blank href=print_bugs2.aspx?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
-			'<a href=edit_query.aspx?id=' + convert(varchar,qu_id) + '>rename</a>' [rename],
-			'<a href=delete_query.aspx?id=' + convert(varchar,qu_id) + '>delete</a>' [delete]
+			'<a target=_blank href=PrintBugs.aspx?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
+			'<a target=_blank href=PrintBugs.aspx?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
+			'<a target=_blank href=PrintBugs2.aspx?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
+			'<a href=EditQuery.aspx?id=' + convert(varchar,qu_id) + '>rename</a>' [rename],
+			'<a href=DeleteQuery.aspx?id=' + convert(varchar,qu_id) + '>delete</a>' [delete]
 			from queries
 			inner join users on qu_user = us_id
 			where isnull(qu_user,0) = $us
 			order by qu_desc";
             }
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.user.usid));
-            this.ds = DbUtil.get_dataset(sql);
+            sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            this.Ds = DbUtil.GetDataSet(sql);
         }
     }
 }

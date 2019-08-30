@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="translate.aspx.cs" Inherits="BugTracker.Web.translate" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Translate.aspx.cs" Inherits="BugTracker.Web.Translate" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, Util.get_setting("PluralBugLabel", "bugs")); %>
+    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -21,7 +21,7 @@
             <tbody>
                 <tr>
                     <td>
-                        <a id="back_href" href="" runat="server">back to <% Response.Write(Util.get_setting("SingularBugLabel", "bug")); %></a>
+                        <a id="back_href" href="" runat="server">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
                         <form enctype="multipart/form-data" runat="server">
                             <table border="0" class="frm">
                                 <tbody>

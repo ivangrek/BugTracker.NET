@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class massedit {
+    public partial class MassEdit {
         
         /// <summary>
         /// msg control.

@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class queries {
+    public partial class Queries {
         
         /// <summary>
         /// show_all control.

@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class admin {
+    public partial class Admin {
     }
 }

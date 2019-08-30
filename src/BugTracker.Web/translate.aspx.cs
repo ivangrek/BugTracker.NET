@@ -13,68 +13,68 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class translate : Page
+    public partial class Translate : Page
     {
-        public Security security;
-        public string sql;
+        public Security Security;
+        public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "translate";
 
-            var string_bp_id = Request["postid"];
-            var string_bg_id = Request["bugid"];
+            var stringBpId = Request["postid"];
+            var stringBgId = Request["bugid"];
 
             if (!IsPostBack)
             {
-                if (string_bp_id != null && string_bp_id != "")
+                if (stringBpId != null && stringBpId != "")
                 {
-                    string_bp_id = Util.sanitize_integer(string_bp_id);
+                    stringBpId = Util.SanitizeInteger(stringBpId);
 
-                    this.sql = @"select bp_bug, bp_comment
+                    this.Sql = @"select bp_bug, bp_comment
 						from bug_posts
 						where bp_id = $id";
 
-                    this.sql = this.sql.Replace("$id", string_bp_id);
+                    this.Sql = this.Sql.Replace("$id", stringBpId);
 
-                    var dr = DbUtil.get_datarow(this.sql);
+                    var dr = DbUtil.GetDataRow(this.Sql);
 
-                    string_bg_id = Convert.ToString((int) dr["bp_bug"]);
+                    stringBgId = Convert.ToString((int) dr["bp_bug"]);
                     var obj = dr["bp_comment"];
                     if (dr["bp_comment"] != DBNull.Value) this.source.InnerText = obj.ToString();
                 }
-                else if (string_bg_id != null && string_bg_id != "")
+                else if (stringBgId != null && stringBgId != "")
                 {
-                    string_bg_id = Util.sanitize_integer(string_bg_id);
+                    stringBgId = Util.SanitizeInteger(stringBgId);
 
-                    this.sql = @"select bg_short_desc
+                    this.Sql = @"select bg_short_desc
 						from bugs
 						where bg_id = $id";
 
-                    this.sql = this.sql.Replace("$id", string_bg_id);
+                    this.Sql = this.Sql.Replace("$id", stringBgId);
 
-                    var obj = DbUtil.execute_scalar(this.sql);
+                    var obj = DbUtil.ExecuteScalar(this.Sql);
 
                     if (obj != DBNull.Value) this.source.InnerText = obj.ToString();
                 }
 
                 // added check for permission level - corey
-                var permission_level = Bug.get_bug_permission_level(Convert.ToInt32(string_bg_id), this.security);
-                if (permission_level == Security.PERMISSION_NONE)
+                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), this.Security);
+                if (permissionLevel == Security.PermissionNone)
                 {
                     Response.Write("You are not allowed to view this item");
                     Response.End();
                 }
 
-                this.back_href.HRef = "edit_bug.aspx?id=" + string_bg_id;
+                this.back_href.HRef = "EditBug.aspx?id=" + stringBgId;
 
-                this.bugid.Value = string_bg_id;
+                this.bugid.Value = stringBgId;
 
                 fill_translationmodes();
             }

@@ -14,17 +14,17 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class mbug : Page
+    public partial class MBug : Page
     {
-        public bool assigned_to_changed;
-        public DataSet ds_posts;
-        public string err_text;
-        public int id;
+        public bool AssignedToChanged;
+        public DataSet DsPosts;
+        public string ErrText;
+        public int Id;
 
-        public int permission_level;
-        public Security security;
-        public string sql;
-        public bool status_changed;
+        public int PermissionLevel;
+        public Security Security;
+        public string Sql;
+        public bool StatusChanged;
 
         //SortedDictionary<string, string> hash_custom_cols = new SortedDictionary<string, string>();
         //SortedDictionary<string, string> hash_prev_custom_cols = new SortedDictionary<string, string>();
@@ -36,92 +36,92 @@ namespace BugTracker.Web
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
-            if (Util.get_setting("EnableMobile", "0") == "0")
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            if (Util.GetSetting("EnableMobile", "0") == "0")
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
                 Response.End();
             }
 
             this.msg.InnerText = "";
-            this.err_text = "";
+            this.ErrText = "";
 
-            var string_bugid = Request["id"];
+            var stringBugid = Request["id"];
 
-            if (string_bugid == null || string_bugid == "" || string_bugid == "0")
+            if (stringBugid == null || stringBugid == "" || stringBugid == "0")
             {
-                this.id = 0;
+                this.Id = 0;
 
                 this.submit_button.Value = "Create";
-                Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - Create ";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Create ";
                 this.my_header.InnerText = Page.Title;
 
                 if (IsPostBack)
                 {
                     if (!validate())
                     {
-                        this.msg.InnerHtml = this.err_text;
+                        this.msg.InnerHtml = this.ErrText;
                     }
                     else
                     {
                         var result = insert_bug();
                         if (result != "")
-                            this.msg.InnerHtml = this.err_text;
+                            this.msg.InnerHtml = this.ErrText;
                         else
-                            Response.Redirect("mbugs.aspx");
+                            Response.Redirect("MBugs.aspx");
                     }
                 }
                 else
                 {
-                    load_dropdowns(this.security.user);
+                    load_dropdowns(this.Security.User);
 
-                    this.sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
-                    this.sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 1
+                    this.Sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
+                    this.Sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 1
 
-                    var ds_defaults = DbUtil.get_dataset(this.sql);
-                    var dt_project_default = ds_defaults.Tables[0];
-                    var dt_status_default = ds_defaults.Tables[1];
+                    var dsDefaults = DbUtil.GetDataSet(this.Sql);
+                    var dtProjectDefault = dsDefaults.Tables[0];
+                    var dtStatusDefault = dsDefaults.Tables[1];
 
-                    string default_value;
+                    string defaultValue;
 
                     // status
-                    if (ds_defaults.Tables[1].Rows.Count > 0)
-                        default_value = Convert.ToString((int) dt_status_default.Rows[0][0]);
+                    if (dsDefaults.Tables[1].Rows.Count > 0)
+                        defaultValue = Convert.ToString((int) dtStatusDefault.Rows[0][0]);
                     else
-                        default_value = "0";
+                        defaultValue = "0";
                     foreach (ListItem li in this.status.Items)
-                        if (li.Value == default_value)
+                        if (li.Value == defaultValue)
                             li.Selected = true;
                         else
                             li.Selected = false;
 
                     // get default values
-                    var initial_project = (string) Session["project"];
+                    var initialProject = (string) Session["project"];
 
                     // project
-                    if (this.security.user.forced_project != 0)
-                        initial_project = Convert.ToString(this.security.user.forced_project);
+                    if (this.Security.User.ForcedProject != 0)
+                        initialProject = Convert.ToString(this.Security.User.ForcedProject);
 
-                    if (initial_project != null && initial_project != "0")
+                    if (initialProject != null && initialProject != "0")
                     {
                         foreach (ListItem li in this.project.Items)
-                            if (li.Value == initial_project)
+                            if (li.Value == initialProject)
                                 li.Selected = true;
                             else
                                 li.Selected = false;
                     }
                     else
                     {
-                        if (dt_project_default.Rows.Count > 0)
-                            default_value = Convert.ToString((int) dt_project_default.Rows[0][0]);
+                        if (dtProjectDefault.Rows.Count > 0)
+                            defaultValue = Convert.ToString((int) dtProjectDefault.Rows[0][0]);
                         else
-                            default_value = "0";
+                            defaultValue = "0";
 
                         foreach (ListItem li in this.project.Items)
-                            if (li.Value == default_value)
+                            if (li.Value == defaultValue)
                                 li.Selected = true;
                             else
                                 li.Selected = false;
@@ -130,29 +130,29 @@ namespace BugTracker.Web
             }
             else
             {
-                this.id = Convert.ToInt32(string_bugid);
+                this.Id = Convert.ToInt32(stringBugid);
 
                 this.submit_button.Value = "Update";
-                Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - Update";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Update";
                 this.my_header.InnerText = Page.Title;
 
                 if (IsPostBack)
                 {
                     if (!validate())
                     {
-                        this.msg.InnerHtml = this.err_text;
+                        this.msg.InnerHtml = this.ErrText;
                     }
                     else
                     {
                         var result = update_bug();
                         if (result != "")
-                            this.msg.InnerHtml = this.err_text;
+                            this.msg.InnerHtml = this.ErrText;
                         else
-                            Response.Redirect("mbugs.aspx");
+                            Response.Redirect("MBugs.aspx");
                     }
                 }
 
-                var dr = Bug.get_bug_datarow(this.id, this.security);
+                var dr = Bug.GetBugDataRow(this.Id, this.Security);
 
                 if (dr == null)
                 {
@@ -161,14 +161,14 @@ namespace BugTracker.Web
                     return;
                 }
 
-                Page.Title += " #" + string_bugid;
+                Page.Title += " #" + stringBugid;
                 this.my_header.InnerText = Page.Title;
 
                 this.created_by.InnerText = Convert.ToString(dr["reporter"]);
                 this.short_desc.Value = Convert.ToString(dr["short_desc"]);
 
                 // load dropdowns
-                load_dropdowns(this.security.user);
+                load_dropdowns(this.Security.User);
 
                 // project
                 foreach (ListItem li in this.project.Items)
@@ -192,8 +192,8 @@ namespace BugTracker.Web
                         li.Selected = false;
 
                 // Posts
-                this.permission_level = (int) dr["pu_permission_level"];
-                this.ds_posts = PrintBug.get_bug_posts(this.id, this.security.user.external_user, true);
+                this.PermissionLevel = (int) dr["pu_permission_level"];
+                this.DsPosts = Core.PrintBug.GetBugPosts(this.Id, this.Security.User.ExternalUser, true);
 
                 // save current values in previous, so that later we can write the audit trail when things change
                 this.prev_short_desc.Value = (string) dr["short_desc"];
@@ -215,8 +215,8 @@ namespace BugTracker.Web
 		and isnull(pu_permission_level,$dpl) not in (0, 1)
 		order by pj_name;";
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.user.usid));
-            sql = sql.Replace("$dpl", Util.get_setting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
 
             //1
             sql += "\nselect us_id, us_username from users order by us_username;";
@@ -225,21 +225,21 @@ namespace BugTracker.Web
             sql += "\nselect st_id, st_name from statuses order by st_sort_seq, st_name;";
 
             // do a batch of sql statements
-            var ds_dropdowns = DbUtil.get_dataset(sql);
+            var dsDropdowns = DbUtil.GetDataSet(sql);
 
-            this.project.DataSource = ds_dropdowns.Tables[0];
+            this.project.DataSource = dsDropdowns.Tables[0];
             this.project.DataTextField = "pj_name";
             this.project.DataValueField = "pj_id";
             this.project.DataBind();
             this.project.Items.Insert(0, new ListItem("[not assigned]", "0"));
 
-            this.assigned_to.DataSource = ds_dropdowns.Tables[1];
+            this.assigned_to.DataSource = dsDropdowns.Tables[1];
             this.assigned_to.DataTextField = "us_username";
             this.assigned_to.DataValueField = "us_id";
             this.assigned_to.DataBind();
             this.assigned_to.Items.Insert(0, new ListItem("[not assigned]", "0"));
 
-            this.status.DataSource = ds_dropdowns.Tables[2];
+            this.status.DataSource = dsDropdowns.Tables[2];
             this.status.DataTextField = "st_name";
             this.status.DataValueField = "st_id";
             this.status.DataBind();
@@ -248,10 +248,10 @@ namespace BugTracker.Web
 
         public string update_bug()
         {
-            this.status_changed = false;
-            this.assigned_to_changed = false;
+            this.StatusChanged = false;
+            this.AssignedToChanged = false;
 
-            this.sql = @"update bugs set
+            this.Sql = @"update bugs set
 				bg_short_desc = N'$sd$',
                         bg_project = $pj$,
 						bg_assigned_to_user = $au$,
@@ -260,30 +260,30 @@ namespace BugTracker.Web
 						bg_last_updated_date = getdate()
 						where bg_id = $id$";
 
-            this.sql = this.sql.Replace("$pj$", this.project.SelectedItem.Value);
-            this.sql = this.sql.Replace("$au$", this.assigned_to.SelectedItem.Value);
-            this.sql = this.sql.Replace("$st$", this.status.SelectedItem.Value);
-            this.sql = this.sql.Replace("$lu$", Convert.ToString(this.security.user.usid));
-            this.sql = this.sql.Replace("$sd$", this.short_desc.Value.Replace("'", "''"));
-            this.sql = this.sql.Replace("$id$", Convert.ToString(this.id));
+            this.Sql = this.Sql.Replace("$pj$", this.project.SelectedItem.Value);
+            this.Sql = this.Sql.Replace("$au$", this.assigned_to.SelectedItem.Value);
+            this.Sql = this.Sql.Replace("$st$", this.status.SelectedItem.Value);
+            this.Sql = this.Sql.Replace("$lu$", Convert.ToString(this.Security.User.Usid));
+            this.Sql = this.Sql.Replace("$sd$", this.short_desc.Value.Replace("'", "''"));
+            this.Sql = this.Sql.Replace("$id$", Convert.ToString(this.Id));
 
-            DbUtil.execute_nonquery(this.sql);
+            DbUtil.ExecuteNonQuery(this.Sql);
 
-            var bug_fields_have_changed = record_changes();
+            var bugFieldsHaveChanged = record_changes();
 
-            var comment_text = HttpUtility.HtmlDecode(this.comment.Value);
+            var commentText = HttpUtility.HtmlDecode(this.comment.Value);
 
-            var bugpost_fields_have_changed = Bug.insert_comment(this.id, this.security.user.usid,
-                                                  comment_text,
-                                                  comment_text,
+            var bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, this.Security.User.Usid,
+                                                  commentText,
+                                                  commentText,
                                                   null, // from
                                                   null, // cc
                                                   "text/plain",
                                                   false) != 0; // internal only
 
-            if (bug_fields_have_changed || bugpost_fields_have_changed)
-                Bug.send_notifications(Bug.UPDATE, this.id, this.security, 0, this.status_changed,
-                    this.assigned_to_changed,
+            if (bugFieldsHaveChanged || bugpostFieldsHaveChanged)
+                Bug.SendNotifications(Bug.Update, this.Id, this.Security, 0, this.StatusChanged,
+                    this.AssignedToChanged,
                     0); // Convert.ToInt32(assigned_to.SelectedItem.Value));
 
             this.comment.Value = "";
@@ -294,23 +294,23 @@ namespace BugTracker.Web
         // returns true if there was a change
         public bool record_changes()
         {
-            var base_sql = @"
+            var baseSql = @"
 		insert into bug_posts
 		(bp_bug, bp_user, bp_date, bp_comment, bp_type)
 		values($id, $us, getdate(), N'$3', 'update')";
 
-            base_sql = base_sql.Replace("$id", Convert.ToString(this.id));
-            base_sql = base_sql.Replace("$us", Convert.ToString(this.security.user.usid));
+            baseSql = baseSql.Replace("$id", Convert.ToString(this.Id));
+            baseSql = baseSql.Replace("$us", Convert.ToString(this.Security.User.Usid));
 
             string from;
-            this.sql = "";
+            this.Sql = "";
 
-            var do_update = false;
+            var doUpdate = false;
 
             if (this.prev_short_desc.Value != this.short_desc.Value)
             {
-                do_update = true;
-                this.sql += base_sql.Replace(
+                doUpdate = true;
+                this.Sql += baseSql.Replace(
                     "$3",
                     "changed desc from \""
                     + this.prev_short_desc.Value.Replace("'", "''") + "\" to \""
@@ -324,8 +324,8 @@ namespace BugTracker.Web
                 // The "from" might not be in the dropdown anymore
                 //from = get_dropdown_text_from_value(project, prev_project.Value);
 
-                do_update = true;
-                this.sql += base_sql.Replace(
+                doUpdate = true;
+                this.Sql += baseSql.Replace(
                     "$3",
                     "changed project from \""
                     + this.prev_project_name.Value.Replace("'", "''") + "\" to \""
@@ -337,10 +337,10 @@ namespace BugTracker.Web
 
             if (this.prev_assigned_to.Value != this.assigned_to.SelectedItem.Value)
             {
-                this.assigned_to_changed = true; // for notifications
+                this.AssignedToChanged = true; // for notifications
 
-                do_update = true;
-                this.sql += base_sql.Replace(
+                doUpdate = true;
+                this.Sql += baseSql.Replace(
                     "$3",
                     "changed assigned_to from \""
                     + this.prev_assigned_to_username.Value.Replace("'", "''") + "\" to \""
@@ -352,12 +352,12 @@ namespace BugTracker.Web
 
             if (this.prev_status.Value != this.status.SelectedItem.Value)
             {
-                this.status_changed = true; // for notifications
+                this.StatusChanged = true; // for notifications
 
                 from = get_dropdown_text_from_value(this.status, this.prev_status.Value);
 
-                do_update = true;
-                this.sql += base_sql.Replace(
+                doUpdate = true;
+                this.Sql += baseSql.Replace(
                     "$3",
                     "changed status from \""
                     + from.Replace("'", "''") + "\" to \""
@@ -366,19 +366,19 @@ namespace BugTracker.Web
                 this.prev_status.Value = this.status.SelectedItem.Value;
             }
 
-            if (do_update
-                && Util.get_setting("TrackBugHistory", "1") == "1") // you might not want the debris to grow
-                DbUtil.execute_nonquery(this.sql);
+            if (doUpdate
+                && Util.GetSetting("TrackBugHistory", "1") == "1") // you might not want the debris to grow
+                DbUtil.ExecuteNonQuery(this.Sql);
 
             // return true if something did change
-            return do_update;
+            return doUpdate;
         }
 
         public string insert_bug()
         {
-            var comment_text = HttpUtility.HtmlDecode(this.comment.Value);
+            var commentText = HttpUtility.HtmlDecode(this.comment.Value);
 
-            var new_ids = Bug.insert_bug(this.short_desc.Value, this.security,
+            var newIds = Bug.InsertBug(this.short_desc.Value, this.Security,
                 "", //tags.Value,
                 Convert.ToInt32(this.project.SelectedItem.Value),
                 0, //Convert.ToInt32(org.SelectedItem.Value),
@@ -390,8 +390,8 @@ namespace BugTracker.Web
                 "",
                 "",
                 "",
-                comment_text,
-                comment_text,
+                commentText,
+                commentText,
                 null, // from
                 null, // cc
                 "text/plain", // commentType,
@@ -404,15 +404,15 @@ namespace BugTracker.Web
 
         public bool validate()
         {
-            var is_valid = true;
+            var isValid = true;
 
             if (this.short_desc.Value == "")
             {
-                is_valid = false;
-                this.err_text += "Description is required.<br>";
+                isValid = false;
+                this.ErrText += "Description is required.<br>";
             }
 
-            return is_valid;
+            return isValid;
         }
 
         /// ////

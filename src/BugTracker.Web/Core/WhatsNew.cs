@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -12,28 +13,28 @@ namespace BugTracker.Web.Core
 
     public class WhatsNew
     {
-        public const long ten_million = 10000000;
+        public const long TenMillion = 10000000;
 
-        private static readonly object mylock = new object();
-        private static long prev_seconds;
+        private static readonly object Mylock = new object();
+        private static long _prevSeconds;
 
-        public static void add_news(int bugid, string desc, string action, Security security)
+        public static void AddNews(int bugid, string desc, string action, Security security)
         {
-            if (Util.get_setting("EnableWhatsNewPage", "0") == "1")
+            if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
             {
-                var seconds = DateTime.Now.Ticks / ten_million;
-                if (seconds == prev_seconds) seconds++; // prevent dupes, even if we have to lie.
-                prev_seconds = seconds;
+                var seconds = DateTime.Now.Ticks / TenMillion;
+                if (seconds == _prevSeconds) seconds++; // prevent dupes, even if we have to lie.
+                _prevSeconds = seconds;
 
                 var bn = new BugNews();
-                bn.seconds = seconds;
-                bn.seconds_string = Convert.ToString(seconds);
-                bn.bugid = Convert.ToString(bugid);
-                bn.desc = desc;
-                bn.action = action;
-                bn.who = security.user.username;
+                bn.Seconds = seconds;
+                bn.SecondsString = Convert.ToString(seconds);
+                bn.Bugid = Convert.ToString(bugid);
+                bn.Desc = desc;
+                bn.Action = action;
+                bn.Who = security.User.Username;
 
-                lock (mylock)
+                lock (Mylock)
                 {
                     var app = (HttpApplicationState)HttpRuntime.Cache["Application"];
                     var list = (List<BugNews>)app["whatsnew"];
@@ -49,7 +50,7 @@ namespace BugTracker.Web.Core
                     list.Add(bn);
 
                     // Trim the old items
-                    var max = Convert.ToInt32(Util.get_setting("WhatsNewMaxItemsCount", "200"));
+                    var max = Convert.ToInt32(Util.GetSetting("WhatsNewMaxItemsCount", "200"));
                     while (list.Count > max) list.RemoveAt(0);
                 }
             }
@@ -58,11 +59,11 @@ namespace BugTracker.Web.Core
 
     public class BugNews
     {
-        public string action;
-        public string bugid;
-        public string desc;
-        public long seconds;
-        public string seconds_string;
-        public string who;
+        public string Action;
+        public string Bugid;
+        public string Desc;
+        public long Seconds;
+        public string SecondsString;
+        public string Who;
     }
 }

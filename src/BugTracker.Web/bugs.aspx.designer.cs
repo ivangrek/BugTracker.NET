@@ -11,7 +11,7 @@
 
 namespace BugTracker.Web
 {
-    public partial class bugs {
+    public partial class Bugs {
     
         /// <summary>
         /// query control.

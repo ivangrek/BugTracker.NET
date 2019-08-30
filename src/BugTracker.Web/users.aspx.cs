@@ -13,24 +13,24 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class users : Page
+    public partial class Users : Page
     {
-        public DataSet ds;
-        public Security security;
+        public DataSet Ds;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.MUST_BE_ADMIN_OR_PROJECT_ADMIN);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdminOrProjectAdmin);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "users";
 
             string sql;
 
-            if (this.security.user.is_admin)
+            if (this.Security.User.IsAdmin)
                 sql = @"
 			select distinct pu_user
 			into #t
@@ -39,13 +39,13 @@ namespace BugTracker.Web
 			where pu_admin = 1;
 
 			select u.us_id [id],
-			'<a href=edit_user.aspx?id=' + convert(varchar,u.us_id) + '>edit</a>' [$no_sort_edit],
-			'<a href=edit_user.aspx?copy=y&id=' + convert(varchar,u.us_id) + '>copy</a>' [$no_sort_add<br>like<br>this],
-			'<a href=delete_user.aspx?id=' + convert(varchar,u.us_id) + '>delete</a>' [$no_sort_delete],
+			'<a href=EditUser.aspx?id=' + convert(varchar,u.us_id) + '>edit</a>' [$no_sort_edit],
+			'<a href=EditUser.aspx?copy=y&id=' + convert(varchar,u.us_id) + '>copy</a>' [$no_sort_add<br>like<br>this],
+			'<a href=DeleteUser.aspx?id=' + convert(varchar,u.us_id) + '>delete</a>' [$no_sort_delete],
 
 			u.us_username [username],
 			isnull(u.us_firstname,'') + ' ' + isnull(u.us_lastname,'') [name],
-			'<a sort=''' + og_name + ''' href=edit_org.aspx?id=' + convert(varchar,og_id) + '>' + og_name + '</a>' [org],
+			'<a sort=''' + og_name + ''' href=EditOrg.aspx?id=' + convert(varchar,og_id) + '>' + og_name + '</a>' [org],
             isnull(u.us_email,'') [email],
 			case when u.us_admin = 1 then 'Y' else 'N' end [admin],
 			case when pu_user is null then 'N' else 'Y' end [project<br>admin],
@@ -77,9 +77,9 @@ namespace BugTracker.Web
 			where pu_admin = 1;
 
 			select u.us_id [id],
-			'<a href=edit_user.aspx?id=' + convert(varchar,u.us_id) + '>edit</a>' [$no_sort_edit],
-			'<a href=edit_user.aspx?copy=y&id=' + convert(varchar,u.us_id) + '>copy</a>' [$no_sort_add<br>like<br>this],
-			'<a href=delete_user.aspx?id=' + convert(varchar,u.us_id) + '>delete</a>' [$no_sort_delete],
+			'<a href=EditUser.aspx?id=' + convert(varchar,u.us_id) + '>edit</a>' [$no_sort_edit],
+			'<a href=EditUser.aspx?copy=y&id=' + convert(varchar,u.us_id) + '>copy</a>' [$no_sort_add<br>like<br>this],
+			'<a href=DeleteUser.aspx?id=' + convert(varchar,u.us_id) + '>delete</a>' [$no_sort_delete],
 
 			u.us_username [username],
 			isnull(u.us_firstname,'') + ' ' + isnull(u.us_lastname,'') [name],
@@ -130,8 +130,8 @@ namespace BugTracker.Web
             else
                 sql = sql.Replace("$filter_users", "");
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.user.usid));
-            this.ds = DbUtil.get_dataset(sql);
+            sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            this.Ds = DbUtil.GetDataSet(sql);
 
             // cookies
             if (this.hide_inactive_users.Checked)

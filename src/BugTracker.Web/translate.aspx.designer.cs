@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class translate {
+    public partial class Translate {
         
         /// <summary>
         /// back_href control.

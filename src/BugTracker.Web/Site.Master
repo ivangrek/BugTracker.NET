@@ -11,9 +11,9 @@
 <html>
 <head runat="server">
     <title>BugTracker</title>
-    <link rel="shortcut icon" type="image/png" href="<%= ResolveUrl("~/favicon.ico")%>">
-    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/btnet.css")%>">
-    <script type="text/javascript" src="<%= ResolveUrl("~/jquery/jquery-1.3.2.min.js") %>"></script>
+    <link rel="shortcut icon" type="image/png" href="<%= ResolveUrl("~/Content/favicon.ico")%>">
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/Content/btnet.css")%>">
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-1.3.2.min.js") %>"></script>
 
     <asp:ContentPlaceHolder ID="Head" runat="server" />
 </head>

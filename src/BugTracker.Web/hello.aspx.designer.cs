@@ -11,6 +11,6 @@
 
 namespace BugTracker.Web
 {
-    public partial class hello {
+    public partial class Hello {
     }
 }

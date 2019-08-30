@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="search.aspx.cs" Inherits="BugTracker.Web.search" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Search.aspx.cs" Inherits="BugTracker.Web.Search" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -13,19 +13,19 @@
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="on_change()">--%>
 
-    <link rel="StyleSheet" href="jquery/jquery-ui-1.7.2.custom.css" type="text/css">
-    <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on search.aspx  -->
-    <link rel="StyleSheet" href="custom/btnet_search.css" type="text/css">
-    <script type="text/javascript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" src="bug_list.js"></script>
-    <script type="text/javascript" src="suggest.js"></script>
-    <script type="text/javascript" src="datejs/date.js"></script>
+    <link rel="StyleSheet" href="Scripts/jquery/jquery-ui-1.7.2.custom.css" type="text/css">
+    <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on Search.aspx  -->
+    <link rel="StyleSheet" href="Content/custom/btnet_search.css" type="text/css">
+    <script type="text/javascript" src="Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="Scripts/bug_list.js"></script>
+    <script type="text/javascript" src="Scripts/suggest.js"></script>
+    <script type="text/javascript" src="Scripts/datejs/date.js"></script>
 
     <script>
-        search_suggest_min_chars = <% Response.Write(Util.get_setting("SearchSuggestMinChars", "3")); %>
+        search_suggest_min_chars = <% Response.Write(Util.GetSetting("SearchSuggestMinChars", "3")); %>
 
         // start of mass edit javascript
-        <% if (security.user.is_admin || security.user.can_mass_edit_bugs)
+        <% if (this.Security.User.IsAdmin || this.Security.User.CanMassEditBugs)
         { %>
 
             function select_all(sel) {
@@ -238,7 +238,7 @@
 
         }
 
-        var asp_form_id = '<% Response.Write(Util.get_form_name()); %>';
+        var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
 
 
         function on_change() {
@@ -264,7 +264,7 @@
                 "bg_project_custom_dropdown_value3");
 
         <%
-        if (security.user.other_orgs_permission_level != 0)
+        if (this.Security.User.OtherOrgsPermissionLevel != 0)
         {
         %>
             var org_clause = build_clause_from_options(frm.org.options, "bg_org");
@@ -283,7 +283,7 @@
             var udf_clause = "";
 
         <%
-        if (show_udf)
+        if (this.ShowUdf)
 
         {
         %>
@@ -318,7 +318,7 @@
                 comments_clause =
                     " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and isnull(bp_comment_search,bp_comment) like";
                 comments_clause += " N'%" + like2_string + "%'";
-            <% if (security.user.external_user)
+            <% if (this.Security.User.ExternalUser)
         { %>
                 comments_clause += " and bp_hidden_from_external_users = 0";
             <% } %>
@@ -354,21 +354,21 @@
 
         <%
         // echo the custom input columns as the user types them
-        var custom_count = 1;
-        foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+        var customCount = 1;
+        foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
-            var column_name = (string)drcc["name"];
-            if (security.user.dict_custom_field_permission_level[column_name] == Security.PERMISSION_NONE)
+            var columnName = (string)drcc["name"];
+            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
             {
                 continue;
             }
 
-            var clause = "custom_clause_" + Convert.ToString(custom_count++);
-            var custom_col_id = column_name.Replace(" ", "");
+            var clause = "custom_clause_" + Convert.ToString(customCount++);
+            var customColId = columnName.Replace(" ", "");
             var datatype = (string)drcc["datatype"];
 
             Response.Write("var " + clause + " = \"\";\n");
-            Response.Write("el = document.getElementById('" + custom_col_id + "')\n");
+            Response.Write("el = document.getElementById('" + customColId + "')\n");
 
             if ((datatype == "varchar" || datatype == "nvarchar" || datatype == "char" || datatype == "nchar")
                 && (string)drcc["dropdown type"] == "")
@@ -376,7 +376,7 @@
                 // my_text_field like '%val%'
                 Response.Write("if (el.value != \"\")\n");
                 Response.Write("{\n\t");
-                Response.Write(clause + " = \" [" + column_name + "] like '%\" + el.value.replace(/'/gi,\"''\") + \"%'\\n\"\n");
+                Response.Write(clause + " = \" [" + columnName + "] like '%\" + el.value.replace(/'/gi,\"''\") + \"%'\\n\"\n");
                 Response.Write("\twhere = build_where(where, " + clause + ");\n");
                 Response.Write("}\n\n");
             }
@@ -384,15 +384,15 @@
             {
                 Response.Write("if (el.value != \"\")\n");
                 Response.Write("{\n\t");
-                Response.Write(clause + " = \" [" + column_name + "] >=  '\" + format_from_date_for_db(el.value) + \"'\\n\"\n");
+                Response.Write(clause + " = \" [" + columnName + "] >=  '\" + format_from_date_for_db(el.value) + \"'\\n\"\n");
                 Response.Write("\twhere = build_where(where, " + clause + ");\n");
                 Response.Write("}\n\n");
 
-                Response.Write("el = document.getElementById('to__" + custom_col_id + "')\n");
+                Response.Write("el = document.getElementById('to__" + customColId + "')\n");
 
                 Response.Write("if (el.value != \"\")\n");
                 Response.Write("{\n\t");
-                Response.Write(clause + " = \" [" + column_name + "] <=  '\" + format_to_date_for_db(el.value) + \"'\\n\"\n");
+                Response.Write(clause + " = \" [" + columnName + "] <=  '\" + format_to_date_for_db(el.value) + \"'\\n\"\n");
                 Response.Write("\twhere = build_where(where, " + clause + ");\n");
                 Response.Write("}\n\n");
             }
@@ -402,7 +402,7 @@
                 Response.Write("vals = in_not_in_vals(el)\n");
                 Response.Write("if (vals != \"\")\n");
                 Response.Write("{\n\t");
-                Response.Write(clause + " = \" [" + column_name + "] in \" + vals\n");
+                Response.Write(clause + " = \" [" + columnName + "] in \" + vals\n");
                 Response.Write("\twhere = build_where(where, " + clause + ");\n");
                 Response.Write("}\n\n");
             }
@@ -429,16 +429,16 @@
             where = build_where(where, udf_clause);
 
         <%
-        var search_sql = Util.get_setting("SearchSQL", "");
+        var searchSql = Util.GetSetting("SearchSQL", "");
 
-        if (search_sql == "")
+        if (searchSql == "")
         {
         %>
             var select = "select isnull(pr_background_color,'#ffffff') [color], bg_id [id]";
             select += ",\nbg_short_desc [desc]";
 
         <%
-        if (use_full_names)
+        if (this.UseFullNames)
         {
         %>
             select += ",\nisnull(rpt.us_lastname + ', ' + rpt.us_firstname,'') [reported by]";
@@ -453,7 +453,7 @@
         %>		
             select += ",\nbg_reported_date [reported on]";
         <%
-        if (use_full_names)
+        if (this.UseFullNames)
         {
         %>
             select += ",\nisnull(lu.us_lastname + ', ' + lu.us_firstname,'') [last updated by]";
@@ -469,44 +469,44 @@
             select += ",\nbg_last_updated_date [last updated on]";
 
         <%
-        if (security.user.tags_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.TagsFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(bg_tags,'') [tags]";
         <%
         }
 
-        if (security.user.project_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.ProjectFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(pj_name,'') [project]";
         <%
         }
 
-        if (security.user.org_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.OrgFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(og_name,'') [organization]";
         <%
         }
 
-        if (security.user.category_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.CategoryFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(ct_name,'') [category]";
         <%
         }
 
-        if (security.user.priority_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.PriorityFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(pr_name,'') [priority]";
         <%
         }
 
-        if (security.user.assigned_to_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.AssignedToFieldPermissionLevel != Security.PermissionNone)
         {
-            if (use_full_names)
+            if (this.UseFullNames)
             {
         %>
             select += ",\nisnull(asg.us_lastname + ', ' + asg.us_firstname,'') [assigned to]";
@@ -520,28 +520,28 @@
             }
         }
 
-        if (security.user.status_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.StatusFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(st_name,'') [status]";
         <%
         }
 
-        if (security.user.udf_field_permission_level != Security.PERMISSION_NONE)
+        if (this.Security.User.UdfFieldPermissionLevel != Security.PermissionNone)
         {
-            if (show_udf)
+            if (this.ShowUdf)
             {
-                var udf_name = Util.get_setting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
-                Response.Write("select += \",\\nisnull(udf_name,'') [" + udf_name + "]\"");
+                var udfName = Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
+                Response.Write("select += \",\\nisnull(udf_name,'') [" + udfName + "]\"");
             }
         }
 
         // add the custom fields to the columns
-        var user_dropdown_cnt = 1;
-        foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+        var userDropdownCnt = 1;
+        foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
-            var column_name = (string)drcc["name"];
-            if (security.user.dict_custom_field_permission_level[column_name] == Security.PERMISSION_NONE)
+            var columnName = (string)drcc["name"];
+            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
             {
                 continue;
             }
@@ -549,34 +549,34 @@
             if (Convert.ToString(drcc["dropdown type"]) == "users")
             {
                 Response.Write("\nselect += \", \\nisnull(users"
-                               + Convert.ToString(user_dropdown_cnt)
+                               + Convert.ToString(userDropdownCnt)
                                + ".us_username,'') ["
-                               + column_name
+                               + columnName
                                + "]\"");
-                user_dropdown_cnt++;
+                userDropdownCnt++;
             }
             else
             {
                 if (Convert.ToString(drcc["datatype"]) == "decimal")
                 {
                     Response.Write("\nselect += \", \\nisnull(["
-                                   + column_name
+                                   + columnName
                                    + "],0) ["
-                                   + column_name
+                                   + columnName
                                    + "]\"");
                 }
                 else
                 {
                     Response.Write("\nselect += \", \\nisnull(["
-                                   + column_name
+                                   + columnName
                                    + "],'') ["
-                                   + column_name
+                                   + columnName
                                    + "]\"");
                 }
             }
         }
 
-        Response.Write("\nselect += \"" + project_dropdown_select_cols + "\"");
+        Response.Write("\nselect += \"" + this.ProjectDropdownSelectCols + "\"");
         %>
 
             select += "\nfrom bugs\n";
@@ -591,11 +591,11 @@
 
         <%
         // do the joins related to "user" dropdowns
-        user_dropdown_cnt = 1;
-        foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+        userDropdownCnt = 1;
+        foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
-            var column_name = (string)drcc["name"];
-            if (security.user.dict_custom_field_permission_level[column_name] == Security.PERMISSION_NONE)
+            var columnName = (string)drcc["name"];
+            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
             {
                 continue;
             }
@@ -603,18 +603,18 @@
             if (Convert.ToString(drcc["dropdown type"]) == "users")
             {
                 Response.Write("select += \"left outer join users users");
-                Response.Write(Convert.ToString(user_dropdown_cnt));
+                Response.Write(Convert.ToString(userDropdownCnt));
                 Response.Write(" on users");
-                Response.Write(Convert.ToString(user_dropdown_cnt));
+                Response.Write(Convert.ToString(userDropdownCnt));
                 Response.Write(".us_id = bugs.");
                 Response.Write("[");
-                Response.Write(column_name);
+                Response.Write(columnName);
                 Response.Write("]\\n\"\n");
-                user_dropdown_cnt++;
+                userDropdownCnt++;
             }
         }
 
-        if (show_udf)
+        if (this.ShowUdf)
         {
         %>
             select += "left outer join user_defined_attribute on udf_id = bg_user_defined_attribute\n";
@@ -628,7 +628,7 @@
         else
         {
         %>
-            var search_sql = "<% Response.Write(search_sql.Replace("\r\n", "")); %>";
+            var search_sql = "<% Response.Write(searchSql.Replace("\r\n", "")); %>";
             search_sql = search_sql.replace(/\[br\]/g, "\n");
             frm.query.value = search_sql.replace(/\$WHERE\$/, where);
         <%
@@ -648,7 +648,7 @@
         var shown = true;
 
         function showhide_form() {
-            var frm = document.getElementById("<% Response.Write(Util.get_form_name()); %>");
+            var frm = document.getElementById("<% Response.Write(Util.GetFormName()); %>");
             if (shown) {
                 frm.style.display = "none";
                 shown = false;
@@ -674,7 +674,7 @@
         }
 
         function do_doc_ready() {
-            date_format = '<% Response.Write(Util.get_setting("DatepickerDateFormat", "yy-mm-dd")); %>';
+            date_format = '<% Response.Write(Util.GetSetting("DatepickerDateFormat", "yy-mm-dd")); %>';
             $('.date').datepicker({ dateFormat: date_format, duration: 'fast' });
             $('.date').change(on_change);
             $('.filter').click(on_invert_filter);
@@ -684,7 +684,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% security.write_menu(Response, "search"); %>
+    <% this.Security.WriteMenu(Response, "search"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -692,10 +692,10 @@
 
     <div class="align">
 
-        <% if (!security.user.adds_not_allowed)
+        <% if (!this.Security.User.AddsNotAllowed)
             { %>
-        <a href="edit_bug.aspx">
-            <img src="add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.get_setting("SingularBugLabel", "bug")); %></a>
+        <a href="EditBug.aspx">
+            <img src="Content/images/add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
         <% } %>
 
         <a style="margin-left: 40px;" href="javascript:showhide_form()" id="showhide">hide form</a>
@@ -707,7 +707,7 @@
                 <tr>
                     <td>
                         <div id="searchfrom">
-                            <form class="frm" action="search.aspx" method="POST" runat="server" onmouseover="hide_suggest()">
+                            <form class="frm" action="Search.aspx" method="POST" runat="server" onmouseover="hide_suggest()">
 
                                 <table border="0" cellpadding="6" cellspacing="0">
                                     <tr>
@@ -776,16 +776,16 @@
                                 <br>
                                 <table border="0" cellpadding="3" cellspacing="0">
                                     <tr>
-                                        <td><span class="lbl"><% Response.Write(Util.capitalize_first_letter(Util.get_setting("SingularBugLabel", "bug"))); %> description contains:&nbsp;</span>
+                                        <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> description contains:&nbsp;</span>
                                         <td colspan="2">
                                             <input type="text" class="txt" id="like" runat="server" onkeydown="search_criteria_onkeydown(this,event)" onkeyup="search_criteria_onkeyup(this,event)" size="50" autocomplete="off">
 
 
-                                            <% if (show_udf)
+                                            <% if (this.ShowUdf)
                                                 {
                                             %>
                                         <td nowrap rowspan="2">
-                                            <span class="lbl" id="udf_label" runat="server"><% Response.Write(Util.get_setting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")); %></span><br>
+                                            <span class="lbl" id="udf_label" runat="server"><% Response.Write(Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")); %></span><br>
                                             <asp:ListBox Rows="4" SelectionMode="Multiple" ID="udf" runat="server" onchange="on_change()"></asp:ListBox>
 
                                             <%
@@ -795,7 +795,7 @@
                                     </tr>
 
                                     <tr>
-                                        <td><span class="lbl"><% Response.Write(Util.capitalize_first_letter(Util.get_setting("SingularBugLabel", "bug"))); %> comments contain:&nbsp;</span>
+                                        <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> comments contain:&nbsp;</span>
                                         <td colspan="2">
                                             <input type="text" class="txt" id="like2" runat="server" onkeyup="on_change()" size="50" autocomplete="off">
                                         </td>
@@ -803,7 +803,7 @@
 
 
                                     <tr>
-                                        <td nowrap><span class="lbl"><% Response.Write(Util.capitalize_first_letter(Util.get_setting("SingularBugLabel", "bug"))); %> comments since:&nbsp;</span>
+                                        <td nowrap><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> comments since:&nbsp;</span>
                                         <td colspan="2">
                                             <input type="text" class="txt date" id="comments_since" runat="server" onkeyup="on_change()" size="10">
                                             <a style="font-size: 8pt;"
@@ -850,28 +850,28 @@
 
                                     <%
 
-                                        var minTextAreaSize = int.Parse(Util.get_setting("TextAreaThreshold", "100"));
-                                        var maxTextAreaRows = int.Parse(Util.get_setting("MaxTextAreaRows", "5"));
+                                        var minTextAreaSize = int.Parse(Util.GetSetting("TextAreaThreshold", "100"));
+                                        var maxTextAreaRows = int.Parse(Util.GetSetting("MaxTextAreaRows", "5"));
 
                                         // Create the custom column INPUT elements
-                                        foreach (DataRow drcc in ds_custom_cols.Tables[0].Rows)
+                                        foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                                         {
-                                            var column_name = (string)drcc["name"];
-                                            if (security.user.dict_custom_field_permission_level[column_name] == Security.PERMISSION_NONE)
+                                            var columnName = (string)drcc["name"];
+                                            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
                                             {
                                                 continue;
                                             }
 
-                                            var field_id = column_name.Replace(" ", "");
+                                            var fieldId = columnName.Replace(" ", "");
                                             var datatype = drcc["datatype"].ToString();
-                                            var dropdown_type = Convert.ToString(drcc["dropdown type"]);
+                                            var dropdownType = Convert.ToString(drcc["dropdown type"]);
 
                                             Response.Write("<tr>");
-                                            Response.Write("<td><span class=lbl id=\"" + field_id + "_label\">");
-                                            Response.Write(column_name);
+                                            Response.Write("<td><span class=lbl id=\"" + fieldId + "_label\">");
+                                            Response.Write(columnName);
 
                                             if ((datatype == "nvarchar" || datatype == "varchar" || datatype == "char" || datatype == "nchar")
-                                                && dropdown_type == "")
+                                                && dropdownType == "")
                                             {
                                                 Response.Write(" contains");
                                             }
@@ -882,36 +882,36 @@
 
                                             var fieldLength = int.Parse(drcc["length"].ToString());
 
-                                            var dropdown_options = Convert.ToString(drcc["vals"]);
+                                            var dropdownOptions = Convert.ToString(drcc["vals"]);
 
-                                            if (dropdown_type != "" || dropdown_options != "")
+                                            if (dropdownType != "" || dropdownOptions != "")
                                             {
                                                 // create dropdown here
 
                                                 Response.Write("<select multiple=multiple size=3 onchange='on_change()' ");
 
-                                                Response.Write(" id=\"" + field_id + "\"");
-                                                Response.Write(" name=\"" + column_name + "\"");
+                                                Response.Write(" id=\"" + fieldId + "\"");
+                                                Response.Write(" name=\"" + columnName + "\"");
                                                 Response.Write(">");
 
-                                                var selected_vals = Request[column_name];
-                                                if (selected_vals == null)
+                                                var selectedVals = Request[columnName];
+                                                if (selectedVals == null)
                                                 {
-                                                    selected_vals = "$Q6Q6Q6$"; // the point here is, don't select anything in the dropdowns
+                                                    selectedVals = "$Q6Q6Q6$"; // the point here is, don't select anything in the dropdowns
                                                 }
-                                                var selected_vals_array = Util.split_string_using_commas(selected_vals);
+                                                var selectedValsArray = Util.SplitStringUsingCommas(selectedVals);
 
-                                                if (dropdown_type != "users")
+                                                if (dropdownType != "users")
                                                 {
-                                                    var options = Util.split_dropdown_vals(dropdown_options);
+                                                    var options = Util.SplitDropdownVals(dropdownOptions);
                                                     for (var j = 0; j < options.Length; j++)
                                                     {
                                                         Response.Write("<option ");
 
                                                         // reselect vals
-                                                        for (var k = 0; k < selected_vals_array.Length; k++)
+                                                        for (var k = 0; k < selectedValsArray.Length; k++)
                                                         {
-                                                            if (options[j] == selected_vals_array[k])
+                                                            if (options[j] == selectedValsArray[k])
                                                             {
                                                                 Response.Write(" selected ");
                                                                 break;
@@ -925,19 +925,19 @@
                                                 }
                                                 else
                                                 {
-                                                    var dv_users = new DataView(dt_users);
-                                                    foreach (DataRowView drv in dv_users)
+                                                    var dvUsers = new DataView(this.DtUsers);
+                                                    foreach (DataRowView drv in dvUsers)
                                                     {
-                                                        var user_id = Convert.ToString(drv[0]);
-                                                        var user_name = Convert.ToString(drv[1]);
+                                                        var userId = Convert.ToString(drv[0]);
+                                                        var userName = Convert.ToString(drv[1]);
 
                                                         Response.Write("<option value=");
-                                                        Response.Write(user_id);
+                                                        Response.Write(userId);
 
                                                         // reselect vals
-                                                        for (var k = 0; k < selected_vals_array.Length; k++)
+                                                        for (var k = 0; k < selectedValsArray.Length; k++)
                                                         {
-                                                            if (user_id == selected_vals_array[k])
+                                                            if (userId == selectedValsArray[k])
                                                             {
                                                                 Response.Write(" selected ");
                                                                 break;
@@ -945,7 +945,7 @@
                                                         }
 
                                                         Response.Write(">");
-                                                        Response.Write(user_name);
+                                                        Response.Write(userName);
                                                         Response.Write("</option>");
                                                     }
                                                 }
@@ -956,7 +956,7 @@
                                             {
                                                 if (datatype == "datetime")
                                                 {
-                                                    write_custom_date_controls(column_name);
+                                                    write_custom_date_controls(columnName);
                                                 }
                                                 else
                                                 {
@@ -977,24 +977,24 @@
                                                         size = 30;
                                                     }
 
-                                                    var size_string = Convert.ToString(size);
+                                                    var sizeString = Convert.ToString(size);
 
-                                                    Response.Write(" size=" + size_string);
-                                                    Response.Write(" maxlength=" + size_string);
+                                                    Response.Write(" size=" + sizeString);
+                                                    Response.Write(" maxlength=" + sizeString);
 
-                                                    Response.Write(" name=\"" + column_name + "\"");
-                                                    Response.Write(" id=\"" + field_id + "\"");
+                                                    Response.Write(" name=\"" + columnName + "\"");
+                                                    Response.Write(" id=\"" + fieldId + "\"");
 
                                                     Response.Write(" value=\"");
-                                                    if (Request[column_name] != "")
+                                                    if (Request[columnName] != "")
                                                     {
-                                                        Response.Write(HttpUtility.HtmlEncode(Request[column_name]));
+                                                        Response.Write(HttpUtility.HtmlEncode(Request[columnName]));
                                                     }
                                                     Response.Write("\"");
                                                     Response.Write(">");
 
                                                     if ((datatype == "nvarchar" || datatype == "varchar" || datatype == "char" || datatype == "nchar")
-                                                        && dropdown_type == "")
+                                                        && dropdownType == "")
                                                     {
                                                         //
                                                     }
@@ -1033,7 +1033,7 @@
                                                     frm2.submit();
                                                 }
                                             </script>
-                                            <% if (security.user.is_guest) /* can't save search */
+                                            <% if (this.Security.User.IsGuest) /* can't save search */
                                                 { %>
                                             <span style="color: Gray; font-size: 7pt;">Save Search not available to "guest" user</span>
                                             <% }
@@ -1055,8 +1055,8 @@
                                 <input type="hidden" name="tags" id="tags" value="">
 
                                 <script>
-                                    var enable_popups = <% Response.Write(security.user.enable_popups ? "1" : "0"); %>;
-                                    var asp_form_id = '<% Response.Write(Util.get_form_name()); %>';
+                                    var enable_popups = <% Response.Write(this.Security.User.EnablePopups ? "1" : "0"); %>;
+                                    var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
                                 </script>
 
                                 <div id="popup" class="buglist_popup"></div>
@@ -1071,25 +1071,25 @@
     </div>
 
     <%
-        if (dv == null)
+        if (this.Dv == null)
         {
         }
         else
         {
-            if (dv.Table.Rows.Count > 0)
+            if (this.Dv.Table.Rows.Count > 0)
             {
-                Response.Write("<a target=_blank href=print_bugs.aspx>print list</a>");
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=print_bugs2.aspx>print detail</a>");
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=print_bugs.aspx?format=excel>export to excel</a><br>");
+                Response.Write("<a target=_blank href=PrintBugs.aspx>print list</a>");
+                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=PrintBugs2.aspx>print detail</a>");
+                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=PrintBugs.aspx?format=excel>export to excel</a><br>");
 
-                if (Util.get_setting("EnableTags", "0") == "1")
+                if (Util.GetSetting("EnableTags", "0") == "1")
                 {
-                    BugList.display_buglist_tags_line(Response, security);
+                    BugList.DisplayBugListTagsLine(Response, this.Security);
                 }
 
-                if (!security.user.is_guest && (security.user.is_admin || security.user.can_mass_edit_bugs))
+                if (!this.Security.User.IsGuest && (this.Security.User.IsAdmin || this.Security.User.CanMassEditBugs))
                 {
-                    Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=massedit.aspx>");
+                    Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=MassEdit.aspx>");
                     display_bugs(true);
                     Response.Write("<p><table class=frm><tr><td colspan=5 class=smallnote>Update or delete all checked items");
                     Response.Write("<tr><td colspan=5>");
@@ -1116,7 +1116,7 @@
             else
             {
                 Response.Write("<p>No ");
-                Response.Write(Util.get_setting("PluralBugLabel", "bug"));
+                Response.Write(Util.GetSetting("PluralBugLabel", "bug"));
                 Response.Write("<p>");
             }
         }
@@ -1128,7 +1128,7 @@
     <pre style="font-family: courier new; font-size: 8pt" id="visible_sql_text" runat="server">&nbsp;</pre>
 
     <!-- form 3 -->
-    <form id="save_query_form" target="_blank" method="post" action="edit_query.aspx">
+    <form id="save_query_form" target="_blank" method="post" action="EditQuery.aspx">
         <input type="hidden" name="sql_text" value="">
     </form>
 </asp:Content>

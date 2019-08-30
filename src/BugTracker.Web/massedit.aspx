@@ -5,13 +5,13 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="massedit.aspx.cs" Inherits="BugTracker.Web.massedit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="MassEdit.aspx.cs" Inherits="BugTracker.Web.MassEdit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.security.write_menu(Response, "admin"); %>
+    <% this.Security.WriteMenu(Response, "admin"); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -20,7 +20,7 @@
             <div runat="server" id="msg" class="err">&nbsp;</div>
 
             <p>
-                <a href="search.aspx">back to search</a>
+                <a href="Search.aspx">back to search</a>
 
         <p>
             or

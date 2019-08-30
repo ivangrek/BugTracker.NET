@@ -1,5 +1,6 @@
 /*
     Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 */
@@ -23,73 +24,73 @@ namespace BugTracker.Web.Core
 
     public class Util
     {
-        public static HttpContext context;
+        public static HttpContext Context;
 
-        private static HttpRequest Request;
+        private static HttpRequest _request;
         //private static HttpResponse Response = null;
         //private static HttpServerUtility Server = null;
 
-        private static readonly object dummy = new object();
+        private static readonly object Dummy = new object();
 
-        public static Regex reCommas = new Regex(",");
-        public static Regex rePipes = new Regex("\\|");
+        public static Regex ReCommas = new Regex(",");
+        public static Regex RePipes = new Regex("\\|");
 
-        private static readonly Regex reEmail =
+        private static readonly Regex ReEmail =
             new Regex("^([a-zA-Z0-9_\\-\\'\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$");
 
-        public static bool validate_email(string s)
+        public static bool ValidateEmail(string s)
         {
-            return reEmail.IsMatch(s);
+            return ReEmail.IsMatch(s);
         }
 
-        public static void set_context(HttpContext asp_net_context)
+        public static void SetContext(HttpContext aspNetContext)
         {
-            context = asp_net_context;
+            Context = aspNetContext;
 
             try
             {
-                Request = context.Request;
+                _request = Context.Request;
             }
             catch (Exception e)
             {
-                write_to_log("caught exception in util.set_context:" + e.Message);
+                WriteToLog("caught exception in util.SetContext:" + e.Message);
             }
         }
 
-        public static string get_form_name()
+        public static string GetFormName()
         {
-            return get_setting("AspNetFormId", "ctl00");
+            return GetSetting("AspNetFormId", "ctl00");
         }
 
-        public static string get_log_file_path()
+        public static string GetLogFilePath()
         {
             // determine log file name
-            var log_file_folder = get_log_folder();
+            var logFileFolder = GetLogFolder();
 
             var now = DateTime.Now;
-            var now_string =
+            var nowString =
                 now.Year
                 + "_" +
                 now.Month.ToString("0#")
                 + "_" +
                 now.Day.ToString("0#");
 
-            var path = log_file_folder
+            var path = logFileFolder
                        + "\\"
                        + "btnet_log_"
-                       + now_string
+                       + nowString
                        + ".txt";
 
             return path;
         }
 
-        public static void write_to_log(string s)
+        public static void WriteToLog(string s)
         {
-            if (get_setting("LogEnabled", "1") == "0") return;
+            if (GetSetting("LogEnabled", "1") == "0") return;
 
-            var path = get_log_file_path();
+            var path = GetLogFilePath();
 
-            lock (dummy)
+            lock (Dummy)
             {
                 var w = File.AppendText(path);
 
@@ -118,11 +119,11 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static void write_to_memory_log(string s)
+        public static void WriteToMemoryLog(string s)
         {
             if (HttpContext.Current == null) return;
 
-            if (get_setting("MemoryLogEnabled", "0") == "0") return;
+            if (GetSetting("MemoryLogEnabled", "0") == "0") return;
 
             var url = "";
             if (HttpContext.Current.Request != null) url = HttpContext.Current.Request.Url.ToString();
@@ -133,7 +134,7 @@ namespace BugTracker.Web.Core
                        + " "
                        + s;
 
-            var list = (List<string>) HttpContext.Current.Application["log"];
+            var list = (List<string>)HttpContext.Current.Application["log"];
 
             if (list == null)
             {
@@ -144,27 +145,27 @@ namespace BugTracker.Web.Core
             list.Add(line);
         }
 
-        public static void do_not_cache(HttpResponse Response)
+        public static void DoNotCache(HttpResponse response)
         {
-            Response.CacheControl = "no-cache";
-            Response.AddHeader("Pragma", "no-cache");
-            Response.Expires = -1;
+            response.CacheControl = "no-cache";
+            response.AddHeader("Pragma", "no-cache");
+            response.Expires = -1;
         }
 
-        public static string get_setting(string name, string default_value)
+        public static string GetSetting(string name, string defaultValue)
         {
-            var name_values
-                = (NameValueCollection) ConfigurationManager.GetSection("appSettings");
-            if (string.IsNullOrEmpty(name_values[name]))
-                return default_value;
-            return name_values[name];
+            var nameValues
+                = (NameValueCollection)ConfigurationManager.GetSection("appSettings");
+            if (string.IsNullOrEmpty(nameValues[name]))
+                return defaultValue;
+            return nameValues[name];
         }
 
-        public static bool is_int(string maybe_int)
+        public static bool IsInt(string maybeInt)
         {
             try
             {
-                var i = int.Parse(maybe_int);
+                var i = int.Parse(maybeInt);
                 return true;
             }
             catch (Exception)
@@ -173,36 +174,36 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static string is_valid_decimal(string name, string val, int left_of_decimal, int right_of_decimal)
+        public static string IsValidDecimal(string name, string val, int leftOfDecimal, int rightOfDecimal)
         {
-            var ci = get_culture_info();
+            var ci = GetCultureInfo();
             decimal x;
             if (!decimal.TryParse(val, NumberStyles.Float, ci, out x))
                 return name + " is not in a valid decimal format";
 
-            var vals = val.Split(new[] {ci.NumberFormat.NumberDecimalSeparator}, StringSplitOptions.None);
+            var vals = val.Split(new[] { ci.NumberFormat.NumberDecimalSeparator }, StringSplitOptions.None);
 
             if (vals.Length > 0)
             {
-                if (vals[0].Length > left_of_decimal)
+                if (vals[0].Length > leftOfDecimal)
                     return name + " has too many digits to the left of the decimal point";
             }
             else if (vals.Length > 1)
             {
-                if (vals[1].Length > right_of_decimal)
+                if (vals[1].Length > rightOfDecimal)
                     return name + " has too many digits to the right of the decimal point";
             }
 
             return "";
         }
 
-        public static bool is_datetime(string maybe_datetime)
+        public static bool IsDateTime(string maybeDatetime)
         {
             DateTime d;
 
             try
             {
-                d = DateTime.Parse(maybe_datetime, get_culture_info());
+                d = DateTime.Parse(maybeDatetime, GetCultureInfo());
                 return true;
             }
             catch (Exception)
@@ -211,21 +212,21 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static string bool_to_string(bool b)
+        public static string BoolToString(bool b)
         {
             return b ? "1" : "0";
         }
 
-        public static string strip_html(string text_with_tags)
+        public static string StripHtml(string textWithTags)
         {
-            if (get_setting("StripHtmlTagsFromSearchableText", "1") == "1")
-                return HttpUtility.HtmlDecode(Regex.Replace(text_with_tags, @"<(.|\n)*?>", string.Empty));
-            return text_with_tags;
+            if (GetSetting("StripHtmlTagsFromSearchableText", "1") == "1")
+                return HttpUtility.HtmlDecode(Regex.Replace(textWithTags, @"<(.|\n)*?>", string.Empty));
+            return textWithTags;
         }
 
-        public static string strip_dangerous_tags(string text_with_tags)
+        public static string StripDangerousTags(string textWithTags)
         {
-            var s = Regex.Replace(text_with_tags,
+            var s = Regex.Replace(textWithTags,
                 @"<script", "<scrSAFEipt", RegexOptions.IgnoreCase);
             s = Regex.Replace(s, @"</script", "</scrSAFEipt", RegexOptions.IgnoreCase);
             s = Regex.Replace(s, @"<object", "<obSAFEject", RegexOptions.IgnoreCase);
@@ -262,13 +263,13 @@ namespace BugTracker.Web.Core
             return s;
         }
 
-        public static CultureInfo get_culture_info()
+        public static CultureInfo GetCultureInfo()
         {
             // Create a basic culture object to provide also all input parsing
             return new CultureInfo(Thread.CurrentThread.CurrentCulture.Name);
         }
 
-        public static string format_db_date_and_time(object date)
+        public static string FormatDbDateTime(object date)
         {
             if (date.GetType() == typeof(DBNull)) return "";
 
@@ -282,51 +283,51 @@ namespace BugTracker.Web.Core
             // but we can guess.  Probably, not for sure, but probably
             // if the time is 12:00 AM, the time is just debris.
 
-            var dt = (DateTime) date;
+            var dt = (DateTime)date;
 
             if (dt.Year == 1900) return "";
 
-            var date_time_format = "";
+            var dateTimeFormat = "";
             if ((dt.Hour == 0 || dt.Hour == 12) && dt.Minute == 0 && dt.Second == 0)
-                date_time_format = get_setting("JustDateFormat", "g");
+                dateTimeFormat = GetSetting("JustDateFormat", "g");
             else
-                date_time_format = get_setting("DateTimeFormat", "g");
+                dateTimeFormat = GetSetting("DateTimeFormat", "g");
 
-            var hours_offset = Convert.ToInt32(get_setting("DisplayTimeOffsetInHours", "0"));
+            var hoursOffset = Convert.ToInt32(GetSetting("DisplayTimeOffsetInHours", "0"));
 
-            if (hours_offset != 0) dt = dt.AddHours(hours_offset);
-            return dt.ToString(date_time_format, get_culture_info());
+            if (hoursOffset != 0) dt = dt.AddHours(hoursOffset);
+            return dt.ToString(dateTimeFormat, GetCultureInfo());
         }
 
         //modified by CJU on jan 9 2008
 
-        public static string format_db_value(decimal val)
+        public static string FormatDbValue(decimal val)
         {
-            return val.ToString(get_culture_info());
+            return val.ToString(GetCultureInfo());
         }
 
-        public static string format_db_value(DateTime val)
+        public static string FormatDbValue(DateTime val)
         {
-            return format_db_date_and_time(val);
+            return FormatDbDateTime(val);
         }
 
-        public static string format_db_value(object val)
+        public static string FormatDbValue(object val)
         {
             if (val is decimal)
-                return format_db_value((decimal) val);
+                return FormatDbValue((decimal)val);
             if (val is DateTime)
-                return format_db_value((DateTime) val);
+                return FormatDbValue((DateTime)val);
             return Convert.ToString(val);
         }
         //end modified by CJU on jan 9 2008
 
-        public static string format_local_date_into_db_format(string date)
+        public static string FormatLocalDateIntoDbFormat(string date)
         {
             // seems to already be in the right format
             DateTime d;
             try
             {
-                d = DateTime.Parse(date, get_culture_info());
+                d = DateTime.Parse(date, GetCultureInfo());
             }
             catch (FormatException)
             {
@@ -335,145 +336,145 @@ namespace BugTracker.Web.Core
             }
 
             // Note that yyyyMMdd HH:mm:ss is a universal SQL dateformat for strings.
-            return d.ToString(get_setting("SQLServerDateFormat", "yyyyMMdd HH:mm:ss"));
+            return d.ToString(GetSetting("SQLServerDateFormat", "yyyyMMdd HH:mm:ss"));
         }
 
-        public static string format_local_decimal_into_db_format(string val)
+        public static string FormatLocalDecimalIntoDbFormat(string val)
         {
-            var x = decimal.Parse(val, get_culture_info());
+            var x = decimal.Parse(val, GetCultureInfo());
 
             return x.ToString(CultureInfo.InvariantCulture);
         }
 
-        public static string alter_sql_per_project_permissions(string sql, Security security)
+        public static string AlterSqlPerProjectPermissions(string sql, Security security)
         {
-            string project_permissions_sql;
+            string projectPermissionsSql;
 
-            var dpl = get_setting("DefaultPermissionLevel", "2");
+            var dpl = GetSetting("DefaultPermissionLevel", "2");
 
             if (dpl == "0")
-                project_permissions_sql = @" (bugs.bg_project in (
+                projectPermissionsSql = @" (bugs.bg_project in (
 					select pu_project
 					from project_user_xref
 					where pu_user = $user
 					and pu_permission_level > 0)) ";
             else
-                project_permissions_sql = @" (bugs.bg_project not in (
+                projectPermissionsSql = @" (bugs.bg_project not in (
 					select pu_project
 					from project_user_xref
 					where pu_user = $user
 					and pu_permission_level = 0)) ";
 
-            if (security.user.can_only_see_own_reported)
+            if (security.User.CanOnlySeeOwnReported)
             {
-                project_permissions_sql += @"
+                projectPermissionsSql += @"
 					    and bugs.bg_reported_user = $user ";
             }
             else
             {
-                if (security.user.other_orgs_permission_level == 0)
-                    project_permissions_sql += @"
+                if (security.User.OtherOrgsPermissionLevel == 0)
+                    projectPermissionsSql += @"
 					    and bugs.bg_org = $user.org ";
             }
 
-            project_permissions_sql
-                = project_permissions_sql.Replace("$user.org", Convert.ToString(security.user.org));
+            projectPermissionsSql
+                = projectPermissionsSql.Replace("$user.org", Convert.ToString(security.User.Org));
 
-            project_permissions_sql
-                = project_permissions_sql.Replace("$user", Convert.ToString(security.user.usid));
+            projectPermissionsSql
+                = projectPermissionsSql.Replace("$user", Convert.ToString(security.User.Usid));
 
             // Figure out where to alter sql for project permissions
             // I've tried lots of different schemes over the years....
 
-            var alter_here_pos = sql.IndexOf("$ALTER_HERE"); // places - can be multiple - are explicitly marked
-            if (alter_here_pos != -1) return sql.Replace("$ALTER_HERE", "/* ALTER_HERE */ " + project_permissions_sql);
+            var alterHerePos = sql.IndexOf("$ALTER_HERE"); // places - can be multiple - are explicitly marked
+            if (alterHerePos != -1) return sql.Replace("$ALTER_HERE", "/* ALTER_HERE */ " + projectPermissionsSql);
 
-            string bug_sql;
+            string bugSql;
 
-            var where_pos =
+            var wherePos =
                 sql.IndexOf(
                     "WhErE"); // first look for a "special" where, case sensitive, in case there are multiple where's to choose from
-            if (where_pos == -1)
-                where_pos = sql.ToUpper().IndexOf("WHERE");
+            if (wherePos == -1)
+                wherePos = sql.ToUpper().IndexOf("WHERE");
 
-            var order_pos = sql.IndexOf("/*ENDWHR*/"); // marker for end of the where statement
+            var orderPos = sql.IndexOf("/*ENDWHR*/"); // marker for end of the where statement
 
-            if (order_pos == -1)
-                order_pos = sql.ToUpper().LastIndexOf("ORDER BY");
+            if (orderPos == -1)
+                orderPos = sql.ToUpper().LastIndexOf("ORDER BY");
 
-            if (order_pos < where_pos)
-                order_pos = -1; // ignore an order by that occurs in a subquery, for example
+            if (orderPos < wherePos)
+                orderPos = -1; // ignore an order by that occurs in a subquery, for example
 
-            if (where_pos != -1 && order_pos != -1)
+            if (wherePos != -1 && orderPos != -1)
                 // both WHERE and ORDER BY clauses
-                bug_sql = sql.Substring(0, where_pos + 5)
+                bugSql = sql.Substring(0, wherePos + 5)
                           + " /* altered - both  */ ( "
-                          + sql.Substring(where_pos + 5, order_pos - (where_pos + 5))
+                          + sql.Substring(wherePos + 5, orderPos - (wherePos + 5))
                           + " ) AND ( "
-                          + project_permissions_sql
+                          + projectPermissionsSql
                           + " ) "
-                          + sql.Substring(order_pos);
-            else if (order_pos == -1 && where_pos == -1)
+                          + sql.Substring(orderPos);
+            else if (orderPos == -1 && wherePos == -1)
                 // Neither
-                bug_sql = sql + " /* altered - neither */ WHERE " + project_permissions_sql;
-            else if (order_pos == -1)
+                bugSql = sql + " /* altered - neither */ WHERE " + projectPermissionsSql;
+            else if (orderPos == -1)
                 // WHERE, without order
-                bug_sql = sql.Substring(0, where_pos + 5)
+                bugSql = sql.Substring(0, wherePos + 5)
                           + " /* altered - just where */ ( "
-                          + sql.Substring(where_pos + 5)
+                          + sql.Substring(wherePos + 5)
                           + " ) AND ( "
-                          + project_permissions_sql + " )";
+                          + projectPermissionsSql + " )";
             else
                 // ORDER BY, without WHERE
-                bug_sql = sql.Substring(0, order_pos)
+                bugSql = sql.Substring(0, orderPos)
                           + " /* altered - just order by  */ WHERE "
-                          + project_permissions_sql
-                          + sql.Substring(order_pos);
+                          + projectPermissionsSql
+                          + sql.Substring(orderPos);
 
-            return bug_sql;
+            return bugSql;
         }
 
-        public static string encrypt_string_using_MD5(string s)
+        public static string EncryptStringUsingMd5(string s)
         {
-            var byte_array = Encoding.Default.GetBytes(s);
+            var byteArray = Encoding.Default.GetBytes(s);
 
             var alg =
                 HashAlgorithm.Create("MD5");
 
-            var byte_array2 = alg.ComputeHash(byte_array);
+            var byteArray2 = alg.ComputeHash(byteArray);
 
             var sb
-                = new StringBuilder(byte_array2.Length);
+                = new StringBuilder(byteArray2.Length);
 
-            foreach (var b in byte_array2) sb.AppendFormat("{0:X2}", b);
+            foreach (var b in byteArray2) sb.AppendFormat("{0:X2}", b);
 
             return sb.ToString();
         }
 
-        public static void update_user_password(int us_id, string unencypted)
+        public static void UpdateUserPassword(int usId, string unencypted)
         {
             var random = new Random();
             var salt = random.Next(10000, 99999);
 
-            var encrypted = encrypt_string_using_MD5(unencypted + Convert.ToString(salt));
+            var encrypted = EncryptStringUsingMd5(unencypted + Convert.ToString(salt));
 
             var sql = "update users set us_password = N'$en', us_salt = $salt where us_id = $id";
 
             sql = sql.Replace("$en", encrypted);
             sql = sql.Replace("$salt", Convert.ToString(salt));
-            sql = sql.Replace("$id", Convert.ToString(us_id));
+            sql = sql.Replace("$id", Convert.ToString(usId));
 
-            DbUtil.execute_nonquery(sql);
+            DbUtil.ExecuteNonQuery(sql);
         }
 
-        public static string capitalize_first_letter(string s)
+        public static string CapitalizeFirstLetter(string s)
         {
-            if (s.Length > 0 && get_setting("NoCapitalization", "0") == "0")
+            if (s.Length > 0 && GetSetting("NoCapitalization", "0") == "0")
                 return s.Substring(0, 1).ToUpper() + s.Substring(1, s.Length - 1);
             return s;
         }
 
-        public static string sanitize_integer(string s)
+        public static string SanitizeInteger(string s)
         {
             int n;
             string s2;
@@ -490,7 +491,7 @@ namespace BugTracker.Web.Core
             return s;
         }
 
-        public static bool is_numeric_datatype(Type datatype)
+        public static bool IsNumericDataType(Type datatype)
         {
             if (datatype == typeof(int)
                 || datatype == typeof(decimal)
@@ -505,24 +506,24 @@ namespace BugTracker.Web.Core
             return false;
         }
 
-        protected static string get_absolute_or_relative_folder(string folder)
+        protected static string GetAbsoluteOrRelativeFolder(string folder)
         {
             if (folder.IndexOf(":") == 1
                 || folder.StartsWith("\\\\"))
                 // leave as is
                 return folder;
 
-            var map_path = (string) HttpRuntime.Cache["MapPath"];
-            return map_path + "\\" + folder;
+            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            return mapPath + "\\" + folder;
         }
 
-        public static string get_folder(string name, string dflt)
+        public static string GetFolder(string name, string dflt)
         {
-            var folder = get_setting(name, "");
+            var folder = GetSetting(name, "");
             if (folder == "")
                 return dflt;
 
-            folder = get_absolute_or_relative_folder(folder);
+            folder = GetAbsoluteOrRelativeFolder(folder);
             if (!Directory.Exists(folder))
                 throw new Exception(name + " specified in Web.config, \""
                                          + folder
@@ -531,38 +532,38 @@ namespace BugTracker.Web.Core
             return folder;
         }
 
-        public static string get_lucene_index_folder()
+        public static string GetLuceneIndexFolder()
         {
-            var map_path = (string) HttpRuntime.Cache["MapPath"];
-            return get_folder("LuceneIndexFolder", map_path + "\\App_Data\\lucene_index");
+            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            return GetFolder("LuceneIndexFolder", mapPath + "\\App_Data\\lucene_index");
         }
 
-        public static string get_upload_folder()
+        public static string GetUploadFolder()
         {
-            var map_path = (string) HttpRuntime.Cache["MapPath"];
-            return get_folder("UploadFolder", map_path + "\\App_Data\\uploads");
+            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            return GetFolder("UploadFolder", mapPath + "\\App_Data\\uploads");
         }
 
-        public static string get_log_folder()
+        public static string GetLogFolder()
         {
-            var map_path = (string) HttpRuntime.Cache["MapPath"];
-            return get_folder("LogFileFolder", map_path + "\\App_Data\\logs");
+            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            return GetFolder("LogFileFolder", mapPath + "\\App_Data\\logs");
         }
 
-        public static string[] split_string_using_commas(string s)
+        public static string[] SplitStringUsingCommas(string s)
         {
-            return reCommas.Split(s);
+            return ReCommas.Split(s);
         }
 
-        public static string[] split_dropdown_vals(string s)
+        public static string[] SplitDropdownVals(string s)
         {
-            var array = rePipes.Split(s);
+            var array = RePipes.Split(s);
             for (var i = 0; i < array.Length; i++) array[i] = array[i].Trim().Replace("\r", "").Replace("\n", "");
             return array;
         }
 
         // common to add/edit custom files, project
-        public static string validate_dropdown_values(string vals)
+        public static string ValidateDropdownValues(string vals)
         {
             if (vals.Contains("'")
                 || vals.Contains("\"")
@@ -573,12 +574,12 @@ namespace BugTracker.Web.Core
             return "";
         }
 
-        public static string how_long_ago(int seconds)
+        public static string HowLongAgo(int seconds)
         {
-            return how_long_ago(new TimeSpan(0, 0, seconds));
+            return HowLongAgo(new TimeSpan(0, 0, seconds));
         }
 
-        public static string how_long_ago(TimeSpan ts)
+        public static string HowLongAgo(TimeSpan ts)
         {
             if (ts.Days > 0)
             {
@@ -614,11 +615,11 @@ namespace BugTracker.Web.Core
             return ts.Seconds + " seconds ago";
         }
 
-        public static DataTable get_related_users(Security security, bool force_full_names)
+        public static DataTable GetRelatedUsers(Security security, bool forceFullNames)
         {
             var sql = "";
 
-            if (get_setting("DefaultPermissionLevel", "2") == "0")
+            if (GetSetting("DefaultPermissionLevel", "2") == "0")
                 // only show users who have explicit permission
                 // for projects that this user has permissions for
 
@@ -708,9 +709,9 @@ end
 
 drop table #temp";
 
-            if (get_setting("LimitUsernameDropdownsInSearch", "0") == "1")
+            if (GetSetting("LimitUsernameDropdownsInSearch", "0") == "1")
             {
-                var sql_limit_user_names = @"
+                var sqlLimitUserNames = @"
 
 select isnull(bg_assigned_to_user,0) keep_me
 into #temp2
@@ -722,30 +723,30 @@ delete from #temp
 where us_id not in (select keep_me from #temp2)
 drop table #temp2";
 
-                sql = sql.Replace("$limit_users", sql_limit_user_names);
+                sql = sql.Replace("$limit_users", sqlLimitUserNames);
             }
             else
             {
                 sql = sql.Replace("$limit_users", "");
             }
 
-            if (force_full_names || get_setting("UseFullNames", "0") == "1")
+            if (forceFullNames || GetSetting("UseFullNames", "0") == "1")
                 // true condition
                 sql = sql.Replace("$fullnames", "1 = 1");
             else
                 // false condition
                 sql = sql.Replace("$fullnames", "0 = 1");
 
-            sql = sql.Replace("$user.usid", Convert.ToString(security.user.usid));
-            sql = sql.Replace("$user.org", Convert.ToString(security.user.org));
-            sql = sql.Replace("$og_external_user", Convert.ToString(security.user.external_user ? 1 : 0));
+            sql = sql.Replace("$user.usid", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$user.org", Convert.ToString(security.User.Org));
+            sql = sql.Replace("$og_external_user", Convert.ToString(security.User.ExternalUser ? 1 : 0));
             sql = sql.Replace("$og_other_orgs_permission_level",
-                Convert.ToString(security.user.other_orgs_permission_level));
+                Convert.ToString(security.User.OtherOrgsPermissionLevel));
 
-            return DbUtil.get_dataset(sql).Tables[0];
+            return DbUtil.GetDataSet(sql).Tables[0];
         }
 
-        public static int get_default_user(int projectid)
+        public static int GetDefaultUser(int projectid)
         {
             if (projectid == 0) return 0;
 
@@ -754,20 +755,20 @@ drop table #temp2";
 					where pj_id = $pj";
 
             sql = sql.Replace("$pj", Convert.ToString(projectid));
-            var obj = DbUtil.execute_scalar(sql);
+            var obj = DbUtil.ExecuteScalar(sql);
 
             if (obj != null)
-                return (int) obj;
+                return (int)obj;
             return 0;
         }
 
-        public static DataSet get_custom_columns()
+        public static DataSet GetCustomColumns()
         {
-            var ds = (DataSet) context.Application["custom_columns_dataset"];
+            var ds = (DataSet)Context.Application["custom_columns_dataset"];
 
             if (ds != null) return ds;
 
-            ds = DbUtil.get_dataset(@"
+            ds = DbUtil.GetDataSet(@"
 /* custom columns */ select sc.name, st.[name] [datatype], 
 case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
 sc.xprec, sc.xscale, sc.isnullable,
@@ -805,13 +806,13 @@ and sc.name not in ('rowguid',
 'bg_tags')
 order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
-            context.Application["custom_columns_dataset"] = ds;
+            Context.Application["custom_columns_dataset"] = ds;
             return ds;
         }
 
-        public static bool check_password_strength(string pw)
+        public static bool CheckPasswordStrength(string pw)
         {
-            if (get_setting("RequireStrongPasswords", "0") == "0") return true;
+            if (GetSetting("RequireStrongPasswords", "0") == "0") return true;
 
             if (pw.Length < 8) return false;
             if (pw.IndexOf("password") > -1) return false;
@@ -823,7 +824,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             var lowercase = 0;
             var uppercase = 0;
             var digits = 0;
-            var special_chars = 0;
+            var specialChars = 0;
 
             for (var i = 0; i < pw.Length; i++)
             {
@@ -831,15 +832,15 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
                 if (c >= 'a' && c <= 'z') lowercase = 1;
                 else if (c >= 'A' && c <= 'Z') uppercase = 1;
                 else if (c >= '0' && c <= '9') digits = 1;
-                else special_chars = 1;
+                else specialChars = 1;
             }
 
-            if (lowercase + uppercase + digits + special_chars < 2) return false;
+            if (lowercase + uppercase + digits + specialChars < 2) return false;
 
             return true;
         }
 
-        public static string filename_to_content_type(string filename)
+        public static string FilenameToContentType(string filename)
         {
             var ext = Path.GetExtension(filename).ToLower();
 
@@ -871,7 +872,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             return "";
         }
 
-        public static string request_to_string_for_sql(string val, string datatype)
+        public static string RequestToStringForSql(string val, string datatype)
         {
             if (val == null || val.Length == 0)
             {
@@ -886,69 +887,69 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             val = val.Replace("'", "''");
 
             if (datatype == "datetime")
-                return "'" + format_local_date_into_db_format(val) + "'";
+                return "'" + FormatLocalDateIntoDbFormat(val) + "'";
             if (datatype == "decimal")
-                return format_local_decimal_into_db_format(val);
+                return FormatLocalDecimalIntoDbFormat(val);
             if (datatype == "int")
                 return val;
             return "N'" + val + "'";
         }
 
-        public static void redirect(HttpRequest Request, HttpResponse Response)
+        public static void Redirect(HttpRequest request, HttpResponse response)
         {
-            // redirect to the page the user was going to or start off with bugs.aspx
-            var url = Request.QueryString["url"];
-            var qs = Request.QueryString["qs"];
+            // redirect to the page the user was going to or start off with Bugs.aspx
+            var url = request.QueryString["url"];
+            var qs = request.QueryString["qs"];
 
             if (string.IsNullOrEmpty(url))
             {
-                var mobile = Request["mobile"];
+                var mobile = request["mobile"];
                 if (string.IsNullOrEmpty(mobile))
-                    Response.Redirect("bugs.aspx");
+                    response.Redirect("Bugs.aspx");
                 else
-                    Response.Redirect("mbugs.aspx");
+                    response.Redirect("MBugs.aspx");
             }
-            else if (url == Request.ServerVariables["URL"]) // I can't remember what this code means...
+            else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
             {
-                Response.Redirect("bugs.aspx");
+                response.Redirect("Bugs.aspx");
             }
             else
             {
-                Response.Redirect(remove_line_breaks(url) + "?" + remove_line_breaks(HttpUtility.UrlDecode(qs)));
+                response.Redirect(RemoveLineBreaks(url) + "?" + RemoveLineBreaks(HttpUtility.UrlDecode(qs)));
             }
         }
 
-        public static void redirect(string url, HttpRequest Request, HttpResponse Response)
+        public static void Redirect(string url, HttpRequest request, HttpResponse response)
         {
             //redirect to the url supplied with the original querystring
             if (url.IndexOf("?") > 0)
-                Response.Redirect(url + "&url="
-                                      + remove_line_breaks(Request.QueryString["url"])
+                response.Redirect(url + "&url="
+                                      + RemoveLineBreaks(request.QueryString["url"])
                                       + "&qs="
-                                      + remove_line_breaks(Request.QueryString["qs"]));
+                                      + RemoveLineBreaks(request.QueryString["qs"]));
             else
-                Response.Redirect(url + "?url="
-                                      + remove_line_breaks(Request.QueryString["url"])
+                response.Redirect(url + "?url="
+                                      + RemoveLineBreaks(request.QueryString["url"])
                                       + "&qs="
-                                      + remove_line_breaks(Request.QueryString["qs"]));
+                                      + RemoveLineBreaks(request.QueryString["qs"]));
         }
 
-        public static string remove_line_breaks(string s)
+        public static string RemoveLineBreaks(string s)
         {
             if (s == null)
                 return "";
             return s.Replace("\n", "").Replace("\r", "");
         }
 
-        public static void update_most_recent_login_datetime(int us_id)
+        public static void UpdateMostRecentLoginDateTime(int usId)
         {
             var sql = @"update users set us_most_recent_login_datetime = getdate() where us_id = $us";
-            sql = sql.Replace("$us", Convert.ToString(us_id));
-            DbUtil.execute_nonquery(sql);
+            sql = sql.Replace("$us", Convert.ToString(usId));
+            DbUtil.ExecuteNonQuery(sql);
         }
 
         //
-        //public static void print_as_excel(HttpResponse Response, DataView dv)
+        //public static void PrintAsExcel(HttpResponse Response, DataView dv)
         //{ 
         //    Response.AddHeader("content-disposition", "attachment;filename=bugs.xls");
         //    Response.Write("<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/></head><body>");
@@ -1001,24 +1002,24 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
         //} 
 
-        public static void print_as_excel(HttpResponse Response, DataView dv)
+        public static void PrintAsExcel(HttpResponse response, DataView dv)
         {
-            Response.Clear();
-            Response.AddHeader("content-disposition",
+            response.Clear();
+            response.AddHeader("content-disposition",
                 "attachment; filename=btnet_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
-            Response.ContentType = "application/ms-excel";
-            Response.ContentEncoding = Encoding.UTF8;
+            response.ContentType = "application/ms-excel";
+            response.ContentEncoding = Encoding.UTF8;
 
-            if (get_setting("WriteUtf8Preamble", "1") == "1") Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            if (GetSetting("WriteUtf8Preamble", "1") == "1") response.BinaryWrite(Encoding.UTF8.GetPreamble());
 
             int col;
-            bool first_column;
+            bool firstColumn;
             var quote = "\"";
-            var two_quotes = quote + quote;
-            var line_break = "\r\n";
+            var twoQuotes = quote + quote;
+            var lineBreak = "\r\n";
 
             // column names
-            first_column = true;
+            firstColumn = true;
             for (col = 1; col < dv.Table.Columns.Count; col++)
             {
                 if (dv.Table.Columns[col].ColumnName == "$FLAG")
@@ -1026,19 +1027,19 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
                 if (dv.Table.Columns[col].ColumnName == "$SEEN")
                     continue;
 
-                if (!first_column) Response.Write(",");
-                Response.Write(quote);
-                Response.Write(dv.Table.Columns[col].ColumnName.Replace("<br>", " ").Replace(quote, two_quotes));
-                Response.Write(quote);
-                first_column = false;
+                if (!firstColumn) response.Write(",");
+                response.Write(quote);
+                response.Write(dv.Table.Columns[col].ColumnName.Replace("<br>", " ").Replace(quote, twoQuotes));
+                response.Write(quote);
+                firstColumn = false;
             }
 
-            Response.Write(line_break);
+            response.Write(lineBreak);
 
             // bug rows
             foreach (DataRowView drv in dv)
             {
-                first_column = true;
+                firstColumn = true;
                 for (col = 1; col < dv.Table.Columns.Count; col++)
                 {
                     var column = dv.Table.Columns[col];
@@ -1048,27 +1049,27 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
                     if (column.ColumnName == "$SEEN")
                         continue;
 
-                    if (!first_column) Response.Write(",");
+                    if (!firstColumn) response.Write(",");
 
-                    Response.Write(quote);
+                    response.Write(quote);
                     if (column.DataType == typeof(DateTime))
-                        Response.Write(format_db_date_and_time(drv[col]));
+                        response.Write(FormatDbDateTime(drv[col]));
                     else
-                        Response.Write(drv[col].ToString().Replace(line_break, "|").Replace("\n", "|")
-                            .Replace(quote, two_quotes));
+                        response.Write(drv[col].ToString().Replace(lineBreak, "|").Replace("\n", "|")
+                            .Replace(quote, twoQuotes));
 
-                    Response.Write(quote);
+                    response.Write(quote);
 
-                    first_column = false;
+                    firstColumn = false;
                 }
 
-                Response.Write(line_break);
+                response.Write(lineBreak);
             }
 
-            Response.End();
+            response.End();
         }
 
-        public static DataSet get_all_tasks(Security security, int bugid)
+        public static DataSet GetAllTasks(Security security, int bugid)
         {
             var sql = "select ";
 
@@ -1083,26 +1084,26 @@ bug_users.us_username as [assigned to],";
 
             sql += "tsk_id [task<br>id], tsk_description [task<br>description] ";
 
-            if (get_setting("ShowTaskAssignedTo", "1") == "1") sql += ", task_users.us_username [task<br>assigned to]";
+            if (GetSetting("ShowTaskAssignedTo", "1") == "1") sql += ", task_users.us_username [task<br>assigned to]";
 
-            if (get_setting("ShowTaskPlannedStartDate", "1") == "1") sql += ", tsk_planned_start_date [planned start]";
-            if (get_setting("ShowTaskActualStartDate", "1") == "1") sql += ", tsk_actual_start_date [actual start]";
+            if (GetSetting("ShowTaskPlannedStartDate", "1") == "1") sql += ", tsk_planned_start_date [planned start]";
+            if (GetSetting("ShowTaskActualStartDate", "1") == "1") sql += ", tsk_actual_start_date [actual start]";
 
-            if (get_setting("ShowTaskPlannedEndDate", "1") == "1") sql += ", tsk_planned_end_date [planned end]";
-            if (get_setting("ShowTaskActualEndDate", "1") == "1") sql += ", tsk_actual_end_date [actual end]";
+            if (GetSetting("ShowTaskPlannedEndDate", "1") == "1") sql += ", tsk_planned_end_date [planned end]";
+            if (GetSetting("ShowTaskActualEndDate", "1") == "1") sql += ", tsk_actual_end_date [actual end]";
 
-            if (get_setting("ShowTaskPlannedDuration", "1") == "1")
+            if (GetSetting("ShowTaskPlannedDuration", "1") == "1")
                 sql += ", tsk_planned_duration [planned<br>duration]";
-            if (get_setting("ShowTaskActualDuration", "1") == "1") sql += ", tsk_actual_duration  [actual<br>duration]";
+            if (GetSetting("ShowTaskActualDuration", "1") == "1") sql += ", tsk_actual_duration  [actual<br>duration]";
 
-            if (get_setting("ShowTaskDurationUnits", "1") == "1") sql += ", tsk_duration_units [duration<br>units]";
+            if (GetSetting("ShowTaskDurationUnits", "1") == "1") sql += ", tsk_duration_units [duration<br>units]";
 
-            if (get_setting("ShowTaskPercentComplete", "1") == "1")
+            if (GetSetting("ShowTaskPercentComplete", "1") == "1")
                 sql += ", tsk_percent_complete [percent<br>complete]";
 
-            if (get_setting("ShowTaskStatus", "1") == "1") sql += ", task_statuses.st_name  [task<br>status]";
+            if (GetSetting("ShowTaskStatus", "1") == "1") sql += ", task_statuses.st_name  [task<br>status]";
 
-            if (get_setting("ShowTaskSortSequence", "1") == "1") sql += ", tsk_sort_sequence  [seq]";
+            if (GetSetting("ShowTaskSortSequence", "1") == "1") sql += ", tsk_sort_sequence  [seq]";
 
             sql += @"
 from bug_tasks 
@@ -1117,44 +1118,44 @@ where tsk_bug in
 (";
 
             if (bugid == 0)
-                sql += alter_sql_per_project_permissions("select bg_id from bugs", security);
+                sql += AlterSqlPerProjectPermissions("select bg_id from bugs", security);
             else
                 sql += Convert.ToString(bugid);
             sql += @"
 )
 order by tsk_sort_sequence, tsk_id";
 
-            var ds = DbUtil.get_dataset(sql);
+            var ds = DbUtil.GetDataSet(sql);
 
             return ds;
         }
 
-        public static void display_bug_not_found(HttpResponse Response, Security security, int id)
+        public static void DisplayBugNotFound(HttpResponse response, Security security, int id)
         {
-            Response.Write("<link rel=StyleSheet href=btnet.css type=text/css>");
-            security.write_menu(Response, get_setting("PluralBugLabel", "bugs"));
-            Response.Write("<p>&nbsp;</p><div class=align>");
-            Response.Write("<div class=err>");
-            Response.Write(capitalize_first_letter(get_setting("SingularBugLabel", "bug")));
-            Response.Write(" not found:&nbsp;" + Convert.ToString(id) + "</div>");
-            Response.Write("<p><a href=bugs.aspx>View ");
-            Response.Write(get_setting("PluralBugLabel", "bug"));
-            Response.Write("</a>");
-            Response.End();
+            response.Write("<link rel=StyleSheet href=Content/btnet.css type=text/css>");
+            security.WriteMenu(response, GetSetting("PluralBugLabel", "bugs"));
+            response.Write("<p>&nbsp;</p><div class=align>");
+            response.Write("<div class=err>");
+            response.Write(CapitalizeFirstLetter(GetSetting("SingularBugLabel", "bug")));
+            response.Write(" not found:&nbsp;" + Convert.ToString(id) + "</div>");
+            response.Write("<p><a href=Bugs.aspx>View ");
+            response.Write(GetSetting("PluralBugLabel", "bug"));
+            response.Write("</a>");
+            response.End();
         }
 
-        public static void display_you_dont_have_permission(HttpResponse Response, Security security)
+        public static void DisplayYouDontHavePermission(HttpResponse response, Security security)
         {
-            Response.Write("<link rel=StyleSheet href=btnet.css type=text/css>");
-            security.write_menu(Response, get_setting("PluralBugLabel", "bugs"));
-            Response.Write("<p>&nbsp;</p><div class=align>");
-            Response.Write("<div class=err>You are not allowed to view this "
-                           + get_setting("SingularBugLabel", "bug")
+            response.Write("<link rel=StyleSheet href=Content/btnet.css type=text/css>");
+            security.WriteMenu(response, GetSetting("PluralBugLabel", "bugs"));
+            response.Write("<p>&nbsp;</p><div class=align>");
+            response.Write("<div class=err>You are not allowed to view this "
+                           + GetSetting("SingularBugLabel", "bug")
                            + "</div>");
-            Response.Write("<p><a href=bugs.aspx>View "
-                           + capitalize_first_letter(get_setting
+            response.Write("<p><a href=Bugs.aspx>View "
+                           + CapitalizeFirstLetter(GetSetting
                                ("PluralBugLabel", "bugs")) + "</a>");
-            Response.End();
+            response.End();
         }
-    } // end Util
+    }
 }

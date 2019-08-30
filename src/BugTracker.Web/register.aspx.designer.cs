@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class register {
+    public partial class Register {
         
         /// <summary>
         /// username control.

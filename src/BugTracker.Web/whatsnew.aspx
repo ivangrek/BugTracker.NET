@@ -5,4 +5,4 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="whatsnew.aspx.cs" Inherits="BugTracker.Web.whatsnew" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WhatsNew.aspx.cs" Inherits="BugTracker.Web.WhatsNew" %>

@@ -12,22 +12,22 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class ajax : Page
+    public partial class Ajax : Page
     {
-        public Security security;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            var bugid = Util.sanitize_integer(Request["bugid"]);
+            var bugid = Util.SanitizeInteger(Request["bugid"]);
 
             // check permission
-            var permission_level = Bug.get_bug_permission_level(Convert.ToInt32(bugid), this.security);
-            if (permission_level != Security.PERMISSION_NONE)
+            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugid), this.Security);
+            if (permissionLevel != Security.PermissionNone)
             {
                 Response.Write(@"
 
@@ -43,21 +43,21 @@ font-size: 7pt;
 }
 </style>");
 
-                var int_bugid = Convert.ToInt32(bugid);
-                var ds_posts = PrintBug.get_bug_posts(int_bugid, this.security.user.external_user, false);
-                var post_cnt = PrintBug.write_posts(
-                    ds_posts,
+                var intBugid = Convert.ToInt32(bugid);
+                var dsPosts = Core.PrintBug.GetBugPosts(intBugid, this.Security.User.ExternalUser, false);
+                var postCnt = Core.PrintBug.WritePosts(
+                    dsPosts,
                     Response,
-                    int_bugid,
-                    permission_level,
+                    intBugid,
+                    permissionLevel,
                     false, // write links
                     false, // images inline
                     false, // history inline
                     true, // internal posts
-                    this.security.user);
+                    this.Security.User);
 
                 // We can't unwrite what we wrote, but let's tell javascript to ignore it.
-                if (post_cnt == 0) Response.Write("<!--zeroposts-->");
+                if (postCnt == 0) Response.Write("<!--zeroposts-->");
             }
             else
             {

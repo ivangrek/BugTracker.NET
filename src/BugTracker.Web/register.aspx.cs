@@ -12,14 +12,14 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class register : Page
+    public partial class Register : Page
     {
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.set_context(HttpContext.Current);
-            Util.do_not_cache(Response);
+            Util.SetContext(HttpContext.Current);
+            Util.DoNotCache(Response);
 
-            if (Util.get_setting("AllowSelfRegistration", "0") == "0")
+            if (Util.GetSetting("AllowSelfRegistration", "0") == "0")
             {
                 Response.Write("Sorry, Web.config AllowSelfRegistration is set to 0");
                 Response.End();
@@ -27,7 +27,7 @@ namespace BugTracker.Web
 
             if (!IsPostBack)
             {
-                Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                             + "register";
             }
             else
@@ -53,7 +53,7 @@ namespace BugTracker.Web
                     // encrypt the password
                     var random = new Random();
                     var salt = random.Next(10000, 99999);
-                    var encrypted = Util.encrypt_string_using_MD5(this.password.Value + Convert.ToString(salt));
+                    var encrypted = Util.EncryptStringUsingMd5(this.password.Value + Convert.ToString(salt));
 
                     var sql = @"
 insert into emailed_links
@@ -70,15 +70,15 @@ insert into emailed_links
                     sql = sql.Replace("$firstname", this.firstname.Value.Replace("'", "''"));
                     sql = sql.Replace("$lastname", this.lastname.Value.Replace("'", "''"));
 
-                    DbUtil.execute_nonquery(sql);
+                    DbUtil.ExecuteNonQuery(sql);
 
-                    var result = Email.send_email(this.email.Value,
-                        Util.get_setting("NotificationEmailFrom", ""),
+                    var result = Email.SendEmail(this.email.Value,
+                        Util.GetSetting("NotificationEmailFrom", ""),
                         "", // cc
                         "Please complete registration",
                         "Click to <a href='"
-                        + Util.get_setting("AbsoluteUrlPrefix", "")
-                        + "complete_registration.aspx?id="
+                        + Util.GetSetting("AbsoluteUrlPrefix", "")
+                        + "CompleteRegistration.aspx?id="
                         + guid
                         + "'>complete registration</a>.",
                         BtnetMailFormat.Html);
@@ -106,7 +106,7 @@ insert into emailed_links
             }
             else
             {
-                if (!Util.validate_email(this.email.Value))
+                if (!Util.ValidateEmail(this.email.Value))
                 {
                     this.email_err.InnerHtml = "Format of email address is invalid.";
                     valid = false;
@@ -132,7 +132,7 @@ insert into emailed_links
                     this.confirm_err.InnerText = "Confirm doesn't match password.";
                     valid = false;
                 }
-                else if (!Util.check_password_strength(this.password.Value))
+                else if (!Util.CheckPasswordStrength(this.password.Value))
                 {
                     this.password_err.InnerHtml = "Password is not difficult enough to guess.";
                     this.password_err.InnerHtml += "<br>Avoid common words.";
@@ -169,7 +169,7 @@ select @user_cnt, @email_cnt, @pending_user_cnt, @pending_email_cnt";
             sql = sql.Replace("$us", this.username.Value.Replace("'", "''"));
             sql = sql.Replace("$em", this.email.Value.Replace("'", "''"));
 
-            var dr = DbUtil.get_datarow(sql);
+            var dr = DbUtil.GetDataRow(sql);
 
             if ((int) dr[0] > 0)
             {

@@ -10,7 +10,7 @@
 namespace BugTracker.Web {
     
     
-    public partial class query {
+    public partial class Query {
         
         /// <summary>
         /// dbtables_select control.

@@ -5,11 +5,11 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="bugs.aspx.cs" Inherits="BugTracker.Web.bugs" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Bugs.aspx.cs" Inherits="BugTracker.Web.Bugs" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="bug_list.js"></script>
+    <script type="text/javascript" src="Scripts/bug_list.js"></script>
     <script>
         $(document).ready(function () {
             $('.filter').click(on_invert_filter);
@@ -25,7 +25,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% security.write_menu(Response, Util.get_setting("PluralBugLabel", "bugs")); %>
+    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -34,10 +34,10 @@
             <table border="0">
                 <tr>
                     <td nowrap>
-                        <% if (!security.user.adds_not_allowed)
+                        <% if (!this.Security.User.AddsNotAllowed)
                             { %>
-                        <a href="edit_bug.aspx">
-                            <img src="add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.get_setting("SingularBugLabel", "bug")); %></a>
+                        <a href="EditBug.aspx">
+                            <img src="Content/images/add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <% } %>
 
@@ -45,35 +45,35 @@
                         <asp:DropDownList ID="query" runat="server" onchange="on_query_changed()">
                         </asp:DropDownList>
 
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="print_bugs.aspx">print list</a>
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="print_bugs2.aspx">print detail</a>
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="print_bugs.aspx?format=excel">export to excel</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs.aspx">print list</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs2.aspx">print detail</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs.aspx?format=excel">export to excel</a>
                     <td nowrap align="right" width="100%">
-                        <a target="_blank" href="btnet_screen_capture.exe">
-                            <img src="camera.png" border="0" align="top">&nbsp;download screen capture utility</a>
+                        <a target="_blank" href="Content/btnet_screen_capture.zip">
+                            <img src="Content/images/camera.png" border="0" align="top">&nbsp;download screen capture utility</a>
             </table>
             <br>
             <%
-                if (dv != null)
+                if (this.Dv != null)
                 {
-                    if (dv.Table.Rows.Count > 0)
+                    if (this.Dv.Table.Rows.Count > 0)
                     {
-                        if (Util.get_setting("EnableTags", "0") == "1")
+                        if (Util.GetSetting("EnableTags", "0") == "1")
                         {
-                            BugList.display_buglist_tags_line(Response, security);
+                            BugList.DisplayBugListTagsLine(Response, this.Security);
                         }
                         display_bugs(false);
                     }
                     else
                     {
                         Response.Write("<p>No ");
-                        Response.Write(Util.get_setting("PluralBugLabel", "bugs"));
+                        Response.Write(Util.GetSetting("PluralBugLabel", "bugs"));
                         Response.Write(" yet.<p>");
                     }
                 }
                 else
                 {
-                    Response.Write("<div class=err>Error in query SQL: " + sql_error + "</div>");
+                    Response.Write("<div class=err>Error in query SQL: " + this.SqlError + "</div>");
                 }
             %>
             <input type="hidden" name="new_page" id="new_page" runat="server" value="0" />
@@ -85,8 +85,8 @@
             <input type="hidden" name="tags" id="tags" value="">
 
             <script>
-                var enable_popups = <% Response.Write(security.user.enable_popups ? "1" : "0"); %>;
-                var asp_form_id = '<% Response.Write(Util.get_form_name()); %>';
+                var enable_popups = <% Response.Write(this.Security.User.EnablePopups ? "1" : "0"); %>;
+                var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
             </script>
 
             <div id="popup" class="buglist_popup"></div>

@@ -13,29 +13,29 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class query : Page
+    public partial class Query : Page
     {
-        public DataSet ds;
+        public DataSet Ds;
 
-        public string exception_message;
-        public Security security;
+        public string ExceptionMessage;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
             // If there is a users table, then authenticate this page
             try
             {
-                DbUtil.execute_nonquery("select count(1) from users");
-                this.security = new Security();
-                this.security.check_security(HttpContext.Current, Security.MUST_BE_ADMIN);
+                DbUtil.ExecuteNonQuery("select count(1) from users");
+                this.Security = new Security();
+                this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
             }
             catch (Exception)
             {
             }
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "run query";
 
             if (IsPostBack)
@@ -43,17 +43,17 @@ namespace BugTracker.Web
                 if (this.queryText.Value != "")
                     try
                     {
-                        this.ds = DbUtil.get_dataset(Server.HtmlDecode(this.queryText.Value));
+                        this.Ds = DbUtil.GetDataSet(Server.HtmlDecode(this.queryText.Value));
                     }
                     catch (Exception e2)
                     {
-                        this.exception_message = e2.Message;
+                        this.ExceptionMessage = e2.Message;
                         //exception_message = e2.ToString();  // uncomment this if you need more error info.
                     }
             }
             else
             {
-                var ds = DbUtil.get_dataset("select name from sysobjects where type = 'u' order by 1");
+                var ds = DbUtil.GetDataSet("select name from sysobjects where type = 'u' order by 1");
                 this.dbtables_select.Items.Add("Select Table");
                 foreach (DataRow dr in ds.Tables[0].Rows) this.dbtables_select.Items.Add((string) dr[0]);
             }

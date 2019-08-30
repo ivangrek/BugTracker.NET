@@ -13,23 +13,23 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class statuses : Page
+    public partial class Statuses : Page
     {
-        public DataSet ds;
+        public DataSet Ds;
 
-        public Security security;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.MUST_BE_ADMIN);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "statuses";
 
-            this.ds = DbUtil.get_dataset(
+            this.Ds = DbUtil.GetDataSet(
                 @"select st_id [id],
 		st_name [status],
 		st_sort_seq [sort seq],

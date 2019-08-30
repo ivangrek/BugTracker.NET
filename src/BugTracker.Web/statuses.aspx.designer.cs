@@ -10,6 +10,6 @@
 namespace BugTracker.Web {
     
     
-    public partial class statuses {
+    public partial class Statuses {
     }
 }

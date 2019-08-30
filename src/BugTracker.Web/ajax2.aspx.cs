@@ -13,16 +13,16 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class ajax2 : Page
+    public partial class Ajax2 : Page
     {
-        public Security security;
+        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            this.security = new Security();
-            this.security.check_security(HttpContext.Current, Security.ANY_USER_OK);
+            this.Security = new Security();
+            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
             // will this be too slow?
 
@@ -35,12 +35,12 @@ namespace BugTracker.Web
 			order by 1";
 
                 // if you don't use permissions, comment out this line for speed?
-                sql = Util.alter_sql_per_project_permissions(sql, this.security);
+                sql = Util.AlterSqlPerProjectPermissions(sql, this.Security);
 
                 var text = Request["q"];
                 sql = sql.Replace("$str", text.Replace("'", "''"));
 
-                var ds = DbUtil.get_dataset(sql);
+                var ds = DbUtil.GetDataSet(sql);
 
                 if (ds.Tables[0].Rows.Count > 0)
                 {

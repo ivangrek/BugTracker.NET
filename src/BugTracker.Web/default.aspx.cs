@@ -15,15 +15,15 @@ namespace BugTracker.Web
 
     public partial class Default : Page
     {
-        public string sql;
+        public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.set_context(HttpContext.Current);
+            Util.SetContext(HttpContext.Current);
 
-            Util.do_not_cache(Response);
+            Util.DoNotCache(Response);
 
-            Page.Title = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
                                                                         + "logon";
 
             this.msg.InnerText = "";
@@ -32,19 +32,19 @@ namespace BugTracker.Web
             try
             {
                 // Intentionally getting an extra connection here so that we fall into the right "catch"
-                var conn = DbUtil.get_sqlconnection();
+                var conn = DbUtil.GetSqlConnection();
                 conn.Close();
 
                 try
                 {
-                    DbUtil.execute_nonquery("select count(1) from users");
+                    DbUtil.ExecuteNonQuery("select count(1) from users");
                 }
                 catch (SqlException e1)
                 {
-                    Util.write_to_log(e1.Message);
-                    Util.write_to_log(Util.get_setting("ConnectionString", "?"));
+                    Util.WriteToLog(e1.Message);
+                    Util.WriteToLog(Util.GetSetting("ConnectionString", "?"));
                     this.msg.InnerHtml = "Unable to find \"bugs\" table.<br>"
-                                         + "Click to <a href=install.aspx>setup database tables</a>";
+                                         + "Click to <a href=Install.aspx>setup database tables</a>";
                 }
             }
             catch (SqlException e2)
@@ -57,23 +57,23 @@ namespace BugTracker.Web
             }
 
             // Get authentication mode
-            var auth_mode = Util.get_setting("WindowsAuthentication", "0");
-            var username_cookie = Request.Cookies["user"];
-            var previous_auth_mode = "0";
-            if (username_cookie != null) previous_auth_mode = username_cookie["NTLM"];
+            var authMode = Util.GetSetting("WindowsAuthentication", "0");
+            var usernameCookie = Request.Cookies["user"];
+            var previousAuthMode = "0";
+            if (usernameCookie != null) previousAuthMode = usernameCookie["NTLM"];
 
             // If an error occured, then force the authentication to manual
             if (Request.QueryString["msg"] == null)
             {
                 // If windows authentication only, then redirect
-                if (auth_mode == "1") Util.redirect("loginNT.aspx", Request, Response);
+                if (authMode == "1") Util.Redirect("LoginNt.aspx", Request, Response);
 
                 // If previous login was with windows authentication, then try it again
-                if (previous_auth_mode == "1" && auth_mode == "2")
+                if (previousAuthMode == "1" && authMode == "2")
                 {
                     Response.Cookies["user"]["name"] = "";
                     Response.Cookies["user"]["NTLM"] = "0";
-                    Util.redirect("loginNT.aspx", Request, Response);
+                    Util.Redirect("LoginNt.aspx", Request, Response);
                 }
             }
             else
@@ -86,16 +86,16 @@ namespace BugTracker.Web
             // fill in the username first time in
             if (!IsPostBack)
             {
-                if (previous_auth_mode == "0")
+                if (previousAuthMode == "0")
                 {
                     if (Request.QueryString["user"] == null || Request.QueryString["password"] == null)
                     {
                         //	User name and password are not on the querystring.
 
-                        if (username_cookie != null)
+                        if (usernameCookie != null)
                             //	Set the user name from the last logon.
 
-                            this.user.Value = username_cookie["name"];
+                            this.user.Value = usernameCookie["name"];
                     }
                     else
                     {
@@ -116,29 +116,29 @@ namespace BugTracker.Web
 
         public void on_logon()
         {
-            var auth_mode = Util.get_setting("WindowsAuthentication", "0");
-            if (auth_mode != "0")
+            var authMode = Util.GetSetting("WindowsAuthentication", "0");
+            if (authMode != "0")
                 if (this.user.Value.Trim() == "")
-                    Util.redirect("loginNT.aspx", Request, Response);
+                    Util.Redirect("LoginNt.aspx", Request, Response);
 
-            var authenticated = Authenticate.check_password(this.user.Value, this.pw.Value);
+            var authenticated = Authenticate.CheckPassword(this.user.Value, this.pw.Value);
 
             if (authenticated)
             {
-                this.sql = "select us_id from users where us_username = N'$us'";
-                this.sql = this.sql.Replace("$us", this.user.Value.Replace("'", "''"));
-                var dr = DbUtil.get_datarow(this.sql);
+                this.Sql = "select us_id from users where us_username = N'$us'";
+                this.Sql = this.Sql.Replace("$us", this.user.Value.Replace("'", "''"));
+                var dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
                 {
-                    var us_id = (int) dr["us_id"];
+                    var usId = (int) dr["us_id"];
 
-                    Security.create_session(
+                    Security.CreateSession(
                         Request,
                         Response,
-                        us_id, this.user.Value,
+                        usId, this.user.Value,
                         "0");
 
-                    Util.redirect(Request, Response);
+                    Util.Redirect(Request, Response);
                 }
                 else
                 {
