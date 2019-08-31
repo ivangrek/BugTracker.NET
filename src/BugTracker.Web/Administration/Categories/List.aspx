@@ -5,11 +5,11 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Categories.aspx.cs" Inherits="BugTracker.Web.Categories" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.Categories.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js")%>"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
@@ -18,13 +18,13 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="EditCategory.aspx">add new category</a>
+        <a href="<%= ResolveUrl("~/Administration/Categories/Edit.aspx")%>">add new category</a>
         <p/>
         <%
 
             if (this.Ds.Tables[0].Rows.Count > 0)
                 SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, "EditCategory.aspx?id=", "DeleteCategory.aspx?id=");
+                    Response, this.Ds, ResolveUrl("~/Administration/Categories/Edit.aspx?id="), ResolveUrl("~/Administration/Categories/Delete.aspx?id="));
             else
                 Response.Write("No categories in the database.");
         %>

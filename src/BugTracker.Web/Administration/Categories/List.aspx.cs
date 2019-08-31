@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Categories
 {
     using System;
     using System.Data;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class Categories : Page
+    public partial class List : Page
     {
         public DataSet Ds;
         public Security Security;
@@ -25,17 +25,16 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "categories";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - categories";
 
             this.Ds = DbUtil.GetDataSet(
                 @"select
-		ct_id [id],
-		ct_name [category],
-		ct_sort_seq [sort seq],
-		case when ct_default = 1 then 'Y' else 'N' end [default],
-		ct_id [hidden]
-		from categories order by ct_name");
+        ct_id [id],
+        ct_name [category],
+        ct_sort_seq [sort seq],
+        case when ct_default = 1 then 'Y' else 'N' end [default],
+        ct_id [hidden]
+        from categories order by ct_name");
         }
     }
 }

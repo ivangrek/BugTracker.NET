@@ -7,10 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class Categories {
+namespace BugTracker.Web.Administration.Categories {
+    
+    
+    public partial class List {
     }
 }

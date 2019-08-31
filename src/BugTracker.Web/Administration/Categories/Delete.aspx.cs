@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Categories
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteCategory : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -34,18 +34,17 @@ namespace BugTracker.Web
                 this.Sql = @"delete categories where ct_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Categories.aspx");
+                Server.Transfer("~/Administration/Categories/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete category";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete category";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 
                 this.Sql = @"declare @cnt int
-			select @cnt = count(1) from bugs where bg_category = $1
-			select ct_name, @cnt [cnt] from categories where ct_id = $1";
+            select @cnt = count(1) from bugs where bg_category = $1
+            select ct_name, @cnt [cnt] from categories where ct_id = $1";
                 this.Sql = this.Sql.Replace("$1", id);
 
                 var dr = DbUtil.GetDataRow(this.Sql);

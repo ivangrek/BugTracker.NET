@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Categories
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditCategory : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -31,8 +31,7 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit category";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit category";
 
             this.msg.InnerText = "";
 
@@ -120,10 +119,10 @@ namespace BugTracker.Web
                 else // edit existing
                 {
                     this.Sql = @"update categories set
-				ct_name = N'$na',
-				ct_sort_seq = $ss,
-				ct_default = $df
-				where ct_id = $id";
+                ct_name = N'$na',
+                ct_sort_seq = $ss,
+                ct_default = $df
+                where ct_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 }
@@ -132,7 +131,7 @@ namespace BugTracker.Web
                 this.Sql = this.Sql.Replace("$ss", this.sort_seq.Value);
                 this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Categories.aspx");
+                Server.Transfer("~/Administration/Categories/List.aspx");
             }
             else
             {

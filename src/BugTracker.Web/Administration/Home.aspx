@@ -96,7 +96,7 @@
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/Categories.aspx")%>">Categories</a>
+                            <a href="<%= ResolveUrl("~/Administration/Categories/List.aspx")%>">Categories</a>
                         </li>
                         <p />
                         <li class="listitem">

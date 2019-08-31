@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditCategory.aspx.cs" Inherits="BugTracker.Web.EditCategory" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Categories.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -19,7 +19,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Categories.aspx">back to categories</a>
+                    <a href="<%= ResolveUrl("~/Administration/Categories/List.aspx")%>">back to categories</a>
                     <form class="frm" runat="server">
                         <table border="0">
 

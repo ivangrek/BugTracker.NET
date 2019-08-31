@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Categories {
     
     
-    public partial class EditCategory {
+    public partial class Edit {
         
         /// <summary>
         /// name control.
