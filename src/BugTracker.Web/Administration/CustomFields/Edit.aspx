@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditCustomField.aspx.cs" Inherits="BugTracker.Web.EditCustomField" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.CustomFields.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -20,7 +20,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="CustomFields.aspx">back to custom fields</a>
+                    <a href="<%= ResolveUrl("~/Administration/CustomFields/List.aspx")%>">back to custom fields</a>
                     <p>
                         <form class="frm" runat="server">
                             <table border="0">

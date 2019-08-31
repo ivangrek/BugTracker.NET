@@ -5,11 +5,11 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="CustomFields.aspx.cs" Inherits="BugTracker.Web.CustomFields" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.CustomFields.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js")%>"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
@@ -18,12 +18,12 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="AddCustomfield.aspx">add new custom field</a>
+        <a href="<%= ResolveUrl("~/Administration/CustomFields/Add.aspx")%>">add new custom field</a>
         <p/>
         <%
             if (this.Ds.Tables[0].Rows.Count > 0)
                 SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, "EditCustomField.aspx?id=", "DeleteCustomField.aspx?id=");
+                    Response, this.Ds, ResolveUrl("~/Administration/CustomFields/Edit.aspx?id="), ResolveUrl("~/Administration/CustomFields/Delete.aspx?id="));
             else
                 Response.Write("No custom fields.");
         %>

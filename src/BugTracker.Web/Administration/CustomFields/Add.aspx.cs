@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.CustomFields
 {
     using System;
     using System.Web;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class AddCustomfield : Page
+    public partial class Add : Page
     {
         public Security Security;
         public string Sql;
@@ -25,8 +25,7 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "custom field";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - custom field";
 
             this.msg.InnerText = "";
 
@@ -247,15 +246,15 @@ alter table bugs add [$nm] $dt $ln $null $df";
                 {
                     this.Sql = @"declare @colorder int
 
-				select @colorder = sc.colorder
-				from syscolumns sc
-				inner join sysobjects so on sc.id = so.id
-				where so.name = 'bugs'
-				and sc.name = '$nm'
+                select @colorder = sc.colorder
+                from syscolumns sc
+                inner join sysobjects so on sc.id = so.id
+                where so.name = 'bugs'
+                and sc.name = '$nm'
 
-				insert into custom_col_metadata
-				(ccm_colorder, ccm_dropdown_vals, ccm_sort_seq, ccm_dropdown_type)
-				values(@colorder, N'$v', $ss, '$dt')";
+                insert into custom_col_metadata
+                (ccm_colorder, ccm_dropdown_vals, ccm_sort_seq, ccm_dropdown_type)
+                values(@colorder, N'$v', $ss, '$dt')";
 
                     this.Sql = this.Sql.Replace("$nm", this.name.Value);
                     this.Sql = this.Sql.Replace("$v", this.vals.Value.Replace("'", "''"));
@@ -264,7 +263,7 @@ alter table bugs add [$nm] $dt $ln $null $df";
 
                     DbUtil.ExecuteNonQuery(this.Sql);
                     Application["custom_columns_dataset"] = null;
-                    Server.Transfer("CustomFields.aspx");
+                    Server.Transfer("~/Administration/CustomFields/List.aspx");
                 }
             }
             else

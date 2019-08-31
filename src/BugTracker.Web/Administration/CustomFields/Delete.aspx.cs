@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.CustomFields
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteCustomField : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -29,19 +29,18 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "delete custom field";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete custom field";
 
             if (IsPostBack)
             {
                 // do delete here
 
                 this.Sql = @"select sc.name [column_name], df.name [default_constraint_name]
-			from syscolumns sc
-			inner join sysobjects so on sc.id = so.id
-			left outer join sysobjects df on df.id = sc.cdefault
-			where so.name = 'bugs'
-			and sc.colorder = $id";
+            from syscolumns sc
+            inner join sysobjects so on sc.id = so.id
+            left outer join sysobjects df on df.id = sc.cdefault
+            where so.name = 'bugs'
+            and sc.colorder = $id";
 
                 this.Sql = this.Sql.Replace("$id", Util.SanitizeInteger(this.row_id.Value));
                 var dr = DbUtil.GetDataRow(this.Sql);
@@ -64,24 +63,24 @@ alter table bugs drop column [$nm]";
 
                 //delete row from custom column table
                 this.Sql = @"delete from custom_col_metadata
-		where ccm_colorder = $num";
+        where ccm_colorder = $num";
                 this.Sql = this.Sql.Replace("$num", Util.SanitizeInteger(this.row_id.Value));
 
                 Application["custom_columns_dataset"] = null;
                 DbUtil.ExecuteNonQuery(this.Sql);
 
-                Response.Redirect("CustomFields.aspx");
+                Response.Redirect("~/Administration/CustomFields/List.aspx");
             }
             else
             {
                 var id = Util.SanitizeInteger(Request["id"]);
 
                 this.Sql = @"select sc.name
-			from syscolumns sc
-			inner join sysobjects so on sc.id = so.id
-			left outer join sysobjects df on df.id = sc.cdefault
-			where so.name = 'bugs'
-			and sc.colorder = $id";
+            from syscolumns sc
+            inner join sysobjects so on sc.id = so.id
+            left outer join sysobjects df on df.id = sc.cdefault
+            where so.name = 'bugs'
+            and sc.colorder = $id";
 
                 this.Sql = this.Sql.Replace("$id", id);
                 var dr = DbUtil.GetDataRow(this.Sql);

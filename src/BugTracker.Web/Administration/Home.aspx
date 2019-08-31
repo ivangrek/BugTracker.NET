@@ -113,7 +113,7 @@
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/CustomFields.aspx")%>">Custom Fields</a>
+                            <a href="<%= ResolveUrl("~/Administration/CustomFields/List.aspx")%>">Custom Fields</a>
                             &nbsp;&nbsp;<span class="smallnote">(add custom fields to the bug page)</span>
                         </li>
                         <p />

@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DeleteCustomField.aspx.cs" Inherits="BugTracker.Web.DeleteCustomField" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Delete.aspx.cs" Inherits="BugTracker.Web.Administration.CustomFields.Delete" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -18,7 +18,7 @@
     <p>
         <div class="align">
             <p>&nbsp</p>
-            <a href="CustomFields.aspx">back to custom fields</a>
+            <a href="<%= ResolveUrl("~/Administration/CustomFields/List.aspx")%>">back to custom fields</a>
 
             <p>
                 or

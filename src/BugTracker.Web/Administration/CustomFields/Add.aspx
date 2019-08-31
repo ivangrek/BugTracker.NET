@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AddCustomfield.aspx.cs" Inherits="BugTracker.Web.AddCustomfield" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="BugTracker.Web.Administration.CustomFields.Add" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>

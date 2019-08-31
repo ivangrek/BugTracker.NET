@@ -92,7 +92,7 @@
     <Content Include="Content\images\accept.png" />
     <Content Include="Content\images\add.png" />
     <Content Include="AddAttachment.aspx" />
-    <Content Include="AddCustomfield.aspx" />
+    <Content Include="Administration\CustomFields\Add.aspx" />
     <Content Include="Ajax.aspx" />
     <Content Include="Ajax2.aspx" />
     <Content Include="App_Code\Highlighter.Net.dll" />
@@ -385,7 +385,7 @@
     <Content Include="Content\images\clock.png" />
     <Content Include="Content\images\comment.png" />
     <Content Include="CompleteRegistration.aspx" />
-    <Content Include="CustomFields.aspx" />
+    <Content Include="Administration\CustomFields\List.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Content\images\database.png" />
     <Content Include="Content\images\database_link.png" />
@@ -399,7 +399,7 @@
     <Content Include="DeleteBug.aspx" />
     <Content Include="Administration\Categories\Delete.aspx" />
     <Content Include="DeleteComment.aspx" />
-    <Content Include="DeleteCustomField.aspx" />
+    <Content Include="Administration\CustomFields\Delete.aspx" />
     <Content Include="Administration\Organizations\Delete.aspx" />
     <Content Include="Administration\Priorities\Delete.aspx" />
     <Content Include="Administration\Projects\Delete.aspx" />
@@ -480,7 +480,7 @@
     <Content Include="Scripts\edit_bug.js" />
     <Content Include="Administration\Categories\Edit.aspx" />
     <Content Include="EditComment.aspx" />
-    <Content Include="EditCustomField.aspx" />
+    <Content Include="Administration\CustomFields\Edit.aspx" />
     <Content Include="EditCustomHtml.aspx" />
     <Content Include="EditDashboard.aspx" />
     <Content Include="Administration\Organizations\Edit.aspx" />
@@ -626,12 +626,12 @@
     <Compile Include="AddAttachment.aspx.designer.cs">
       <DependentUpon>AddAttachment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AddCustomfield.aspx.cs">
-      <DependentUpon>AddCustomfield.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AddCustomfield.aspx.designer.cs">
-      <DependentUpon>AddCustomfield.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Home.aspx.cs">
       <DependentUpon>Home.aspx</DependentUpon>
@@ -708,12 +708,12 @@
     <Compile Include="CompleteRegistration.aspx.designer.cs">
       <DependentUpon>CompleteRegistration.aspx</DependentUpon>
     </Compile>
-    <Compile Include="CustomFields.aspx.cs">
-      <DependentUpon>CustomFields.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="CustomFields.aspx.designer.cs">
-      <DependentUpon>CustomFields.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
@@ -757,12 +757,12 @@
     <Compile Include="DeleteComment.aspx.designer.cs">
       <DependentUpon>DeleteComment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteCustomField.aspx.cs">
-      <DependentUpon>DeleteCustomField.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteCustomField.aspx.designer.cs">
-      <DependentUpon>DeleteCustomField.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Organizations\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -869,12 +869,12 @@
     <Compile Include="EditComment.aspx.designer.cs">
       <DependentUpon>EditComment.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditCustomField.aspx.cs">
-      <DependentUpon>EditCustomField.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditCustomField.aspx.designer.cs">
-      <DependentUpon>EditCustomField.aspx</DependentUpon>
+    <Compile Include="Administration\CustomFields\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditCustomHtml.aspx.cs">
       <DependentUpon>EditCustomHtml.aspx</DependentUpon>

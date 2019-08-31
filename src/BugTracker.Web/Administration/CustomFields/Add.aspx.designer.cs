@@ -7,12 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class AddCustomfield {
+namespace BugTracker.Web.Administration.CustomFields {
     
+    
+    public partial class Add {
+        
         /// <summary>
         /// name control.
         /// </summary>
@@ -21,7 +20,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText name;
-    
+        
         /// <summary>
         /// name_err control.
         /// </summary>
@@ -30,7 +29,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell name_err;
-    
+        
         /// <summary>
         /// dropdown_type control.
         /// </summary>
@@ -39,7 +38,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList dropdown_type;
-    
+        
         /// <summary>
         /// datatype control.
         /// </summary>
@@ -48,7 +47,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList datatype;
-    
+        
         /// <summary>
         /// datatype_err control.
         /// </summary>
@@ -57,7 +56,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell datatype_err;
-    
+        
         /// <summary>
         /// length control.
         /// </summary>
@@ -66,7 +65,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText length;
-    
+        
         /// <summary>
         /// length_err control.
         /// </summary>
@@ -75,7 +74,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell length_err;
-    
+        
         /// <summary>
         /// required control.
         /// </summary>
@@ -84,7 +83,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox required;
-    
+        
         /// <summary>
         /// required_err control.
         /// </summary>
@@ -93,7 +92,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell required_err;
-    
+        
         /// <summary>
         /// default_text control.
         /// </summary>
@@ -102,7 +101,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText default_text;
-    
+        
         /// <summary>
         /// default_err control.
         /// </summary>
@@ -111,7 +110,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell default_err;
-    
+        
         /// <summary>
         /// vals control.
         /// </summary>
@@ -120,7 +119,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTextArea vals;
-    
+        
         /// <summary>
         /// vals_err control.
         /// </summary>
@@ -129,7 +128,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl vals_err;
-    
+        
         /// <summary>
         /// sort_seq control.
         /// </summary>
@@ -138,7 +137,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText sort_seq;
-    
+        
         /// <summary>
         /// sort_seq_err control.
         /// </summary>
@@ -147,7 +146,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell sort_seq_err;
-    
+        
         /// <summary>
         /// msg control.
         /// </summary>
@@ -156,7 +155,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
-    
+        
         /// <summary>
         /// sub control.
         /// </summary>

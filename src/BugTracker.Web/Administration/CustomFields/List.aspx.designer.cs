@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.CustomFields {
     
     
-    public partial class CustomFields {
+    public partial class List {
     }
 }

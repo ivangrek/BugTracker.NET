@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.CustomFields {
     
     
-    public partial class DeleteCustomField {
+    public partial class Delete {
         
         /// <summary>
         /// frm control.

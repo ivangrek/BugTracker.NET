@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.CustomFields
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditCustomField : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -31,8 +31,7 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit custom column metadata";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit custom column metadata";
 
             this.msg.InnerText = "";
 
@@ -172,7 +171,7 @@ and sc.colorder = $co";
                     }
                 }
 
-                Server.Transfer("CustomFields.aspx");
+                Server.Transfer("~/Administration/CustomFields/List.aspx");
             }
             else
             {
