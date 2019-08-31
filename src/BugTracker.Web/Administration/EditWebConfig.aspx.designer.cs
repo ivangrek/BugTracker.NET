@@ -7,27 +7,27 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration {
     
     
-    public partial class Query {
+    public partial class EditWebConfig {
         
         /// <summary>
-        /// dbtables_select control.
+        /// myedit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlSelect dbtables_select;
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea myedit;
         
         /// <summary>
-        /// queryText control.
+        /// msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea queryText;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
     }
 }

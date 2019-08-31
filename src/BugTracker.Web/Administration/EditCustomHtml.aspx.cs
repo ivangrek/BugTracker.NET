@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     using System;
     using System.IO;
@@ -52,7 +52,7 @@ namespace BugTracker.Web
                     Response.End();
 
                 // save to disk
-                var path = HttpContext.Current.Server.MapPath(null);
+                var path = HttpContext.Current.Server.MapPath("~/");
                 path += "\\Content\\custom\\";
 
                 var sw = File.CreateText(path + fileName);
@@ -73,7 +73,7 @@ namespace BugTracker.Web
 
         public void load_file_into_control(string fileName)
         {
-            var path = HttpContext.Current.Server.MapPath(null);
+            var path = HttpContext.Current.Server.MapPath("~/");
             path += "\\Content\\custom\\" + fileName;
 
             var sr = File.OpenText(path);

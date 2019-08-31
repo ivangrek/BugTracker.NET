@@ -101,7 +101,7 @@
     <Content Include="Content\images\arrow_down.png" />
     <Content Include="Content\images\arrow_up.png" />
     <Content Include="Content\images\attach.gif" />
-    <Content Include="BackupDb.aspx" />
+    <Content Include="Administration\BackupDb.aspx" />
     <Content Include="Content\images\brick.png" />
     <Content Include="Content\btnet.css" />
     <Content Include="Content\btnet_base.css" />
@@ -481,13 +481,13 @@
     <Content Include="Administration\Categories\Edit.aspx" />
     <Content Include="EditComment.aspx" />
     <Content Include="Administration\CustomFields\Edit.aspx" />
-    <Content Include="EditCustomHtml.aspx" />
+    <Content Include="Administration\EditCustomHtml.aspx" />
     <Content Include="EditDashboard.aspx" />
     <Content Include="Administration\Organizations\Edit.aspx" />
     <Content Include="Administration\Priorities\Edit.aspx" />
     <Content Include="Administration\Projects\Edit.aspx" />
     <Content Include="EditQuery.aspx" />
-    <Content Include="EditQueuedNotifications.aspx" />
+    <Content Include="Administration\EditQueuedNotifications.aspx" />
     <Content Include="EditReport.aspx" />
     <Content Include="EditSelf.aspx" />
     <Content Include="Administration\Statuses\Edit.aspx" />
@@ -496,7 +496,7 @@
     <Content Include="Administration\UserDefinedAttributes\Edit.aspx" />
     <Content Include="Administration\Users\Edit.aspx" />
     <Content Include="Administration\Projects\EditUserPermissions2.aspx" />
-    <Content Include="EditWebConfig.aspx" />
+    <Content Include="Administration\EditWebConfig.aspx" />
     <Content Include="Content\images\email_edit.png" />
     <Content Include="Content\images\email_open.png" />
     <Content Include="Content\favicon.ico" />
@@ -554,14 +554,14 @@
     <Content Include="LoginNt.aspx" />
     <Content Include="Logoff.aspx" />
     <Content Include="Content\lucene_syntax.html" />
-    <Content Include="ManageLogs.aspx" />
+    <Content Include="Administration\ManageLogs.aspx" />
     <Content Include="MassEdit.aspx" />
     <Content Include="Content\mbtnet_base.css" />
     <Content Include="MBug.aspx" />
     <Content Include="MBugs.aspx" />
     <Content Include="MergeBug.aspx" />
     <Content Include="MLogin.aspx" />
-    <Content Include="Notifications.aspx" />
+    <Content Include="Administration\Notifications.aspx" />
     <Content Include="Administration\Organizations\List.aspx" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
@@ -571,7 +571,7 @@
     <Content Include="Administration\Priorities\List.aspx" />
     <Content Include="Administration\Projects\List.aspx" />
     <Content Include="Queries.aspx" />
-    <Content Include="Query.aspx" />
+    <Content Include="Administration\Query.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="Relationships.aspx" />
     <Content Include="Reports.aspx" />
@@ -654,11 +654,11 @@
     <Compile Include="Ajax2.aspx.designer.cs">
       <DependentUpon>Ajax2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="BackupDb.aspx.cs">
+    <Compile Include="Administration\BackupDb.aspx.cs">
       <DependentUpon>BackupDb.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="BackupDb.aspx.designer.cs">
+    <Compile Include="Administration\BackupDb.aspx.designer.cs">
       <DependentUpon>BackupDb.aspx</DependentUpon>
     </Compile>
     <Compile Include="Bugs.aspx.cs">
@@ -876,11 +876,11 @@
     <Compile Include="Administration\CustomFields\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditCustomHtml.aspx.cs">
+    <Compile Include="Administration\EditCustomHtml.aspx.cs">
       <DependentUpon>EditCustomHtml.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditCustomHtml.aspx.designer.cs">
+    <Compile Include="Administration\EditCustomHtml.aspx.designer.cs">
       <DependentUpon>EditCustomHtml.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditDashboard.aspx.cs">
@@ -918,11 +918,11 @@
     <Compile Include="EditQuery.aspx.designer.cs">
       <DependentUpon>EditQuery.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditQueuedNotifications.aspx.cs">
+    <Compile Include="Administration\EditQueuedNotifications.aspx.cs">
       <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditQueuedNotifications.aspx.designer.cs">
+    <Compile Include="Administration\EditQueuedNotifications.aspx.designer.cs">
       <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditReport.aspx.cs">
@@ -981,11 +981,11 @@
     <Compile Include="Administration\Projects\EditUserPermissions2.aspx.designer.cs">
       <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditWebConfig.aspx.cs">
+    <Compile Include="Administration\EditWebConfig.aspx.cs">
       <DependentUpon>EditWebConfig.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditWebConfig.aspx.designer.cs">
+    <Compile Include="Administration\EditWebConfig.aspx.designer.cs">
       <DependentUpon>EditWebConfig.aspx</DependentUpon>
     </Compile>
     <Compile Include="Flag.aspx.cs">
@@ -1138,11 +1138,11 @@
     <Compile Include="Logoff.aspx.designer.cs">
       <DependentUpon>Logoff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ManageLogs.aspx.cs">
+    <Compile Include="Administration\ManageLogs.aspx.cs">
       <DependentUpon>ManageLogs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ManageLogs.aspx.designer.cs">
+    <Compile Include="Administration\ManageLogs.aspx.designer.cs">
       <DependentUpon>ManageLogs.aspx</DependentUpon>
     </Compile>
     <Compile Include="MassEdit.aspx.cs">
@@ -1180,11 +1180,11 @@
     <Compile Include="MLogin.aspx.designer.cs">
       <DependentUpon>MLogin.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Notifications.aspx.cs">
+    <Compile Include="Administration\Notifications.aspx.cs">
       <DependentUpon>Notifications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Notifications.aspx.designer.cs">
+    <Compile Include="Administration\Notifications.aspx.designer.cs">
       <DependentUpon>Notifications.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Organizations\List.aspx.cs">
@@ -1237,11 +1237,11 @@
     <Compile Include="Queries.aspx.designer.cs">
       <DependentUpon>Queries.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Query.aspx.cs">
+    <Compile Include="Administration\Query.aspx.cs">
       <DependentUpon>Query.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Query.aspx.designer.cs">
+    <Compile Include="Administration\Query.aspx.designer.cs">
       <DependentUpon>Query.aspx</DependentUpon>
     </Compile>
     <Compile Include="Register.aspx.cs">

@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     using System;
     using System.IO;
@@ -25,10 +25,9 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit Web.config";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit Web.config";
 
-            var path = HttpContext.Current.Server.MapPath(null);
+            var path = HttpContext.Current.Server.MapPath("~/");
             path += "\\Web.config";
 
             if (!IsPostBack)

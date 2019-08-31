@@ -21,7 +21,7 @@
     <p>
         2) Update the database connection string in Web.config to point to your database.
     <p>
-        3) Copy/paste the text in the file <a target="_blank" href="setup.sql">"setup.sql"</a> into <a target="_blank" href="Query.aspx">this form</a>
+        3) Copy/paste the text in the file <a target="_blank" href="setup.sql">"setup.sql"</a> into <a target="_blank" href="<%= ResolveUrl("~/Administration/Query.aspx")%>">this form</a>
     and run it.
     <p>
         4) Logon at <a href="Home.aspx">Home.aspx</a>

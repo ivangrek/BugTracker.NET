@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" EnableEventValidation="false" AutoEventWireup="true" CodeBehind="BackupDb.aspx.cs" Inherits="BugTracker.Web.BackupDb" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" EnableEventValidation="false" AutoEventWireup="true" CodeBehind="ManageLogs.aspx.cs" Inherits="BugTracker.Web.Administration.ManageLogs" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -19,9 +19,7 @@
         <table border="0">
             <tr>
                 <td>
-
                     <form runat="server">
-
                         <asp:DataGrid ID="MyDataGrid" runat="server" BorderColor="black" CssClass="datat"
                             CellPadding="3" AutoGenerateColumns="false" OnItemCommand="my_button_click">
                             <HeaderStyle CssClass="datah"></HeaderStyle>
@@ -35,26 +33,7 @@
                         </asp:DataGrid>
                         <div class="err" id="msg" runat="server">&nbsp;</div>
 
-                        <div>
-                            <input type="submit" value="Backup Database Now" class="btn" runat="server" onserverclick="on_backup" style="height: 50px; width: 200px;">
-                        </div>
-
                     </form>
-
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    You can use SQL like this to restore your backup to your own server:
-            <pre>
-
-RESTORE DATABASE your_database
-   FROM DISK = 'C:\path\to\your\your_backup_file.bak'
-   WITH 
-      MOVE 'btnet' TO 'C:\path\to\where\you\want\your_db_data.mdf' ,
-      MOVE 'btnet_log'  TO 'C:\path\to\where\you\want\your_db_log.ldf', REPLACE
-
-</pre>
-
-
         </table>
     </div>
 </asp:Content>

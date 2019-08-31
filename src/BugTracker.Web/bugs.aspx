@@ -49,7 +49,7 @@
                     <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs2.aspx">print detail</a>
                     <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs.aspx?format=excel">export to excel</a>
                     <td nowrap align="right" width="100%">
-                        <a target="_blank" href="Content/btnet_screen_capture.zip">
+                        <a target="_blank" href="Content/btnet_screen_capture.exe">
                             <img src="Content/images/camera.png" border="0" align="top">&nbsp;download screen capture utility</a>
             </table>
             <br>

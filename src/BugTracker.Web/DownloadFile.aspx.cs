@@ -29,9 +29,9 @@ namespace BugTracker.Web
             var path = "";
 
             if (which == "backup")
-                path = HttpContext.Current.Server.MapPath(null) + "\\App_Data\\" + filename;
+                path = HttpContext.Current.Server.MapPath("~/") + "\\App_Data\\" + filename;
             else if (which == "log")
-                path = HttpContext.Current.Server.MapPath(null) + "\\App_Data\\logs\\" + filename;
+                path = HttpContext.Current.Server.MapPath("~/") + "\\App_Data\\logs\\" + filename;
             else
                 Response.End();
 

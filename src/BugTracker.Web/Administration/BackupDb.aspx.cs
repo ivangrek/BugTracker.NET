@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     using System;
     using System.Collections;
@@ -16,7 +16,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class ManageLogs : Page
+    public partial class BackupDb : Page
     {
         public string AppDataFolder;
         public Security Security;
@@ -28,18 +28,17 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "manage logs";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - backup db";
 
-            this.AppDataFolder = HttpContext.Current.Server.MapPath(null);
-            this.AppDataFolder += "\\App_Data\\logs\\";
+            this.AppDataFolder = HttpContext.Current.Server.MapPath("~/");
+            this.AppDataFolder += "\\App_Data\\";
 
             if (!IsPostBack) get_files();
         }
 
         public void get_files()
         {
-            var backupFiles = Directory.GetFiles(this.AppDataFolder, "*.txt");
+            var backupFiles = Directory.GetFiles(this.AppDataFolder, "*.bak");
 
             if (backupFiles.Length == 0)
             {
@@ -60,13 +59,13 @@ namespace BugTracker.Web
             dt.Columns.Add(new DataColumn("file", typeof(string)));
             dt.Columns.Add(new DataColumn("url", typeof(string)));
 
-            for (var i = list.Count - 1; i != -1; i--)
+            for (var i = 0; i < list.Count; i++)
             {
                 dr = dt.NewRow();
 
                 var justFile = Path.GetFileName((string) list[i]);
                 dr[0] = justFile;
-                dr[1] = "DownloadFile.aspx?which=log&filename=" + justFile;
+                dr[1] = ResolveUrl($"~/DownloadFile.aspx?which=backup&filename={justFile}");
 
                 dt.Rows.Add(dr);
             }
@@ -75,6 +74,16 @@ namespace BugTracker.Web
 
             this.MyDataGrid.DataSource = dv;
             this.MyDataGrid.DataBind();
+        }
+
+        public void on_backup(object sender, EventArgs e)
+        {
+            var date = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var db = (string) DbUtil.ExecuteScalar("select db_name()");
+            var backupFile = this.AppDataFolder + "db_backup_" + date + ".bak";
+            var sql = "backup database " + db + " to disk = '" + backupFile + "'";
+            DbUtil.ExecuteNonQuery(sql);
+            get_files();
         }
 
         public void my_button_click(object sender, DataGridCommandEventArgs e)

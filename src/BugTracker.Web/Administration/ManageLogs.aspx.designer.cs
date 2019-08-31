@@ -7,12 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class BackupDb {
+namespace BugTracker.Web.Administration {
     
+    
+    public partial class ManageLogs {
+        
         /// <summary>
         /// MyDataGrid control.
         /// </summary>
@@ -21,7 +20,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DataGrid MyDataGrid;
-    
+        
         /// <summary>
         /// msg control.
         /// </summary>

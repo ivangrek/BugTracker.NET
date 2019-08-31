@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     using System;
     using System.Data;
@@ -27,20 +27,19 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "queued notifications";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - queued notifications";
 
             this.Ds = DbUtil.GetDataSet(
                 @"select
-		qn_id [id],
-		qn_date_created [date created],
-		qn_to [to],
-		qn_bug [bug],
-		qn_status [status],
-		qn_retries [retries],
-		qn_last_exception [last error]
-		from queued_notifications
-		order by id;");
+        qn_id [id],
+        qn_date_created [date created],
+        qn_to [to],
+        qn_bug [bug],
+        qn_status [status],
+        qn_retries [retries],
+        qn_last_exception [last error]
+        from queued_notifications
+        order by id;");
 
             this.Ses = (string) Session["session_cookie"];
         }

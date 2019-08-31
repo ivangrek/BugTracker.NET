@@ -118,29 +118,29 @@
                         </li>
                         <p />
                         <li class="listitem">
-                            <a target="_blank" href="<%= ResolveUrl("~/Query.aspx")%>">Run Ad-hoc Query</a>
+                            <a target="_blank" href="<%= ResolveUrl("~/Administration/Query.aspx")%>">Run Ad-hoc Query</a>
                             &nbsp;&nbsp;
                             <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">This links to Query.aspx.&nbsp;&nbsp;Query.aspx is potentially unsafe.&nbsp;&nbsp;Delete it if you are deploying on a public web server.</span>
                             <br>
                             <p>
-                            <li class="listitem"><a href="<%= ResolveUrl("~/Notifications.aspx")%>">Queued Email Notifications</a></li>
+                            <li class="listitem"><a href="<%= ResolveUrl("~/Administration/Notifications.aspx")%>">Queued Email Notifications</a></li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/EditCustomHtml.aspx")%>">Edit Custom Html</a>
+                            <a href="<%= ResolveUrl("~/Administration/EditCustomHtml.aspx")%>">Edit Custom Html</a>
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/EditWebConfig.aspx")%>">Edit Web.Config</a>
+                            <a href="<%= ResolveUrl("~/Administration/EditWebConfig.aspx")%>">Edit Web.Config</a>
                             &nbsp;&nbsp;
                             <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!</span>
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/BackupDb.aspx")%>">Backup Database</a>
+                            <a href="<%= ResolveUrl("~/Administration/BackupDb.aspx")%>">Backup Database</a>
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/ManageLogs.aspx")%>">Manage Logs</a>
+                            <a href="<%= ResolveUrl("~/Administration/ManageLogs.aspx")%>">Manage Logs</a>
                         </li>
                     </ul>
                 </td>

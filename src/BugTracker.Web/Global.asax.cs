@@ -19,7 +19,7 @@ namespace BugTracker.Web
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            var path = HttpContext.Current.Server.MapPath(null);
+            var path = HttpContext.Current.Server.MapPath("~/");
 
             HttpRuntime.Cache.Add("MapPath", path, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration,
                 CacheItemPriority.NotRemovable, null);
@@ -56,19 +56,19 @@ namespace BugTracker.Web
 
             Util.SetContext(HttpContext.Current); // required for map path calls to work in util.cs
 
-            var sr = File.OpenText(path + "\\Content\\custom\\custom_header.html");
+            var sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_header.html"));
             Application["custom_header"] = sr.ReadToEnd();
             sr.Close();
 
-            sr = File.OpenText(path + "\\Content\\custom\\custom_footer.html");
+            sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_footer.html"));
             Application["custom_footer"] = sr.ReadToEnd();
             sr.Close();
 
-            sr = File.OpenText(path + "\\Content\\custom\\custom_logo.html");
+            sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_logo.html"));
             Application["custom_logo"] = sr.ReadToEnd();
             sr.Close();
 
-            sr = File.OpenText(path + "\\Content\\custom\\custom_welcome.html");
+            sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_welcome.html"));
             Application["custom_welcome"] = sr.ReadToEnd();
             sr.Close();
 

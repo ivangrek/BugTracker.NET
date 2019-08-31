@@ -7,20 +7,21 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+
+
+namespace BugTracker.Web.Administration
+{
+    public partial class BackupDb {
     
-    
-    public partial class EditWebConfig {
-        
         /// <summary>
-        /// myedit control.
+        /// MyDataGrid control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea myedit;
-        
+        protected global::System.Web.UI.WebControls.DataGrid MyDataGrid;
+    
         /// <summary>
         /// msg control.
         /// </summary>
