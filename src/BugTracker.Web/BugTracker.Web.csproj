@@ -682,6 +682,7 @@
     <Compile Include="ChangePassword.aspx.designer.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Core\Administration\StatusService.cs" />
     <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
     <Compile Include="Core\BugList.cs" />

@@ -11,59 +11,47 @@ namespace BugTracker.Web.Administration.Statuses
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
 
     public partial class Delete : Page
     {
-        public Security Security;
-        public string Sql;
+        protected Security Security { get; set; }
 
-        public void Page_Init(object sender, EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
         }
 
-        public void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            Security = new Security();
+            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+
+            var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
 
             if (IsPostBack)
             {
                 // do delete here
-                this.Sql = @"delete statuses where st_id = $1";
-                this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
-                DbUtil.ExecuteNonQuery(this.Sql);
+                StatusService.Delete(id);
                 Server.Transfer("~/Administration/Statuses/List.aspx");
             }
             else
             {
                 Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete status";
 
-                var id = Util.SanitizeInteger(Request["id"]);
+                var (valid, name) = StatusService.CheckDeleting(id);
 
-                this.Sql = @"declare @cnt int
-            select @cnt = count(1) from bugs where bg_status = $1
-            select st_name, @cnt [cnt] from statuses where st_id = $1";
-                this.Sql = this.Sql.Replace("$1", id);
-
-                var dr = DbUtil.GetDataRow(this.Sql);
-
-                if ((int) dr["cnt"] > 0)
+                if (valid)
                 {
-                    Response.Write("You can't delete status \""
-                                   + Convert.ToString(dr["st_name"])
-                                   + "\" because some bugs still reference it.");
+                    Response.Write($"You can't delete status \"{name}\" because some bugs still reference it.");
                     Response.End();
                 }
                 else
                 {
-                    this.confirm_href.InnerText = "confirm delete of \""
-                                                  + Convert.ToString(dr["st_name"])
-                                                  + "\"";
-
-                    this.row_id.Value = id;
+                    this.confirmHref.InnerText = $"confirm delete of \"{name}\"";
+                    this.rowId.Value = Convert.ToString(id);
                 }
             }
         }

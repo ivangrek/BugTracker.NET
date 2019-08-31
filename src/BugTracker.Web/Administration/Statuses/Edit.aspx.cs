@@ -8,144 +8,135 @@
 namespace BugTracker.Web.Administration.Statuses
 {
     using System;
+    using System.Collections.Generic;
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
 
     public partial class Edit : Page
     {
-        public int Id;
+        protected Security Security { get; set; }
 
-        public Security Security;
-        public string Sql;
-
-        public void Page_Init(object sender, EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
         }
 
-        public void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            Security = new Security();
+            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit status";
+            int.TryParse(Request.QueryString["id"], out var id);
 
-            this.msg.InnerText = "";
+            this.msg.InnerText = string.Empty;
 
-            var var = Request.QueryString["id"];
-            if (var == null)
-                this.Id = 0;
-            else
-                this.Id = Convert.ToInt32(var);
-
-            if (!IsPostBack)
+            if (IsPostBack)
             {
+                OnUpdate(id);
+            }
+            else
+            {
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit status";
+
                 // add or edit?
-                if (this.Id == 0)
+                if (id == 0)
                 {
                     this.sub.Value = "Create";
                 }
                 else
                 {
                     this.sub.Value = "Update";
-
+                    Validate();
                     // Get this entry's data from the db and fill in the form
-
-                    this.Sql =
-                        @"select st_name, st_sort_seq, isnull(st_style,'') [st_style], st_default from statuses where st_id = $1";
-                    this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
-                    var dr = DbUtil.GetDataRow(this.Sql);
+                    var dataRow = StatusService.LoadOne(id);
 
                     // Fill in this form
-                    this.name.Value = (string) dr["st_name"];
-                    this.sort_seq.Value = Convert.ToString((int) dr["st_sort_seq"]);
-                    this.style.Value = (string) dr["st_style"];
-                    this.default_selection.Checked = Convert.ToBoolean((int) dr["st_default"]);
+                    this.name.Value = (string)dataRow["st_name"];
+                    this.sortSeq.Value = Convert.ToString((int)dataRow["st_sort_seq"]);
+                    this.style.Value = (string)dataRow["st_style"];
+                    this.defaultSelection.Checked = Convert.ToBoolean((int)dataRow["st_default"]);
                 }
             }
-            else
-            {
-                on_update();
-            }
         }
 
-        public bool validate()
+        private void OnUpdate(int id)
         {
-            var good = true;
-            if (this.name.Value == "")
-            {
-                good = false;
-                this.name_err.InnerText = "Description is required.";
-            }
-            else
-            {
-                this.name_err.InnerText = "";
-            }
-
-            if (this.sort_seq.Value == "")
-            {
-                good = false;
-                this.sort_seq_err.InnerText = "Sort Sequence is required.";
-            }
-            else
-            {
-                this.sort_seq_err.InnerText = "";
-            }
-
-            if (!Util.IsInt(this.sort_seq.Value))
-            {
-                good = false;
-                this.sort_seq_err.InnerText = "Sort Sequence must be an integer.";
-            }
-            else
-            {
-                this.sort_seq_err.InnerText = "";
-            }
-
-            return good;
-        }
-
-        public void on_update()
-        {
-            var good = validate();
+            var good = ValidateForm();
 
             if (good)
             {
-                if (this.Id == 0) // insert new
+                var parameters = new Dictionary<string, string>
                 {
-                    this.Sql =
-                        "insert into statuses (st_name, st_sort_seq, st_style, st_default) values (N'$na', $ss, N'$st', $df)";
+                    { "$id", Convert.ToString(id)},
+                    { "$na", this.name.Value.Replace("'", "''")},
+                    { "$ss", this.sortSeq.Value},
+                    { "$st", this.style.Value.Replace("'", "''")},
+                    { "$df", Util.BoolToString(this.defaultSelection.Checked)},
+                };
+
+                if (id == 0) // insert new
+                {
+                    StatusService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    this.Sql = @"update statuses set
-                st_name = N'$na',
-                st_sort_seq = $ss,
-                st_style = N'$st',
-                st_default = $df
-                where st_id = $id";
-
-                    this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
+                    StatusService.Update(parameters);
                 }
 
-                this.Sql = this.Sql.Replace("$na", this.name.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$ss", this.sort_seq.Value);
-                this.Sql = this.Sql.Replace("$st", this.style.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
-                DbUtil.ExecuteNonQuery(this.Sql);
                 Server.Transfer("~/Administration/Statuses/List.aspx");
             }
             else
             {
-                if (this.Id == 0) // insert new
+                if (id == 0) // insert new
+                {
                     this.msg.InnerText = "Status was not created.";
+                }
                 else // edit existing
+                {
                     this.msg.InnerText = "Status was not updated.";
+                }
             }
+        }
+
+        private bool ValidateForm()
+        {
+            var good = true;
+
+            if (this.name.Value == string.Empty)
+            {
+                good = false;
+                this.nameErr.InnerText = "Description is required.";
+            }
+            else
+            {
+                this.nameErr.InnerText = string.Empty;
+            }
+
+            if (this.sortSeq.Value == string.Empty)
+            {
+                good = false;
+                this.sortSeqErr.InnerText = "Sort Sequence is required.";
+            }
+            else
+            {
+                this.sortSeqErr.InnerText = string.Empty;
+            }
+
+            if (!Util.IsInt(this.sortSeq.Value))
+            {
+                good = false;
+                this.sortSeqErr.InnerText = "Sort Sequence must be an integer.";
+            }
+            else
+            {
+                this.sortSeqErr.InnerText = string.Empty;
+            }
+
+            return good;
         }
     }
 }

@@ -16,19 +16,21 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <table border="0">
+        <a href="<%= ResolveUrl("~/Administration/Statuses/List.aspx")%>">back to statuses</a>
+        <div>&nbsp;</div>
+
+        <table style="border-collapse: collapse; border: 0;">
             <tr>
                 <td>
-                    <a href="<%= ResolveUrl("~/Administration/Statuses/List.aspx")%>">back to statuses</a>
+                    
                     <form class="frm" runat="server">
                         <table border="0">
-
                             <tr>
                                 <td class="lbl">Description:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="name" maxlength="20" size="20">
+                                    <input runat="server" type="text" class="txt" id="name" maxlength="20" size="20" />
                                 </td>
-                                <td runat="server" class="err" id="name_err">&nbsp;</td>
+                                <td runat="server" class="err" id="nameErr">&nbsp;</td>
                             </tr>
 
                             <tr>
@@ -40,9 +42,9 @@
                             <tr>
                                 <td class="lbl">Sort Sequence:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="sort_seq" maxlength="2" size="2">
+                                    <input runat="server" type="text" class="txt" id="sortSeq" maxlength="2" size="2" />
                                 </td>
-                                <td runat="server" class="err" id="sort_seq_err">&nbsp;</td>
+                                <td runat="server" class="err" id="sortSeqErr">&nbsp;</td>
                             </tr>
 
                             <tr>
@@ -55,7 +57,7 @@
                             <tr>
                                 <td class="lbl">CSS Class:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="style" value="" maxlength="10" size="10">
+                                    <input runat="server" type="text" class="txt" id="style" value="" maxlength="10" size="10" />
                                     &nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Administration/EditStyles.aspx")%>">more CSS info...</a>
                                 </td>
                                 <td runat="server" class="err" id="style_err">&nbsp;</td>
@@ -64,9 +66,9 @@
                             <tr>
                                 <td class="lbl">Default Selection:</td>
                                 <td>
-                                    <asp:CheckBox runat="server" class="cb" ID="default_selection" />
+                                    <asp:CheckBox runat="server" class="cb" ID="defaultSelection" />
                                 </td>
-                                <td>&nbsp</td>
+                                <td>&nbsp;</td>
                             </tr>
 
                             <tr>
@@ -77,15 +79,15 @@
 
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
-                                    <td>&nbsp</td>
+                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit" />
                                 </td>
+                                <td>&nbsp;</td>
                             </tr>
+                        </table>
+                    </form>
                 </td>
             </tr>
         </table>
-        </form>
-    </td></tr></table>
     </div>
 </asp:Content>
 
