@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditProject.aspx.cs" Inherits="BugTracker.Web.EditProject" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Projects.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -20,7 +20,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Projects.aspx">back to projects</a>
+                    <a href="<%= ResolveUrl("~/Administration/Projects/List.aspx")%>">back to projects</a>
                     &nbsp;&nbsp;&nbsp;&nbsp;
 
                     <% if (this.Id != 0)

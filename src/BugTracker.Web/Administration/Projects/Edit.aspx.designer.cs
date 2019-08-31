@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Projects {
     
     
-    public partial class EditProject {
+    public partial class Edit {
         
         /// <summary>
         /// permissions_href control.

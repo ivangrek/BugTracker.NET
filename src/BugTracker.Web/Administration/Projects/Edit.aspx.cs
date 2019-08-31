@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Projects
 {
     using System;
     using System.Web;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class EditProject : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -120,7 +120,7 @@ namespace BugTracker.Web
                             break;
                         }
 
-                    this.permissions_href.HRef = "EditUserPermissions2.aspx?id=" + Convert.ToString(this.Id)
+                    this.permissions_href.HRef = ResolveUrl("~/Administration/Projects/EditUserPermissions2.aspx") + "?id=" + Convert.ToString(this.Id)
                                                                                    + "&label=" +
                                                                                    HttpUtility.UrlEncode(
                                                                                        this.name.Value);
@@ -279,7 +279,7 @@ namespace BugTracker.Web
                 this.Sql = this.Sql.Replace("$cdv3", this.custom_dropdown_values3.Value.Replace("'", "''"));
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Projects.aspx");
+                Server.Transfer("~/Administration/Projects/List.aspx");
             }
             else
             {

@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Projects
 {
     using System;
     using System.Web;
@@ -40,20 +40,20 @@ namespace BugTracker.Web
                 if (Request["projects"] != null)
                 {
                     this.back_href.InnerText = "back to projects";
-                    this.back_href.HRef = "Projects.aspx";
+                    this.back_href.HRef = ResolveUrl("~/Administration/Projects/List.aspx");
                 }
                 else
                 {
                     this.back_href.InnerText = "back to project";
-                    this.back_href.HRef = "EditProject.aspx?id=" + projectIdString;
+                    this.back_href.HRef = ResolveUrl($"~/Administration/Projects/Edit.aspx?id={projectIdString}");
                 }
 
                 this.Sql = @"Select us_username, us_id, isnull(pu_permission_level,$dpl) [pu_permission_level]
-			from users
-			left outer join project_user_xref on pu_user = us_id
-			and pu_project = $pj
-			order by us_username;
-			select pj_name from projects where pj_id = $pj;";
+            from users
+            left outer join project_user_xref on pu_user = us_id
+            and pu_project = $pj
+            order by us_username;
+            select pj_name from projects where pj_id = $pj;";
 
                 this.Sql = this.Sql.Replace("$pj", projectIdString);
                 this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
@@ -81,11 +81,11 @@ namespace BugTracker.Web
             foreach (DataGridItem dgi in this.MyDataGrid.Items)
             {
                 this.Sql = @" if exists (select * from project_user_xref where pu_user = $us and pu_project = $pj)
-		            update project_user_xref set pu_permission_level = $pu
-		            where pu_user = $us and pu_project = $pj
-		         else
-		            insert into project_user_xref (pu_user, pu_project, pu_permission_level)
-		            values ($us, $pj, $pu); ";
+                    update project_user_xref set pu_permission_level = $pu
+                    where pu_user = $us and pu_project = $pj
+                 else
+                    insert into project_user_xref (pu_user, pu_project, pu_permission_level)
+                    values ($us, $pj, $pu); ";
 
                 this.Sql = this.Sql.Replace("$pj", Util.SanitizeInteger(Request["id"]));
                 this.Sql = this.Sql.Replace("$us", Convert.ToString(dgi.Cells[1].Text));

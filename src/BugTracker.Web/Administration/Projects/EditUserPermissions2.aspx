@@ -5,7 +5,8 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditUserPermissions2.aspx.cs" Inherits="BugTracker.Web.EditUserPermissions2" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditUserPermissions2.aspx.cs" Inherits="BugTracker.Web.Administration.Projects.EditUserPermissions2" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Import Namespace="System.Data" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>

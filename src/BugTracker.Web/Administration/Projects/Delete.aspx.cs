@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Projects
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteProject : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -35,7 +35,7 @@ namespace BugTracker.Web
                 this.Sql = @"delete projects where pj_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Projects.aspx");
+                Server.Transfer("~/Administration/Projects/List.aspx");
             }
             else
             {
@@ -45,13 +45,13 @@ namespace BugTracker.Web
                 var id = Util.SanitizeInteger(Request["id"]);
 
                 this.Sql = @"declare @cnt int
-			select @cnt = count(1) from bugs where bg_project = $1
-			select pj_name, @cnt [cnt] from projects where pj_id = $1";
+            select @cnt = count(1) from bugs where bg_project = $1
+            select pj_name, @cnt [cnt] from projects where pj_id = $1";
                 this.Sql = this.Sql.Replace("$1", id);
 
                 var dr = DbUtil.GetDataRow(this.Sql);
 
-                if ((int) dr["cnt"] > 0)
+                if ((int)dr["cnt"] > 0)
                 {
                     Response.Write("You can't delete project \""
                                    + Convert.ToString(dr["pj_name"])

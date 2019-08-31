@@ -402,7 +402,7 @@
     <Content Include="DeleteCustomField.aspx" />
     <Content Include="Administration\Organizations\Delete.aspx" />
     <Content Include="DeletePriority.aspx" />
-    <Content Include="DeleteProject.aspx" />
+    <Content Include="Administration\Projects\Delete.aspx" />
     <Content Include="DeleteQuery.aspx" />
     <Content Include="DeleteReport.aspx" />
     <Content Include="DeleteStatus.aspx" />
@@ -485,7 +485,7 @@
     <Content Include="EditDashboard.aspx" />
     <Content Include="Administration\Organizations\Edit.aspx" />
     <Content Include="EditPriority.aspx" />
-    <Content Include="EditProject.aspx" />
+    <Content Include="Administration\Projects\Edit.aspx" />
     <Content Include="EditQuery.aspx" />
     <Content Include="EditQueuedNotifications.aspx" />
     <Content Include="EditReport.aspx" />
@@ -495,7 +495,7 @@
     <Content Include="EditTask.aspx" />
     <Content Include="EditUdf.aspx" />
     <Content Include="Administration\Users\Edit.aspx" />
-    <Content Include="EditUserPermissions2.aspx" />
+    <Content Include="Administration\Projects\EditUserPermissions2.aspx" />
     <Content Include="EditWebConfig.aspx" />
     <Content Include="Content\images\email_edit.png" />
     <Content Include="Content\images\email_open.png" />
@@ -569,7 +569,7 @@
     <Content Include="PrintBugs.aspx" />
     <Content Include="PrintBugs2.aspx" />
     <Content Include="Priorities.aspx" />
-    <Content Include="Projects.aspx" />
+    <Content Include="Administration\Projects\List.aspx" />
     <Content Include="Queries.aspx" />
     <Content Include="Query.aspx" />
     <Content Include="Register.aspx" />
@@ -778,12 +778,12 @@
     <Compile Include="DeletePriority.aspx.designer.cs">
       <DependentUpon>DeletePriority.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteProject.aspx.cs">
-      <DependentUpon>DeleteProject.aspx</DependentUpon>
+    <Compile Include="Administration\Projects\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteProject.aspx.designer.cs">
-      <DependentUpon>DeleteProject.aspx</DependentUpon>
+    <Compile Include="Administration\Projects\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeleteQuery.aspx.cs">
       <DependentUpon>DeleteQuery.aspx</DependentUpon>
@@ -904,12 +904,12 @@
     <Compile Include="EditPriority.aspx.designer.cs">
       <DependentUpon>EditPriority.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditProject.aspx.cs">
-      <DependentUpon>EditProject.aspx</DependentUpon>
+    <Compile Include="Administration\Projects\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditProject.aspx.designer.cs">
-      <DependentUpon>EditProject.aspx</DependentUpon>
+    <Compile Include="Administration\Projects\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditQuery.aspx.cs">
       <DependentUpon>EditQuery.aspx</DependentUpon>
@@ -974,11 +974,11 @@
     <Compile Include="Administration\Users\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditUserPermissions2.aspx.cs">
+    <Compile Include="Administration\Projects\EditUserPermissions2.aspx.cs">
       <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditUserPermissions2.aspx.designer.cs">
+    <Compile Include="Administration\Projects\EditUserPermissions2.aspx.designer.cs">
       <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditWebConfig.aspx.cs">
@@ -1222,12 +1222,12 @@
     <Compile Include="Priorities.aspx.designer.cs">
       <DependentUpon>Priorities.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Projects.aspx.cs">
-      <DependentUpon>Projects.aspx</DependentUpon>
+    <Compile Include="Administration\Projects\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Projects.aspx.designer.cs">
-      <DependentUpon>Projects.aspx</DependentUpon>
+    <Compile Include="Administration\Projects\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries.aspx.cs">

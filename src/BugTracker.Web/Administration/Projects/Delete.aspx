@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DeleteProject.aspx.cs" Inherits="BugTracker.Web.DeleteProject" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Delete.aspx.cs" Inherits="BugTracker.Web.Administration.Projects.Delete" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -18,7 +18,7 @@
     <p>
         <div class="align">
             <p>&nbsp</p>
-            <a href="Projects.aspx">back to projects</a>
+            <a href="<%= ResolveUrl("~/Administration/Projects/List.aspx")%>">back to projects</a>
 
             <p>
                 or

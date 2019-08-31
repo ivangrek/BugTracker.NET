@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Projects {
     
     
-    public partial class DeleteProject {
+    public partial class Delete {
         
         /// <summary>
         /// frm control.
