@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Priorities {
     
     
-    public partial class EditPriority {
+    public partial class Edit {
         
         /// <summary>
         /// name control.

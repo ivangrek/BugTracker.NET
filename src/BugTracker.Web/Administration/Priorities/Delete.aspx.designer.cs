@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Priorities {
     
     
-    public partial class DeletePriority {
+    public partial class Delete {
         
         /// <summary>
         /// frm control.

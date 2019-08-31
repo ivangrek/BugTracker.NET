@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Priorities {
     
     
-    public partial class Priorities {
+    public partial class List {
     }
 }

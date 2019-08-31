@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Priorities
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditPriority : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -31,8 +31,7 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit priority";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit priority";
 
             this.msg.InnerText = "";
 
@@ -56,8 +55,8 @@ namespace BugTracker.Web
                     // Get this entry's data from the db and fill in the form
 
                     this.Sql = @"select
-				pr_name, pr_sort_seq, pr_background_color, isnull(pr_style,'') [pr_style], pr_default
-				from priorities where pr_id = $1";
+                pr_name, pr_sort_seq, pr_background_color, isnull(pr_style,'') [pr_style], pr_default
+                from priorities where pr_id = $1";
 
                     this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
                     var dr = DbUtil.GetDataRow(this.Sql);
@@ -131,18 +130,18 @@ namespace BugTracker.Web
                 if (this.Id == 0) // insert new
                 {
                     this.Sql = @"insert into priorities
-				(pr_name, pr_sort_seq, pr_background_color, pr_style, pr_default)
-				values (N'$na', $ss, N'$co', N'$st', $df)";
+                (pr_name, pr_sort_seq, pr_background_color, pr_style, pr_default)
+                values (N'$na', $ss, N'$co', N'$st', $df)";
                 }
                 else // edit existing
                 {
                     this.Sql = @"update priorities set
-				pr_name = N'$na',
-				pr_sort_seq = $ss,
-				pr_background_color = N'$co',
-				pr_style = N'$st',
-				pr_default = $df
-				where pr_id = $id";
+                pr_name = N'$na',
+                pr_sort_seq = $ss,
+                pr_background_color = N'$co',
+                pr_style = N'$st',
+                pr_default = $df
+                where pr_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 }
@@ -153,7 +152,7 @@ namespace BugTracker.Web
                 this.Sql = this.Sql.Replace("$st", this.style.Value.Replace("'", "''"));
                 this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("priorities.aspx");
+                Server.Transfer("~/Administration/Priorities/List.aspx");
             }
             else
             {

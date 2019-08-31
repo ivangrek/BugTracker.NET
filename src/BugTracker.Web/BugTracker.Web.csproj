@@ -401,7 +401,7 @@
     <Content Include="DeleteComment.aspx" />
     <Content Include="DeleteCustomField.aspx" />
     <Content Include="Administration\Organizations\Delete.aspx" />
-    <Content Include="DeletePriority.aspx" />
+    <Content Include="Administration\Priorities\Delete.aspx" />
     <Content Include="Administration\Projects\Delete.aspx" />
     <Content Include="DeleteQuery.aspx" />
     <Content Include="DeleteReport.aspx" />
@@ -484,14 +484,14 @@
     <Content Include="EditCustomHtml.aspx" />
     <Content Include="EditDashboard.aspx" />
     <Content Include="Administration\Organizations\Edit.aspx" />
-    <Content Include="EditPriority.aspx" />
+    <Content Include="Administration\Priorities\Edit.aspx" />
     <Content Include="Administration\Projects\Edit.aspx" />
     <Content Include="EditQuery.aspx" />
     <Content Include="EditQueuedNotifications.aspx" />
     <Content Include="EditReport.aspx" />
     <Content Include="EditSelf.aspx" />
     <Content Include="EditStatus.aspx" />
-    <Content Include="EditStyles.aspx" />
+    <Content Include="Administration\EditStyles.aspx" />
     <Content Include="EditTask.aspx" />
     <Content Include="EditUdf.aspx" />
     <Content Include="Administration\Users\Edit.aspx" />
@@ -568,7 +568,7 @@
     <Content Include="PrintBug.aspx" />
     <Content Include="PrintBugs.aspx" />
     <Content Include="PrintBugs2.aspx" />
-    <Content Include="Priorities.aspx" />
+    <Content Include="Administration\Priorities\List.aspx" />
     <Content Include="Administration\Projects\List.aspx" />
     <Content Include="Queries.aspx" />
     <Content Include="Query.aspx" />
@@ -771,12 +771,12 @@
     <Compile Include="Administration\Organizations\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeletePriority.aspx.cs">
-      <DependentUpon>DeletePriority.aspx</DependentUpon>
+    <Compile Include="Administration\Priorities\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeletePriority.aspx.designer.cs">
-      <DependentUpon>DeletePriority.aspx</DependentUpon>
+    <Compile Include="Administration\Priorities\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Projects\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -897,12 +897,12 @@
     <Compile Include="Administration\Organizations\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditPriority.aspx.cs">
-      <DependentUpon>EditPriority.aspx</DependentUpon>
+    <Compile Include="Administration\Priorities\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditPriority.aspx.designer.cs">
-      <DependentUpon>EditPriority.aspx</DependentUpon>
+    <Compile Include="Administration\Priorities\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Projects\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
@@ -946,11 +946,11 @@
     <Compile Include="EditStatus.aspx.designer.cs">
       <DependentUpon>EditStatus.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditStyles.aspx.cs">
+    <Compile Include="Administration\EditStyles.aspx.cs">
       <DependentUpon>EditStyles.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditStyles.aspx.designer.cs">
+    <Compile Include="Administration\EditStyles.aspx.designer.cs">
       <DependentUpon>EditStyles.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditTask.aspx.cs">
@@ -1215,12 +1215,12 @@
     <Compile Include="PrintBugs2.aspx.designer.cs">
       <DependentUpon>PrintBugs2.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Priorities.aspx.cs">
-      <DependentUpon>Priorities.aspx</DependentUpon>
+    <Compile Include="Administration\Priorities\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Priorities.aspx.designer.cs">
-      <DependentUpon>Priorities.aspx</DependentUpon>
+    <Compile Include="Administration\Priorities\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Projects\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>

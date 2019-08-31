@@ -5,11 +5,11 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Priorities.aspx.cs" Inherits="BugTracker.Web.Priorities" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.Priorities.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js")%>"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
@@ -18,13 +18,13 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="EditPriority.aspx">add new priority</a>
+        <a href="<%= ResolveUrl("~/Administration/Priorities/Edit.aspx")%>">add new priority</a>
         <p />
         <%
 
             if (this.Ds.Tables[0].Rows.Count > 0)
                 SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, "EditPriority.aspx?id=", "DeletePriority.aspx?id=", false);
+                    Response, this.Ds, ResolveUrl("~/Administration/Priorities/Edit.aspx?id="), ResolveUrl("~/Administration/Priorities/Delete.aspx?id="), false);
             else
                 Response.Write("No priorities in the database.");
         %>

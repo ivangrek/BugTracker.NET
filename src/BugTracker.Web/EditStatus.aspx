@@ -56,7 +56,7 @@
                                 <td class="lbl">CSS Class:</td>
                                 <td>
                                     <input runat="server" type="text" class="txt" id="style" value="" maxlength="10" size="10">
-                                    &nbsp;&nbsp;<a target="_blank" href="EditStyles.aspx">more CSS info...</a>
+                                    &nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Administration/EditStyles.aspx")%>">more CSS info...</a>
                                 </td>
                                 <td runat="server" class="err" id="style_err">&nbsp;</td>
                             </tr>

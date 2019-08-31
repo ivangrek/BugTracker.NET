@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditPriority.aspx.cs" Inherits="BugTracker.Web.EditPriority" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Priorities.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="change_sample_color()">--%>
@@ -32,7 +32,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Priorities.aspx">back to priorities</a>
+                    <a href="<%= ResolveUrl("~/Administration/Priorities/List.aspx")%>">back to priorities</a>
                     <form class="frm" runat="server">
                         <table border="0">
 
@@ -78,7 +78,7 @@
                                 <td class="lbl">CSS Class:</td>
                                 <td>
                                     <input runat="server" type="text" class="txt" id="style" value="" maxlength="10" size="10">
-                                    &nbsp;&nbsp;<a target="_blank" href="EditStyles.aspx">more CSS info...</a>
+                                    &nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Administration/EditStyles.aspx")%>">more CSS info...</a>
                                 </td>
                                 <td runat="server" class="err" id="style_err">&nbsp;</td>
                             </tr>

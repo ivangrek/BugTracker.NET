@@ -36,17 +36,17 @@ namespace BugTracker.Web
 
             this.Ds = DbUtil.GetDataSet(
                 @"select
-			'<a target=_blank href=EditPriority.aspx?id=' + convert(varchar,pr_id) + '>' + pr_name + '</a>' [priority],
-			'<a target=_blank href=EditStatus.aspx?id=' + convert(varchar,st_id) + '>' + st_name + '</a>' [status],
-			isnull(pr_style,'') [priority CSS class],
-			isnull(st_style,'') [status CSS class],
-			isnull(pr_style + st_style,'datad') [combo CSS class - priority + status ],
-			'<span class=''' + isnull(pr_style,'') + isnull(st_style,'')  +'''>The quick brown fox</span>' [text sample]
-			from priorities, statuses /* intentioanl cartesian join */
-			order by pr_sort_seq, st_sort_seq;
+            '<a target=_blank href=" + ResolveUrl("~/Administration/Priorities/Edit.aspx") + @"?id=' + convert(varchar,pr_id) + '>' + pr_name + '</a>' [priority],
+            '<a target=_blank href=EditStatus.aspx?id=' + convert(varchar,st_id) + '>' + st_name + '</a>' [status],
+            isnull(pr_style,'') [priority CSS class],
+            isnull(st_style,'') [status CSS class],
+            isnull(pr_style + st_style,'datad') [combo CSS class - priority + status ],
+            '<span class=''' + isnull(pr_style,'') + isnull(st_style,'')  +'''>The quick brown fox</span>' [text sample]
+            from priorities, statuses /* intentioanl cartesian join */
+            order by pr_sort_seq, st_sort_seq;
 
-			select distinct isnull(pr_style + st_style,'datad')
-			from priorities, statuses;");
+            select distinct isnull(pr_style + st_style,'datad')
+            from priorities, statuses;");
 
             var classesList = new ArrayList();
             foreach (DataRow drStyles in this.Ds.Tables[1].Rows) classesList.Add("." + (string) drStyles[0]);

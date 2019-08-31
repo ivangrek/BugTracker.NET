@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DeletePriority.aspx.cs" Inherits="BugTracker.Web.DeletePriority" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Delete.aspx.cs" Inherits="BugTracker.Web.Administration.Priorities.Delete" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -18,7 +18,7 @@
     <p>
         <div class="align">
             <p>&nbsp</p>
-            <a href="Priorities.aspx">back to priorities</a>
+            <a href="<%= ResolveUrl("~/Administration/Priorities/List.aspx")%>">back to priorities</a>
 
             <p>
                 or

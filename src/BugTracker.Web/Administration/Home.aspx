@@ -100,7 +100,7 @@
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/Priorities.aspx")%>">Priorities</a>
+                            <a href="<%= ResolveUrl("~/Administration/Priorities/List.aspx")%>">Priorities</a>
                         </li>
                         <p />
                         <li class="listitem">
