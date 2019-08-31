@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.UserDefinedAttributes {
     
     
-    public partial class EditUdf {
+    public partial class Edit {
         
         /// <summary>
         /// name control.

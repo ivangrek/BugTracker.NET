@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.UserDefinedAttributes {
     
     
-    public partial class DeleteUdf {
+    public partial class Delete {
         
         /// <summary>
         /// frm control.

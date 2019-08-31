@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditUdf.aspx.cs" Inherits="BugTracker.Web.EditUdf" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.UserDefinedAttributes.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -19,7 +19,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Udfs.aspx">back to user defined attribute values</a>
+                    <a href="<%= ResolveUrl("~/Administration/UserDefinedAttributes/List.aspx")%>">back to user defined attribute values</a>
                     <form class="frm" runat="server">
                         <table border="0">
 

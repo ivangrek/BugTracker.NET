@@ -408,7 +408,7 @@
     <Content Include="Administration\Statuses\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
-    <Content Include="DeleteUdf.aspx" />
+    <Content Include="Administration\UserDefinedAttributes\Delete.aspx" />
     <Content Include="Administration\Users\Delete.aspx" />
     <Content Include="DownloadFile.aspx" />
     <Content Include="Scripts\edit_area\autocompletion.js" />
@@ -493,7 +493,7 @@
     <Content Include="Administration\Statuses\Edit.aspx" />
     <Content Include="Administration\EditStyles.aspx" />
     <Content Include="EditTask.aspx" />
-    <Content Include="EditUdf.aspx" />
+    <Content Include="Administration\UserDefinedAttributes\Edit.aspx" />
     <Content Include="Administration\Users\Edit.aspx" />
     <Content Include="Administration\Projects\EditUserPermissions2.aspx" />
     <Content Include="EditWebConfig.aspx" />
@@ -601,7 +601,7 @@
     <Content Include="Content\images\telephone.png" />
     <Content Include="Content\images\telephone_edit.png" />
     <Content Include="Translate.aspx" />
-    <Content Include="Udfs.aspx" />
+    <Content Include="Administration\UserDefinedAttributes\List.aspx" />
     <Content Include="UpdateDashboard.aspx" />
     <Content Include="Upgrade273To274.aspx" />
     <Content Include="Administration\Users\List.aspx" />
@@ -820,12 +820,12 @@
     <Compile Include="DeleteTask.aspx.designer.cs">
       <DependentUpon>DeleteTask.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteUdf.aspx.cs">
-      <DependentUpon>DeleteUdf.aspx</DependentUpon>
+    <Compile Include="Administration\UserDefinedAttributes\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteUdf.aspx.designer.cs">
-      <DependentUpon>DeleteUdf.aspx</DependentUpon>
+    <Compile Include="Administration\UserDefinedAttributes\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Users\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -960,12 +960,12 @@
     <Compile Include="EditTask.aspx.designer.cs">
       <DependentUpon>EditTask.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditUdf.aspx.cs">
-      <DependentUpon>EditUdf.aspx</DependentUpon>
+    <Compile Include="Administration\UserDefinedAttributes\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditUdf.aspx.designer.cs">
-      <DependentUpon>EditUdf.aspx</DependentUpon>
+    <Compile Include="Administration\UserDefinedAttributes\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Users\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
@@ -1412,12 +1412,12 @@
     <Compile Include="Translate.aspx.designer.cs">
       <DependentUpon>Translate.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Udfs.aspx.cs">
-      <DependentUpon>Udfs.aspx</DependentUpon>
+    <Compile Include="Administration\UserDefinedAttributes\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Udfs.aspx.designer.cs">
-      <DependentUpon>Udfs.aspx</DependentUpon>
+    <Compile Include="Administration\UserDefinedAttributes\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="UpdateDashboard.aspx.cs">
       <DependentUpon>UpdateDashboard.aspx</DependentUpon>

@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.UserDefinedAttributes {
     
     
-    public partial class Udfs {
+    public partial class List {
     }
 }

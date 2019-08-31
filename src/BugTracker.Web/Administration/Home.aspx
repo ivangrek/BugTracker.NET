@@ -108,7 +108,7 @@
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/Udfs.aspx")%>">User Defined Attribute</a>
+                            <a href="<%= ResolveUrl("~/Administration/UserDefinedAttributes/List.aspx")%>">User Defined Attributes</a>
                             &nbsp;&nbsp;<span class="smallnote">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</span>
                         </li>
                         <p />

@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.UserDefinedAttributes
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditUdf : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -122,10 +122,10 @@ namespace BugTracker.Web
                 else // edit existing
                 {
                     this.Sql = @"update user_defined_attribute set
-				udf_name = N'$na',
-				udf_sort_seq = $ss,
-				udf_default = $df
-				where udf_id = $id";
+                udf_name = N'$na',
+                udf_sort_seq = $ss,
+                udf_default = $df
+                where udf_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 }
@@ -134,7 +134,7 @@ namespace BugTracker.Web
                 this.Sql = this.Sql.Replace("$ss", this.sort_seq.Value);
                 this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Udfs.aspx");
+                Server.Transfer("~/Administration/UserDefinedAttributes/List.aspx");
             }
             else
             {
