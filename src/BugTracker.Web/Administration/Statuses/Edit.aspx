@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditStatus.aspx.cs" Inherits="BugTracker.Web.EditStatus" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Statuses.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -19,7 +19,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Statuses.aspx">back to statuses</a>
+                    <a href="<%= ResolveUrl("~/Administration/Statuses/List.aspx")%>">back to statuses</a>
                     <form class="frm" runat="server">
                         <table border="0">
 

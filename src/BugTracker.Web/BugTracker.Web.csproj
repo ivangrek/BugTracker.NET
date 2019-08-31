@@ -405,7 +405,7 @@
     <Content Include="Administration\Projects\Delete.aspx" />
     <Content Include="DeleteQuery.aspx" />
     <Content Include="DeleteReport.aspx" />
-    <Content Include="DeleteStatus.aspx" />
+    <Content Include="Administration\Statuses\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
     <Content Include="DeleteUdf.aspx" />
@@ -490,7 +490,7 @@
     <Content Include="EditQueuedNotifications.aspx" />
     <Content Include="EditReport.aspx" />
     <Content Include="EditSelf.aspx" />
-    <Content Include="EditStatus.aspx" />
+    <Content Include="Administration\Statuses\Edit.aspx" />
     <Content Include="Administration\EditStyles.aspx" />
     <Content Include="EditTask.aspx" />
     <Content Include="EditUdf.aspx" />
@@ -583,7 +583,7 @@
     <Content Include="ServerVariables.aspx" />
     <Content Include="setup.sql" />
     <Content Include="Scripts\sortable.js" />
-    <Content Include="Statuses.aspx" />
+    <Content Include="Administration\Statuses\List.aspx" />
     <Content Include="Subscribe.aspx" />
     <Content Include="Scripts\suggest.js" />
     <Content Include="Content\images\svn.png" />
@@ -799,12 +799,12 @@
     <Compile Include="DeleteReport.aspx.designer.cs">
       <DependentUpon>DeleteReport.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteStatus.aspx.cs">
-      <DependentUpon>DeleteStatus.aspx</DependentUpon>
+    <Compile Include="Administration\Statuses\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteStatus.aspx.designer.cs">
-      <DependentUpon>DeleteStatus.aspx</DependentUpon>
+    <Compile Include="Administration\Statuses\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeleteSubscriber.aspx.cs">
       <DependentUpon>DeleteSubscriber.aspx</DependentUpon>
@@ -939,12 +939,12 @@
     <Compile Include="EditSelf.aspx.designer.cs">
       <DependentUpon>EditSelf.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditStatus.aspx.cs">
-      <DependentUpon>EditStatus.aspx</DependentUpon>
+    <Compile Include="Administration\Statuses\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditStatus.aspx.designer.cs">
-      <DependentUpon>EditStatus.aspx</DependentUpon>
+    <Compile Include="Administration\Statuses\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\EditStyles.aspx.cs">
       <DependentUpon>EditStyles.aspx</DependentUpon>
@@ -1314,12 +1314,12 @@
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
     </Compile>
-    <Compile Include="Statuses.aspx.cs">
-      <DependentUpon>Statuses.aspx</DependentUpon>
+    <Compile Include="Administration\Statuses\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Statuses.aspx.designer.cs">
-      <DependentUpon>Statuses.aspx</DependentUpon>
+    <Compile Include="Administration\Statuses\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Subscribe.aspx.cs">
       <DependentUpon>Subscribe.aspx</DependentUpon>

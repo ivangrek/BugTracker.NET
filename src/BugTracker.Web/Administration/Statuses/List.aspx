@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Statuses.aspx.cs" Inherits="BugTracker.Web.Statuses" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.Statuses.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -18,13 +18,13 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="EditStatus.aspx">add new status</a>
+        <a href="<%= ResolveUrl("~/Administration/Statuses/Edit.aspx")%>">add new status</a>
         <p />
         <%
 
             if (this.Ds.Tables[0].Rows.Count > 0)
                 SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, "EditStatus.aspx?id=", "DeleteStatus.aspx?id=");
+                    Response, this.Ds, ResolveUrl("~/Administration/Statuses/Edit.aspx?id="), ResolveUrl("~/Administration/Statuses/Delete.aspx?id="));
             else
                 Response.Write("No statuses in the database.");
         %>

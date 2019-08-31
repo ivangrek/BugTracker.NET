@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Statuses
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteStatus : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -35,18 +35,17 @@ namespace BugTracker.Web
                 this.Sql = @"delete statuses where st_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Statuses.aspx");
+                Server.Transfer("~/Administration/Statuses/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete status";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete status";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 
                 this.Sql = @"declare @cnt int
-			select @cnt = count(1) from bugs where bg_status = $1
-			select st_name, @cnt [cnt] from statuses where st_id = $1";
+            select @cnt = count(1) from bugs where bg_status = $1
+            select st_name, @cnt [cnt] from statuses where st_id = $1";
                 this.Sql = this.Sql.Replace("$1", id);
 
                 var dr = DbUtil.GetDataRow(this.Sql);

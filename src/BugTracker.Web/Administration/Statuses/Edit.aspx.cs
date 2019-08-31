@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Statuses
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditStatus : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -123,11 +123,11 @@ namespace BugTracker.Web
                 else // edit existing
                 {
                     this.Sql = @"update statuses set
-				st_name = N'$na',
-				st_sort_seq = $ss,
-				st_style = N'$st',
-				st_default = $df
-				where st_id = $id";
+                st_name = N'$na',
+                st_sort_seq = $ss,
+                st_style = N'$st',
+                st_default = $df
+                where st_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 }
@@ -137,7 +137,7 @@ namespace BugTracker.Web
                 this.Sql = this.Sql.Replace("$st", this.style.Value.Replace("'", "''"));
                 this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Statuses.aspx");
+                Server.Transfer("~/Administration/Statuses/List.aspx");
             }
             else
             {

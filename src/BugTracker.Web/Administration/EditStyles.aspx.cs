@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     using System;
     using System.Collections;
@@ -37,7 +37,7 @@ namespace BugTracker.Web
             this.Ds = DbUtil.GetDataSet(
                 @"select
             '<a target=_blank href=" + ResolveUrl("~/Administration/Priorities/Edit.aspx") + @"?id=' + convert(varchar,pr_id) + '>' + pr_name + '</a>' [priority],
-            '<a target=_blank href=EditStatus.aspx?id=' + convert(varchar,st_id) + '>' + st_name + '</a>' [status],
+            '<a target=_blank href=" + ResolveUrl("~/Administration/Statuses/Edit.aspx?id=") + @"?id=' + convert(varchar,st_id) + '>' + st_name + '</a>' [status],
             isnull(pr_style,'') [priority CSS class],
             isnull(st_style,'') [status CSS class],
             isnull(pr_style + st_style,'datad') [combo CSS class - priority + status ],
