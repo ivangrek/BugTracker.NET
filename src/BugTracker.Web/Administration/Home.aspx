@@ -84,7 +84,7 @@
                     <ul>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/Users.aspx")%>">Users</a>
+                            <a href="<%= ResolveUrl("~/Administration/Users/List.aspx")%>">Users</a>
                         </li>
                         <p />
                         <li class="listitem">

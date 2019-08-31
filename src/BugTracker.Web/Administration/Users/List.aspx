@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Users.aspx.cs" Inherits="BugTracker.Web.Users" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.Users.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO
     <body onload="filter_changed()">--%>
 
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js")%>"></script>
 
     <script>
 
@@ -38,7 +38,7 @@
         <table border="0" width="80%">
             <tr>
                 <td align="left" valign="top">
-                    <a href="EditUser.aspx">add new user </a>
+                    <a href="<%= ResolveUrl("~/Administration/Users/Edit.aspx")%>">add new user </a>
                     <td align="right" valign="top">
                         <form runat="server">
 

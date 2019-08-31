@@ -7,36 +7,27 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Users {
     
     
-    public partial class DeleteUser {
+    public partial class List {
         
         /// <summary>
-        /// frm control.
+        /// filter_users control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm frm;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText filter_users;
         
         /// <summary>
-        /// confirm_href control.
+        /// hide_inactive_users control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
-        
-        /// <summary>
-        /// row_id control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden row_id;
+        protected global::System.Web.UI.WebControls.CheckBox hide_inactive_users;
     }
 }

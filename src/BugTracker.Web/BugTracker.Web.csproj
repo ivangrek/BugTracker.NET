@@ -409,7 +409,7 @@
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
     <Content Include="DeleteUdf.aspx" />
-    <Content Include="DeleteUser.aspx" />
+    <Content Include="Administration\Users\Delete.aspx" />
     <Content Include="DownloadFile.aspx" />
     <Content Include="Scripts\edit_area\autocompletion.js" />
     <Content Include="Scripts\edit_area\edit_area.css" />
@@ -494,7 +494,7 @@
     <Content Include="EditStyles.aspx" />
     <Content Include="EditTask.aspx" />
     <Content Include="EditUdf.aspx" />
-    <Content Include="EditUser.aspx" />
+    <Content Include="Administration\Users\Edit.aspx" />
     <Content Include="EditUserPermissions2.aspx" />
     <Content Include="EditWebConfig.aspx" />
     <Content Include="Content\images\email_edit.png" />
@@ -604,7 +604,7 @@
     <Content Include="Udfs.aspx" />
     <Content Include="UpdateDashboard.aspx" />
     <Content Include="Upgrade273To274.aspx" />
-    <Content Include="Users.aspx" />
+    <Content Include="Administration\Users\List.aspx" />
     <Content Include="Scripts\version_control_sel_rev.js" />
     <Content Include="ViewAttachment.aspx" />
     <Content Include="ViewMemoryLog.aspx" />
@@ -827,12 +827,12 @@
     <Compile Include="DeleteUdf.aspx.designer.cs">
       <DependentUpon>DeleteUdf.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteUser.aspx.cs">
-      <DependentUpon>DeleteUser.aspx</DependentUpon>
+    <Compile Include="Administration\Users\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteUser.aspx.designer.cs">
-      <DependentUpon>DeleteUser.aspx</DependentUpon>
+    <Compile Include="Administration\Users\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="DownloadFile.aspx.cs">
       <DependentUpon>DownloadFile.aspx</DependentUpon>
@@ -967,12 +967,12 @@
     <Compile Include="EditUdf.aspx.designer.cs">
       <DependentUpon>EditUdf.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditUser.aspx.cs">
-      <DependentUpon>EditUser.aspx</DependentUpon>
+    <Compile Include="Administration\Users\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditUser.aspx.designer.cs">
-      <DependentUpon>EditUser.aspx</DependentUpon>
+    <Compile Include="Administration\Users\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditUserPermissions2.aspx.cs">
       <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
@@ -1433,12 +1433,12 @@
     <Compile Include="Upgrade273To274.aspx.designer.cs">
       <DependentUpon>Upgrade273To274.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Users.aspx.cs">
-      <DependentUpon>Users.aspx</DependentUpon>
+    <Compile Include="Administration\Users\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Users.aspx.designer.cs">
-      <DependentUpon>Users.aspx</DependentUpon>
+    <Compile Include="Administration\Users\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewAttachment.aspx.cs">
       <DependentUpon>ViewAttachment.aspx</DependentUpon>

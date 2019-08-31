@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Users
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteUser : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -64,7 +64,7 @@ delete dashboard_items where ds_user = $us";
 
                 this.Sql = this.Sql.Replace("$us", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Users.aspx");
+                Server.Transfer("~/Administration/Users/List.aspx");
             }
             else
             {

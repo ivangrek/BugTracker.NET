@@ -162,17 +162,17 @@ and us_active = 1";
             if (level == MustBeAdmin && !this.User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
-                response.Redirect("Home.aspx");
+                response.Redirect("~/Home.aspx");
             }
             else if (level == AnyUserOkExceptGuest && this.User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
-                response.Redirect("Home.aspx");
+                response.Redirect("~/Home.aspx");
             }
             else if (level == MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
-                response.Redirect("Home.aspx");
+                response.Redirect("~/Home.aspx");
             }
 
             if (Util.GetSetting("WindowsAuthentication", "0") == "1")
@@ -262,17 +262,17 @@ function on_submit_search()
             response.Write(logo);
 
             response.Write("<td width=20>&nbsp;</td>");
-            WriteMenuItem(response, thisLink, Util.GetSetting("PluralBugLabel", "bugs"), "Bugs.aspx");
+            WriteMenuItem(response, thisLink, Util.GetSetting("PluralBugLabel", "bugs"), VirtualPathUtility.ToAbsolute("~/Bugs.aspx"));
 
-            if (this.User.CanSearch) WriteMenuItem(response, thisLink, "search", "Search.aspx");
+            if (this.User.CanSearch) WriteMenuItem(response, thisLink, "search", VirtualPathUtility.ToAbsolute("~/Search.aspx"));
 
             if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
-                WriteMenuItem(response, thisLink, "news", "ViewWhatsNew.aspx");
+                WriteMenuItem(response, thisLink, "news", VirtualPathUtility.ToAbsolute("~/ViewWhatsNew.aspx"));
 
-            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", "Queries.aspx");
+            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", VirtualPathUtility.ToAbsolute("~/Queries.aspx"));
 
             if (this.User.IsAdmin || this.User.CanUseReports || this.User.CanEditReports)
-                WriteMenuItem(response, thisLink, "reports", "Reports.aspx");
+                WriteMenuItem(response, thisLink, "reports", VirtualPathUtility.ToAbsolute("~/Reports.aspx"));
 
             if (Util.GetSetting("CustomMenuLinkLabel", "") != "")
                 WriteMenuItem(response, thisLink,
@@ -280,8 +280,8 @@ function on_submit_search()
                     Util.GetSetting("CustomMenuLinkUrl", ""));
 
             if (this.User.IsAdmin)
-                WriteMenuItem(response, thisLink, "admin", "Administration/Home.aspx");
-            else if (this.User.IsProjectAdmin) WriteMenuItem(response, thisLink, "users", "Users.aspx");
+                WriteMenuItem(response, thisLink, "admin", VirtualPathUtility.ToAbsolute("~/Administration/Home.aspx"));
+            else if (this.User.IsProjectAdmin) WriteMenuItem(response, thisLink, "users", VirtualPathUtility.ToAbsolute("~/Administration/Users/List.aspx"));
 
             // go to
 
@@ -317,13 +317,13 @@ function on_submit_search()
             if (this.AuthMethod == "plain")
             {
                 if (this.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
-                    WriteMenuItem(response, thisLink, "login", "Home.aspx");
+                    WriteMenuItem(response, thisLink, "login", VirtualPathUtility.ToAbsolute("~/Home.aspx"));
                 else
-                    WriteMenuItem(response, thisLink, "logoff", "Logoff.aspx");
+                    WriteMenuItem(response, thisLink, "logoff", VirtualPathUtility.ToAbsolute("~/Logoff.aspx"));
             }
 
             // for guest account, suppress display of "edit_self
-            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "settings", "EditSelf.aspx");
+            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "settings", VirtualPathUtility.ToAbsolute("~/EditSelf.aspx"));
 
             response.Write("<td valign=middle align=left'>");
             response.Write(

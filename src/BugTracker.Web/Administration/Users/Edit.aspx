@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditUser.aspx.cs" Inherits="BugTracker.Web.EditUser" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Users.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -53,7 +53,7 @@
             <tr>
                 <td>
 
-                    <a href="Users.aspx">back to users</a>
+                    <a href="<%= ResolveUrl("~/Administration/Users/List.aspx")%>">back to users</a>
                     &nbsp;&nbsp;&nbsp;&nbsp;
 
 

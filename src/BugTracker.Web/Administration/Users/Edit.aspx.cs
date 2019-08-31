@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Users
 {
     using System;
     using System.Collections;
@@ -15,7 +15,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class EditUser : Page
+    public partial class Edit : Page
     {
         public bool Copy;
         public int Id;
@@ -35,16 +35,15 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdminOrProjectAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit user";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit user";
 
             if (!this.Security.User.IsAdmin)
             {
                 // Check if the current user is an admin for any project
                 this.Sql = @"select pu_project
-			from project_user_xref
-			where pu_user = $us
-			and pu_admin = 1";
+            from project_user_xref
+            where pu_user = $us
+            and pu_admin = 1";
                 this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
                 var dsProjects = DbUtil.GetDataSet(this.Sql);
 
@@ -91,17 +90,17 @@ namespace BugTracker.Web
                     // get values for permissions grid
                     // Table 0
                     this.Sql = @"
-				select pj_id, pj_name,
-				isnull(a.pu_permission_level,$dpl) [pu_permission_level],
-				isnull(a.pu_auto_subscribe,0) [pu_auto_subscribe],
-				isnull(a.pu_admin,0) [pu_admin]
-				from projects
-				inner join project_user_xref project_admin on pj_id = project_admin.pu_project
-				and project_admin.pu_user = $this_usid
-				and project_admin.pu_admin = 1
-				left outer join project_user_xref a on pj_id = a.pu_project
-				and a.pu_user = $us
-				order by pj_name;";
+                select pj_id, pj_name,
+                isnull(a.pu_permission_level,$dpl) [pu_permission_level],
+                isnull(a.pu_auto_subscribe,0) [pu_auto_subscribe],
+                isnull(a.pu_admin,0) [pu_admin]
+                from projects
+                inner join project_user_xref project_admin on pj_id = project_admin.pu_project
+                and project_admin.pu_user = $this_usid
+                and project_admin.pu_admin = 1
+                left outer join project_user_xref a on pj_id = a.pu_project
+                and a.pu_user = $us
+                order by pj_name;";
 
                     this.Sql = this.Sql.Replace("$this_usid", Convert.ToString(this.Security.User.Usid));
                 }
@@ -111,50 +110,50 @@ namespace BugTracker.Web
 
                     // populate permissions grid
                     this.Sql = @"
-				select pj_id, pj_name,
-				isnull(pu_permission_level,$dpl) [pu_permission_level],
-				isnull(pu_auto_subscribe,0) [pu_auto_subscribe],
-				isnull(pu_admin,0) [pu_admin]
-				from projects
-				left outer join project_user_xref on pj_id = pu_project
-				and pu_user = $us
-				order by pj_name;";
+                select pj_id, pj_name,
+                isnull(pu_permission_level,$dpl) [pu_permission_level],
+                isnull(pu_auto_subscribe,0) [pu_auto_subscribe],
+                isnull(pu_admin,0) [pu_admin]
+                from projects
+                left outer join project_user_xref on pj_id = pu_project
+                and pu_user = $us
+                order by pj_name;";
                 }
 
                 // Table 1
 
                 this.Sql += @"/* populate query dropdown */
-		    declare @org int
-		    set @org = null
-		    select @org = us_org from users where us_id = $us
+            declare @org int
+            set @org = null
+            select @org = us_org from users where us_id = $us
 
-			select qu_id, qu_desc
-			from queries
-			where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
-			or isnull(qu_user,0) = $us
-			or isnull(qu_org,0) = isnull(@org,-1)
-			order by qu_desc;";
+            select qu_id, qu_desc
+            from queries
+            where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
+            or isnull(qu_user,0) = $us
+            or isnull(qu_org,0) = isnull(@org,-1)
+            order by qu_desc;";
 
                 // Table 2
 
                 if (this.Security.User.IsAdmin)
                 {
                     this.Sql += @"/* populate org dropdown 1 */
-				select og_id, og_name
-				from orgs
-				order by og_name;";
+                select og_id, og_name
+                from orgs
+                order by og_name;";
                 }
                 else
                 {
                     if (this.Security.User.OtherOrgsPermissionLevel == Security.PermissionAll)
                         this.Sql += @"/* populate org dropdown 2 */
-					select og_id, og_name
-					from orgs
-					where og_non_admins_can_use = 1
-					order by og_name;";
+                    select og_id, og_name
+                    from orgs
+                    where og_non_admins_can_use = 1
+                    order by og_name;";
                     else
                         this.Sql += @"/* populate org dropdown 3 */
-					select 1; -- dummy";
+                    select 1; -- dummy";
                 }
 
                 // Table 3
@@ -162,31 +161,31 @@ namespace BugTracker.Web
                     // get existing user values
 
                     this.Sql += @"
-			select
-				us_username,
-				isnull(us_firstname,'') [us_firstname],
-				isnull(us_lastname,'') [us_lastname],
-				isnull(us_bugs_per_page,10) [us_bugs_per_page],
-				us_use_fckeditor,
-				us_enable_bug_list_popups,
-				isnull(us_email,'') [us_email],
-				us_active,
-				us_admin,
-				us_enable_notifications,
-				us_send_notifications_to_self,
+            select
+                us_username,
+                isnull(us_firstname,'') [us_firstname],
+                isnull(us_lastname,'') [us_lastname],
+                isnull(us_bugs_per_page,10) [us_bugs_per_page],
+                us_use_fckeditor,
+                us_enable_bug_list_popups,
+                isnull(us_email,'') [us_email],
+                us_active,
+                us_admin,
+                us_enable_notifications,
+                us_send_notifications_to_self,
                 us_reported_notifications,
                 us_assigned_notifications,
                 us_subscribed_notifications,
-				us_auto_subscribe,
-				us_auto_subscribe_own_bugs,
-				us_auto_subscribe_reported_bugs,
-				us_default_query,
-				us_org,
-				isnull(us_signature,'') [us_signature],
-				isnull(us_forced_project,0) [us_forced_project],
-				us_created_user
-				from users
-				where us_id = $us";
+                us_auto_subscribe,
+                us_auto_subscribe_own_bugs,
+                us_auto_subscribe_reported_bugs,
+                us_default_query,
+                us_org,
+                isnull(us_signature,'') [us_signature],
+                isnull(us_forced_project,0) [us_forced_project],
+                us_created_user
+                from users
+                where us_id = $us";
 
                 this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Id));
                 this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
@@ -256,12 +255,12 @@ namespace BugTracker.Web
                     // check if project admin is allowed to edit this user
                     if (!this.Security.User.IsAdmin)
                     {
-                        if (this.Security.User.Usid != (int) dr["us_created_user"])
+                        if (this.Security.User.Usid != (int)dr["us_created_user"])
                         {
                             Response.Write("You not allowed to edit this user, because you didn't create it.");
                             Response.End();
                         }
-                        else if ((int) dr["us_admin"] == 1)
+                        else if ((int)dr["us_admin"] == 1)
                         {
                             Response.Write("You not allowed to edit this user, because it is an admin.");
                             Response.End();
@@ -271,7 +270,7 @@ namespace BugTracker.Web
                     // select values in dropdowns
 
                     // select forced project
-                    var currentForcedProject = (int) dr["us_forced_project"];
+                    var currentForcedProject = (int)dr["us_forced_project"];
                     foreach (ListItem li in this.forced_project.Items)
                         if (Convert.ToInt32(li.Value) == currentForcedProject)
                         {
@@ -290,31 +289,31 @@ namespace BugTracker.Web
                     }
                     else
                     {
-                        this.username.Value = (string) dr["us_username"];
-                        this.firstname.Value = (string) dr["us_firstname"];
-                        this.lastname.Value = (string) dr["us_lastname"];
-                        this.email.Value = (string) dr["us_email"];
-                        this.signature.InnerText = (string) dr["us_signature"];
+                        this.username.Value = (string)dr["us_username"];
+                        this.firstname.Value = (string)dr["us_firstname"];
+                        this.lastname.Value = (string)dr["us_lastname"];
+                        this.email.Value = (string)dr["us_email"];
+                        this.signature.InnerText = (string)dr["us_signature"];
                     }
 
                     this.bugs_per_page.Value = Convert.ToString(dr["us_bugs_per_page"]);
-                    this.use_fckeditor.Checked = Convert.ToBoolean((int) dr["us_use_fckeditor"]);
-                    this.enable_popups.Checked = Convert.ToBoolean((int) dr["us_enable_bug_list_popups"]);
-                    this.active.Checked = Convert.ToBoolean((int) dr["us_active"]);
-                    this.admin.Checked = Convert.ToBoolean((int) dr["us_admin"]);
-                    this.enable_notifications.Checked = Convert.ToBoolean((int) dr["us_enable_notifications"]);
-                    this.send_to_self.Checked = Convert.ToBoolean((int) dr["us_send_notifications_to_self"]);
-                    this.reported_notifications.Items[(int) dr["us_reported_notifications"]].Selected = true;
-                    this.assigned_notifications.Items[(int) dr["us_assigned_notifications"]].Selected = true;
-                    this.subscribed_notifications.Items[(int) dr["us_subscribed_notifications"]].Selected = true;
-                    this.auto_subscribe.Checked = Convert.ToBoolean((int) dr["us_auto_subscribe"]);
-                    this.auto_subscribe_own.Checked = Convert.ToBoolean((int) dr["us_auto_subscribe_own_bugs"]);
+                    this.use_fckeditor.Checked = Convert.ToBoolean((int)dr["us_use_fckeditor"]);
+                    this.enable_popups.Checked = Convert.ToBoolean((int)dr["us_enable_bug_list_popups"]);
+                    this.active.Checked = Convert.ToBoolean((int)dr["us_active"]);
+                    this.admin.Checked = Convert.ToBoolean((int)dr["us_admin"]);
+                    this.enable_notifications.Checked = Convert.ToBoolean((int)dr["us_enable_notifications"]);
+                    this.send_to_self.Checked = Convert.ToBoolean((int)dr["us_send_notifications_to_self"]);
+                    this.reported_notifications.Items[(int)dr["us_reported_notifications"]].Selected = true;
+                    this.assigned_notifications.Items[(int)dr["us_assigned_notifications"]].Selected = true;
+                    this.subscribed_notifications.Items[(int)dr["us_subscribed_notifications"]].Selected = true;
+                    this.auto_subscribe.Checked = Convert.ToBoolean((int)dr["us_auto_subscribe"]);
+                    this.auto_subscribe_own.Checked = Convert.ToBoolean((int)dr["us_auto_subscribe_own_bugs"]);
                     this.auto_subscribe_reported.Checked =
-                        Convert.ToBoolean((int) dr["us_auto_subscribe_reported_bugs"]);
+                        Convert.ToBoolean((int)dr["us_auto_subscribe_reported_bugs"]);
 
                     // org
                     foreach (ListItem li in this.org.Items)
-                        if (Convert.ToInt32(li.Value) == (int) dr["us_org"])
+                        if (Convert.ToInt32(li.Value) == (int)dr["us_org"])
                         {
                             li.Selected = true;
                             break;
@@ -322,7 +321,7 @@ namespace BugTracker.Web
 
                     // query
                     foreach (ListItem li in this.query.Items)
-                        if (Convert.ToInt32(li.Value) == (int) dr["us_default_query"])
+                        if (Convert.ToInt32(li.Value) == (int)dr["us_default_query"])
                         {
                             li.Selected = true;
                             break;
@@ -330,24 +329,24 @@ namespace BugTracker.Web
 
                     // select projects
                     foreach (DataRow dr2 in ds.Tables[0].Rows)
-                    foreach (ListItem li in this.project_auto_subscribe.Items)
-                        if (Convert.ToInt32(li.Value) == (int) dr2["pj_id"])
-                        {
-                            if ((int) dr2["pu_auto_subscribe"] == 1)
-                                li.Selected = true;
-                            else
-                                li.Selected = false;
-                        }
+                        foreach (ListItem li in this.project_auto_subscribe.Items)
+                            if (Convert.ToInt32(li.Value) == (int)dr2["pj_id"])
+                            {
+                                if ((int)dr2["pu_auto_subscribe"] == 1)
+                                    li.Selected = true;
+                                else
+                                    li.Selected = false;
+                            }
 
                     foreach (DataRow dr3 in ds.Tables[0].Rows)
-                    foreach (ListItem li in this.project_admin.Items)
-                        if (Convert.ToInt32(li.Value) == (int) dr3["pj_id"])
-                        {
-                            if ((int) dr3["pu_admin"] == 1)
-                                li.Selected = true;
-                            else
-                                li.Selected = false;
-                        }
+                        foreach (ListItem li in this.project_admin.Items)
+                            if (Convert.ToInt32(li.Value) == (int)dr3["pj_id"])
+                            {
+                                if ((int)dr3["pu_admin"] == 1)
+                                    li.Selected = true;
+                                else
+                                    li.Selected = false;
+                            }
                 } // add or edit
             } // if !postback
             else
@@ -473,7 +472,7 @@ namespace BugTracker.Web
                     // See if the user already exists?
                     this.Sql = "select count(1) from users where us_username = N'$1'";
                     this.Sql = this.Sql.Replace("$1", this.username.Value.Replace("'", "''"));
-                    var userCount = (int) DbUtil.ExecuteScalar(this.Sql);
+                    var userCount = (int)DbUtil.ExecuteScalar(this.Sql);
 
                     if (userCount == 0)
                     {
@@ -533,7 +532,7 @@ select scope_identity()";
 
                         update_project_user_xref();
 
-                        Server.Transfer("Users.aspx");
+                        Server.Transfer("~/Administration/Users/List.aspx");
                     }
                     else
                     {
@@ -545,10 +544,10 @@ select scope_identity()";
                 {
                     // See if the user already exists?
                     this.Sql = @"select count(1)
-				from users where us_username = N'$1' and us_id <> $2";
+                from users where us_username = N'$1' and us_id <> $2";
                     this.Sql = this.Sql.Replace("$1", this.username.Value.Replace("'", "''"));
                     this.Sql = this.Sql.Replace("$2", Convert.ToString(this.Id));
-                    var userCount = (int) DbUtil.ExecuteScalar(this.Sql);
+                    var userCount = (int)DbUtil.ExecuteScalar(this.Sql);
 
                     if (userCount == 0)
                     {
@@ -586,7 +585,7 @@ where us_id = $id";
 
                         update_project_user_xref();
 
-                        Server.Transfer("Users.aspx");
+                        Server.Transfer("~/Administration/Users/List.aspx");
                     }
                     else
                     {
@@ -627,7 +626,7 @@ where us_id = $id";
 
             foreach (ListItem li in this.project_admin.Items)
             {
-                var p = (Project) hashProjects[Convert.ToInt32(li.Value)];
+                var p = (Project)hashProjects[Convert.ToInt32(li.Value)];
                 if (li.Selected)
                 {
                     p.Admin = 1;
@@ -645,21 +644,21 @@ where us_id = $id";
 
             foreach (DataGridItem dgi in this.MyDataGrid.Items)
             {
-                rb = (RadioButton) dgi.FindControl("none");
+                rb = (RadioButton)dgi.FindControl("none");
                 if (rb.Checked)
                 {
                     permissionLevel = 0;
                 }
                 else
                 {
-                    rb = (RadioButton) dgi.FindControl("readonly");
+                    rb = (RadioButton)dgi.FindControl("readonly");
                     if (rb.Checked)
                     {
                         permissionLevel = 1;
                     }
                     else
                     {
-                        rb = (RadioButton) dgi.FindControl("reporter");
+                        rb = (RadioButton)dgi.FindControl("reporter");
                         if (rb.Checked)
                             permissionLevel = 3;
                         else
@@ -669,7 +668,7 @@ where us_id = $id";
 
                 var pjId = Convert.ToInt32(dgi.Cells[1].Text);
 
-                var p = (Project) hashProjects[pjId];
+                var p = (Project)hashProjects[pjId];
                 p.PermissionLevel = permissionLevel;
 
                 if (permissionLevel != defaultPermissionLevel) p.MaybeInsert = true;
@@ -691,21 +690,21 @@ where us_id = $id";
             if (projects != "")
             {
                 this.Sql += @"
-			insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
-			select pj_id, $us, 0
-			from projects
-			where pj_id in ($projects)
-			and pj_id not in (select pu_project from project_user_xref where pu_user = $us);";
+            insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
+            select pj_id, $us, 0
+            from projects
+            where pj_id in ($projects)
+            and pj_id not in (select pu_project from project_user_xref where pu_user = $us);";
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
 
             // First turn everything off, then turn selected ones on.
             this.Sql += @"
-		update project_user_xref
-		set pu_auto_subscribe = 0,
-		pu_admin = 0,
-		pu_permission_level = $dpl
-		where pu_user = $us;";
+        update project_user_xref
+        set pu_auto_subscribe = 0,
+        pu_admin = 0,
+        pu_permission_level = $dpl
+        where pu_user = $us;";
 
             projects = "";
             foreach (Project p in hashProjects.Values)
@@ -721,10 +720,10 @@ where us_id = $id";
             if (projects != "")
             {
                 this.Sql += @"
-			update project_user_xref
-			set pu_auto_subscribe = 1
-			where pu_user = $us
-			and pu_project in ($projects);";
+            update project_user_xref
+            set pu_auto_subscribe = 1
+            where pu_user = $us
+            and pu_project in ($projects);";
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
 
@@ -742,10 +741,10 @@ where us_id = $id";
                 if (projects != "")
                 {
                     this.Sql += @"
-				update project_user_xref
-				set pu_admin = 1
-				where pu_user = $us
-				and pu_project in ($projects);";
+                update project_user_xref
+                set pu_admin = 1
+                where pu_user = $us
+                and pu_project in ($projects);";
 
                     this.Sql = this.Sql.Replace("$projects", projects);
                 }
@@ -764,10 +763,10 @@ where us_id = $id";
             if (projects != "")
             {
                 this.Sql += @"
-			update project_user_xref
-			set pu_permission_level = 0
-			where pu_user = $us
-			and pu_project in ($projects);";
+            update project_user_xref
+            set pu_permission_level = 0
+            where pu_user = $us
+            and pu_project in ($projects);";
 
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
@@ -785,10 +784,10 @@ where us_id = $id";
             if (projects != "")
             {
                 this.Sql += @"
-			update project_user_xref
-			set pu_permission_level = 1
-			where pu_user = $us
-			and pu_project in ($projects);";
+            update project_user_xref
+            set pu_permission_level = 1
+            where pu_user = $us
+            and pu_project in ($projects);";
 
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
@@ -806,10 +805,10 @@ where us_id = $id";
             if (projects != "")
             {
                 this.Sql += @"
-			update project_user_xref
-			set pu_permission_level = 2
-			where pu_user = $us
-			and pu_project in ($projects);";
+            update project_user_xref
+            set pu_permission_level = 2
+            where pu_user = $us
+            and pu_project in ($projects);";
 
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
@@ -827,10 +826,10 @@ where us_id = $id";
             if (projects != "")
             {
                 this.Sql += @"
-			update project_user_xref
-			set pu_permission_level = 3
-			where pu_user = $us
-			and pu_project in ($projects);";
+            update project_user_xref
+            set pu_permission_level = 3
+            where pu_user = $us
+            and pu_project in ($projects);";
 
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
@@ -839,34 +838,34 @@ where us_id = $id";
             if (this.retroactive.Checked)
             {
                 this.Sql = @"
-			delete from bug_subscriptions where bs_user = $us;";
+            delete from bug_subscriptions where bs_user = $us;";
 
                 if (this.auto_subscribe.Checked)
                 {
                     this.Sql += @"
-			insert into bug_subscriptions (bs_bug, bs_user)
-				select bg_id, $us from bugs;";
+            insert into bug_subscriptions (bs_bug, bs_user)
+                select bg_id, $us from bugs;";
                 }
                 else
                 {
                     if (this.auto_subscribe_reported.Checked)
                         this.Sql += @"
-					insert into bug_subscriptions (bs_bug, bs_user)
-					select bg_id, $us from bugs where bg_reported_user = $us
-					and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
+                    insert into bug_subscriptions (bs_bug, bs_user)
+                    select bg_id, $us from bugs where bg_reported_user = $us
+                    and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
 
                     if (this.auto_subscribe_own.Checked)
                         this.Sql += @"
-					insert into bug_subscriptions (bs_bug, bs_user)
-					select bg_id, $us from bugs where bg_assigned_to_user = $us
-					and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
+                    insert into bug_subscriptions (bs_bug, bs_user)
+                    select bg_id, $us from bugs where bg_assigned_to_user = $us
+                    and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
 
                     if (autoSubscribeProjects != "")
                     {
                         this.Sql += @"
-					insert into bug_subscriptions (bs_bug, bs_user)
-					select bg_id, $us from bugs where bg_project in ($projects)
-					and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
+                    insert into bug_subscriptions (bs_bug, bs_user)
+                    select bg_id, $us from bugs where bg_project in ($projects)
+                    and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
                         this.Sql = this.Sql.Replace("$projects", autoSubscribeProjects);
                     }
                 }

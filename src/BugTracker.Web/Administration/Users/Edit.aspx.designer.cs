@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Users {
     
     
-    public partial class EditUser {
+    public partial class Edit {
         
         /// <summary>
         /// username control.
