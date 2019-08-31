@@ -400,7 +400,7 @@
     <Content Include="DeleteCategory.aspx" />
     <Content Include="DeleteComment.aspx" />
     <Content Include="DeleteCustomField.aspx" />
-    <Content Include="DeleteOrg.aspx" />
+    <Content Include="Administration\Organizations\Delete.aspx" />
     <Content Include="DeletePriority.aspx" />
     <Content Include="DeleteProject.aspx" />
     <Content Include="DeleteQuery.aspx" />
@@ -483,7 +483,7 @@
     <Content Include="EditCustomField.aspx" />
     <Content Include="EditCustomHtml.aspx" />
     <Content Include="EditDashboard.aspx" />
-    <Content Include="EditOrg.aspx" />
+    <Content Include="Administration\Organizations\Edit.aspx" />
     <Content Include="EditPriority.aspx" />
     <Content Include="EditProject.aspx" />
     <Content Include="EditQuery.aspx" />
@@ -562,7 +562,7 @@
     <Content Include="MergeBug.aspx" />
     <Content Include="MLogin.aspx" />
     <Content Include="Notifications.aspx" />
-    <Content Include="Orgs.aspx" />
+    <Content Include="Administration\Organizations\List.aspx" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
     <Content Include="PrintBug.aspx" />
@@ -764,12 +764,12 @@
     <Compile Include="DeleteCustomField.aspx.designer.cs">
       <DependentUpon>DeleteCustomField.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteOrg.aspx.cs">
-      <DependentUpon>DeleteOrg.aspx</DependentUpon>
+    <Compile Include="Administration\Organizations\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteOrg.aspx.designer.cs">
-      <DependentUpon>DeleteOrg.aspx</DependentUpon>
+    <Compile Include="Administration\Organizations\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeletePriority.aspx.cs">
       <DependentUpon>DeletePriority.aspx</DependentUpon>
@@ -890,12 +890,12 @@
     <Compile Include="EditDashboard.aspx.designer.cs">
       <DependentUpon>EditDashboard.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditOrg.aspx.cs">
-      <DependentUpon>EditOrg.aspx</DependentUpon>
+    <Compile Include="Administration\Organizations\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditOrg.aspx.designer.cs">
-      <DependentUpon>EditOrg.aspx</DependentUpon>
+    <Compile Include="Administration\Organizations\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditPriority.aspx.cs">
       <DependentUpon>EditPriority.aspx</DependentUpon>
@@ -1187,12 +1187,12 @@
     <Compile Include="Notifications.aspx.designer.cs">
       <DependentUpon>Notifications.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Orgs.aspx.cs">
-      <DependentUpon>Orgs.aspx</DependentUpon>
+    <Compile Include="Administration\Organizations\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Orgs.aspx.designer.cs">
-      <DependentUpon>Orgs.aspx</DependentUpon>
+    <Compile Include="Administration\Organizations\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="PrintBug.aspx.cs">
       <DependentUpon>PrintBug.aspx</DependentUpon>

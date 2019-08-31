@@ -88,7 +88,7 @@
                         </li>
                         <p />
                         <li class="listitem">
-                            <a href="<%= ResolveUrl("~/Orgs.aspx")%>">Organizations</a>
+                            <a href="<%= ResolveUrl("~/Administration/Organizations/List.aspx")%>">Organizations</a>
                         </li>
                         <p />
                         <li class="listitem">

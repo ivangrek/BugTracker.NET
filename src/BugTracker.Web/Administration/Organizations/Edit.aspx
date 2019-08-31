@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditOrg.aspx.cs" Inherits="BugTracker.Web.EditOrg" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Organizations.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="System.Data" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -20,7 +20,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Orgs.aspx">back to organizations</a>
+                    <a href="<%= ResolveUrl("~/Administration/Organizations/List.aspx")%>">back to organizations</a>
                     <form class="frm" runat="server">
                         <table border="0">
 

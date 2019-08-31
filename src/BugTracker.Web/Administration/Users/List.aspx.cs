@@ -44,7 +44,7 @@ namespace BugTracker.Web.Administration.Users
 
             u.us_username [username],
             isnull(u.us_firstname,'') + ' ' + isnull(u.us_lastname,'') [name],
-            '<a sort=''' + og_name + ''' href=EditOrg.aspx?id=' + convert(varchar,og_id) + '>' + og_name + '</a>' [org],
+            '<a sort=''' + og_name + ''' href=" + ResolveUrl("~/Administration/Organizations/Edit.aspx") + @"?id=' + convert(varchar,og_id) + '>' + og_name + '</a>' [org],
             isnull(u.us_email,'') [email],
             case when u.us_admin = 1 then 'Y' else 'N' end [admin],
             case when pu_user is null then 'N' else 'Y' end [project<br>admin],

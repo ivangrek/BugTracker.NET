@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
-    
-    
-    public partial class DeleteOrg {
-        
+namespace BugTracker.Web.Administration.Organizations
+{
+
+
+    public partial class Delete
+    {
+
         /// <summary>
         /// frm control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace BugTracker.Web {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm frm;
-        
+
         /// <summary>
         /// confirm_href control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace BugTracker.Web {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
-        
+
         /// <summary>
         /// row_id control.
         /// </summary>

@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Organizations {
     
     
-    public partial class Orgs {
+    public partial class List {
     }
 }

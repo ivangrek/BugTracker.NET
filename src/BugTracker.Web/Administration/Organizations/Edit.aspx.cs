@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Organizations
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class EditOrg : Page
+    public partial class Edit : Page
     {
         public Dictionary<string, int> DictCustomFieldPermissionLevel = new Dictionary<string, int>();
         public DataSet DsCustom;
@@ -22,22 +22,22 @@ namespace BugTracker.Web
 
         public string RadioTemplate = @"
 <tr>
-	<td>""$name$"" field permission
-	<td colspan=2>
-		<table id='$name$_field' border='0'>
-		<tr>
-		<td>
-			<span ID='$name$0'><input id='$name$_field_0' type='radio' name='$name$' value='0' $checked0$/><label for='$name$_field_0'>none</label></span>
-		</td>
+    <td>""$name$"" field permission
+    <td colspan=2>
+        <table id='$name$_field' border='0'>
+        <tr>
+        <td>
+            <span ID='$name$0'><input id='$name$_field_0' type='radio' name='$name$' value='0' $checked0$/><label for='$name$_field_0'>none</label></span>
+        </td>
 
-		<td>
-			<span ID='$name$1'><input id='$name$_field_1' type='radio' name='$name$' value='1' $checked1$/><label for='$name$_field_1'>view only</label></span>
-		</td>
-		<td>
-			<span ID='$name$2'><input id='$name$_field_2' type='radio' name='$name$' value='2' $checked2$ /><label for='$name$_field_2'>edit</label></span>
-		</td>
-		</tr>
-		</table>
+        <td>
+            <span ID='$name$1'><input id='$name$_field_1' type='radio' name='$name$' value='1' $checked1$/><label for='$name$_field_1'>view only</label></span>
+        </td>
+        <td>
+            <span ID='$name$2'><input id='$name$_field_2' type='radio' name='$name$' value='2' $checked2$ /><label for='$name$_field_2'>edit</label></span>
+        </td>
+        </tr>
+        </table>
 <tr>";
 
         public Security Security;
@@ -55,8 +55,7 @@ namespace BugTracker.Web
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit organization";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit organization";
 
             this.msg.InnerText = "";
 
@@ -193,99 +192,99 @@ namespace BugTracker.Web
                 {
                     this.Sql = @"
 insert into orgs
-	(og_name,
-	og_domain,
-	og_active,
-	og_non_admins_can_use,
-	og_external_user,
-	og_can_edit_sql,
-	og_can_delete_bug,
-	og_can_edit_and_delete_posts,
-	og_can_merge_bugs,
-	og_can_mass_edit_bugs,
-	og_can_use_reports,
-	og_can_edit_reports,
-	og_can_be_assigned_to,
-	og_can_view_tasks,
-	og_can_edit_tasks,
-	og_can_search,
-	og_can_only_see_own_reported,
-	og_can_assign_to_internal_users,
-	og_other_orgs_permission_level,
-	og_project_field_permission_level,
-	og_org_field_permission_level,
-	og_category_field_permission_level,
-	og_tags_field_permission_level,
-	og_priority_field_permission_level,
-	og_status_field_permission_level,
-	og_assigned_to_field_permission_level,
-	og_udf_field_permission_level
-	$custom1$
-	)
-	values (
-	N'$name', 
-	N'$domain',
-	$active,
-	$non_admins_can_use,
-	$external_user,
-	$can_edit_sql,
-	$can_delete_bug,
-	$can_edit_and_delete_posts,
-	$can_merge_bugs,
-	$can_mass_edit_bugs,
-	$can_use_reports,
-	$can_edit_reports,
-	$can_be_assigned_to,
-	$can_view_tasks,
-	$can_edit_tasks,
-	$can_search,
-	$can_only_see_own_reported,
-	$can_assign_to_internal_users,
-	$other_orgs,
-	$flp_project,
-	$flp_org,
-	$flp_category,
-	$flp_tags,
-	$flp_priority,
-	$flp_status,
-	$flp_assigned_to,
-	$flp_udf
-	$custom2$
+    (og_name,
+    og_domain,
+    og_active,
+    og_non_admins_can_use,
+    og_external_user,
+    og_can_edit_sql,
+    og_can_delete_bug,
+    og_can_edit_and_delete_posts,
+    og_can_merge_bugs,
+    og_can_mass_edit_bugs,
+    og_can_use_reports,
+    og_can_edit_reports,
+    og_can_be_assigned_to,
+    og_can_view_tasks,
+    og_can_edit_tasks,
+    og_can_search,
+    og_can_only_see_own_reported,
+    og_can_assign_to_internal_users,
+    og_other_orgs_permission_level,
+    og_project_field_permission_level,
+    og_org_field_permission_level,
+    og_category_field_permission_level,
+    og_tags_field_permission_level,
+    og_priority_field_permission_level,
+    og_status_field_permission_level,
+    og_assigned_to_field_permission_level,
+    og_udf_field_permission_level
+    $custom1$
+    )
+    values (
+    N'$name', 
+    N'$domain',
+    $active,
+    $non_admins_can_use,
+    $external_user,
+    $can_edit_sql,
+    $can_delete_bug,
+    $can_edit_and_delete_posts,
+    $can_merge_bugs,
+    $can_mass_edit_bugs,
+    $can_use_reports,
+    $can_edit_reports,
+    $can_be_assigned_to,
+    $can_view_tasks,
+    $can_edit_tasks,
+    $can_search,
+    $can_only_see_own_reported,
+    $can_assign_to_internal_users,
+    $other_orgs,
+    $flp_project,
+    $flp_org,
+    $flp_category,
+    $flp_tags,
+    $flp_priority,
+    $flp_status,
+    $flp_assigned_to,
+    $flp_udf
+    $custom2$
 )";
                 }
                 else // edit existing
                 {
                     this.Sql = @"
 update orgs set
-	og_name = N'$name',
-	og_domain = N'$domain',
-	og_active = $active,
-	og_non_admins_can_use = $non_admins_can_use,
-	og_external_user = $external_user,
-	og_can_edit_sql = $can_edit_sql,
-	og_can_delete_bug = $can_delete_bug,
-	og_can_edit_and_delete_posts = $can_edit_and_delete_posts,
-	og_can_merge_bugs = $can_merge_bugs,
-	og_can_mass_edit_bugs = $can_mass_edit_bugs,
-	og_can_use_reports = $can_use_reports,
-	og_can_edit_reports = $can_edit_reports,
-	og_can_be_assigned_to = $can_be_assigned_to,
-	og_can_view_tasks = $can_view_tasks,
-	og_can_edit_tasks = $can_edit_tasks,
-	og_can_search = $can_search,
-	og_can_only_see_own_reported = $can_only_see_own_reported,
-	og_can_assign_to_internal_users = $can_assign_to_internal_users,
-	og_other_orgs_permission_level = $other_orgs,
-	og_project_field_permission_level = $flp_project,
-	og_org_field_permission_level = $flp_org,
-	og_category_field_permission_level = $flp_category,
-	og_tags_field_permission_level = $flp_tags,
-	og_priority_field_permission_level = $flp_priority,
-	og_status_field_permission_level = $flp_status,
-	og_assigned_to_field_permission_level = $flp_assigned_to,
-	og_udf_field_permission_level = $flp_udf
-	$custom3$
-	where og_id = $og_id";
+    og_name = N'$name',
+    og_domain = N'$domain',
+    og_active = $active,
+    og_non_admins_can_use = $non_admins_can_use,
+    og_external_user = $external_user,
+    og_can_edit_sql = $can_edit_sql,
+    og_can_delete_bug = $can_delete_bug,
+    og_can_edit_and_delete_posts = $can_edit_and_delete_posts,
+    og_can_merge_bugs = $can_merge_bugs,
+    og_can_mass_edit_bugs = $can_mass_edit_bugs,
+    og_can_use_reports = $can_use_reports,
+    og_can_edit_reports = $can_edit_reports,
+    og_can_be_assigned_to = $can_be_assigned_to,
+    og_can_view_tasks = $can_view_tasks,
+    og_can_edit_tasks = $can_edit_tasks,
+    og_can_search = $can_search,
+    og_can_only_see_own_reported = $can_only_see_own_reported,
+    og_can_assign_to_internal_users = $can_assign_to_internal_users,
+    og_other_orgs_permission_level = $other_orgs,
+    og_project_field_permission_level = $flp_project,
+    og_org_field_permission_level = $flp_org,
+    og_category_field_permission_level = $flp_category,
+    og_tags_field_permission_level = $flp_tags,
+    og_priority_field_permission_level = $flp_priority,
+    og_status_field_permission_level = $flp_status,
+    og_assigned_to_field_permission_level = $flp_assigned_to,
+    og_udf_field_permission_level = $flp_udf
+    $custom3$
+    where og_id = $og_id";
 
                     this.Sql = this.Sql.Replace("$og_id", Convert.ToString(this.Id));
                 }
@@ -359,7 +358,7 @@ update orgs set
                 }
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Orgs.aspx");
+                Server.Transfer("~/Administration/Organizations/List.aspx");
             }
             else
             {

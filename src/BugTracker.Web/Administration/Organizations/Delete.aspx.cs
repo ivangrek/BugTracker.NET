@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration.Organizations
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteOrg : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -35,7 +35,7 @@ namespace BugTracker.Web
                 this.Sql = @"delete orgs where og_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Orgs.aspx");
+                Server.Transfer("~/Administration/Organizations/List.aspx");
             }
             else
             {

@@ -7,10 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Administration.Organizations {
     
     
-    public partial class EditOrg {
+    public partial class Edit
+    {
         
         /// <summary>
         /// og_name control.
