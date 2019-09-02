@@ -511,21 +511,21 @@
     <Content Include="GenerateBtnetscReg.aspx" />
     <Content Include="GetDbDatetime.aspx" />
     <Content Include="Content\images\git.png" />
-    <Content Include="GitBlame.aspx" />
-    <Content Include="GitDiff.aspx" />
-    <Content Include="GitHook.aspx" />
-    <Content Include="GitLog.aspx" />
-    <Content Include="GitView.aspx" />
-    <Content Include="GitViewRevisions.aspx" />
+    <Content Include="Versioning\Git\Blame.aspx" />
+    <Content Include="Versioning\Git\Diff.aspx" />
+    <Content Include="Versioning\Git\Hook.aspx" />
+    <Content Include="Versioning\Git\Log.aspx" />
+    <Content Include="Versioning\Git\View.aspx" />
+    <Content Include="Versioning\Git\ViewRevisions.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Hello.aspx" />
     <Content Include="Content\images\hg.png" />
-    <Content Include="HgBlame.aspx" />
-    <Content Include="HgDiff.aspx" />
-    <Content Include="HgHook.aspx" />
-    <Content Include="HgLog.aspx" />
-    <Content Include="HgView.aspx" />
-    <Content Include="HgViewRevisions.aspx" />
+    <Content Include="Versioning\Hg\Blame.aspx" />
+    <Content Include="Versioning\Hg\Diff.aspx" />
+    <Content Include="Versioning\Hg\Hook.aspx" />
+    <Content Include="Versioning\Hg\Log.aspx" />
+    <Content Include="Versioning\Hg\View.aspx" />
+    <Content Include="Versioning\Hg\ViewRevisions.aspx" />
     <Content Include="InsertBug.aspx" />
     <Content Include="Install.aspx" />
     <Content Include="Scripts\jquery\grippie.png" />
@@ -593,12 +593,12 @@
     <Content Include="Subscribe.aspx" />
     <Content Include="Scripts\suggest.js" />
     <Content Include="Content\images\svn.png" />
-    <Content Include="SvnBlame.aspx" />
-    <Content Include="SvnDiff.aspx" />
-    <Content Include="SvnHook.aspx" />
-    <Content Include="SvnLog.aspx" />
-    <Content Include="SvnView.aspx" />
-    <Content Include="SvnViewRevisions.aspx" />
+    <Content Include="Versioning\Svn\Blame.aspx" />
+    <Content Include="Versioning\Svn\Diff.aspx" />
+    <Content Include="Versioning\Svn\Hook.aspx" />
+    <Content Include="Versioning\Svn\Log.aspx" />
+    <Content Include="Versioning\Svn\View.aspx" />
+    <Content Include="Versioning\Svn\ViewRevisions.aspx" />
     <Content Include="Tags.aspx" />
     <Content Include="Tasks.aspx" />
     <Content Include="TasksAll.aspx" />
@@ -1032,47 +1032,47 @@
     <Compile Include="GetDbDatetime.aspx.designer.cs">
       <DependentUpon>GetDbDatetime.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GitBlame.aspx.cs">
-      <DependentUpon>GitBlame.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Blame.aspx.cs">
+      <DependentUpon>Blame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GitBlame.aspx.designer.cs">
-      <DependentUpon>GitBlame.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Blame.aspx.designer.cs">
+      <DependentUpon>Blame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GitDiff.aspx.cs">
-      <DependentUpon>GitDiff.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Diff.aspx.cs">
+      <DependentUpon>Diff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GitDiff.aspx.designer.cs">
-      <DependentUpon>GitDiff.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Diff.aspx.designer.cs">
+      <DependentUpon>Diff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GitHook.aspx.cs">
-      <DependentUpon>GitHook.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Hook.aspx.cs">
+      <DependentUpon>Hook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GitHook.aspx.designer.cs">
-      <DependentUpon>GitHook.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Hook.aspx.designer.cs">
+      <DependentUpon>Hook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GitLog.aspx.cs">
-      <DependentUpon>GitLog.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Log.aspx.cs">
+      <DependentUpon>Log.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GitLog.aspx.designer.cs">
-      <DependentUpon>GitLog.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\Log.aspx.designer.cs">
+      <DependentUpon>Log.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GitView.aspx.cs">
-      <DependentUpon>GitView.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GitView.aspx.designer.cs">
-      <DependentUpon>GitView.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GitViewRevisions.aspx.cs">
-      <DependentUpon>GitViewRevisions.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\ViewRevisions.aspx.cs">
+      <DependentUpon>ViewRevisions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GitViewRevisions.aspx.designer.cs">
-      <DependentUpon>GitViewRevisions.aspx</DependentUpon>
+    <Compile Include="Versioning\Git\ViewRevisions.aspx.designer.cs">
+      <DependentUpon>ViewRevisions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -1084,47 +1084,47 @@
     <Compile Include="Hello.aspx.designer.cs">
       <DependentUpon>Hello.aspx</DependentUpon>
     </Compile>
-    <Compile Include="HgBlame.aspx.cs">
-      <DependentUpon>HgBlame.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Blame.aspx.cs">
+      <DependentUpon>Blame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HgBlame.aspx.designer.cs">
-      <DependentUpon>HgBlame.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Blame.aspx.designer.cs">
+      <DependentUpon>Blame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="HgDiff.aspx.cs">
-      <DependentUpon>HgDiff.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Diff.aspx.cs">
+      <DependentUpon>Diff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HgDiff.aspx.designer.cs">
-      <DependentUpon>HgDiff.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Diff.aspx.designer.cs">
+      <DependentUpon>Diff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="HgHook.aspx.cs">
-      <DependentUpon>HgHook.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Hook.aspx.cs">
+      <DependentUpon>Hook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HgHook.aspx.designer.cs">
-      <DependentUpon>HgHook.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Hook.aspx.designer.cs">
+      <DependentUpon>Hook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="HgLog.aspx.cs">
-      <DependentUpon>HgLog.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Log.aspx.cs">
+      <DependentUpon>Log.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HgLog.aspx.designer.cs">
-      <DependentUpon>HgLog.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\Log.aspx.designer.cs">
+      <DependentUpon>Log.aspx</DependentUpon>
     </Compile>
-    <Compile Include="HgView.aspx.cs">
-      <DependentUpon>HgView.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HgView.aspx.designer.cs">
-      <DependentUpon>HgView.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
-    <Compile Include="HgViewRevisions.aspx.cs">
-      <DependentUpon>HgViewRevisions.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\ViewRevisions.aspx.cs">
+      <DependentUpon>ViewRevisions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HgViewRevisions.aspx.designer.cs">
-      <DependentUpon>HgViewRevisions.aspx</DependentUpon>
+    <Compile Include="Versioning\Hg\ViewRevisions.aspx.designer.cs">
+      <DependentUpon>ViewRevisions.aspx</DependentUpon>
     </Compile>
     <Compile Include="InsertBug.aspx.cs">
       <DependentUpon>InsertBug.aspx</DependentUpon>
@@ -1345,47 +1345,47 @@
     <Compile Include="Subscribe.aspx.designer.cs">
       <DependentUpon>Subscribe.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SvnBlame.aspx.cs">
-      <DependentUpon>SvnBlame.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Blame.aspx.cs">
+      <DependentUpon>Blame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SvnBlame.aspx.designer.cs">
-      <DependentUpon>SvnBlame.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Blame.aspx.designer.cs">
+      <DependentUpon>Blame.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SvnDiff.aspx.cs">
-      <DependentUpon>SvnDiff.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Diff.aspx.cs">
+      <DependentUpon>Diff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SvnDiff.aspx.designer.cs">
-      <DependentUpon>SvnDiff.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Diff.aspx.designer.cs">
+      <DependentUpon>Diff.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SvnHook.aspx.cs">
-      <DependentUpon>SvnHook.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Hook.aspx.cs">
+      <DependentUpon>Hook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SvnHook.aspx.designer.cs">
-      <DependentUpon>SvnHook.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Hook.aspx.designer.cs">
+      <DependentUpon>Hook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SvnLog.aspx.cs">
-      <DependentUpon>SvnLog.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Log.aspx.cs">
+      <DependentUpon>Log.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SvnLog.aspx.designer.cs">
-      <DependentUpon>SvnLog.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\Log.aspx.designer.cs">
+      <DependentUpon>Log.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SvnView.aspx.cs">
-      <DependentUpon>SvnView.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SvnView.aspx.designer.cs">
-      <DependentUpon>SvnView.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SvnViewRevisions.aspx.cs">
-      <DependentUpon>SvnViewRevisions.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\ViewRevisions.aspx.cs">
+      <DependentUpon>ViewRevisions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SvnViewRevisions.aspx.designer.cs">
-      <DependentUpon>SvnViewRevisions.aspx</DependentUpon>
+    <Compile Include="Versioning\Svn\ViewRevisions.aspx.designer.cs">
+      <DependentUpon>ViewRevisions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Tags.aspx.cs">
       <DependentUpon>Tags.aspx</DependentUpon>

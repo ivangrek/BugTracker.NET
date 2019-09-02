@@ -401,7 +401,7 @@ namespace BugTracker.Web
             {
                 var revisionCnt = 0;
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["svn_revision_cnt"];
-                var svnRevisionsLink = "<a target=_blank href=SvnViewRevisions.aspx?id="
+                var svnRevisionsLink = "<a target=_blank href=" + ResolveUrl("~/Versioning/Svn/ViewRevisions.aspx") + @"?id="
                                          + Convert.ToString(this.Id)
                                          + " title='View Subversion svn_revisions related to this item'><img src=Content/images/svn.png border=0 align=top>&nbsp;svn revisions(" +
                                          revisionCnt + ")</a>";
@@ -416,7 +416,7 @@ namespace BugTracker.Web
             {
                 var revisionCnt = 0;
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["git_commit_cnt"];
-                var gitCommitsLink = "<a target=_blank href=GitViewRevisions.aspx?id="
+                var gitCommitsLink = "<a target=_blank href=" + ResolveUrl("~/Versioning/Git/ViewRevisions.aspx") + @"?id="
                                        + Convert.ToString(this.Id)
                                        + " title='View git git_commits related to this item'><img src=Content/images/git.png border=0 align=top>&nbsp;git commits(" +
                                        revisionCnt + ")</a>";
@@ -431,7 +431,7 @@ namespace BugTracker.Web
             {
                 var revisionCnt = 0;
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["hg_commit_cnt"];
-                var hgRevisionsLink = "<a target=_blank href=HgViewRevisions.aspx?id="
+                var hgRevisionsLink = "<a target=_blank href=" + ResolveUrl("~/Versioning/Hg/ViewRevisions.aspx") + @"?id="
                                         + Convert.ToString(this.Id)
                                         + " title='View mercurial git_hg_revisions related to this item'><img src=Content/images/hg.png border=0 align=top>&nbsp;hg revisions(" +
                                         revisionCnt + ")</a>";
