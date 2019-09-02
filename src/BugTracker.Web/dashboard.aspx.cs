@@ -60,7 +60,7 @@ order by ds_col, ds_row";
                     {
                         iframeId++;
                         Response.Write("\n<div class=panel>");
-                        Response.Write("\n<iframe frameborder='0' src=ViewReport.aspx?view=data&id="
+                        Response.Write("\n<iframe frameborder='0' src=" + ResolveUrl("~/Reports/View.aspx") + @"?view=data&id="
                                        + dr["ds_report"]
                                        // this didn't work
                                        //+ "&parent_iframe="
@@ -73,7 +73,7 @@ order by ds_col, ds_row";
                     else
                     {
                         Response.Write("\n<div class=panel>");
-                        Response.Write("\n<img src=ViewReport.aspx?scale=2&view=" + dr["ds_chart_type"] + "&id=" +
+                        Response.Write("\n<img src=" + ResolveUrl("~/Reports/View.aspx") + @"?scale=2&view=" + dr["ds_chart_type"] + "&id=" +
                                        dr["ds_report"] + ">");
                         Response.Write("\n</div>");
                     }

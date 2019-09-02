@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Reports {
     
     
-    public partial class EditReport {
+    public partial class Edit {
         
         /// <summary>
         /// desc control.

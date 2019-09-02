@@ -7,10 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class ViewReport {
+namespace BugTracker.Web.Reports {
+    
+    
+    public partial class List {
     }
 }

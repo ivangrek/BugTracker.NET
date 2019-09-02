@@ -5,11 +5,11 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Reports.aspx.cs" Inherits="BugTracker.Web.Reports" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Reports.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js")%>"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
@@ -22,10 +22,10 @@
 
         <% if (this.Security.User.IsAdmin || this.Security.User.CanEditReports)
             { %>
-        <a href="EditReport.aspx">add new report</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="<%= ResolveUrl("~/Reports/Edit.aspx")%>">add new report</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <% } %>
 
-        <a href="Dashboard.aspx">dashboard</a>
+        <a href="<%= ResolveUrl("~/Dashboard.aspx")%>">dashboard</a>
 
         <%
 

@@ -410,7 +410,7 @@
     <Content Include="Administration\Priorities\Delete.aspx" />
     <Content Include="Administration\Projects\Delete.aspx" />
     <Content Include="DeleteQuery.aspx" />
-    <Content Include="DeleteReport.aspx" />
+    <Content Include="Reports\Delete.aspx" />
     <Content Include="Administration\Statuses\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
@@ -494,7 +494,7 @@
     <Content Include="Administration\Projects\Edit.aspx" />
     <Content Include="EditQuery.aspx" />
     <Content Include="Administration\EditQueuedNotifications.aspx" />
-    <Content Include="EditReport.aspx" />
+    <Content Include="Reports\Edit.aspx" />
     <Content Include="EditSelf.aspx" />
     <Content Include="Administration\Statuses\Edit.aspx" />
     <Content Include="Administration\EditStyles.aspx" />
@@ -580,7 +580,7 @@
     <Content Include="Administration\Query.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="Relationships.aspx" />
-    <Content Include="Reports.aspx" />
+    <Content Include="Reports\List.aspx" />
     <Content Include="Search.aspx" />
     <Content Include="SearchText.aspx" />
     <Content Include="Seen.aspx" />
@@ -614,7 +614,7 @@
     <Content Include="Scripts\version_control_sel_rev.js" />
     <Content Include="ViewAttachment.aspx" />
     <Content Include="ViewMemoryLog.aspx" />
-    <Content Include="ViewReport.aspx" />
+    <Content Include="Reports\View.aspx" />
     <Content Include="ViewSubscribers.aspx" />
     <Content Include="ViewWebConfig.aspx" />
     <Content Include="ViewWhatsNew.aspx" />
@@ -811,12 +811,12 @@
     <Compile Include="DeleteQuery.aspx.designer.cs">
       <DependentUpon>DeleteQuery.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteReport.aspx.cs">
-      <DependentUpon>DeleteReport.aspx</DependentUpon>
+    <Compile Include="Reports\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteReport.aspx.designer.cs">
-      <DependentUpon>DeleteReport.aspx</DependentUpon>
+    <Compile Include="Reports\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Statuses\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -944,12 +944,12 @@
     <Compile Include="Administration\EditQueuedNotifications.aspx.designer.cs">
       <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditReport.aspx.cs">
-      <DependentUpon>EditReport.aspx</DependentUpon>
+    <Compile Include="Reports\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditReport.aspx.designer.cs">
-      <DependentUpon>EditReport.aspx</DependentUpon>
+    <Compile Include="Reports\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditSelf.aspx.cs">
       <DependentUpon>EditSelf.aspx</DependentUpon>
@@ -1278,12 +1278,12 @@
     <Compile Include="Relationships.aspx.designer.cs">
       <DependentUpon>Relationships.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Reports.aspx.cs">
-      <DependentUpon>Reports.aspx</DependentUpon>
+    <Compile Include="Reports\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Reports.aspx.designer.cs">
-      <DependentUpon>Reports.aspx</DependentUpon>
+    <Compile Include="Reports\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Search.aspx.cs">
       <DependentUpon>Search.aspx</DependentUpon>
@@ -1474,12 +1474,12 @@
     <Compile Include="ViewMemoryLog.aspx.designer.cs">
       <DependentUpon>ViewMemoryLog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ViewReport.aspx.cs">
-      <DependentUpon>ViewReport.aspx</DependentUpon>
+    <Compile Include="Reports\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ViewReport.aspx.designer.cs">
-      <DependentUpon>ViewReport.aspx</DependentUpon>
+    <Compile Include="Reports\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSubscribers.aspx.cs">
       <DependentUpon>ViewSubscribers.aspx</DependentUpon>

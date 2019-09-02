@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Reports
 {
     using System;
     using System.Data;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class Reports : Page
+    public partial class List : Page
     {
         public DataSet Ds;
         public Security Security;
@@ -43,22 +43,22 @@ namespace BugTracker.Web
 select
 rp_desc [report],
 case
-	when rp_chart_type = 'pie' then
-		'<a target=''_blank'' href=''ViewReport.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>pie</a>'
-	when rp_chart_type = 'line' then
-		'<a target=''_blank'' href=''ViewReport.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>line</a>'
-	when rp_chart_type = 'bar' then
-		'<a target=''_blank'' href=''ViewReport.aspx?view=chart&id=' + convert(varchar, rp_id) + '''>bar</a>'
-	else
-		'&nbsp;' end [view<br>chart],
-'<a target=''_blank'' href=''ViewReport.aspx?view=data&id=' + convert(varchar, rp_id) + '''>data</a>' [view<br>data]
+    when rp_chart_type = 'pie' then
+        '<a target=''_blank'' href=''" + ResolveUrl("~/Reports/View.aspx") + @"?view=chart&id=' + convert(varchar, rp_id) + '''>pie</a>'
+    when rp_chart_type = 'line' then
+        '<a target=''_blank'' href=''" + ResolveUrl("~/Reports/View.aspx") + @"?view=chart&id=' + convert(varchar, rp_id) + '''>line</a>'
+    when rp_chart_type = 'bar' then
+        '<a target=''_blank'' href=''" + ResolveUrl("~/Reports/View.aspx") + @"?view=chart&id=' + convert(varchar, rp_id) + '''>bar</a>'
+    else
+        '&nbsp;' end [view<br>chart],
+'<a target=''_blank'' href=''" + ResolveUrl("~/Reports/View.aspx") + @"?view=data&id=' + convert(varchar, rp_id) + '''>data</a>' [view<br>data]
 $adm
 from reports order by rp_desc";
 
             if (this.Security.User.IsAdmin || this.Security.User.CanEditReports)
                 sql = sql.Replace("$adm", ", " +
-                                          "'<a href=''EditReport.aspx?id=' + convert(varchar, rp_id) + '''>edit</a>' [edit], " +
-                                          "'<a href=''DeleteReport.aspx?id=' + convert(varchar, rp_id) + '''>delete</a>' [delete] ");
+                                          "'<a href=''" + ResolveUrl("~/Reports/Edit.aspx") +"?id=' + convert(varchar, rp_id) + '''>edit</a>' [edit], " +
+                                          "'<a href=''" + ResolveUrl("~/Reports/Delete.aspx") + "?id=' + convert(varchar, rp_id) + '''>delete</a>' [delete] ");
             else
                 sql = sql.Replace("$adm", "");
 

@@ -5,10 +5,10 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditReport.aspx.cs" Inherits="BugTracker.Web.EditReport" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Reports.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/edit_area/edit_area_full.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_area/edit_area_full.js")%>"></script>
 
     <script>
         editAreaLoader.init({
@@ -33,7 +33,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <a href="Reports.aspx">back to reports</a>
+        <a href="<%= ResolveUrl("~/Reports/List.aspx")%>">back to reports</a>
         <br>
         <br>
         <table border="0">

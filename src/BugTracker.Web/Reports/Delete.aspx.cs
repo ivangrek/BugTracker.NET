@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Reports
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteReport : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -48,7 +48,7 @@ delete reports where rp_id = $1;
 delete dashboard_items where ds_report = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Reports.aspx");
+                Server.Transfer("~/Reports/List.aspx");
             }
             else
             {

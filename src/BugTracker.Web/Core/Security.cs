@@ -272,7 +272,7 @@ function on_submit_search()
             if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", VirtualPathUtility.ToAbsolute("~/Queries.aspx"));
 
             if (this.User.IsAdmin || this.User.CanUseReports || this.User.CanEditReports)
-                WriteMenuItem(response, thisLink, "reports", VirtualPathUtility.ToAbsolute("~/Reports.aspx"));
+                WriteMenuItem(response, thisLink, "reports", VirtualPathUtility.ToAbsolute("~/Reports/List.aspx"));
 
             if (Util.GetSetting("CustomMenuLinkLabel", "") != "")
                 WriteMenuItem(response, thisLink,

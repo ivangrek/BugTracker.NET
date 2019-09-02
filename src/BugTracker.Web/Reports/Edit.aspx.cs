@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Reports
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditReport : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -68,8 +68,8 @@ namespace BugTracker.Web
 
                     // Get this entry's data from the db and fill in the form
                     this.Sql = @"select
-				rp_desc, rp_sql, rp_chart_type
-				from reports where rp_id = $1";
+                rp_desc, rp_sql, rp_chart_type
+                from reports where rp_id = $1";
                     this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
                     var dr = DbUtil.GetDataRow(this.Sql);
 
@@ -146,17 +146,17 @@ namespace BugTracker.Web
                 {
                     // insert new
                     this.Sql = @"insert into reports
-				(rp_desc, rp_sql, rp_chart_type)
-				values (N'$de', N'$sq', N'$ct')";
+                (rp_desc, rp_sql, rp_chart_type)
+                values (N'$de', N'$sq', N'$ct')";
                 }
                 else
                 {
                     // edit existing
                     this.Sql = @"update reports set
-				rp_desc = N'$de',
-				rp_sql = N'$sq',
-				rp_chart_type = N'$ct'
-				where rp_id = $id";
+                rp_desc = N'$de',
+                rp_sql = N'$sq',
+                rp_chart_type = N'$ct'
+                where rp_id = $id";
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 }
 
@@ -175,7 +175,7 @@ namespace BugTracker.Web
                 this.Sql = this.Sql.Replace("$ct", ct);
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Reports.aspx");
+                Server.Transfer("~/Reports/List.aspx");
             }
             else
             {
