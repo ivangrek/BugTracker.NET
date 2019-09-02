@@ -9,58 +9,103 @@ namespace BugTracker.Web.Core.Administration
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
+    using Persistence;
+    using Persistence.Models;
 
-    internal static class StatusService
+    internal interface IStatusService
     {
-        internal static DataSet LoadList()
+        DataSet LoadList();
+
+        Status LoadOne(int id);
+
+        void Create(Dictionary<string, string> parameters);
+
+        void Update(Dictionary<string, string> parameters);
+
+        (bool Valid, string Name) CheckDeleting(int id);
+
+        void Delete(int id);
+    }
+
+    internal class StatusService : IStatusService
+    {
+        private readonly ApplicationContext context;
+
+        public StatusService(ApplicationContext context)
         {
-            return DbUtil.GetDataSet(
-                @"select st_id [id],
-                st_name [status],
-                st_sort_seq [sort seq],
-                st_style [css<br>class],
-                case when st_default = 1 then 'Y' else 'N' end [default],
-                st_id [hidden]
-                from statuses order by st_sort_seq");
+            this.context = context;
         }
 
-        internal static DataRow LoadOne(int id)
+        public DataSet LoadList()
         {
-            var sql = @"select st_name, st_sort_seq, isnull(st_style,'') [st_style], st_default from statuses where st_id = $1"
-                .Replace("$1", Convert.ToString(id));
+            var statuses = this.context.Statuses
+                .OrderBy(x => x.SortSequence)
+                .ToArray();
 
-            return DbUtil.GetDataRow(sql);
+            var dataTable = new DataTable();
+
+            dataTable.Columns.Add("id");
+            dataTable.Columns.Add("status");
+            dataTable.Columns.Add("sort seq");
+            dataTable.Columns.Add("css<br>class");
+            dataTable.Columns.Add("default");
+            dataTable.Columns.Add("hidden");
+
+            foreach (var status in statuses)
+            {
+                dataTable.Rows.Add(status.Id, status.Name, status.SortSequence, status.Style, status.Default, status.Id);
+            }
+
+            var dataSet = new DataSet();
+
+            dataSet.Tables.Add(dataTable);
+
+            return dataSet;
         }
 
-        internal static void Create(Dictionary<string, string> parameters)
+        public Status LoadOne(int id)
         {
-            var sql = @"insert into statuses (st_name, st_sort_seq, st_style, st_default) values (N'$na', $ss, N'$st', $df)"
-                .Replace("$na", parameters["$na"])
-                .Replace("$ss", parameters["$ss"])
-                .Replace("$st", parameters["$st"])
-                .Replace("$df", parameters["$df"]);
+            var status = this.context.Statuses
+                .First(x => x.Id == id);
 
-            DbUtil.ExecuteNonQuery(sql);
+            return status;
         }
 
-        internal static void Update(Dictionary<string, string> parameters)
+        public void Create(Dictionary<string, string> parameters)
         {
-            var sql = @"update statuses set
-                st_name = N'$na',
-                st_sort_seq = $ss,
-                st_style = N'$st',
-                st_default = $df
-                where st_id = $id"
-                .Replace("$id", parameters["$id"])
-                .Replace("$na", parameters["$na"])
-                .Replace("$ss", parameters["$ss"])
-                .Replace("$st", parameters["$st"])
-                .Replace("$df", parameters["$df"]);
+            var status = new Status
+            {
+                Name = parameters["$na"],
+                SortSequence = Convert.ToInt32(parameters["$ss"]),
+                Style = parameters["$st"],
+                Default = Convert.ToInt32(parameters["$df"])
+            };
 
-            DbUtil.ExecuteNonQuery(sql);
+            this.context.Statuses
+                .Add(status);
+
+            this.context
+                .SaveChanges();
         }
 
-        internal static (bool Valid, string Name) CheckDeleting(int id)
+        public void Update(Dictionary<string, string> parameters)
+        {
+            var id = Convert.ToInt32(parameters["$id"]);
+            var status = this.context.Statuses
+                .First(x => x.Id == id);
+
+            status.Name = parameters["$na"];
+            status.SortSequence = Convert.ToInt32(parameters["$ss"]);
+            status.Style = parameters["$st"];
+            status.Default = Convert.ToInt32(parameters["$df"]);
+
+
+            this.context
+                .SaveChanges();
+        }
+
+        public (bool Valid, string Name) CheckDeleting(int id)
         {
             var sql = @"declare @cnt int
                 select @cnt = count(1) from bugs where bg_status = $1
@@ -72,12 +117,16 @@ namespace BugTracker.Web.Core.Administration
             return (Convert.ToInt32(dataRow["cnt"]) > 0, Convert.ToString(dataRow["st_name"]));
         }
 
-        internal static void Delete(int id)
+        public void Delete(int id)
         {
-            var sql = @"delete statuses where st_id = $1"
-                .Replace("$1", Convert.ToString(id));
+            var status = this.context.Statuses
+                .First(x => x.Id == id);
 
-            DbUtil.ExecuteNonQuery(sql);
+            this.context.Statuses
+                .Remove(status);
+
+            this.context
+                .SaveChanges();
         }
     }
 }

@@ -13,9 +13,12 @@ namespace BugTracker.Web.Administration.Statuses
     using System.Web.UI;
     using Core;
     using Core.Administration;
+    using Core.Persistence;
 
     public partial class Edit : Page
     {
+        private readonly IStatusService statusService = new StatusService(new ApplicationContext());
+
         protected Security Security { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
@@ -52,13 +55,13 @@ namespace BugTracker.Web.Administration.Statuses
                     this.sub.Value = "Update";
                     Validate();
                     // Get this entry's data from the db and fill in the form
-                    var dataRow = StatusService.LoadOne(id);
+                    var dataRow = this.statusService.LoadOne(id);
 
                     // Fill in this form
-                    this.name.Value = (string)dataRow["st_name"];
-                    this.sortSeq.Value = Convert.ToString((int)dataRow["st_sort_seq"]);
-                    this.style.Value = (string)dataRow["st_style"];
-                    this.defaultSelection.Checked = Convert.ToBoolean((int)dataRow["st_default"]);
+                    this.name.Value = dataRow.Name;
+                    this.sortSeq.Value = Convert.ToString(dataRow.SortSequence);
+                    this.style.Value = dataRow.Style;
+                    this.defaultSelection.Checked = Convert.ToBoolean(dataRow.Default);
                 }
             }
         }
@@ -80,11 +83,11 @@ namespace BugTracker.Web.Administration.Statuses
 
                 if (id == 0) // insert new
                 {
-                    StatusService.Create(parameters);
+                    this.statusService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    StatusService.Update(parameters);
+                    this.statusService.Update(parameters);
                 }
 
                 Server.Transfer("~/Administration/Statuses/List.aspx");

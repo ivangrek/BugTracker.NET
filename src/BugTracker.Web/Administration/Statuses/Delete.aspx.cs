@@ -12,9 +12,12 @@ namespace BugTracker.Web.Administration.Statuses
     using System.Web.UI;
     using Core;
     using Core.Administration;
+    using Core.Persistence;
 
     public partial class Delete : Page
     {
+        private readonly IStatusService statusService = new StatusService(new ApplicationContext());
+
         protected Security Security { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
@@ -34,14 +37,14 @@ namespace BugTracker.Web.Administration.Statuses
             if (IsPostBack)
             {
                 // do delete here
-                StatusService.Delete(id);
+                this.statusService.Delete(id);
                 Server.Transfer("~/Administration/Statuses/List.aspx");
             }
             else
             {
                 Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete status";
 
-                var (valid, name) = StatusService.CheckDeleting(id);
+                var (valid, name) = this.statusService.CheckDeleting(id);
 
                 if (valid)
                 {
