@@ -53,7 +53,7 @@ namespace BugTracker.Web.Administration.Statuses
                 else
                 {
                     this.sub.Value = "Update";
-                    Validate();
+
                     // Get this entry's data from the db and fill in the form
                     var dataRow = this.statusService.LoadOne(id);
 

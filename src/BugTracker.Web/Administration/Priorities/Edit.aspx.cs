@@ -8,43 +8,45 @@
 namespace BugTracker.Web.Administration.Priorities
 {
     using System;
+    using System.Collections.Generic;
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
     public partial class Edit : Page
     {
-        public int Id;
+        private readonly IPriorityService priorityService = new PriorityService(new ApplicationContext());
 
-        public Security Security;
-        public string Sql;
+        protected Security Security { get; set; }
 
-        public void Page_Init(object sender, EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
         }
 
-        public void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit priority";
+            int.TryParse(Request.QueryString["id"], out var id);
 
-            this.msg.InnerText = "";
+            this.msg.InnerText = string.Empty;
 
-            var var = Request.QueryString["id"];
-            if (var == null)
-                this.Id = 0;
-            else
-                this.Id = Convert.ToInt32(var);
-
-            if (!IsPostBack)
+            if (IsPostBack)
             {
+                OnUpdate(id);
+            }
+            else
+            {
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit priority";
+
                 // add or edit?
-                if (this.Id == 0)
+                if (id == 0)
                 {
                     this.sub.Value = "Create";
                 }
@@ -53,62 +55,93 @@ namespace BugTracker.Web.Administration.Priorities
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
-
-                    this.Sql = @"select
-                pr_name, pr_sort_seq, pr_background_color, isnull(pr_style,'') [pr_style], pr_default
-                from priorities where pr_id = $1";
-
-                    this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
-                    var dr = DbUtil.GetDataRow(this.Sql);
+                    var dataRow = this.priorityService.LoadOne(id);
 
                     // Fill in this form
-                    this.name.Value = (string) dr["pr_name"];
-                    this.sort_seq.Value = Convert.ToString((int) dr["pr_sort_seq"]);
-                    this.color.Value = (string) dr["pr_background_color"];
-                    this.style.Value = (string) dr["pr_style"];
-                    this.default_selection.Checked = Convert.ToBoolean((int) dr["pr_default"]);
+                    this.name.Value = dataRow.Name;
+                    this.sortSeq.Value = Convert.ToString(dataRow.SortSequence);
+                    this.color.Value = dataRow.BackgroundColor;
+                    this.style.Value = dataRow.Style;
+                    this.defaultSelection.Checked = Convert.ToBoolean(dataRow.Default);
                 }
-            }
-            else
-            {
-                on_update();
             }
         }
 
-        public bool validate()
+        private void OnUpdate(int id)
+        {
+            var good = ValidateForm();
+
+            if (good)
+            {
+                var parameters = new Dictionary<string, string>
+                {
+                    { "$id", Convert.ToString(id)},
+                    { "$na", this.name.Value.Replace("'", "''")},
+                    { "$ss", this.sortSeq.Value},
+                    { "$co", this.color.Value.Replace("'", "''")},
+                    { "$st", this.style.Value.Replace("'", "''")},
+                    { "$df", Util.BoolToString(this.defaultSelection.Checked)},
+                };
+
+                if (id == 0) // insert new
+                {
+                    this.priorityService.Create(parameters);
+                }
+                else // edit existing
+                {
+                    this.priorityService.Update(parameters);
+                }
+
+                Server.Transfer("~/Administration/Priorities/List.aspx");
+            }
+            else
+            {
+                if (id == 0) // insert new
+                {
+                    this.msg.InnerText = "Priority was not created.";
+                }
+                else // edit existing
+                {
+                    this.msg.InnerText = "Priority was not updated.";
+                }
+            }
+        }
+
+        private bool ValidateForm()
         {
             var good = true;
-            if (this.name.Value == "")
+
+            if (this.name.Value == string.Empty)
             {
                 good = false;
                 this.name_err.InnerText = "Description is required.";
             }
             else
             {
-                this.name_err.InnerText = "";
+                this.name_err.InnerText = string.Empty;
             }
 
-            if (this.sort_seq.Value == "")
+            if (this.sortSeq.Value == string.Empty)
             {
                 good = false;
-                this.sort_seq_err.InnerText = "Sort Sequence is required.";
+                this.sortSeqErr.InnerText = "Sort Sequence is required.";
             }
             else
             {
-                this.sort_seq_err.InnerText = "";
+                this.sortSeqErr.InnerText = string.Empty;
             }
 
-            if (!Util.IsInt(this.sort_seq.Value))
+            if (!Util.IsInt(this.sortSeq.Value))
             {
                 good = false;
-                this.sort_seq_err.InnerText = "Sort Sequence must be an integer.";
+                this.sortSeqErr.InnerText = "Sort Sequence must be an integer.";
             }
             else
             {
-                this.sort_seq_err.InnerText = "";
+                this.sortSeqErr.InnerText = string.Empty;
             }
 
-            if (this.color.Value == "")
+            if (this.color.Value == string.Empty)
             {
                 good = false;
                 this.color_err.InnerText = "Background Color in #FFFFFF format is required.";
@@ -119,48 +152,6 @@ namespace BugTracker.Web.Administration.Priorities
             }
 
             return good;
-        }
-
-        public void on_update()
-        {
-            var good = validate();
-
-            if (good)
-            {
-                if (this.Id == 0) // insert new
-                {
-                    this.Sql = @"insert into priorities
-                (pr_name, pr_sort_seq, pr_background_color, pr_style, pr_default)
-                values (N'$na', $ss, N'$co', N'$st', $df)";
-                }
-                else // edit existing
-                {
-                    this.Sql = @"update priorities set
-                pr_name = N'$na',
-                pr_sort_seq = $ss,
-                pr_background_color = N'$co',
-                pr_style = N'$st',
-                pr_default = $df
-                where pr_id = $id";
-
-                    this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
-                }
-
-                this.Sql = this.Sql.Replace("$na", this.name.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$ss", this.sort_seq.Value);
-                this.Sql = this.Sql.Replace("$co", this.color.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$st", this.style.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
-                DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Administration/Priorities/List.aspx");
-            }
-            else
-            {
-                if (this.Id == 0) // insert new
-                    this.msg.InnerText = "Priority was not created.";
-                else // edit existing
-                    this.msg.InnerText = "Priority was not updated.";
-            }
         }
     }
 }

@@ -9,10 +9,12 @@
         public ApplicationContext() : base("DefaultConnection")
         { }
 
+        public DbSet<Priority> Priorities { get; set; }
         public DbSet<Status> Statuses { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Configurations.Add(new PriorityConfiguration());
             modelBuilder.Configurations.Add(new StatusConfiguration());
         }
     }

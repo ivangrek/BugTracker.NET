@@ -32,11 +32,11 @@ namespace BugTracker.Web.Administration.Statuses
             Security = new Security();
             Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
-
             if (IsPostBack)
             {
                 // do delete here
+                var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
+
                 this.statusService.Delete(id);
                 Server.Transfer("~/Administration/Statuses/List.aspx");
             }
@@ -44,6 +44,7 @@ namespace BugTracker.Web.Administration.Statuses
             {
                 Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete status";
 
+                var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
                 var (valid, name) = this.statusService.CheckDeleting(id);
 
                 if (valid)

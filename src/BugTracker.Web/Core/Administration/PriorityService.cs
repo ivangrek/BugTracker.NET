@@ -13,11 +13,11 @@ namespace BugTracker.Web.Core.Administration
     using Persistence;
     using Persistence.Models;
 
-    internal interface IStatusService
+    internal interface IPriorityService
     {
         DataSet LoadList();
 
-        Status LoadOne(int id);
+        Priority LoadOne(int id);
 
         void Create(Dictionary<string, string> parameters);
 
@@ -28,37 +28,39 @@ namespace BugTracker.Web.Core.Administration
         void Delete(int id);
     }
 
-    internal class StatusService : IStatusService
+    internal class PriorityService : IPriorityService
     {
         private readonly ApplicationContext context;
 
-        public StatusService(ApplicationContext context)
+        public PriorityService(ApplicationContext context)
         {
             this.context = context;
         }
 
         public DataSet LoadList()
         {
-            var statuses = this.context.Statuses
+            var priorities = this.context.Priorities
                 .OrderBy(x => x.SortSequence)
                 .ToArray();
 
             var dataTable = new DataTable();
 
             dataTable.Columns.Add("id");
-            dataTable.Columns.Add("status");
+            dataTable.Columns.Add("description");
             dataTable.Columns.Add("sort seq");
+            dataTable.Columns.Add("background<br>color");
             dataTable.Columns.Add("css<br>class");
             dataTable.Columns.Add("default");
             dataTable.Columns.Add("hidden");
 
-            foreach (var status in statuses)
+            foreach (var priority in priorities)
             {
-                var defaultValue = status.Default == 1
+                var backgroundColorValue = $"<div style='background:{priority.BackgroundColor};'>{priority.BackgroundColor}</div>";
+                var defaultValue = priority.Default == 1
                     ? "Y"
                     : "N";
 
-                dataTable.Rows.Add(status.Id, status.Name, status.SortSequence, status.Style, defaultValue, status.Id);
+                dataTable.Rows.Add(priority.Id, priority.Name, priority.SortSequence, backgroundColorValue, priority.Style, defaultValue, priority.Id);
             }
 
             var dataSet = new DataSet();
@@ -68,26 +70,27 @@ namespace BugTracker.Web.Core.Administration
             return dataSet;
         }
 
-        public Status LoadOne(int id)
+        public Priority LoadOne(int id)
         {
-            var status = this.context.Statuses
+            var priority = this.context.Priorities
                 .First(x => x.Id == id);
 
-            return status;
+            return priority;
         }
 
         public void Create(Dictionary<string, string> parameters)
         {
-            var status = new Status
+            var priority = new Priority
             {
                 Name = parameters["$na"],
                 SortSequence = Convert.ToInt32(parameters["$ss"]),
+                BackgroundColor = parameters["$co"],
                 Style = parameters["$st"],
                 Default = Convert.ToInt32(parameters["$df"])
             };
 
-            this.context.Statuses
-                .Add(status);
+            this.context.Priorities
+                .Add(priority);
 
             this.context
                 .SaveChanges();
@@ -96,13 +99,14 @@ namespace BugTracker.Web.Core.Administration
         public void Update(Dictionary<string, string> parameters)
         {
             var id = Convert.ToInt32(parameters["$id"]);
-            var status = this.context.Statuses
+            var priority = this.context.Priorities
                 .First(x => x.Id == id);
 
-            status.Name = parameters["$na"];
-            status.SortSequence = Convert.ToInt32(parameters["$ss"]);
-            status.Style = parameters["$st"];
-            status.Default = Convert.ToInt32(parameters["$df"]);
+            priority.Name = parameters["$na"];
+            priority.SortSequence = Convert.ToInt32(parameters["$ss"]);
+            priority.BackgroundColor = parameters["$co"];
+            priority.Style = parameters["$st"];
+            priority.Default = Convert.ToInt32(parameters["$df"]);
 
             this.context
                 .SaveChanges();
@@ -111,22 +115,22 @@ namespace BugTracker.Web.Core.Administration
         public (bool Valid, string Name) CheckDeleting(int id)
         {
             var sql = @"declare @cnt int
-                select @cnt = count(1) from bugs where bg_status = $1
-                select st_name, @cnt [cnt] from statuses where st_id = $1"
+                select @cnt = count(1) from bugs where bg_priority = $1
+                select pr_name, @cnt [cnt] from priorities where pr_id = $1"
                 .Replace("$1", Convert.ToString(id));
 
             var dataRow = DbUtil.GetDataRow(sql);
 
-            return (Convert.ToInt32(dataRow["cnt"]) > 0, Convert.ToString(dataRow["st_name"]));
+            return (Convert.ToInt32(dataRow["cnt"]) > 0, Convert.ToString(dataRow["pr_name"]));
         }
 
         public void Delete(int id)
         {
-            var status = this.context.Statuses
+            var priority = this.context.Priorities
                 .First(x => x.Id == id);
 
-            this.context.Statuses
-                .Remove(status);
+            this.context.Priorities
+                .Remove(priority);
 
             this.context
                 .SaveChanges();

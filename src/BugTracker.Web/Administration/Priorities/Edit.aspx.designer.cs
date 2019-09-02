@@ -31,22 +31,22 @@ namespace BugTracker.Web.Administration.Priorities {
         protected global::System.Web.UI.HtmlControls.HtmlTableCell name_err;
         
         /// <summary>
-        /// sort_seq control.
+        /// sortSeq control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText sort_seq;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText sortSeq;
         
         /// <summary>
-        /// sort_seq_err control.
+        /// sortSeqErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell sort_seq_err;
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell sortSeqErr;
         
         /// <summary>
         /// color control.
@@ -76,22 +76,22 @@ namespace BugTracker.Web.Administration.Priorities {
         protected global::System.Web.UI.HtmlControls.HtmlInputText style;
         
         /// <summary>
-        /// style_err control.
+        /// styleErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell style_err;
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell styleErr;
         
         /// <summary>
-        /// default_selection control.
+        /// defaultSelection control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox default_selection;
+        protected global::System.Web.UI.WebControls.CheckBox defaultSelection;
         
         /// <summary>
         /// msg control.

@@ -12,29 +12,26 @@ namespace BugTracker.Web.Administration.Priorities
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
     public partial class List : Page
     {
-        public DataSet Ds;
-        public Security Security;
+        private readonly IPriorityService priorityService = new PriorityService(new ApplicationContext());
 
-        public void Page_Load(object sender, EventArgs e)
+        protected DataSet Ds;
+        protected Security Security { get; set; }
+
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            Security = new Security();
+            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - priorities";
 
-            this.Ds = DbUtil.GetDataSet(
-                @"select pr_id [id],
-        pr_name [description],
-        pr_sort_seq [sort seq],
-        '<div style=''background:' + pr_background_color + ';''>' + pr_background_color + '</div>' [background<br>color],
-        pr_style [css<br>class],
-        case when pr_default = 1 then 'Y' else 'N' end [default],
-        pr_id [hidden] from priorities");
+            Ds = this.priorityService.LoadList();
         }
     }
 }

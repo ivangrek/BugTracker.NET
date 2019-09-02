@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.Priorities.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -19,14 +20,18 @@
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
         <a href="<%= ResolveUrl("~/Administration/Priorities/Edit.aspx")%>">add new priority</a>
-        <p />
-        <%
 
+        <%
             if (this.Ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, ResolveUrl("~/Administration/Priorities/Edit.aspx?id="), ResolveUrl("~/Administration/Priorities/Delete.aspx?id="), false);
+            {
+                SortableHtmlTable.CreateFromDataSet(Response, this.Ds,
+                    ResolveUrl("~/Administration/Priorities/Edit.aspx?id="),
+                    ResolveUrl("~/Administration/Priorities/Delete.aspx?id="), false);
+            }
             else
+            {
                 Response.Write("No priorities in the database.");
+            }
         %>
     </div>
 </asp:Content>
