@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="EditQuery.aspx.cs" Inherits="BugTracker.Web.EditQuery" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Queries.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <script type="text/javascript" src="Scripts/edit_area/edit_area_full.js"></script>
@@ -36,7 +36,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Queries.aspx">back to queries</a>
+                    <a href="<%= ResolveUrl("~/Queries/List.aspx")%>">back to queries</a>
                     <form class="frm" runat="server">
                         <table border="0" cellspacing="8" cellpadding="0">
 

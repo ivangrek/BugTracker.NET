@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Queries.aspx.cs" Inherits="BugTracker.Web.Queries" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Queries.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -24,7 +24,7 @@
         <table border="0" width="80%">
             <tr>
                 <td align="left" valign="top">
-                    <a href="EditQuery.aspx">add new query</a>
+                    <a href="<%= ResolveUrl("~/Queries/Edit.aspx") %>">add new query</a>
                 <td align="right" valign="top">
                     <form runat="server">
                         <span class="lbl">show everybody's private queries:</span>

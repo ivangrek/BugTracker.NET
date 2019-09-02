@@ -1128,7 +1128,7 @@
     <pre style="font-family: courier new; font-size: 8pt" id="visible_sql_text" runat="server">&nbsp;</pre>
 
     <!-- form 3 -->
-    <form id="save_query_form" target="_blank" method="post" action="EditQuery.aspx">
+    <form id="save_query_form" target="_blank" method="post" action="<%= ResolveUrl("~/Queries/Edit.aspx") %>">
         <input type="hidden" name="sql_text" value="">
     </form>
 </asp:Content>

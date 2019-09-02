@@ -269,7 +269,7 @@ function on_submit_search()
             if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
                 WriteMenuItem(response, thisLink, "news", VirtualPathUtility.ToAbsolute("~/ViewWhatsNew.aspx"));
 
-            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", VirtualPathUtility.ToAbsolute("~/Queries.aspx"));
+            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", VirtualPathUtility.ToAbsolute("~/Queries/List.aspx"));
 
             if (this.User.IsAdmin || this.User.CanUseReports || this.User.CanEditReports)
                 WriteMenuItem(response, thisLink, "reports", VirtualPathUtility.ToAbsolute("~/Reports/List.aspx"));

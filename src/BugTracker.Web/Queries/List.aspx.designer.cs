@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Queries {
     
     
-    public partial class Queries {
+    public partial class List {
         
         /// <summary>
         /// show_all control.

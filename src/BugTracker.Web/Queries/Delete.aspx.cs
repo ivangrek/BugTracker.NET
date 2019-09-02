@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Queries
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteQuery : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -36,7 +36,7 @@ namespace BugTracker.Web
                 this.Sql = @"delete queries where qu_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("Queries.aspx");
+                Server.Transfer("~/Queries/List.aspx");
             }
             else
             {

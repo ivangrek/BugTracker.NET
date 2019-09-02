@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DeleteQuery.aspx.cs" Inherits="BugTracker.Web.DeleteQuery" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Delete.aspx.cs" Inherits="BugTracker.Web.Queries.Delete" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -18,7 +18,7 @@
     <p>
         <div class="align">
             <p>&nbsp</p>
-            <a href="Queries.aspx">back to queries</a>
+            <a href="<%= ResolveUrl("~/Queries/List.aspx")%>">back to queries</a>
 
             <p>
                 or

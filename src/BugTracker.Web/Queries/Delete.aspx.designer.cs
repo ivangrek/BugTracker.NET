@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Queries {
     
     
-    public partial class DeleteQuery {
+    public partial class Delete {
         
         /// <summary>
         /// frm control.

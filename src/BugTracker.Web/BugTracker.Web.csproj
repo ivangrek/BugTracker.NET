@@ -409,7 +409,7 @@
     <Content Include="Administration\Organizations\Delete.aspx" />
     <Content Include="Administration\Priorities\Delete.aspx" />
     <Content Include="Administration\Projects\Delete.aspx" />
-    <Content Include="DeleteQuery.aspx" />
+    <Content Include="Queries\Delete.aspx" />
     <Content Include="Reports\Delete.aspx" />
     <Content Include="Administration\Statuses\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
@@ -492,7 +492,7 @@
     <Content Include="Administration\Organizations\Edit.aspx" />
     <Content Include="Administration\Priorities\Edit.aspx" />
     <Content Include="Administration\Projects\Edit.aspx" />
-    <Content Include="EditQuery.aspx" />
+    <Content Include="Queries\Edit.aspx" />
     <Content Include="Administration\EditQueuedNotifications.aspx" />
     <Content Include="Reports\Edit.aspx" />
     <Content Include="EditSelf.aspx" />
@@ -576,7 +576,7 @@
     <Content Include="PrintBugs2.aspx" />
     <Content Include="Administration\Priorities\List.aspx" />
     <Content Include="Administration\Projects\List.aspx" />
-    <Content Include="Queries.aspx" />
+    <Content Include="Queries\List.aspx" />
     <Content Include="Administration\Query.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="Relationships.aspx" />
@@ -804,12 +804,12 @@
     <Compile Include="Administration\Projects\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteQuery.aspx.cs">
-      <DependentUpon>DeleteQuery.aspx</DependentUpon>
+    <Compile Include="Queries\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteQuery.aspx.designer.cs">
-      <DependentUpon>DeleteQuery.aspx</DependentUpon>
+    <Compile Include="Queries\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Reports\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -930,12 +930,12 @@
     <Compile Include="Administration\Projects\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditQuery.aspx.cs">
-      <DependentUpon>EditQuery.aspx</DependentUpon>
+    <Compile Include="Queries\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditQuery.aspx.designer.cs">
-      <DependentUpon>EditQuery.aspx</DependentUpon>
+    <Compile Include="Queries\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\EditQueuedNotifications.aspx.cs">
       <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
@@ -1250,12 +1250,12 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyInfoExt.cs" />
-    <Compile Include="Queries.aspx.cs">
-      <DependentUpon>Queries.aspx</DependentUpon>
+    <Compile Include="Queries\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Queries.aspx.designer.cs">
-      <DependentUpon>Queries.aspx</DependentUpon>
+    <Compile Include="Queries\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Query.aspx.cs">
       <DependentUpon>Query.aspx</DependentUpon>

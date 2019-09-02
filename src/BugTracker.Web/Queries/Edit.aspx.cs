@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Queries
 {
     using System;
     using System.Web;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class EditQuery : Page
+    public partial class Edit : Page
     {
         public int Id;
 
@@ -305,7 +305,7 @@ select us_id, us_username from users order by us_username";
                 }
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("queries.aspx");
+                Server.Transfer("~/Queries/List.aspx");
             }
             else
             {
