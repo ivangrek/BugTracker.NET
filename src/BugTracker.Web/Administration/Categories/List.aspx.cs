@@ -12,29 +12,26 @@ namespace BugTracker.Web.Administration.Categories
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
     public partial class List : Page
     {
-        public DataSet Ds;
-        public Security Security;
+        private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
 
-        public void Page_Load(object sender, EventArgs e)
+        protected DataSet Ds { get; set; }
+        protected Security Security { get; set; }
+
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            Security = new Security();
+            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - categories";
 
-            this.Ds = DbUtil.GetDataSet(
-                @"select
-        ct_id [id],
-        ct_name [category],
-        ct_sort_seq [sort seq],
-        case when ct_default = 1 then 'Y' else 'N' end [default],
-        ct_id [hidden]
-        from categories order by ct_name");
+            Ds = this.categoryService.LoadList();
         }
     }
 }

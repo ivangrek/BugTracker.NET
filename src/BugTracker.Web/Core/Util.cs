@@ -20,8 +20,6 @@ namespace BugTracker.Web.Core
     using System.Threading;
     using System.Web;
 
-    // Util
-
     public class Util
     {
         public static HttpContext Context;
@@ -177,8 +175,7 @@ namespace BugTracker.Web.Core
         public static string IsValidDecimal(string name, string val, int leftOfDecimal, int rightOfDecimal)
         {
             var ci = GetCultureInfo();
-            decimal x;
-            if (!decimal.TryParse(val, NumberStyles.Float, ci, out x))
+            if (!decimal.TryParse(val, NumberStyles.Float, ci, out _))
                 return name + " is not in a valid decimal format";
 
             var vals = val.Split(new[] { ci.NumberFormat.NumberDecimalSeparator }, StringSplitOptions.None);
@@ -271,11 +268,11 @@ namespace BugTracker.Web.Core
 
         public static string FormatDbDateTime(object date)
         {
-            if (date.GetType() == typeof(DBNull)) return "";
+            if (date is DBNull) return "";
 
-            if (date.GetType() == typeof(string))
+            if (date is string s)
             {
-                if (date == "") return "";
+                if (s == "") return "";
                 date = Convert.ToDateTime(date);
             }
 
@@ -438,17 +435,18 @@ namespace BugTracker.Web.Core
         {
             var byteArray = Encoding.Default.GetBytes(s);
 
-            var alg =
-                HashAlgorithm.Create("MD5");
+            using (var alg = HashAlgorithm.Create("MD5"))
+            {
+                var byteArray2 = alg.ComputeHash(byteArray);
+                var sb = new StringBuilder(byteArray2.Length);
 
-            var byteArray2 = alg.ComputeHash(byteArray);
+                foreach (var b in byteArray2)
+                {
+                    sb.AppendFormat("{0:X2}", b);
+                }
 
-            var sb
-                = new StringBuilder(byteArray2.Length);
-
-            foreach (var b in byteArray2) sb.AppendFormat("{0:X2}", b);
-
-            return sb.ToString();
+                return sb.ToString();
+            }
         }
 
         public static void UpdateUserPassword(int usId, string unencypted)
@@ -617,7 +615,7 @@ namespace BugTracker.Web.Core
 
         public static DataTable GetRelatedUsers(Security security, bool forceFullNames)
         {
-            var sql = "";
+            string sql;
 
             if (GetSetting("DefaultPermissionLevel", "2") == "0")
                 // only show users who have explicit permission

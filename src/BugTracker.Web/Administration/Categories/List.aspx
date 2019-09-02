@@ -19,14 +19,18 @@
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
         <a href="<%= ResolveUrl("~/Administration/Categories/Edit.aspx")%>">add new category</a>
-        <p/>
-        <%
 
+        <%
             if (this.Ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, ResolveUrl("~/Administration/Categories/Edit.aspx?id="), ResolveUrl("~/Administration/Categories/Delete.aspx?id="));
+            {
+                SortableHtmlTable.CreateFromDataSet(Response, this.Ds,
+                    ResolveUrl("~/Administration/Categories/Edit.aspx?id="),
+                    ResolveUrl("~/Administration/Categories/Delete.aspx?id="));
+            }
             else
+            {
                 Response.Write("No categories in the database.");
+            }
         %>
     </div>
 </asp:Content>

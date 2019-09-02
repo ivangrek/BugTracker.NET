@@ -688,6 +688,7 @@
     <Compile Include="ChangePassword.aspx.designer.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Core\Administration\CategoryService.cs" />
     <Compile Include="Core\Administration\PriorityService.cs" />
     <Compile Include="Core\Administration\StatusService.cs" />
     <Compile Include="Core\Authenticate.cs" />
@@ -696,8 +697,10 @@
     <Compile Include="Core\DbUtil.cs" />
     <Compile Include="Core\Email.cs" />
     <Compile Include="Core\Persistence\ApplicationContext.cs" />
+    <Compile Include="Core\Persistence\Configurations\CategoryConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\PriorityConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\StatusConfiguration.cs" />
+    <Compile Include="Core\Persistence\Models\Category.cs" />
     <Compile Include="Core\Persistence\Models\Priority.cs" />
     <Compile Include="Core\Persistence\Models\Status.cs" />
     <Compile Include="Core\MyLucene.cs" />

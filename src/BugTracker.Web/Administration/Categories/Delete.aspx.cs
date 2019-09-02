@@ -11,58 +11,51 @@ namespace BugTracker.Web.Administration.Categories
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
     public partial class Delete : Page
     {
-        public Security Security;
-        public string Sql;
+        private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
 
-        public void Page_Init(object sender, EventArgs e)
+        protected Security Security;
+
+        protected void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
         }
 
-        public void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            Security = new Security();
+            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
             if (IsPostBack)
             {
-                this.Sql = @"delete categories where ct_id = $1";
-                this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
-                DbUtil.ExecuteNonQuery(this.Sql);
+                var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
+
+                this.categoryService.Delete(id);
+
                 Server.Transfer("~/Administration/Categories/List.aspx");
             }
             else
             {
                 Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete category";
 
-                var id = Util.SanitizeInteger(Request["id"]);
+                var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
+                var (valid, name) = this.categoryService.CheckDeleting(id);
 
-                this.Sql = @"declare @cnt int
-            select @cnt = count(1) from bugs where bg_category = $1
-            select ct_name, @cnt [cnt] from categories where ct_id = $1";
-                this.Sql = this.Sql.Replace("$1", id);
-
-                var dr = DbUtil.GetDataRow(this.Sql);
-
-                if ((int) dr["cnt"] > 0)
+                if (valid)
                 {
-                    Response.Write("You can't delete category \""
-                                   + Convert.ToString(dr["ct_name"])
-                                   + "\" because some bugs still reference it.");
+                    Response.Write($"You can't delete category \"{name}\" because some bugs still reference it.");
                     Response.End();
                 }
                 else
                 {
-                    this.confirm_href.InnerText = "confirm delete of \""
-                                                  + Convert.ToString(dr["ct_name"])
-                                                  + "\"";
-
-                    this.row_id.Value = id;
+                    this.confirmHref.InnerText = $"confirm delete of \"{name}\"";
+                    this.rowId.Value = Convert.ToString(id);
                 }
             }
         }

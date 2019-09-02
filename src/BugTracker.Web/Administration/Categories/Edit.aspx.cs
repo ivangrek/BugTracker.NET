@@ -8,23 +8,25 @@
 namespace BugTracker.Web.Administration.Categories
 {
     using System;
+    using System.Collections.Generic;
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
     public partial class Edit : Page
     {
-        public int Id;
+        private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
 
-        public Security Security;
-        public string Sql;
+        public Security Security { get; set; }
 
-        public void Page_Init(object sender, EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
         }
 
-        public void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
@@ -33,18 +35,20 @@ namespace BugTracker.Web.Administration.Categories
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit category";
 
-            this.msg.InnerText = "";
+            int.TryParse(Request.QueryString["id"], out var id);
 
-            var var = Request.QueryString["id"];
-            if (var == null)
-                this.Id = 0;
-            else
-                this.Id = Convert.ToInt32(var);
+            this.msg.InnerText = string.Empty;
 
-            if (!IsPostBack)
+            if (IsPostBack)
             {
+                OnUpdate(id);
+            }
+            else
+            {
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit priority";
+
                 // add or edit?
-                if (this.Id == 0)
+                if (id == 0)
                 {
                     this.sub.Value = "Create";
                 }
@@ -53,93 +57,89 @@ namespace BugTracker.Web.Administration.Categories
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
-
-                    this.Sql = @"select ct_name, ct_sort_seq, ct_default from categories where ct_id = $1";
-                    this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
-                    var dr = DbUtil.GetDataRow(this.Sql);
+                    var dataRow = this.categoryService.LoadOne(id);
 
                     // Fill in this form
-                    this.name.Value = (string) dr[0];
-                    this.sort_seq.Value = Convert.ToString((int) dr[1]);
-                    this.default_selection.Checked = Convert.ToBoolean((int) dr["ct_default"]);
+                    this.name.Value = dataRow.Name;
+                    this.sortSeq.Value = Convert.ToString(dataRow.SortSequence);
+                    this.defaultSelection.Checked = Convert.ToBoolean(dataRow.Default);
                 }
             }
-            else
-            {
-                on_update();
-            }
         }
 
-        public bool validate()
+        public void OnUpdate(int id)
         {
-            var good = true;
-            if (this.name.Value == "")
-            {
-                good = false;
-                this.name_err.InnerText = "Description is required.";
-            }
-            else
-            {
-                this.name_err.InnerText = "";
-            }
-
-            if (this.sort_seq.Value == "")
-            {
-                good = false;
-                this.sort_seq_err.InnerText = "Sort Sequence is required.";
-            }
-            else
-            {
-                this.sort_seq_err.InnerText = "";
-            }
-
-            if (!Util.IsInt(this.sort_seq.Value))
-            {
-                good = false;
-                this.sort_seq_err.InnerText = "Sort Sequence must be an integer.";
-            }
-            else
-            {
-                this.sort_seq_err.InnerText = "";
-            }
-
-            return good;
-        }
-
-        public void on_update()
-        {
-            var good = validate();
+            var good = ValidateForm();
 
             if (good)
             {
-                if (this.Id == 0) // insert new
+                var parameters = new Dictionary<string, string>
                 {
-                    this.Sql = "insert into categories (ct_name, ct_sort_seq, ct_default) values (N'$na', $ss, $df)";
+                    { "$id", Convert.ToString(id)},
+                    { "$na", this.name.Value.Replace("'", "''")},
+                    { "$ss", this.sortSeq.Value},
+                    { "$df", Util.BoolToString(this.defaultSelection.Checked)},
+                };
+
+                if (id == 0) // insert new
+                {
+                    this.categoryService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    this.Sql = @"update categories set
-                ct_name = N'$na',
-                ct_sort_seq = $ss,
-                ct_default = $df
-                where ct_id = $id";
-
-                    this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
+                    this.categoryService.Update(parameters);
                 }
 
-                this.Sql = this.Sql.Replace("$na", this.name.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$ss", this.sort_seq.Value);
-                this.Sql = this.Sql.Replace("$df", Util.BoolToString(this.default_selection.Checked));
-                DbUtil.ExecuteNonQuery(this.Sql);
                 Server.Transfer("~/Administration/Categories/List.aspx");
             }
             else
             {
-                if (this.Id == 0) // insert new
+                if (id == 0) // insert new
+                {
                     this.msg.InnerText = "Category was not created.";
+                }
                 else // edit existing
+                {
                     this.msg.InnerText = "Category was not updated.";
+                }
             }
+        }
+
+        public bool ValidateForm()
+        {
+            var good = true;
+
+            if (this.name.Value == string.Empty)
+            {
+                good = false;
+                this.nameErr.InnerText = "Description is required.";
+            }
+            else
+            {
+                this.nameErr.InnerText = string.Empty;
+            }
+
+            if (this.sortSeq.Value == string.Empty)
+            {
+                good = false;
+                this.sortSeqErr.InnerText = "Sort Sequence is required.";
+            }
+            else
+            {
+                this.sortSeqErr.InnerText = string.Empty;
+            }
+
+            if (!Util.IsInt(this.sortSeq.Value))
+            {
+                good = false;
+                this.sortSeqErr.InnerText = "Sort Sequence must be an integer.";
+            }
+            else
+            {
+                this.sortSeqErr.InnerText = string.Empty;
+            }
+
+            return good;
         }
     }
 }
