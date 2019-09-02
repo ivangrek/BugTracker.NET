@@ -1,4 +1,10 @@
-﻿namespace BugTracker.Web.Core.Persistence.Models
+﻿/*
+   Copyright 2017-2019 Ivan Grek
+
+   Distributed under the terms of the GNU General Public License
+*/
+
+namespace BugTracker.Web.Core.Persistence.Models
 {
     public class Status
     {

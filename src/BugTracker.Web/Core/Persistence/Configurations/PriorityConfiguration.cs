@@ -1,4 +1,10 @@
-﻿namespace BugTracker.Web.Core.Persistence.Configurations
+﻿/*
+   Copyright 2017-2019 Ivan Grek
+
+   Distributed under the terms of the GNU General Public License
+*/
+
+namespace BugTracker.Web.Core.Persistence.Configurations
 {
     using System.Data.Entity.ModelConfiguration;
     using Models;

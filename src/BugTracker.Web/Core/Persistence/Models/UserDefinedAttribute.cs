@@ -6,7 +6,7 @@
 
 namespace BugTracker.Web.Core.Persistence.Models
 {
-    public class Category
+    public class UserDefinedAttribute
     {
         public int Id { get; set; }
 

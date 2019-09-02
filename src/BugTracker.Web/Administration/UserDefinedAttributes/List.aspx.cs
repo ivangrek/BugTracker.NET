@@ -12,28 +12,26 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     using System.Web;
     using System.Web.UI;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
     public partial class List : Page
     {
-        public DataSet Ds;
-        public Security Security;
+        private readonly IUserDefinedAttributeService userDefinedAttributeService = new UserDefinedAttributeService(new ApplicationContext());
 
-        public void Page_Load(object sender, EventArgs e)
+        protected DataSet Ds;
+        protected Security Security { get; set; }
+
+        protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            Security = new Security();
+            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - user defined attribute values";
 
-            this.Ds = DbUtil.GetDataSet(
-                @"select udf_id [id],
-        udf_name [user defined attribute value],
-        udf_sort_seq [sort seq],
-        case when udf_default = 1 then 'Y' else 'N' end [default],
-        udf_id [hidden]
-        from user_defined_attribute order by udf_name");
+            Ds = this.userDefinedAttributeService.LoadList();
         }
     }
 }

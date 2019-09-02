@@ -33,8 +33,6 @@ namespace BugTracker.Web.Administration.Categories
             this.Security = new Security();
             this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit category";
-
             int.TryParse(Request.QueryString["id"], out var id);
 
             this.msg.InnerText = string.Empty;
@@ -45,7 +43,7 @@ namespace BugTracker.Web.Administration.Categories
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit priority";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit category";
 
                 // add or edit?
                 if (id == 0)

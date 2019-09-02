@@ -18,7 +18,7 @@ namespace BugTracker.Web.Administration.Categories
     {
         private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
 
-        protected Security Security;
+        protected Security Security { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {

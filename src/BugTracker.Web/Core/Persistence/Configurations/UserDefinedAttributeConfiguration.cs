@@ -9,29 +9,25 @@ namespace BugTracker.Web.Core.Persistence.Configurations
     using System.Data.Entity.ModelConfiguration;
     using Models;
 
-    internal sealed class StatusConfiguration : EntityTypeConfiguration<Status>
+    internal sealed class UserDefinedAttributeConfiguration : EntityTypeConfiguration<UserDefinedAttribute>
     {
-        public StatusConfiguration()
+        public UserDefinedAttributeConfiguration()
         {
-            ToTable("statuses")
+            ToTable("user_defined_attribute")
                 .HasKey(x => x.Id);
 
             Property(x => x.Id)
-                .HasColumnName("st_id");
+                .HasColumnName("udf_id");
 
             Property(x => x.Name)
-                .HasColumnName("st_name")
+                .HasColumnName("udf_name")
                 .HasMaxLength(60);
 
             Property(x => x.SortSequence)
-                .HasColumnName("st_sort_seq");
-
-            Property(x => x.Style)
-                .HasColumnName("st_style")
-                .HasMaxLength(30);
+                .HasColumnName("udf_sort_seq");
 
             Property(x => x.Default)
-                .HasColumnName("st_default");
+                .HasColumnName("udf_default");
         }
     }
 }

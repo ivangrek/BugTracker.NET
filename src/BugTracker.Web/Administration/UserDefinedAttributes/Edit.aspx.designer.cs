@@ -22,40 +22,40 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes {
         protected global::System.Web.UI.HtmlControls.HtmlInputText name;
         
         /// <summary>
-        /// name_err control.
+        /// nameErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell name_err;
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell nameErr;
         
         /// <summary>
-        /// sort_seq control.
+        /// sortSeq control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText sort_seq;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText sortSeq;
         
         /// <summary>
-        /// sort_seq_err control.
+        /// sortSeqErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell sort_seq_err;
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell sortSeqErr;
         
         /// <summary>
-        /// default_selection control.
+        /// defaultSelection control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox default_selection;
+        protected global::System.Web.UI.WebControls.CheckBox defaultSelection;
         
         /// <summary>
         /// msg control.
