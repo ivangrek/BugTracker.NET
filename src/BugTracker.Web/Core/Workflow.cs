@@ -34,12 +34,12 @@ namespace BugTracker.Web.Core
             // when the bug has been updated.   You'll get the updated status,
             // in DataRow bug, but you won't get the updated version of the
             // all other fields, so if your workflow depends on them too, you 
-            // might also want to customize EditBug.aspx.  
+            // might also want to customize Bugs/Edit.aspx.  
 
-            // See the "Note about customizing workflow" in EditBug.aspx
+            // See the "Note about customizing workflow" in Bugs/Edit.aspx
             // for the place to edit.
 
-            // If you don't want to change EditBug.aspx, but your logic needs
+            // If you don't want to change Bugs/Edit.aspx, but your logic needs
             // other fields, you can fetch them from the database yourself in
             // your own code here.
         }
@@ -52,9 +52,9 @@ namespace BugTracker.Web.Core
         {
             // This method will be called during validation.
             // You'll get some updated fielsd in DataRow bug, but not all.
-            // You  might also want to customize EditBug.aspx.  
+            // You  might also want to customize Bugs/Edit.aspx.  
 
-            // See the "Note about customizing workflow" in EditBug.aspx
+            // See the "Note about customizing workflow" in Bugs/Edit.aspx
             // for the place to make the DataRow more accurate.
 
             // Uncomment the next line to play with the sample code.

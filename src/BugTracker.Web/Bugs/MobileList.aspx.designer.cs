@@ -7,45 +7,45 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Bugs {
     
     
-    public partial class DeleteBug {
+    public partial class MobileList {
         
         /// <summary>
-        /// back_href control.
+        /// my_header control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor back_href;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl my_header;
         
         /// <summary>
-        /// frm control.
+        /// create control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm frm;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor create;
         
         /// <summary>
-        /// confirm_href control.
+        /// only_mine control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
+        protected global::System.Web.UI.HtmlControls.HtmlInputCheckBox only_mine;
         
         /// <summary>
-        /// row_id control.
+        /// only_mine_label control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden row_id;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl only_mine_label;
     }
 }

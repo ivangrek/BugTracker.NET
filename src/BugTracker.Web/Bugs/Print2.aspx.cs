@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class PrintBugs2 : Page
+    public partial class Print2 : Page
     {
         public DataSet Ds;
         public DataView Dv;
@@ -49,7 +49,7 @@ namespace BugTracker.Web
                 bugSql = bugSql.Replace("$ME", Convert.ToString(this.Security.User.Usid));
                 bugSql = Util.AlterSqlPerProjectPermissions(bugSql, this.Security);
 
-                // all we really need is the bugid, but let's do the same query as PrintBugs.aspx
+                // all we really need is the bugid, but let's do the same query as Bugs/Print.aspx
                 this.Ds = DbUtil.GetDataSet(bugSql);
             }
             else

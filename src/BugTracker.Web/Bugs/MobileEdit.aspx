@@ -5,16 +5,16 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="MBug.aspx.cs" Inherits="BugTracker.Web.MBug" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="MobileEdit.aspx.cs" Inherits="BugTracker.Web.Bugs.MobileEdit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="Scripts/jquery/jquery.mobile-1.2.0.min.css" />
-    <link rel="stylesheet" href="Content/mbtnet_base.css" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Scripts/jquery/jquery.mobile-1.2.0.min.css") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/mbtnet_base.css") %>" />
 
-    <script src="Scripts/jquery/jquery-1.8.2.min.js"></script>
-    <script src="Scripts/jquery/jquery.mobile-1.2.0.min.js"></script>
+    <script src="<%= ResolveUrl("~/Scripts/jquery/jquery-1.8.2.min.js") %>"></script>
+    <script src="<%= ResolveUrl("~/Scripts/jquery/jquery.mobile-1.2.0.min.js") %>"></script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
@@ -28,7 +28,7 @@
         <!-- /header -->
 
         <div data-role="content">
-            <a class="ui-submit" data-ajax="false" href="MBugs.aspx" data-role="button" data-icon="arrow-l" data-iconpos="left">Back to List</a>
+            <a class="ui-submit" data-ajax="false" href="<%= ResolveUrl("~/Bugs/MobileList.aspx") %>" data-role="button" data-icon="arrow-l" data-iconpos="left">Back to List</a>
 
             <form data-ajax="false" id="Form1" class="frm" runat="server">
                 <div class="err" runat="server" id="msg">&nbsp;</div>

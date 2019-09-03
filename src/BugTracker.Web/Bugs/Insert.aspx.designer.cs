@@ -7,9 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Bugs {
     
     
-    public partial class PrintBugs2 {
+    public partial class Insert {
     }
 }

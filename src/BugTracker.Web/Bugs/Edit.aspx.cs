@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class EditBug : Page
+    public partial class Edit : Page
     {
         public bool AssignedToChanged;
 
@@ -334,14 +334,14 @@ namespace BugTracker.Web
             if (this.PermissionLevel == Security.PermissionAll)
             {
                 var cloneLink = "<a class=warn href=\"javascript:clone()\" "
-                                 + " title='Create a copy of this item'><img src=Content/images/paste_plain.png border=0 align=top>&nbsp;create copy</a>";
+                                 + " title='Create a copy of this item'><img src=" + ResolveUrl("~/Content/images/paste_plain.png") + " border=0 align=top>&nbsp;create copy</a>";
                 this.clone.InnerHtml = cloneLink;
             }
 
             if (this.PermissionLevel != Security.PermissionReadonly)
             {
                 var attachmentLink =
-                    "<img src=Content/images/attach.gif align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachments/Add.aspx") +@"','add attachment ',"
+                    "<img src=" + ResolveUrl("~/Content/images/attach.gif") + " align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachments/Add.aspx") +@"','add attachment ',"
                     + Convert.ToString(this.Id)
                     + ",600,300)\" title='Attach an image, document, or other file to this item'>add attachment</a>";
                 this.attachment.InnerHtml = attachmentLink;
@@ -357,7 +357,7 @@ namespace BugTracker.Web
                 {
                     var sendEmailLink = "<a href='javascript:send_email("
                                           + Convert.ToString(this.Id)
-                                          + ")' title='Send an email about this item'><img src=Content/images/email_edit.png border=0 align=top>&nbsp;send email</a>";
+                                          + ")' title='Send an email about this item'><img src=" + ResolveUrl("~/Content/images/email_edit.png") + " border=0 align=top>&nbsp;send email</a>";
                     this.send_email.InnerHtml = sendEmailLink;
                 }
                 else
@@ -374,7 +374,7 @@ namespace BugTracker.Web
             {
                 var subscribersLink = "<a target=_blank href=ViewSubscribers.aspx?id="
                                        + Convert.ToString(this.Id)
-                                       + " title='View users who have subscribed to email notifications for this item'><img src=Content/images/telephone_edit.png border=0 align=top>&nbsp;subscribers</a>";
+                                       + " title='View users who have subscribed to email notifications for this item'><img src=" + ResolveUrl("~/Content/images/telephone_edit.png") + " border=0 align=top>&nbsp;subscribers</a>";
                 this.subscribers.InnerHtml = subscribersLink;
             }
             else
@@ -388,7 +388,7 @@ namespace BugTracker.Web
                 if (this.Id != 0) relationshipCnt = (int) this.DrBug["relationship_cnt"];
                 var relationshipsLink = "<a target=_blank href=Relationships.aspx?bgid="
                                          + Convert.ToString(this.Id)
-                                         + " title='Create a relationship between this item and another item'><img src=Content/images/database_link.png border=0 align=top>&nbsp;relationships(<span id=relationship_cnt>" +
+                                         + " title='Create a relationship between this item and another item'><img src=" + ResolveUrl("~/Content/images/database_link.png") + " border=0 align=top>&nbsp;relationships(<span id=relationship_cnt>" +
                                          relationshipCnt + "</span>)</a>";
                 this.relationships.InnerHtml = relationshipsLink;
             }
@@ -403,7 +403,7 @@ namespace BugTracker.Web
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["svn_revision_cnt"];
                 var svnRevisionsLink = "<a target=_blank href=" + ResolveUrl("~/Versioning/Svn/ViewRevisions.aspx") + @"?id="
                                          + Convert.ToString(this.Id)
-                                         + " title='View Subversion svn_revisions related to this item'><img src=Content/images/svn.png border=0 align=top>&nbsp;svn revisions(" +
+                                         + " title='View Subversion svn_revisions related to this item'><img src=" + ResolveUrl("~/Content/images/svn.png") + " border=0 align=top>&nbsp;svn revisions(" +
                                          revisionCnt + ")</a>";
                 this.svn_revisions.InnerHtml = svnRevisionsLink;
             }
@@ -418,7 +418,7 @@ namespace BugTracker.Web
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["git_commit_cnt"];
                 var gitCommitsLink = "<a target=_blank href=" + ResolveUrl("~/Versioning/Git/ViewRevisions.aspx") + @"?id="
                                        + Convert.ToString(this.Id)
-                                       + " title='View git git_commits related to this item'><img src=Content/images/git.png border=0 align=top>&nbsp;git commits(" +
+                                       + " title='View git git_commits related to this item'><img src=" + ResolveUrl("~/Content/images/git.png") + " border=0 align=top>&nbsp;git commits(" +
                                        revisionCnt + ")</a>";
                 this.git_commits.InnerHtml = gitCommitsLink;
             }
@@ -433,7 +433,7 @@ namespace BugTracker.Web
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["hg_commit_cnt"];
                 var hgRevisionsLink = "<a target=_blank href=" + ResolveUrl("~/Versioning/Hg/ViewRevisions.aspx") + @"?id="
                                         + Convert.ToString(this.Id)
-                                        + " title='View mercurial git_hg_revisions related to this item'><img src=Content/images/hg.png border=0 align=top>&nbsp;hg revisions(" +
+                                        + " title='View mercurial git_hg_revisions related to this item'><img src=" + ResolveUrl("~/Content/images/hg.png") + " border=0 align=top>&nbsp;hg revisions(" +
                                         revisionCnt + ")</a>";
                 this.hg_revisions.InnerHtml = hgRevisionsLink;
             }
@@ -450,7 +450,7 @@ namespace BugTracker.Web
                     if (this.Id != 0) taskCnt = (int) this.DrBug["task_cnt"];
                     var tasksLink = "<a target=_blank href=TasksFrame.aspx?bugid="
                                      + Convert.ToString(this.Id)
-                                     + " title='View sub-tasks/time-tracking entries related to this item'><img src=Content/images/clock.png border=0 align=top>&nbsp;tasks/time(<span id=task_cnt>" +
+                                     + " title='View sub-tasks/time-tracking entries related to this item'><img src=" + ResolveUrl("~/Content/images/clock.png") + " border=0 align=top>&nbsp;tasks/time(<span id=task_cnt>" +
                                      taskCnt + "</span>)</a>";
                     this.tasks.InnerHtml = tasksLink;
                 }
@@ -466,9 +466,9 @@ namespace BugTracker.Web
 
             format_subcribe_cancel_link();
 
-            this.print.InnerHtml = "<a target=_blank href=PrintBug.aspx?id="
+            this.print.InnerHtml = "<a target=_blank href=" + ResolveUrl("~/Bugs/Print1.aspx?id=")
                                    + Convert.ToString(this.Id)
-                                   + " title='Display this item in a printer-friendly format'><img src=Content/images/printer.png border=0 align=top>&nbsp;print</a>";
+                                   + " title='Display this item in a printer-friendly format'><img src=" + ResolveUrl("~/Content/images/printer.png") + " border=0 align=top>&nbsp;print</a>";
 
             // merge
             if (!this.Security.User.IsGuest)
@@ -476,9 +476,9 @@ namespace BugTracker.Web
                 if (this.Security.User.IsAdmin
                     || this.Security.User.CanMergeBugs)
                 {
-                    var mergeBugLink = "<a href=MergeBug.aspx?id="
+                    var mergeBugLink = "<a href=" + ResolveUrl("~/Bugs/Merge.aspx?id=")
                                          + Convert.ToString(this.Id)
-                                         + " title='Merge this item and another item together'><img src=Content/images/database_refresh.png border=0 align=top>&nbsp;merge</a>";
+                                         + " title='Merge this item and another item together'><img src=" + ResolveUrl("~/Content/images/database_refresh.png") + " border=0 align=top>&nbsp;merge</a>";
 
                     this.merge_bug.InnerHtml = mergeBugLink;
                 }
@@ -498,9 +498,9 @@ namespace BugTracker.Web
                 if (this.Security.User.IsAdmin
                     || this.Security.User.CanDeleteBug)
                 {
-                    var deleteBugLink = "<a href=DeleteBug.aspx?id="
+                    var deleteBugLink = "<a href=" + ResolveUrl("~/Bugs/Delete.aspx") + "?id="
                                           + Convert.ToString(this.Id)
-                                          + " title='Delete this item'><img src=Content/images/delete.png border=0 align=top>&nbsp;delete</a>";
+                                          + " title='Delete this item'><img src=" + ResolveUrl("~/Content/images/delete.png") + " border=0 align=top>&nbsp;delete</a>";
 
                     this.delete_bug.InnerHtml = deleteBugLink;
                 }
@@ -521,7 +521,7 @@ namespace BugTracker.Web
                                       + Util.GetSetting("CustomBugLinkUrl", "")
                                       + "?bugid="
                                       + Convert.ToString(this.Id)
-                                      + "><img src=Content/images/brick.png border=0 align=top>&nbsp;"
+                                      + "><img src=" + ResolveUrl("~/Content/images/brick.png") + " border=0 align=top>&nbsp;"
                                       + Util.GetSetting("CustomBugLinkLabel", "")
                                       + "</a>";
 
@@ -595,13 +595,13 @@ namespace BugTracker.Web
         {
             // Display an error because the bugid must be an integer
 
-            Response.Write("<link rel=StyleSheet href=Content/btnet.css type=text/css>");
+            Response.Write("<link rel=StyleSheet href='" + ResolveUrl("~/Content/btnet.css") + "' type=text/css>");
             this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs"));
             Response.Write("<p>&nbsp;</p><div class=align>");
             Response.Write("<div class=err>Error: ");
             Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")));
             Response.Write(" ID must be an integer.</div>");
-            Response.Write("<p><a href=Bugs.aspx>View ");
+            Response.Write("<p><a href=" + ResolveUrl("~/Bugs/List.aspx") +">View ");
             Response.Write(Util.GetSetting("PluralBugLabel", "bugs"));
             Response.Write("</a>");
             Response.End();
@@ -681,7 +681,7 @@ namespace BugTracker.Web
             // save for next bug
             Session["project"] = this.project.SelectedItem.Value;
 
-            Response.Redirect("EditBug.aspx?id=" + Convert.ToString(this.Id));
+            Response.Redirect($"~/Bugs/Edit.aspx?id={this.Id}");
         }
 
         public void do_update()
@@ -844,7 +844,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                 set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
                         + " was NOT updated.<br>"
                         + " Somebody changed it while you were editing it.<br>"
-                        + " Click <a href=EditBug.aspx?id="
+                        + " Click <a href=" + ResolveUrl("~/Bugs/Edit.aspx") + "?id="
                         + Convert.ToString(this.Id)
                         + ">[here]</a> to refresh the page and discard your changes.<br>");
                 return;
@@ -1165,7 +1165,7 @@ order by us_username; ";
                         "<a id='notifications' title='Get or stop getting email notifications about changes to this item.'"
                         + " href='javascript:toggle_notifications("
                         + Convert.ToString(this.Id)
-                        + ")'><img src=Content/images/telephone.png border=0 align=top>&nbsp;<span id='get_stop_notifications'>";
+                        + ")'><img src=" + ResolveUrl("~/Content/images/telephone.png") + " border=0 align=top>&nbsp;<span id='get_stop_notifications'>";
 
                     if (subscribed > 0)
                         subscriptionLink += "stop notifications</span></a>";
@@ -1487,17 +1487,17 @@ order by us_username; ";
                 {
                     if (prevBug != 0)
                         prevNextLink =
-                            "&nbsp;&nbsp;&nbsp;&nbsp;<a class=warn href=EditBug.aspx?id="
+                            "&nbsp;&nbsp;&nbsp;&nbsp;<a class=warn href=" + ResolveUrl("~/Bugs/Edit.aspx") + "?id="
                             + Convert.ToString(prevBug)
-                            + "><img src=Content/images/arrow_up.png border=0 align=top>prev</a>";
+                            + "><img src=" + ResolveUrl("~/Content/images/arrow_up.png") + " border=0 align=top>prev</a>";
                     else
                         prevNextLink = "&nbsp;&nbsp;&nbsp;&nbsp;<span class=gray_link>prev</span>";
 
                     if (nextBug != 0)
                         prevNextLink +=
-                            "&nbsp;&nbsp;&nbsp;&nbsp;<a class=warn href=EditBug.aspx?id="
+                            "&nbsp;&nbsp;&nbsp;&nbsp;<a class=warn href=" + ResolveUrl("~/Bugs/Edit.aspx") + "?id="
                             + Convert.ToString(nextBug)
-                            + ">next<img src=Content/images/arrow_down.png border=0 align=top></a>";
+                            + ">next<img src=" + ResolveUrl("~/Content/images/arrow_down.png") + " border=0 align=top></a>";
                     else
                         prevNextLink += "&nbsp;&nbsp;&nbsp;&nbsp;<span class=gray_link>next</span>";
 
@@ -2407,7 +2407,7 @@ where us_id = @us_id";
                 {
                     var stringOtherBugid = Convert.ToString(intOtherBugid);
 
-                    Response.Write("&nbsp;<a href=EditBug.aspx?id=");
+                    Response.Write("&nbsp;<a href=" + ResolveUrl("~/Bugs/Edit.aspx") + "?id=");
                     Response.Write(stringOtherBugid);
                     Response.Write(">");
                     Response.Write(stringOtherBugid);

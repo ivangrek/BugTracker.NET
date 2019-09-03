@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Bugs {
     
     
-    public partial class EditBug {
+    public partial class Edit {
         
         /// <summary>
         /// prev_next control.

@@ -7,144 +7,153 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Bugs {
     
     
-    public partial class MergeBug {
+    public partial class MobileEdit {
         
         /// <summary>
-        /// back_href control.
+        /// my_header control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor back_href;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl my_header;
         
         /// <summary>
-        /// confirm_href control.
+        /// Form1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
+        protected global::System.Web.UI.HtmlControls.HtmlForm Form1;
         
         /// <summary>
-        /// from_bug control.
+        /// msg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText from_bug;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
         
         /// <summary>
-        /// static_from_bug control.
+        /// short_desc control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl static_from_bug;
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea short_desc;
         
         /// <summary>
-        /// static_from_desc control.
+        /// project control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl static_from_desc;
+        protected global::System.Web.UI.WebControls.DropDownList project;
         
         /// <summary>
-        /// from_err control.
+        /// assigned_to control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl from_err;
+        protected global::System.Web.UI.WebControls.DropDownList assigned_to;
         
         /// <summary>
-        /// into_bug control.
+        /// status control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText into_bug;
+        protected global::System.Web.UI.WebControls.DropDownList status;
         
         /// <summary>
-        /// static_into_bug control.
+        /// comment control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl static_into_bug;
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea comment;
         
         /// <summary>
-        /// static_into_desc control.
+        /// submit_button control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl static_into_desc;
+        protected global::System.Web.UI.HtmlControls.HtmlInputSubmit submit_button;
         
         /// <summary>
-        /// into_err control.
+        /// created_by control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl into_err;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl created_by;
         
         /// <summary>
-        /// submit control.
+        /// prev_status control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputSubmit submit;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_status;
         
         /// <summary>
-        /// confirm control.
+        /// prev_short_desc control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden confirm;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_short_desc;
         
         /// <summary>
-        /// prev_from_bug control.
+        /// prev_assigned_to control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_from_bug;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_assigned_to;
         
         /// <summary>
-        /// prev_into_bug control.
+        /// prev_assigned_to_username control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_into_bug;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_assigned_to_username;
         
         /// <summary>
-        /// orig_id control.
+        /// prev_project control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden orig_id;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_project;
+        
+        /// <summary>
+        /// prev_project_name control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_project_name;
     }
 }

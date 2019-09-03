@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class PrintBug : Page
+    public partial class Print1 : Page
     {
         public DataRow Dr;
         public bool HistoryInline;

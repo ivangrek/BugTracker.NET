@@ -5,22 +5,21 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="EditBug.aspx.cs" Inherits="BugTracker.Web.EditBug" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Bugs.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="on_body_load()" onunload="on_body_unload()">--%>
 
-    <link rel="StyleSheet" href="Scripts/jquery/jquery-ui-1.7.2.custom.css" type="text/css">
+    <link rel="StyleSheet" href="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.css") %>" type="text/css">
     <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on Search.aspx  -->
-    <link rel="StyleSheet" href="Content/custom/btnet_edit_bug.css" type="text/css">
-    <script type="text/javascript" src="Scripts/jquery/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" src="Scripts/jquery/jquery.textarearesizer.compressed.js"></script>
-    <script type="text/javascript" src="Scripts/edit_bug.js"></script>
+    <link rel="StyleSheet" href="<%= ResolveUrl("~/Content/custom/btnet_edit_bug.css") %>" type="text/css">
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery.textarearesizer.compressed.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_bug.js") %>"></script>
     <% if (this.Security.User.UseFckeditor)
         { %>
-    <script type="text/javascript" src="Scripts/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/ckeditor/ckeditor.js") %>"></script>
     <% } %>
     <script>
         var this_bugid = <% Response.Write(Convert.ToString(this.Id)); %>
@@ -59,8 +58,8 @@
 
         <% if (!this.Security.User.AddsNotAllowed && this.Id > 0)
             { %>
-        <a class="warn" href="EditBug.aspx?id=0">
-            <img src="Content/images/add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+        <a class="warn" href="<%= ResolveUrl("~/Bugs/Edit.aspx?id=0") %>">
+            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <% } %>
 
@@ -71,7 +70,6 @@
 
         <table border="0" cellspacing="0" cellpadding="3">
             <tr>
-
                 <td nowrap valign="top">
                     <!-- links -->
                     <div id="edit_bug_menu">

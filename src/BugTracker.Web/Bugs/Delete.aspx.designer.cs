@@ -7,28 +7,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Bugs {
     
     
-    public partial class MBugs {
+    public partial class Delete {
         
         /// <summary>
-        /// my_header control.
+        /// back_href control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl my_header;
-        
-        /// <summary>
-        /// create control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor create;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor back_href;
         
         /// <summary>
         /// frm control.
@@ -40,21 +31,21 @@ namespace BugTracker.Web {
         protected global::System.Web.UI.HtmlControls.HtmlForm frm;
         
         /// <summary>
-        /// only_mine control.
+        /// confirm_href control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputCheckBox only_mine;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
         
         /// <summary>
-        /// only_mine_label control.
+        /// row_id control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl only_mine_label;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden row_id;
     }
 }

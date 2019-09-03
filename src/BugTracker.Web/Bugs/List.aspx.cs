@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
@@ -15,7 +15,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class Bugs : Page
+    public partial class List : Page
     {
         public DataSet DsCustomCols = null;
         public DataView Dv;

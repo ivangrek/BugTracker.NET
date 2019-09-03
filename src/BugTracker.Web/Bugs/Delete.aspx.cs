@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteBug : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -51,7 +51,7 @@ namespace BugTracker.Web
             if (IsPostBack)
             {
                 Bug.DeleteBug(Convert.ToInt32(this.row_id.Value));
-                Server.Transfer("Bugs.aspx");
+                Server.Transfer("~/Bugs/List.aspx");
             }
             else
             {
@@ -60,7 +60,7 @@ namespace BugTracker.Web
                                                                             Util.GetSetting("SingularBugLabel",
                                                                                 "bug");
 
-                this.back_href.HRef = "EditBug.aspx?id=" + id;
+                this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={id}");
 
                 this.Sql = @"select bg_short_desc from bugs where bg_id = $1";
                 this.Sql = this.Sql.Replace("$1", id);

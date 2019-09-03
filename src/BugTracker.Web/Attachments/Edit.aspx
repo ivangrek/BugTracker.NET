@@ -20,14 +20,14 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="EditBug.aspx?id=" <% Response.Write(Convert.ToString(this.Bugid)); %>>back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                    <a href="<%= ResolveUrl($"~/Bugs/Edit.aspx?id={this.Bugid}") %>">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
                     <form class="frm" runat="server">
                         <table border="0">
 
                             <tr>
                                 <td class="lbl">Description:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80">
+                                    <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80"/>
                                 </td>
                                 <td runat="server" class="err" id="desc_err">&nbsp;</td>
                             </tr>

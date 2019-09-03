@@ -92,7 +92,7 @@ namespace BugTracker.Web.Core
                            + Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
                            + " ID:&nbsp;<a href="
                            + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                           + "EditBug.aspx?id="
+                           + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                            + stringBugid
                            + ">"
                            + stringBugid
@@ -102,11 +102,11 @@ namespace BugTracker.Web.Core
                 response.Write(
                     "&nbsp;&nbsp;&nbsp;&nbsp;Mobile link:&nbsp;<a href="
                     + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                    + "MBug.aspx?id="
+                    + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
                     + stringBugid
                     + ">"
                     + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                    + "MBug.aspx?id="
+                    + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
                     + stringBugid
                     + "</a>");
 
@@ -114,7 +114,7 @@ namespace BugTracker.Web.Core
 
             response.Write("Short desc:&nbsp;<a href="
                            + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                           + "EditBug.aspx?id="
+                           + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                            + stringBugid
                            + ">"
                            + HttpUtility.HtmlEncode((string)dr["short_desc"])
@@ -551,7 +551,7 @@ namespace BugTracker.Web.Core
                 if ((int)dr["bp_hidden_from_external_users"] == 1)
                     response.Write("<div class=private>Internal Only!</div>");
 
-                if (writeLinks) response.Write("<img src=Content/images/comment.png align=top>&nbsp;");
+                if (writeLinks) response.Write("<img src=" + VirtualPathUtility.ToAbsolute("~/Content/images/comment.png") + " align=top>&nbsp;");
 
                 response.Write("<span class=pst>comment <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " posted by ");
@@ -933,7 +933,7 @@ namespace BugTracker.Web.Core
         {
             return "<a href="
                    + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
-                   + "EditBug.aspx?id="
+                   + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                    + m.Groups[1]
                    + ">"
                    + m

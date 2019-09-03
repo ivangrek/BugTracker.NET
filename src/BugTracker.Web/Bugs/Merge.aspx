@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="MergeBug.aspx.cs" Inherits="BugTracker.Web.MergeBug" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Merge.aspx.cs" Inherits="BugTracker.Web.Bugs.Merge" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -64,13 +64,13 @@
                             <tr>
                                 <td colspan="2" align="center">
                                     <br>
-                                    <input class="btn" type="submit" runat="server" id="submit" value="Merge">
+                                <input class="btn" type="submit" runat="server" id="submit" value="Merge"/>
                         </table>
 
-                        <input type="hidden" id="confirm" runat="server">
-                        <input type="hidden" id="prev_from_bug" runat="server">
-                        <input type="hidden" id="prev_into_bug" runat="server">
-                        <input type="hidden" id="orig_id" runat="server">
+                        <input type="hidden" id="confirm" runat="server"/>
+                        <input type="hidden" id="prev_from_bug" runat="server"/>
+                        <input type="hidden" id="prev_into_bug" runat="server"/>
+                        <input type="hidden" id="orig_id" runat="server"/>
                     </form>
 
                     <p>

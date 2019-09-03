@@ -162,7 +162,7 @@ namespace BugTracker.Web.Comments
                     Core.WhatsNew.AddNews(this.Bugid, (string) dr["bg_short_desc"], "updated", this.Security);
                 }
 
-                Response.Redirect("EditBug.aspx?id=" + Convert.ToString(this.Bugid));
+                Response.Redirect($"~/Bugs/Edit.aspx?id={this.Bugid}");
             }
         }
     }

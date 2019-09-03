@@ -155,9 +155,9 @@ drop table #$GUID
             Session["bugs_unfiltered"] = ds.Tables[0];
             Session["bugs"] = new DataView(ds.Tables[0]);
 
-            Session["just_did_text_search"] = "yes"; // switch for Bugs.aspx
+            Session["just_did_text_search"] = "yes"; // switch for Bugs/List.aspx
             Session["query"] = Request["query"]; // for util.cs, to persist the text in the search <input>
-            Response.Redirect("Bugs.aspx");
+            Response.Redirect("~/Bugs/List.aspx");
         }
 
         public void display_exception(Exception e)

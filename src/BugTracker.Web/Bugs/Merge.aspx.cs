@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
@@ -15,7 +15,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class MergeBug : Page
+    public partial class Merge : Page
     {
         public DataRow Dr;
 
@@ -49,7 +49,7 @@ namespace BugTracker.Web
             {
                 var origIdString = Util.SanitizeInteger(Request["id"]);
                 this.orig_id.Value = origIdString;
-                this.back_href.HRef = "EditBug.aspx?id=" + origIdString;
+                this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={origIdString}");
                 this.from_bug.Value = origIdString;
             }
             else
@@ -107,15 +107,15 @@ namespace BugTracker.Web
             // Continue and see if from and to exist in db
 
             this.Sql = @"
-	declare @from_desc nvarchar(200)
-	declare @into_desc nvarchar(200)
-	declare @from_id int
-	declare @into_id int
-	set @from_id = -1
-	set @into_id = -1
-	select @from_desc = bg_short_desc, @from_id = bg_id from bugs where bg_id = $from
-	select @into_desc = bg_short_desc, @into_id = bg_id from bugs where bg_id = $into
-	select @from_desc, @into_desc, @from_id, @into_id	";
+    declare @from_desc nvarchar(200)
+    declare @into_desc nvarchar(200)
+    declare @from_id int
+    declare @into_id int
+    set @from_id = -1
+    set @into_id = -1
+    select @from_desc = bg_short_desc, @from_id = bg_id from bugs where bg_id = $from
+    select @into_desc = bg_short_desc, @into_id = bg_id from bugs where bg_id = $into
+    select @from_desc, @into_desc, @from_id, @into_id	";
 
             this.Sql = this.Sql.Replace("$from", this.from_bug.Value);
             this.Sql = this.Sql.Replace("$into", this.into_bug.Value);
@@ -163,7 +163,7 @@ namespace BugTracker.Web
                 if (uploadFolder != null)
                 {
                     this.Sql = @"select bp_id, bp_file from bug_posts
-			where bp_type = 'file' and bp_bug = $from";
+            where bp_type = 'file' and bp_bug = $from";
 
                     this.Sql = this.Sql.Replace("$from", this.prev_from_bug.Value);
                     var ds = DbUtil.GetDataSet(this.Sql);
@@ -224,9 +224,9 @@ update git_commits   set gitcom_bug = $into where gitcom_bug = $from
                 // record the merge itself
 
                 this.Sql = @"insert into bug_posts
-			(bp_bug, bp_user, bp_date, bp_type, bp_comment, bp_comment_search)
-			values($into,$us,getdate(), 'comment', 'merged bug $from into this bug:', 'merged bug $from into this bug:')
-			select scope_identity()";
+            (bp_bug, bp_user, bp_date, bp_type, bp_comment, bp_comment_search)
+            values($into,$us,getdate(), 'comment', 'merged bug $from into this bug:', 'merged bug $from into this bug:')
+            select scope_identity()";
 
                 this.Sql = this.Sql.Replace("$from", this.prev_from_bug.Value);
                 this.Sql = this.Sql.Replace("$into", this.prev_into_bug.Value);
@@ -236,9 +236,9 @@ update git_commits   set gitcom_bug = $into where gitcom_bug = $from
 
                 // update bug comments with info from old bug
                 this.Sql = @"update bug_posts
-			set bp_comment = convert(nvarchar,bp_comment) + char(10) + bg_short_desc
-			from bugs where bg_id = $from
-			and bp_id = $bc";
+            set bp_comment = convert(nvarchar,bp_comment) + char(10) + bg_short_desc
+            from bugs where bg_id = $from
+            and bp_id = $bc";
 
                 this.Sql = this.Sql.Replace("$from", this.prev_from_bug.Value);
                 this.Sql = this.Sql.Replace("$bc", Convert.ToString(commentId));
@@ -268,7 +268,7 @@ update git_commits   set gitcom_bug = $into where gitcom_bug = $from
 
                 Bug.SendNotifications(Bug.Update, Convert.ToInt32(this.prev_into_bug.Value), this.Security);
 
-                Response.Redirect("EditBug.aspx?id=" + this.prev_into_bug.Value);
+                Response.Redirect($"~/Bugs/Edit.aspx?id={this.prev_into_bug.Value}");
             }
             else
             {

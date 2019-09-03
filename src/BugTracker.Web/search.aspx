@@ -694,12 +694,11 @@
 
         <% if (!this.Security.User.AddsNotAllowed)
             { %>
-        <a href="EditBug.aspx">
-            <img src="Content/images/add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+        <a href="<%= ResolveUrl("~/Bugs/Edit.aspx") %>">
+            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
         <% } %>
 
         <a style="margin-left: 40px;" href="javascript:showhide_form()" id="showhide">hide form</a>
-
 
         <table border="0">
             <tr>
@@ -1078,9 +1077,9 @@
         {
             if (this.Dv.Table.Rows.Count > 0)
             {
-                Response.Write("<a target=_blank href=PrintBugs.aspx>print list</a>");
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=PrintBugs2.aspx>print detail</a>");
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=PrintBugs.aspx?format=excel>export to excel</a><br>");
+                Response.Write("<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + ">print list</a>");
+                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + ResolveUrl("~/Bugs/Print2.aspx") + ">print detail</a>");
+                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + "?format=excel>export to excel</a><br>");
 
                 if (Util.GetSetting("EnableTags", "0") == "1")
                 {

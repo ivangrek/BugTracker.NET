@@ -111,7 +111,7 @@
     <Content Include="Content\images\brick.png" />
     <Content Include="Content\btnet.css" />
     <Content Include="Content\btnet_base.css" />
-    <Content Include="Bugs.aspx" />
+    <Content Include="Bugs\List.aspx" />
     <Content Include="Content\images\bugtracker_screen_capture.jpeg" />
     <Content Include="Scripts\bug_list.js" />
     <Content Include="Content\images\camera.png" />
@@ -402,7 +402,7 @@
     <Content Include="Home.aspx" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Attachments\Delete.aspx" />
-    <Content Include="DeleteBug.aspx" />
+    <Content Include="Bugs\Delete.aspx" />
     <Content Include="Administration\Categories\Delete.aspx" />
     <Content Include="Comments\Delete.aspx" />
     <Content Include="Administration\CustomFields\Delete.aspx" />
@@ -482,7 +482,7 @@
     <Content Include="Scripts\edit_area\search_replace.js" />
     <Content Include="Scripts\edit_area\template.html" />
     <Content Include="Attachments\Edit.aspx" />
-    <Content Include="EditBug.aspx" />
+    <Content Include="Bugs\Edit.aspx" />
     <Content Include="Scripts\edit_bug.js" />
     <Content Include="Administration\Categories\Edit.aspx" />
     <Content Include="Comments\Edit.aspx" />
@@ -526,7 +526,7 @@
     <Content Include="Versioning\Hg\Log.aspx" />
     <Content Include="Versioning\Hg\View.aspx" />
     <Content Include="Versioning\Hg\ViewRevisions.aspx" />
-    <Content Include="InsertBug.aspx" />
+    <Content Include="Bugs\Insert.aspx" />
     <Content Include="Install.aspx" />
     <Content Include="Scripts\jquery\grippie.png" />
     <Content Include="Scripts\jquery\images\ajax-loader.gif" />
@@ -563,17 +563,17 @@
     <Content Include="Administration\ManageLogs.aspx" />
     <Content Include="MassEdit.aspx" />
     <Content Include="Content\mbtnet_base.css" />
-    <Content Include="MBug.aspx" />
-    <Content Include="MBugs.aspx" />
-    <Content Include="MergeBug.aspx" />
+    <Content Include="Bugs\MobileEdit.aspx" />
+    <Content Include="Bugs\MobileList.aspx" />
+    <Content Include="Bugs\Merge.aspx" />
     <Content Include="MLogin.aspx" />
     <Content Include="Administration\Notifications.aspx" />
     <Content Include="Administration\Organizations\List.aspx" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
-    <Content Include="PrintBug.aspx" />
-    <Content Include="PrintBugs.aspx" />
-    <Content Include="PrintBugs2.aspx" />
+    <Content Include="Bugs\Print1.aspx" />
+    <Content Include="Bugs\Print.aspx" />
+    <Content Include="Bugs\Print2.aspx" />
     <Content Include="Administration\Priorities\List.aspx" />
     <Content Include="Administration\Projects\List.aspx" />
     <Content Include="Queries\List.aspx" />
@@ -667,12 +667,12 @@
     <Compile Include="Administration\BackupDb.aspx.designer.cs">
       <DependentUpon>BackupDb.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Bugs.aspx.cs">
-      <DependentUpon>Bugs.aspx</DependentUpon>
+    <Compile Include="Bugs\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Bugs.aspx.designer.cs">
-      <DependentUpon>Bugs.aspx</DependentUpon>
+    <Compile Include="Bugs\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Categories\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>
@@ -755,12 +755,12 @@
     <Compile Include="Attachments\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteBug.aspx.cs">
-      <DependentUpon>DeleteBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteBug.aspx.designer.cs">
-      <DependentUpon>DeleteBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Categories\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -867,12 +867,12 @@
     <Compile Include="Attachments\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditBug.aspx.cs">
-      <DependentUpon>EditBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditBug.aspx.designer.cs">
-      <DependentUpon>EditBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Categories\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
@@ -1129,12 +1129,12 @@
     <Compile Include="Versioning\Hg\ViewRevisions.aspx.designer.cs">
       <DependentUpon>ViewRevisions.aspx</DependentUpon>
     </Compile>
-    <Compile Include="InsertBug.aspx.cs">
-      <DependentUpon>InsertBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Insert.aspx.cs">
+      <DependentUpon>Insert.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="InsertBug.aspx.designer.cs">
-      <DependentUpon>InsertBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Insert.aspx.designer.cs">
+      <DependentUpon>Insert.aspx</DependentUpon>
     </Compile>
     <Compile Include="Install.aspx.cs">
       <DependentUpon>Install.aspx</DependentUpon>
@@ -1171,26 +1171,26 @@
     <Compile Include="MassEdit.aspx.designer.cs">
       <DependentUpon>MassEdit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="MBug.aspx.cs">
-      <DependentUpon>MBug.aspx</DependentUpon>
+    <Compile Include="Bugs\MobileEdit.aspx.cs">
+      <DependentUpon>MobileEdit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MBug.aspx.designer.cs">
-      <DependentUpon>MBug.aspx</DependentUpon>
+    <Compile Include="Bugs\MobileEdit.aspx.designer.cs">
+      <DependentUpon>MobileEdit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="MBugs.aspx.cs">
-      <DependentUpon>MBugs.aspx</DependentUpon>
+    <Compile Include="Bugs\MobileList.aspx.cs">
+      <DependentUpon>MobileList.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MBugs.aspx.designer.cs">
-      <DependentUpon>MBugs.aspx</DependentUpon>
+    <Compile Include="Bugs\MobileList.aspx.designer.cs">
+      <DependentUpon>MobileList.aspx</DependentUpon>
     </Compile>
-    <Compile Include="MergeBug.aspx.cs">
-      <DependentUpon>MergeBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Merge.aspx.cs">
+      <DependentUpon>Merge.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MergeBug.aspx.designer.cs">
-      <DependentUpon>MergeBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Merge.aspx.designer.cs">
+      <DependentUpon>Merge.aspx</DependentUpon>
     </Compile>
     <Compile Include="MLogin.aspx.cs">
       <DependentUpon>MLogin.aspx</DependentUpon>
@@ -1213,26 +1213,26 @@
     <Compile Include="Administration\Organizations\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
     </Compile>
-    <Compile Include="PrintBug.aspx.cs">
-      <DependentUpon>PrintBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Print1.aspx.cs">
+      <DependentUpon>Print1.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PrintBug.aspx.designer.cs">
-      <DependentUpon>PrintBug.aspx</DependentUpon>
+    <Compile Include="Bugs\Print1.aspx.designer.cs">
+      <DependentUpon>Print1.aspx</DependentUpon>
     </Compile>
-    <Compile Include="PrintBugs.aspx.cs">
-      <DependentUpon>PrintBugs.aspx</DependentUpon>
+    <Compile Include="Bugs\Print.aspx.cs">
+      <DependentUpon>Print.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PrintBugs.aspx.designer.cs">
-      <DependentUpon>PrintBugs.aspx</DependentUpon>
+    <Compile Include="Bugs\Print.aspx.designer.cs">
+      <DependentUpon>Print.aspx</DependentUpon>
     </Compile>
-    <Compile Include="PrintBugs2.aspx.cs">
-      <DependentUpon>PrintBugs2.aspx</DependentUpon>
+    <Compile Include="Bugs\Print2.aspx.cs">
+      <DependentUpon>Print2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PrintBugs2.aspx.designer.cs">
-      <DependentUpon>PrintBugs2.aspx</DependentUpon>
+    <Compile Include="Bugs\Print2.aspx.designer.cs">
+      <DependentUpon>Print2.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Priorities\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>

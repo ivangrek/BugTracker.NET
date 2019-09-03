@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.IO;
@@ -14,7 +14,7 @@ namespace BugTracker.Web
     using anmar.SharpMimeTools;
     using Core;
 
-    public partial class InsertBug : Page
+    public partial class Insert : Page
     {
         public void Page_Load(object sender, EventArgs e)
         {

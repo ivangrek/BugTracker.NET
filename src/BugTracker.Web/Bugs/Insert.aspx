@@ -5,5 +5,5 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="InsertBug.aspx.cs" Inherits="BugTracker.Web.InsertBug" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Insert.aspx.cs" Inherits="BugTracker.Web.Bugs.Insert" %>
 <%@ Assembly Name="SharpMimeTools" %>

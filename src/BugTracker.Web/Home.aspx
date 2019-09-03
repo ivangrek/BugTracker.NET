@@ -85,7 +85,7 @@
                         <% if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
                             { %>
                         <p>
-                            <a style="font-size: 8pt;" href="Bugs.aspx">Continue as "guest" without logging in</a>
+                            <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Bugs/List.aspx") %>">Continue as "guest" without logging in</a>
                         <p>
                             <% } %>
 

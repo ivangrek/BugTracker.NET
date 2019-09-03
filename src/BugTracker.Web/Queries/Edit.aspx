@@ -96,7 +96,7 @@
                     <p>
 
                         <div id="explanation" style="width: 800px" class="cmt" runat="server">
-                            In order to work with the Bugs.aspx page, your SQL must be structured in a particular way.
+                            In order to work with the Bugs/List.aspx page, your SQL must be structured in a particular way.
     The first column must be either a color starting with "#" or a CSS style class.
     If it starts with "#", it will be interpreted as the background color of the row.
     Otherwise, it will be interpreted as the name of a CSS style class in your CSS file.

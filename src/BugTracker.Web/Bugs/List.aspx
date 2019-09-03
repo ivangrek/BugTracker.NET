@@ -5,11 +5,11 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Bugs.aspx.cs" Inherits="BugTracker.Web.Bugs" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Bugs.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/bug_list.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/bug_list.js") %>"></script>
     <script>
         $(document).ready(function () {
             $('.filter').click(on_invert_filter);
@@ -36,8 +36,8 @@
                     <td nowrap>
                         <% if (!this.Security.User.AddsNotAllowed)
                             { %>
-                        <a href="EditBug.aspx">
-                            <img src="Content/images/add.png" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                        <a href="<%= ResolveUrl("~/Bugs/Edit.aspx") %>">
+                            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <% } %>
 
@@ -45,12 +45,12 @@
                         <asp:DropDownList ID="query" runat="server" onchange="on_query_changed()">
                         </asp:DropDownList>
 
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs.aspx">print list</a>
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs2.aspx">print detail</a>
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="PrintBugs.aspx?format=excel">export to excel</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bugs/Print.aspx") %>">print list</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bugs/Print2.aspx") %>">print detail</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bugs/Print.aspx?format=excel") %>">export to excel</a>
                     <td nowrap align="right" width="100%">
-                        <a target="_blank" href="Content/btnet_screen_capture.exe">
-                            <img src="Content/images/camera.png" border="0" align="top">&nbsp;download screen capture utility</a>
+                        <a target="_blank" href="<%= ResolveUrl("~/Content/btnet_screen_capture.exe") %>">
+                            <img src="<%= ResolveUrl("~/Content/images/camera.png") %>" border="0" align="top">&nbsp;download screen capture utility</a>
             </table>
             <br>
             <%

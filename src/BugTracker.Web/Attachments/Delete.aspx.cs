@@ -79,13 +79,13 @@ namespace BugTracker.Web.Attachments
                     if (File.Exists(path.ToString())) File.Delete(path.ToString());
                 }
 
-                Response.Redirect("EditBug.aspx?id=" + bugIdString);
+                Response.Redirect($"~/Bugs/Edit.aspx?id={bugIdString}");
             }
             else
             {
                 Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete attachment";
 
-                this.back_href.HRef = $"~/EditBug.aspx?id={bugIdString}" ;
+                this.back_href.HRef = $"~/Bugs/Edit.aspx?id={bugIdString}" ;
 
                 this.Sql = @"select bp_file from bug_posts where bp_id = $1";
                 this.Sql = this.Sql.Replace("$1", attachmentIdString);

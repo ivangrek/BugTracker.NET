@@ -72,7 +72,7 @@ namespace BugTracker.Web
                     Response.End();
                 }
 
-                this.back_href.HRef = "EditBug.aspx?id=" + stringBgId;
+                this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={stringBgId}");
 
                 this.bugid.Value = stringBgId;
 

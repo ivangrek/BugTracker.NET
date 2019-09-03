@@ -199,7 +199,7 @@ select bg_id [id],
 		when re_direction = 2 then 'child of $bg'
 		else                       'parent of $bg' 
 	end as [parent or child],
-	'<a target=_blank href=EditBug.aspx?id=' + convert(varchar,bg_id) + '>view</a>' [view]";
+	'<a target=_blank href=" + ResolveUrl("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [view]";
 
             if (!this.Security.User.IsGuest && this.PermissionLevel == Security.PermissionAll)
                 sql += @"

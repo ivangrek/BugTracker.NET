@@ -43,10 +43,10 @@ namespace BugTracker.Web.Queries
                 when isnull(qu_org,0) <> 0 then 'org:' + og_name
                 else ' '
                 end [visibility],
-            '<a href=Bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
-            '<a target=_blank href=" + ResolveUrl("~/PrintBugs.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
-            '<a target=_blank href=" + ResolveUrl("~/PrintBugs.aspx") + @"?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
-            '<a target=_blank href=" + ResolveUrl("~/PrintBugs2.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
+            '<a href=" + ResolveUrl("~/Bugs/List.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
+            '<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
+            '<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + @"?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
+            '<a target=_blank href=" + ResolveUrl("~/Bugs/Print2.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
             '<a href=" + ResolveUrl("~/Queries/Edit.aspx") + @"?id=' + convert(varchar,qu_id) + '>edit</a>' [edit],
             '<a href=" + ResolveUrl("~/Queries/Delete.aspx") + @"?id=' + convert(varchar,qu_id) + '>delete</a>' [delete],
             replace(convert(nvarchar(4000),qu_sql), char(10),'<br>') [sql]
@@ -66,10 +66,10 @@ namespace BugTracker.Web.Queries
 
                 sql = @"select
             qu_desc [query],
-            '<a href=bugs.aspx?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
-            '<a target=_blank href=" + ResolveUrl("~/PrintBugs.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
-            '<a target=_blank href=" + ResolveUrl("~/PrintBugs.aspx") + @"?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
-            '<a target=_blank href=" + ResolveUrl("~/PrintBugs2.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
+            '<a href=" + ResolveUrl("~/Bugs/List.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>view list</a>' [view list],
+            '<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print list</a>' [print list],
+            '<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + @"?format=excel&qu_id=' + convert(varchar,qu_id) + '>export as excel</a>' [export as excel],
+            '<a target=_blank href=" + ResolveUrl("~/Bugs/Print2.aspx") + @"?qu_id=' + convert(varchar,qu_id) + '>print detail</a>' [print list<br>with detail],
             '<a href=" + ResolveUrl("~/Queries/Edit.aspx") + @"?id=' + convert(varchar,qu_id) + '>rename</a>' [rename],
             '<a href=" + ResolveUrl("~/Queries/Delete.aspx") + @"?id=' + convert(varchar,qu_id) + '>delete</a>' [delete]
             from queries

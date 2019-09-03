@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PrintBugs2.aspx.cs" Inherits="BugTracker.Web.PrintBugs2" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Print2.aspx.cs" Inherits="BugTracker.Web.Bugs.Print2" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -43,7 +43,7 @@
                 else
                     firstrow = false;
 
-                var dr = Bug.get_bug_datarow(
+                var dr = Bug.GetBugDataRow(
                     (int)drv[1], this.Security);
 
                 PrintBug.print_bug(Response, dr, this.Security,
@@ -63,7 +63,7 @@
                     else
                         firstrow = false;
 
-                    var dr = Bug.get_bug_datarow(
+                    var dr = Bug.GetBugDataRow(
                         (int)dr2[1], this.Security);
 
                     PrintBug.print_bug(Response, dr, this.Security,

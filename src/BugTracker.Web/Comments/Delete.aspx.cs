@@ -47,7 +47,7 @@ namespace BugTracker.Web.Comments
                 this.Sql = @"delete bug_posts where bp_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Response.Redirect("EditBug.aspx?id=" + Util.SanitizeInteger(this.redirect_bugid.Value));
+                Response.Redirect("~/Bugs/Edit.aspx?id=" + Util.SanitizeInteger(this.redirect_bugid.Value));
             }
             else
             {
@@ -61,12 +61,11 @@ namespace BugTracker.Web.Comments
                     Response.End();
                 }
 
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete comment";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete comment";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 
-                this.back_href.HRef = "EditBug.aspx?id=" + bugId;
+                this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={bugId}");
 
                 this.Sql = @"select bp_comment from bug_posts where bp_id = $1";
                 this.Sql = this.Sql.Replace("$1", id);

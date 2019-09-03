@@ -110,7 +110,7 @@ namespace BugTracker.Web.Attachments
 
                 if (!this.internal_only.Checked) Bug.SendNotifications(Bug.Update, this.Bugid, this.Security);
 
-                Response.Redirect($"~/EditBug.aspx?id={Convert.ToString(this.Bugid)}");
+                Response.Redirect($"~/Bugs/Edit.aspx?id={this.Bugid}");
             }
             else
             {

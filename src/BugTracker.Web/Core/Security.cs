@@ -24,7 +24,7 @@ namespace BugTracker.Web.Core
 
         private static readonly string GotoForm = @"
 <td nowrap valign=middle>
-    <form style='margin: 0px; padding: 0px;' action=EditBug.aspx method=get>
+    <form style='margin: 0px; padding: 0px;' action=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @" method=get>
         <input class=menubtn type=submit value='go to ID'>
         <input class=menuinput size=4 type=text class=txt name=id accesskey=g>
     </form>
@@ -43,15 +43,15 @@ namespace BugTracker.Web.Core
             var cookie = request.Cookies["se_id"];
 
             // This logic allows somebody to put a link in an email, like
-            // EditBug.aspx?id=66
+            // Bugs/Edit.aspx?id=66
             // The user would click on the link, go to the logon page (Home.aspx),
-            // and then after logging in continue on to EditBug.aspx?id=66
+            // and then after logging in continue on to Bugs/Edit.aspx?id=66
             var originalUrl = request.ServerVariables["URL"].ToLower();
             var originalQuerystring = request.ServerVariables["QUERY_STRING"].ToLower();
 
             var target = "Home.aspx";
 
-            if (originalUrl.EndsWith("MBug.aspx")) target = "MLogin.aspx";
+            if (originalUrl.EndsWith("MobileEdit.aspx")) target = "MLogin.aspx";
 
             target += "?url=" + originalUrl + "&qs=" + HttpUtility.UrlEncode(originalQuerystring);
 
@@ -262,7 +262,7 @@ function on_submit_search()
             response.Write(logo);
 
             response.Write("<td width=20>&nbsp;</td>");
-            WriteMenuItem(response, thisLink, Util.GetSetting("PluralBugLabel", "bugs"), VirtualPathUtility.ToAbsolute("~/Bugs.aspx"));
+            WriteMenuItem(response, thisLink, Util.GetSetting("PluralBugLabel", "bugs"), VirtualPathUtility.ToAbsolute("~/Bugs/List.aspx"));
 
             if (this.User.CanSearch) WriteMenuItem(response, thisLink, "search", VirtualPathUtility.ToAbsolute("~/Search.aspx"));
 

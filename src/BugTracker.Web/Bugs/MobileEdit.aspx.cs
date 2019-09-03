@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
@@ -14,7 +14,7 @@ namespace BugTracker.Web
     using System.Web.UI.WebControls;
     using Core;
 
-    public partial class MBug : Page
+    public partial class MobileEdit : Page
     {
         public bool AssignedToChanged;
         public DataSet DsPosts;
@@ -71,7 +71,7 @@ namespace BugTracker.Web
                         if (result != "")
                             this.msg.InnerHtml = this.ErrText;
                         else
-                            Response.Redirect("MBugs.aspx");
+                            Response.Redirect("~/Bugs/MobileList.aspx");
                     }
                 }
                 else
@@ -148,7 +148,7 @@ namespace BugTracker.Web
                         if (result != "")
                             this.msg.InnerHtml = this.ErrText;
                         else
-                            Response.Redirect("MBugs.aspx");
+                            Response.Redirect("~/Bugs/MobileList.aspx");
                     }
                 }
 

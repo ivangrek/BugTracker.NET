@@ -7,12 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class Bugs {
+namespace BugTracker.Web.Bugs {
     
+    
+    public partial class List {
+        
         /// <summary>
         /// query control.
         /// </summary>
@@ -21,7 +20,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList query;
-    
+        
         /// <summary>
         /// new_page control.
         /// </summary>
@@ -30,7 +29,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputHidden new_page;
-    
+        
         /// <summary>
         /// actn control.
         /// </summary>
@@ -39,7 +38,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputHidden actn;
-    
+        
         /// <summary>
         /// filter control.
         /// </summary>
@@ -48,7 +47,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputHidden filter;
-    
+        
         /// <summary>
         /// sort control.
         /// </summary>
@@ -57,7 +56,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputHidden sort;
-    
+        
         /// <summary>
         /// prev_sort control.
         /// </summary>
@@ -66,7 +65,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputHidden prev_sort;
-    
+        
         /// <summary>
         /// prev_dir control.
         /// </summary>

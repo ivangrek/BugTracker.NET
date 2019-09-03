@@ -895,7 +895,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
         public static void Redirect(HttpRequest request, HttpResponse response)
         {
-            // redirect to the page the user was going to or start off with Bugs.aspx
+            // redirect to the page the user was going to or start off with Bugs/List.aspx
             var url = request.QueryString["url"];
             var qs = request.QueryString["qs"];
 
@@ -903,13 +903,13 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             {
                 var mobile = request["mobile"];
                 if (string.IsNullOrEmpty(mobile))
-                    response.Redirect("Bugs.aspx");
+                    response.Redirect("~/Bugs/List.aspx");
                 else
-                    response.Redirect("MBugs.aspx");
+                    response.Redirect("~/Bugs/MobileList.aspx");
             }
             else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
             {
-                response.Redirect("Bugs.aspx");
+                response.Redirect("~/Bugs/List.aspx");
             }
             else
             {
@@ -1136,7 +1136,7 @@ order by tsk_sort_sequence, tsk_id";
             response.Write("<div class=err>");
             response.Write(CapitalizeFirstLetter(GetSetting("SingularBugLabel", "bug")));
             response.Write(" not found:&nbsp;" + Convert.ToString(id) + "</div>");
-            response.Write("<p><a href=Bugs.aspx>View ");
+            response.Write("<p><a href='" + VirtualPathUtility.ToAbsolute("~/Bugs/List.aspx") +"'>View");
             response.Write(GetSetting("PluralBugLabel", "bug"));
             response.Write("</a>");
             response.End();
@@ -1150,7 +1150,7 @@ order by tsk_sort_sequence, tsk_id";
             response.Write("<div class=err>You are not allowed to view this "
                            + GetSetting("SingularBugLabel", "bug")
                            + "</div>");
-            response.Write("<p><a href=Bugs.aspx>View "
+            response.Write("<p><a href='" + VirtualPathUtility.ToAbsolute("~/Bugs/List.aspx") + "'>View "
                            + CapitalizeFirstLetter(GetSetting
                                ("PluralBugLabel", "bugs")) + "</a>");
             response.End();

@@ -736,8 +736,7 @@ namespace BugTracker.Web.Core
                                     {
                                         // write description as a link
                                         response.Write(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=EditBug.aspx?id="
-                                            + stringBugid + ">");
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
                                         response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
                                         response.Write("</a>");
                                     }
@@ -745,8 +744,7 @@ namespace BugTracker.Web.Core
                                     {
                                         // write description as a link
                                         response.Write(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=EditBug.aspx?id="
-                                            + stringBugid + ">");
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
                                         response.Write(dr[i].ToString()); // already encoded
                                         response.Write("</a>");
                                     }
@@ -767,7 +765,7 @@ namespace BugTracker.Web.Core
                                             }
                                             else
                                             {
-                                                response.Write("<a href=EditBug.aspx?id=");
+                                                response.Write("<a href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id="));
                                                 response.Write(stringBugid); // bg_id
                                                 response.Write("#");
                                                 response.Write(parts[1]); // bp_id, the post id

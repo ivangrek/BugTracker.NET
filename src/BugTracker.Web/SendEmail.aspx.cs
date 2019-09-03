@@ -62,30 +62,30 @@ namespace BugTracker.Web
                     stringBpId = Util.SanitizeInteger(stringBpId);
 
                     this.Sql = @"select
-				bp_parent,
+                bp_parent,
                 bp_file,
                 bp_id,
-				bg_id,
-				bg_short_desc,
-				bp_email_from,
-				bp_comment,
-				bp_email_from,
-				bp_date,
-				bp_type,
+                bg_id,
+                bg_short_desc,
+                bp_email_from,
+                bp_comment,
+                bp_email_from,
+                bp_date,
+                bp_type,
                 bp_content_type,
-				bg_project,
+                bg_project,
                 bp_hidden_from_external_users,
-				isnull(us_signature,'') [us_signature],
-				isnull(pj_pop3_email_from,'') [pj_pop3_email_from],
-				isnull(us_email,'') [us_email],
-				isnull(us_firstname,'') [us_firstname],
-				isnull(us_lastname,'') [us_lastname]				
-				from bug_posts
-				inner join bugs on bp_bug = bg_id
-				inner join users on us_id = $us
-				left outer join projects on bg_project = pj_id
-				where bp_id = $id
-				or (bp_parent = $id and bp_type='file')";
+                isnull(us_signature,'') [us_signature],
+                isnull(pj_pop3_email_from,'') [pj_pop3_email_from],
+                isnull(us_email,'') [us_email],
+                isnull(us_firstname,'') [us_firstname],
+                isnull(us_lastname,'') [us_lastname]				
+                from bug_posts
+                inner join bugs on bp_bug = bg_id
+                inner join users on us_id = $us
+                left outer join projects on bg_project = pj_id
+                where bp_id = $id
+                or (bp_parent = $id and bp_type='file')";
 
                     this.Sql = this.Sql.Replace("$id", stringBpId);
                     this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
@@ -114,7 +114,7 @@ namespace BugTracker.Web
                         }
 
                     stringBgId = Convert.ToString(dr["bg_id"]);
-                    this.back_href.HRef = "EditBug.aspx?id=" + stringBgId;
+                    this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={stringBgId}");
                     this.bg_id.Value = stringBgId;
 
                     this.to.Value = dr["bp_email_from"].ToString();
@@ -261,17 +261,17 @@ namespace BugTracker.Web
                     }
 
                     this.Sql = @"select
-				bg_short_desc,
-				bg_project,
-				isnull(us_signature,'') [us_signature],
-				isnull(us_email,'') [us_email],
-				isnull(us_firstname,'') [us_firstname],
-				isnull(us_lastname,'') [us_lastname],
-				isnull(pj_pop3_email_from,'') [pj_pop3_email_from]
-				from bugs
-				inner join users on us_id = $us
-				left outer join projects on bg_project = pj_id
-				where bg_id = $bg";
+                bg_short_desc,
+                bg_project,
+                isnull(us_signature,'') [us_signature],
+                isnull(us_email,'') [us_email],
+                isnull(us_firstname,'') [us_firstname],
+                isnull(us_lastname,'') [us_lastname],
+                isnull(pj_pop3_email_from,'') [pj_pop3_email_from]
+                from bugs
+                inner join users on us_id = $us
+                left outer join projects on bg_project = pj_id
+                where bg_id = $bg";
 
                     this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
                     this.Sql = this.Sql.Replace("$bg", stringBgId);
@@ -280,7 +280,7 @@ namespace BugTracker.Web
 
                     load_from_dropdown(dr, false); // list the user's email first, then the project
 
-                    this.back_href.HRef = "EditBug.aspx?id=" + stringBgId;
+                    this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={stringBgId}");
                     this.bg_id.Value = stringBgId;
 
                     if (requestTo != null) this.to.Value = requestTo;
@@ -460,13 +460,13 @@ namespace BugTracker.Web
 
             this.Sql = @"
 insert into bug_posts
-	(bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_to, bp_type, bp_content_type, bp_email_cc)
-	values($id, $us, getdate(), N'$cm', N'$cs', N'$fr',  N'$to', 'sent', N'$ct', N'$cc');
+    (bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_to, bp_type, bp_content_type, bp_email_cc)
+    values($id, $us, getdate(), N'$cm', N'$cs', N'$fr',  N'$to', 'sent', N'$ct', N'$cc');
 select scope_identity()
 update bugs set
-	bg_last_updated_user = $us,
-	bg_last_updated_date = getdate()
-	where bg_id = $id";
+    bg_last_updated_user = $us,
+    bg_last_updated_date = getdate()
+    where bg_id = $id";
 
             this.Sql = this.Sql.Replace("$id", this.bg_id.Value);
             this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
@@ -560,7 +560,7 @@ update bugs set
             Core.WhatsNew.AddNews(Convert.ToInt32(this.bg_id.Value), this.short_desc.Value, "email sent", this.Security);
 
             if (result == "")
-                Response.Redirect("EditBug.aspx?id=" + this.bg_id.Value);
+                Response.Redirect($"~/Bugs/Edit.aspx?id={this.bg_id.Value}");
             else
                 this.msg.InnerText = result;
         }

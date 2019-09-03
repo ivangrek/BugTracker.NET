@@ -105,7 +105,7 @@
                     how_long_ago(secondsAgo) +
                     "<td class=datad>" +
                     news.bugid +
-                    "<td class=datad><a href=EditBug.aspx?id=" +
+                    "<td class=datad><a href=" + <%= ResolveUrl("~/Bugs/Edit.aspx?id=") %> +
                     news.bugid +
                     ">" +
                     news.desc +
