@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Attachments
 {
     using System;
     using System.IO;
@@ -14,7 +14,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteAttachment : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
@@ -83,10 +83,9 @@ namespace BugTracker.Web
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete attachment";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete attachment";
 
-                this.back_href.HRef = "EditBug.aspx?id=" + bugIdString;
+                this.back_href.HRef = $"~/EditBug.aspx?id={bugIdString}" ;
 
                 this.Sql = @"select bp_file from bug_posts where bp_id = $1";
                 this.Sql = this.Sql.Replace("$1", attachmentIdString);

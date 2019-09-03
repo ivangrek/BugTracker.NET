@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Attachments {
     
     
-    public partial class DeleteAttachment {
+    public partial class Delete {
         
         /// <summary>
         /// back_href control.

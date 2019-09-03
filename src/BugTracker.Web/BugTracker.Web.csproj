@@ -97,7 +97,7 @@
     <Content Include="Content\custom\custom_welcome.html" />
     <Content Include="Content\images\accept.png" />
     <Content Include="Content\images\add.png" />
-    <Content Include="AddAttachment.aspx" />
+    <Content Include="Attachments\Add.aspx" />
     <Content Include="Administration\CustomFields\Add.aspx" />
     <Content Include="Ajax.aspx" />
     <Content Include="Ajax2.aspx" />
@@ -401,7 +401,7 @@
     <Content Include="Scripts\datejs\date.js" />
     <Content Include="Home.aspx" />
     <Content Include="Content\images\delete.png" />
-    <Content Include="DeleteAttachment.aspx" />
+    <Content Include="Attachments\Delete.aspx" />
     <Content Include="DeleteBug.aspx" />
     <Content Include="Administration\Categories\Delete.aspx" />
     <Content Include="DeleteComment.aspx" />
@@ -481,7 +481,7 @@
     <Content Include="Scripts\edit_area\resize_area.js" />
     <Content Include="Scripts\edit_area\search_replace.js" />
     <Content Include="Scripts\edit_area\template.html" />
-    <Content Include="EditAttachment.aspx" />
+    <Content Include="Attachments\Edit.aspx" />
     <Content Include="EditBug.aspx" />
     <Content Include="Scripts\edit_bug.js" />
     <Content Include="Administration\Categories\Edit.aspx" />
@@ -612,7 +612,7 @@
     <Content Include="Upgrade273To274.aspx" />
     <Content Include="Administration\Users\List.aspx" />
     <Content Include="Scripts\version_control_sel_rev.js" />
-    <Content Include="ViewAttachment.aspx" />
+    <Content Include="Attachments\View.aspx" />
     <Content Include="ViewMemoryLog.aspx" />
     <Content Include="Reports\View.aspx" />
     <Content Include="ViewSubscribers.aspx" />
@@ -625,12 +625,12 @@
     <Content Include="WritePosts.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddAttachment.aspx.cs">
-      <DependentUpon>AddAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AddAttachment.aspx.designer.cs">
-      <DependentUpon>AddAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\CustomFields\Add.aspx.cs">
       <DependentUpon>Add.aspx</DependentUpon>
@@ -748,12 +748,12 @@
     <Compile Include="Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteAttachment.aspx.cs">
-      <DependentUpon>DeleteAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteAttachment.aspx.designer.cs">
-      <DependentUpon>DeleteAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeleteBug.aspx.cs">
       <DependentUpon>DeleteBug.aspx</DependentUpon>
@@ -860,12 +860,12 @@
     <Compile Include="DownloadFile.aspx.designer.cs">
       <DependentUpon>DownloadFile.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditAttachment.aspx.cs">
-      <DependentUpon>EditAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditAttachment.aspx.designer.cs">
-      <DependentUpon>EditAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditBug.aspx.cs">
       <DependentUpon>EditBug.aspx</DependentUpon>
@@ -1460,12 +1460,12 @@
     <Compile Include="Administration\Users\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ViewAttachment.aspx.cs">
-      <DependentUpon>ViewAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ViewAttachment.aspx.designer.cs">
-      <DependentUpon>ViewAttachment.aspx</DependentUpon>
+    <Compile Include="Attachments\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewMemoryLog.aspx.cs">
       <DependentUpon>ViewMemoryLog.aspx</DependentUpon>

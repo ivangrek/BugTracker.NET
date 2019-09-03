@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Attachments {
     
     
-    public partial class EditAttachment {
+    public partial class Add {
         
         /// <summary>
         /// desc control.
@@ -31,13 +31,22 @@ namespace BugTracker.Web {
         protected global::System.Web.UI.HtmlControls.HtmlTableCell desc_err;
         
         /// <summary>
-        /// filename control.
+        /// attached_file control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl filename;
+        protected global::System.Web.UI.HtmlControls.HtmlInputFile attached_file;
+        
+        /// <summary>
+        /// attached_file_err control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell attached_file_err;
         
         /// <summary>
         /// internal_only control.

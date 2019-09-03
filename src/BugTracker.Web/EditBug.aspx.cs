@@ -341,7 +341,7 @@ namespace BugTracker.Web
             if (this.PermissionLevel != Security.PermissionReadonly)
             {
                 var attachmentLink =
-                    "<img src=Content/images/attach.gif align=top>&nbsp;<a href=\"javascript:open_popup_window('AddAttachment.aspx','add attachment ',"
+                    "<img src=Content/images/attach.gif align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachments/Add.aspx") +@"','add attachment ',"
                     + Convert.ToString(this.Id)
                     + ",600,300)\" title='Attach an image, document, or other file to this item'>add attachment</a>";
                 this.attachment.InnerHtml = attachmentLink;

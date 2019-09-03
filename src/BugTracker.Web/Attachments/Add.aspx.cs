@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Attachments
 {
     using System;
     using System.IO;
@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class AddAttachment : Page
+    public partial class Add : Page
     {
         public int Bugid;
         public Security Security;

@@ -7,12 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class AddAttachment {
+namespace BugTracker.Web.Attachments {
     
+    
+    public partial class Edit {
+        
         /// <summary>
         /// desc control.
         /// </summary>
@@ -21,7 +20,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText desc;
-    
+        
         /// <summary>
         /// desc_err control.
         /// </summary>
@@ -30,25 +29,16 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell desc_err;
-    
+        
         /// <summary>
-        /// attached_file control.
+        /// filename control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputFile attached_file;
-    
-        /// <summary>
-        /// attached_file_err control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell attached_file_err;
-    
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl filename;
+        
         /// <summary>
         /// internal_only control.
         /// </summary>
@@ -57,7 +47,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox internal_only;
-    
+        
         /// <summary>
         /// internal_only_label control.
         /// </summary>
@@ -66,7 +56,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl internal_only_label;
-    
+        
         /// <summary>
         /// msg control.
         /// </summary>
@@ -75,7 +65,7 @@ namespace BugTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
-    
+        
         /// <summary>
         /// sub control.
         /// </summary>

@@ -7,10 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class ViewAttachment {
+namespace BugTracker.Web.Attachments {
+    
+    
+    public partial class View {
     }
 }

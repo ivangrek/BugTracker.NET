@@ -627,12 +627,12 @@ namespace BugTracker.Web.Core
                         && permissionLevel == Security.PermissionAll)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=EditAttachment.aspx?id="
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/Edit.aspx") + @"?id="
                                        + stringPostId + "&bug_id=" + stringBugId);
                         response.Write(">edit</a>");
 
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=DeleteAttachment.aspx?id="
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/Delete.aspx") + @"?id="
                                        + stringPostId + "&bug_id=" + stringBugId);
                         response.Write(">delete</a>");
                     }
@@ -700,13 +700,13 @@ namespace BugTracker.Web.Core
                         Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                        response.Write(" href=ViewAttachment.aspx?download=0&id="
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
                                        + stringPostId + "&bug_id=" + stringBugId);
                         response.Write(">view</a>");
                     }
 
                     response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                    response.Write(" href=ViewAttachment.aspx?download=1&id="
+                    response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=1&id="
                                    + stringPostId + "&bug_id=" + stringBugId);
                     response.Write(">save</a>");
                 }
@@ -748,14 +748,14 @@ namespace BugTracker.Web.Core
                 if ((string)dr["bp_content_type"] != "text/html" ||
                     Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
                 {
-                    response.Write("<a target=_blank href=ViewAttachment.aspx?download=0&id=");
+                    response.Write("<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id=");
                     response.Write(stringPostId);
                     response.Write("&bug_id=");
                     response.Write(stringBugId);
                     response.Write(">view</a>");
                 }
 
-                response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=ViewAttachment.aspx?download=1&id=");
+                response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=1&id=");
                 response.Write(stringPostId);
                 response.Write("&bug_id=");
                 response.Write(stringBugId);
@@ -794,7 +794,7 @@ namespace BugTracker.Web.Core
                                + "<a href=javascript:resize_image('im" + stringPostId + "',1.5)>" + "[+]</a>&nbsp;"
                                + "<a href=javascript:resize_image('im" + stringPostId + "',.6)>" + "[-]</a>"
                                + "<br><img id=im" + stringPostId
-                               + " src=ViewAttachment.aspx?download=0&id="
+                               + " src=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
                                + stringPostId + "&bug_id=" + stringBugId
                                + ">");
             else if (contentType == "text/plain"
@@ -807,7 +807,7 @@ namespace BugTracker.Web.Core
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',-200)>" + "[-]</a>"
                                + "<br><iframe id=if"
                                + stringPostId
-                               + " width=780 height=200 src=ViewAttachment.aspx?download=0&id="
+                               + " width=780 height=200 src=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
                                + stringPostId + "&bug_id=" + stringBugId
                                + "></iframe>");
         }

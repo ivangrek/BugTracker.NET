@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Attachments
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditAttachment : Page
+    public partial class Edit : Page
     {
         public int Bugid;
         public int Id;
@@ -42,8 +42,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit attachment";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit attachment";
 
             this.msg.InnerText = "";
 
@@ -99,9 +98,9 @@ namespace BugTracker.Web
             if (good)
             {
                 this.Sql = @"update bug_posts set
-			bp_comment = N'$1',
-			bp_hidden_from_external_users = $internal
-			where bp_id = $3";
+            bp_comment = N'$1',
+            bp_hidden_from_external_users = $internal
+            where bp_id = $3";
 
                 this.Sql = this.Sql.Replace("$3", Convert.ToString(this.Id));
                 this.Sql = this.Sql.Replace("$1", this.desc.Value.Replace("'", "''"));
@@ -111,7 +110,7 @@ namespace BugTracker.Web
 
                 if (!this.internal_only.Checked) Bug.SendNotifications(Bug.Update, this.Bugid, this.Security);
 
-                Response.Redirect("EditBug.aspx?id=" + Convert.ToString(this.Bugid));
+                Response.Redirect($"~/EditBug.aspx?id={Convert.ToString(this.Bugid)}");
             }
             else
             {

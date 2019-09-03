@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Attachments
 {
     using System;
     using System.Data;
@@ -16,7 +16,7 @@ namespace BugTracker.Web
     using System.Web.UI;
     using Core;
 
-    public partial class ViewAttachment : Page
+    public partial class View : Page
     {
         public Security Security;
 
