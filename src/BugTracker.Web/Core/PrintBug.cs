@@ -604,7 +604,7 @@ namespace BugTracker.Web.Core
 
                         // This delete leaves debris around, but it's better than nothing
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=DeleteComment.aspx?id="
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Delete.aspx") + @"?id="
                                        + stringPostId + "&bug_id=" + stringBugId);
                         response.Write(">delete</a>");
                     }
@@ -644,12 +644,12 @@ namespace BugTracker.Web.Core
                         && permissionLevel == Security.PermissionAll)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=EditComment.aspx?id="
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Edit.aspx") + @"?id="
                                        + stringPostId + "&bug_id=" + stringBugId);
                         response.Write(">edit</a>");
 
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=DeleteComment.aspx?id="
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Delete.aspx") + @"?id="
                                        + stringPostId + "&bug_id=" + stringBugId);
                         response.Write(">delete</a>");
                     }

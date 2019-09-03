@@ -404,7 +404,7 @@
     <Content Include="Attachments\Delete.aspx" />
     <Content Include="DeleteBug.aspx" />
     <Content Include="Administration\Categories\Delete.aspx" />
-    <Content Include="DeleteComment.aspx" />
+    <Content Include="Comments\Delete.aspx" />
     <Content Include="Administration\CustomFields\Delete.aspx" />
     <Content Include="Administration\Organizations\Delete.aspx" />
     <Content Include="Administration\Priorities\Delete.aspx" />
@@ -485,7 +485,7 @@
     <Content Include="EditBug.aspx" />
     <Content Include="Scripts\edit_bug.js" />
     <Content Include="Administration\Categories\Edit.aspx" />
-    <Content Include="EditComment.aspx" />
+    <Content Include="Comments\Edit.aspx" />
     <Content Include="Administration\CustomFields\Edit.aspx" />
     <Content Include="Administration\EditCustomHtml.aspx" />
     <Content Include="EditDashboard.aspx" />
@@ -769,12 +769,12 @@
     <Compile Include="Administration\Categories\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DeleteComment.aspx.cs">
-      <DependentUpon>DeleteComment.aspx</DependentUpon>
+    <Compile Include="Comments\Delete.aspx.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DeleteComment.aspx.designer.cs">
-      <DependentUpon>DeleteComment.aspx</DependentUpon>
+    <Compile Include="Comments\Delete.aspx.designer.cs">
+      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\CustomFields\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
@@ -881,12 +881,12 @@
     <Compile Include="Administration\Categories\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditComment.aspx.cs">
-      <DependentUpon>EditComment.aspx</DependentUpon>
+    <Compile Include="Comments\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EditComment.aspx.designer.cs">
-      <DependentUpon>EditComment.aspx</DependentUpon>
+    <Compile Include="Comments\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\CustomFields\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>

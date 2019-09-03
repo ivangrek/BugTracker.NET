@@ -7,54 +7,54 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Comments {
     
     
-    public partial class EditComment {
+    public partial class Delete {
         
         /// <summary>
-        /// comment control.
+        /// back_href control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea comment;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor back_href;
         
         /// <summary>
-        /// internal_only control.
+        /// frm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox internal_only;
+        protected global::System.Web.UI.HtmlControls.HtmlForm frm;
         
         /// <summary>
-        /// internal_only_label control.
+        /// confirm_href control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl internal_only_label;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
         
         /// <summary>
-        /// msg control.
+        /// row_id control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden row_id;
         
         /// <summary>
-        /// sub control.
+        /// redirect_bugid control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputSubmit sub;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden redirect_bugid;
     }
 }

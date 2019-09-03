@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Comments
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class EditComment : Page
+    public partial class Edit : Page
     {
         public int Bugid;
         public int Id;

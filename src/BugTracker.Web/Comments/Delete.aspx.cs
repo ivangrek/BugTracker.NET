@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Comments
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class DeleteComment : Page
+    public partial class Delete : Page
     {
         public Security Security;
         public string Sql;
