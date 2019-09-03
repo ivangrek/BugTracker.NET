@@ -7,10 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
-{
-    public partial class ViewWebConfig {
+namespace BugTracker.Web.Administration {
+    
+    
+    public partial class GetDbDateTime {
     }
 }

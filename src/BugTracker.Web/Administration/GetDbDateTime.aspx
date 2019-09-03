@@ -5,4 +5,4 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetDbDatetime.aspx.cs" Inherits="BugTracker.Web.GetDbDatetime" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetDbDateTime.aspx.cs" Inherits="BugTracker.Web.Administration.GetDbDateTime" %>

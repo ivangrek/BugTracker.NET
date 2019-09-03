@@ -9,8 +9,8 @@
 
 
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
-    public partial class GetDbDatetime {
+    public partial class ViewWebConfig {
     }
 }

@@ -509,7 +509,7 @@
     <Content Include="Flag.aspx" />
     <Content Include="Forgot.aspx" />
     <Content Include="GenerateBtnetscReg.aspx" />
-    <Content Include="GetDbDatetime.aspx" />
+    <Content Include="Administration\GetDbDateTime.aspx" />
     <Content Include="Content\images\git.png" />
     <Content Include="Versioning\Git\Blame.aspx" />
     <Content Include="Versioning\Git\Diff.aspx" />
@@ -616,7 +616,7 @@
     <Content Include="ViewMemoryLog.aspx" />
     <Content Include="Reports\View.aspx" />
     <Content Include="ViewSubscribers.aspx" />
-    <Content Include="ViewWebConfig.aspx" />
+    <Content Include="Administration\ViewWebConfig.aspx" />
     <Content Include="ViewWhatsNew.aspx" />
     <Content Include="Vote.aspx" />
     <Content Include="Content\images\vote_up.png" />
@@ -1028,12 +1028,12 @@
     <Compile Include="GenerateBtnetscReg.aspx.designer.cs">
       <DependentUpon>GenerateBtnetscReg.aspx</DependentUpon>
     </Compile>
-    <Compile Include="GetDbDatetime.aspx.cs">
-      <DependentUpon>GetDbDatetime.aspx</DependentUpon>
+    <Compile Include="Administration\GetDbDateTime.aspx.cs">
+      <DependentUpon>GetDbDateTime.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="GetDbDatetime.aspx.designer.cs">
-      <DependentUpon>GetDbDatetime.aspx</DependentUpon>
+    <Compile Include="Administration\GetDbDateTime.aspx.designer.cs">
+      <DependentUpon>GetDbDateTime.aspx</DependentUpon>
     </Compile>
     <Compile Include="Versioning\Git\Blame.aspx.cs">
       <DependentUpon>Blame.aspx</DependentUpon>
@@ -1488,11 +1488,11 @@
     <Compile Include="ViewSubscribers.aspx.designer.cs">
       <DependentUpon>ViewSubscribers.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ViewWebConfig.aspx.cs">
+    <Compile Include="Administration\ViewWebConfig.aspx.cs">
       <DependentUpon>ViewWebConfig.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ViewWebConfig.aspx.designer.cs">
+    <Compile Include="Administration\ViewWebConfig.aspx.designer.cs">
       <DependentUpon>ViewWebConfig.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewWhatsNew.aspx.cs">

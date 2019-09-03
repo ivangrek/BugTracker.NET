@@ -5,13 +5,13 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     using System;
     using System.Web.UI;
     using Core;
 
-    public partial class GetDbDatetime : Page
+    public partial class GetDbDateTime : Page
     {
         public void Page_Load(object sender, EventArgs e)
         {

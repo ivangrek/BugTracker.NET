@@ -5,4 +5,4 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ViewWebConfig.aspx.cs" Inherits="BugTracker.Web.ViewWebConfig" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ViewWebConfig.aspx.cs" Inherits="BugTracker.Web.Administration.ViewWebConfig" %>
