@@ -9,7 +9,7 @@
 
 
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Administration
 {
     public partial class ServerVariables {
     }

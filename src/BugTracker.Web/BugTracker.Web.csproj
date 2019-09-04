@@ -416,7 +416,7 @@
     <Content Include="DeleteTask.aspx" />
     <Content Include="Administration\UserDefinedAttributes\Delete.aspx" />
     <Content Include="Administration\Users\Delete.aspx" />
-    <Content Include="DownloadFile.aspx" />
+    <Content Include="Administration\DownloadFile.aspx" />
     <Content Include="Scripts\edit_area\autocompletion.js" />
     <Content Include="Scripts\edit_area\edit_area.css" />
     <Content Include="Scripts\edit_area\edit_area.js" />
@@ -586,7 +586,7 @@
     <Content Include="Seen.aspx" />
     <Content Include="SelectReport.aspx" />
     <Content Include="SendEmail.aspx" />
-    <Content Include="ServerVariables.aspx" />
+    <Content Include="Administration\ServerVariables.aspx" />
     <Content Include="setup.sql" />
     <Content Include="Scripts\sortable.js" />
     <Content Include="Administration\Statuses\List.aspx" />
@@ -853,11 +853,11 @@
     <Compile Include="Administration\Users\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DownloadFile.aspx.cs">
+    <Compile Include="Administration\DownloadFile.aspx.cs">
       <DependentUpon>DownloadFile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="DownloadFile.aspx.designer.cs">
+    <Compile Include="Administration\DownloadFile.aspx.designer.cs">
       <DependentUpon>DownloadFile.aspx</DependentUpon>
     </Compile>
     <Compile Include="Attachments\Edit.aspx.cs">
@@ -1320,11 +1320,11 @@
     <Compile Include="SendEmail.aspx.designer.cs">
       <DependentUpon>SendEmail.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ServerVariables.aspx.cs">
+    <Compile Include="Administration\ServerVariables.aspx.cs">
       <DependentUpon>ServerVariables.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ServerVariables.aspx.designer.cs">
+    <Compile Include="Administration\ServerVariables.aspx.designer.cs">
       <DependentUpon>ServerVariables.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">

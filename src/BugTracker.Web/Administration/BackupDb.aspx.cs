@@ -65,7 +65,7 @@ namespace BugTracker.Web.Administration
 
                 var justFile = Path.GetFileName((string) list[i]);
                 dr[0] = justFile;
-                dr[1] = ResolveUrl($"~/DownloadFile.aspx?which=backup&filename={justFile}");
+                dr[1] = ResolveUrl($"~/Administration/DownloadFile.aspx?which=backup&filename={justFile}");
 
                 dt.Rows.Add(dr);
             }
