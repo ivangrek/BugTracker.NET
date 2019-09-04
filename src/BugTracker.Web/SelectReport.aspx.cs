@@ -9,23 +9,22 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class SelectReport : Page
     {
         public DataSet Ds;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports)
+            security.CheckSecurity(Security.AnyUserOk);
+
+            if (security.User.IsAdmin || security.User.CanUseReports)
             {
                 //
             }
@@ -35,8 +34,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "reports";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - reports";
 
             var sql = @"
 select

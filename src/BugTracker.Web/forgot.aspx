@@ -44,14 +44,14 @@
                             <tr>
                                 <td class="lbl">Username:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="username" size="40" maxlength="40">
+                                    <input runat="server" type="text" class="txt" id="username" size="40" maxlength="40"/>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td class="lbl">Email:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="email" size="40" maxlength="40">
+                                    <input runat="server" type="text" class="txt" id="email" size="40" maxlength="40"/>
                                 </td>
                             </tr>
 
@@ -63,7 +63,7 @@
 
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input class="btn" type="submit" value="Send password info to my email" runat="server">
+                                    <input class="btn" type="submit" value="Send password info to my email" runat="server"/>
                                 </td>
                             </tr>
 

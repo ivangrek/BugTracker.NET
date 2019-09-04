@@ -6,13 +6,14 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Merge.aspx.cs" Inherits="BugTracker.Web.Bugs.Merge" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "admin"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -40,7 +41,7 @@
                                 <td class="lbl" align="right">FROM <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
                                 :
                         <td align="left" valign="bottom">
-                            <input type="text" class="txt" id="from_bug" runat="server" size="8">
+                        <input type="text" class="txt" id="from_bug" runat="server" size="8"/>
                             <span class="stat" id="static_from_bug" runat="server" style="display: none;"></span>
                             <br>
                             <span class="stat" id="static_from_desc" runat="server" style="display: none;"></span>
@@ -51,7 +52,7 @@
                                     <td class="lbl" align="right">INTO <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
                                     :
                         <td align="left" valign="bottom">
-                            <input type="text" class="txt" id="into_bug" runat="server" size="8">
+                        <input type="text" class="txt" id="into_bug" runat="server" size="8"/>
                             <span class="stat" id="static_into_bug" runat="server" style="display: none;"></span>
                             <br>
                             <span class="stat" id="static_into_desc" runat="server" style="display: none;"></span>

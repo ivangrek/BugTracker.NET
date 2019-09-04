@@ -6,13 +6,13 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.CustomFields.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
-<%@ Import Namespace="BugTracker.Web.Core" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -78,10 +78,10 @@
 
                                 <tr>
                                     <td colspan="2" class="lbl">Default:
-                                &nbsp;&nbsp;<input runat="server" type="text" class="txt" id="default_value" maxlength="50" size="50">
+                                        &nbsp;&nbsp;<input runat="server" type="text" class="txt" id="default_value" maxlength="50" size="50"/>
                                     </td>
-                                    <input runat="server" type="hidden" id="hidden_default_value">
-                                    <input runat="server" type="hidden" id="hidden_default_name">
+                                    <input runat="server" type="hidden" id="hidden_default_value"/>
+                                    <input runat="server" type="hidden" id="hidden_default_name"/>
                                     <td runat="server" class="err" id="default_value_error">&nbsp;</td>
                                 </tr>
 
@@ -100,7 +100,7 @@
 
                                 <tr>
                                     <td colspan="2" class="lbl">Sort Sequence:
-                                &nbsp;&nbsp;<input runat="server" type="text" class="txt" id="sort_seq" maxlength="2" size="2">
+                                        &nbsp;&nbsp;<input runat="server" type="text" class="txt" id="sort_seq" maxlength="2" size="2"/>
                                     </td>
                                     <td runat="server" class="err" id="sort_seq_err">&nbsp;</td>
                                 </tr>
@@ -114,14 +114,14 @@
 
                                 <tr>
                                     <td colspan="2" align="center">
-                                        <input runat="server" class="btn" type="submit" id="sub" value="Update">
+                                        <input runat="server" class="btn" type="submit" id="sub" value="Update"/>
                                     </td>
                                     <td>&nbsp;</td>
                                 </tr>
 
                             </table>
 
-                            <input type="hidden" id="dropdown_type" runat="server">
+                            <input type="hidden" id="dropdown_type" runat="server"/>
                         </form>
 
                 </td>

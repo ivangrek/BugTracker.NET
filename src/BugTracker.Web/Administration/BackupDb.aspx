@@ -6,12 +6,13 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" EnableEventValidation="false" AutoEventWireup="true" CodeBehind="BackupDb.aspx.cs" Inherits="BugTracker.Web.Administration.BackupDb" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "admin"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -36,7 +37,7 @@
                         <div class="err" id="msg" runat="server">&nbsp;</div>
 
                         <div>
-                            <input type="submit" value="Backup Database Now" class="btn" runat="server" onserverclick="on_backup" style="height: 50px; width: 200px;">
+                            <input type="submit" value="Backup Database Now" class="btn" runat="server" onserverclick="on_backup" style="height: 50px; width: 200px;"/>
                         </div>
 
                     </form>

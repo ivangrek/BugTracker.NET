@@ -13,6 +13,15 @@ namespace BugTracker.Web.Attachments {
     public partial class Delete {
         
         /// <summary>
+        /// MainMenu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
+        
+        /// <summary>
         /// back_href control.
         /// </summary>
         /// <remarks>

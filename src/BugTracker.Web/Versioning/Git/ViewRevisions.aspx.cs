@@ -9,7 +9,6 @@ namespace BugTracker.Web.Versioning.Git
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -18,26 +17,24 @@ namespace BugTracker.Web.Versioning.Git
         public int Bugid;
         public DataSet Ds;
 
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
             if (permissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "view git file commits";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - view git file commits";
 
             var sql = @"
 select 

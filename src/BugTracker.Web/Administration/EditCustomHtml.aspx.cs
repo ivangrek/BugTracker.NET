@@ -15,17 +15,18 @@ namespace BugTracker.Web.Administration
 
     public partial class EditCustomHtml : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit web config";
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit web config";
 
             var whichFile = "";
             var fileName = "";

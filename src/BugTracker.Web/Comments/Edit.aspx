@@ -6,13 +6,14 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Comments.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <script type="text/javascript" src="Scripts/jquery/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="Scripts/jquery/jquery.textarearesizer.compressed.js"></script>
-    <% if (this.Security.User.UseFckeditor)
+    <% if (Security.User.UseFckeditor)
         { %>
     <script type="text/javascript" src="Scripts/ckeditor/ckeditor.js"></script>
     <% } %>
@@ -36,7 +37,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu" />
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">

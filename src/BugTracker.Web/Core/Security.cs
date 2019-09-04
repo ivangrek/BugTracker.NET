@@ -22,7 +22,7 @@ namespace BugTracker.Web.Core
         public const int PermissionReporter = 3;
         public const int PermissionAll = 2;
 
-        private static readonly string GotoForm = @"
+        public static readonly string GotoForm = @"
 <td nowrap valign=middle>
     <form style='margin: 0px; padding: 0px;' action=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @" method=get>
         <input class=menubtn type=submit value='go to ID'>
@@ -31,12 +31,13 @@ namespace BugTracker.Web.Core
 </td>";
 
         public string AuthMethod = string.Empty;
-        public HttpContext Context = null;
 
-        public User User = new User();
+        public User User { get; } = new User();
 
-        public void CheckSecurity(HttpContext aspNetContext, int level)
+        public void CheckSecurity(int level)
         {
+            var aspNetContext = HttpContext.Current;
+
             Util.SetContext(aspNetContext);
             var request = aspNetContext.Request;
             var response = aspNetContext.Response;
@@ -210,129 +211,6 @@ and us_active = 1";
             var dt = DateTime.Now;
             var ts = new TimeSpan(365, 0, 0, 0);
             response.Cookies["user"].Expires = dt.Add(ts);
-        }
-
-        public void WriteMenuItem(HttpResponse response,
-            string thisLink, string menuItem, string href)
-        {
-            response.Write("<td class='menu_td'>");
-            if (thisLink == menuItem)
-                response.Write("<a href=" + href + "><span class='selected_menu_item warn'  style='margin-left:3px;'>" +
-                               menuItem + "</span></a>");
-            else
-                response.Write("<a href=" + href + "><span class='menu_item warn' style='margin-left:3px;'>" +
-                               menuItem + "</span></a>");
-            response.Write("</td>");
-        }
-
-        public void WriteMenu(HttpResponse response, string thisLink)
-        {
-            // topmost visible HTML
-            var customHeader = (string)Util.Context.Application["custom_header"];
-            response.Write(customHeader);
-
-            response.Write(@"
-<span id=debug style='position:absolute;top:0;left:0;'></span>
-<script>
-function dbg(s)
-{
-	document.getElementById('debug').innerHTML += (s + '<br>')
-}
-function on_submit_search()
-{
-	el = document.getElementById('lucene_input')
-	if (el.value == '')
-	{
-		alert('Enter the words you are search for.');
-		el.focus()
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-
-}
-
-</script>
-<table border=0 width=100% cellpadding=0 cellspacing=0 class=menubar><tr>");
-
-            // logo
-            var logo = (string)Util.Context.Application["custom_logo"];
-            response.Write(logo);
-
-            response.Write("<td width=20>&nbsp;</td>");
-            WriteMenuItem(response, thisLink, Util.GetSetting("PluralBugLabel", "bugs"), VirtualPathUtility.ToAbsolute("~/Bugs/List.aspx"));
-
-            if (this.User.CanSearch) WriteMenuItem(response, thisLink, "search", VirtualPathUtility.ToAbsolute("~/Search.aspx"));
-
-            if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
-                WriteMenuItem(response, thisLink, "news", VirtualPathUtility.ToAbsolute("~/ViewWhatsNew.aspx"));
-
-            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "queries", VirtualPathUtility.ToAbsolute("~/Queries/List.aspx"));
-
-            if (this.User.IsAdmin || this.User.CanUseReports || this.User.CanEditReports)
-                WriteMenuItem(response, thisLink, "reports", VirtualPathUtility.ToAbsolute("~/Reports/List.aspx"));
-
-            if (Util.GetSetting("CustomMenuLinkLabel", "") != "")
-                WriteMenuItem(response, thisLink,
-                    Util.GetSetting("CustomMenuLinkLabel", ""),
-                    Util.GetSetting("CustomMenuLinkUrl", ""));
-
-            if (this.User.IsAdmin)
-                WriteMenuItem(response, thisLink, "admin", VirtualPathUtility.ToAbsolute("~/Administration/Home.aspx"));
-            else if (this.User.IsProjectAdmin) WriteMenuItem(response, thisLink, "users", VirtualPathUtility.ToAbsolute("~/Administration/Users/List.aspx"));
-
-            // go to
-
-            response.Write(GotoForm);
-
-            // search
-            if (Util.GetSetting("EnableLucene", "1") == "1" && this.User.CanSearch)
-            {
-                var query = (string)HttpContext.Current.Session["query"];
-                if (query == null) query = "";
-                var searchForm = @"
-
-<td nowrap valign=middle>
-    <form style='margin: 0px; padding: 0px;' action=SearchText.aspx method=get onsubmit='return on_submit_search()'>
-        <input class=menubtn type=submit value='search text'>
-        <input class=menuinput  id=lucene_input size=24 type=text class=txt
-        value='" + query.Replace("'", "") + @"' name=query accesskey=s>
-        <a href=Content/lucene_syntax.html target=_blank style='font-size: 7pt;'>advanced</a>
-    </form>
-</td>";
-                //context.Session["query"] = null;
-                response.Write(searchForm);
-            }
-
-            response.Write("<td nowrap valign=middle>");
-            if (this.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
-                response.Write("<span class=smallnote>using as<br>");
-            else
-                response.Write("<span class=smallnote>logged in as<br>");
-            response.Write(this.User.Username);
-            response.Write("</span></td>");
-
-            if (this.AuthMethod == "plain")
-            {
-                if (this.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
-                    WriteMenuItem(response, thisLink, "login", VirtualPathUtility.ToAbsolute("~/Home.aspx"));
-                else
-                    WriteMenuItem(response, thisLink, "logoff", VirtualPathUtility.ToAbsolute("~/Logoff.aspx"));
-            }
-
-            // for guest account, suppress display of "edit_self
-            if (!this.User.IsGuest) WriteMenuItem(response, thisLink, "settings", VirtualPathUtility.ToAbsolute("~/EditSelf.aspx"));
-
-            response.Write("<td valign=middle align=left'>");
-            response.Write(
-                "<a target=_blank href=Content/about.html><span class='menu_item' style='margin-left:3px;'>about</span></a></td>");
-            response.Write("<td nowrap valign=middle>");
-            response.Write(
-                "<a target=_blank href=http://ifdefined.com/README.html><span class='menu_item' style='margin-left:3px;'>help</span></a></td>");
-
-            response.Write("</tr></table><br>");
         }
     }
 }

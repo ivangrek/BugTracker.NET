@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Administration.Users.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -30,7 +31,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "admin"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -43,7 +44,7 @@
                         <form runat="server">
 
                             <span class="lbl">Show only usernames starting with:</span>
-                            <input type="text" runat="server" id="filter_users" class="txt" value="" onkeyup="filter_changed()" style="color: red;">
+                            <input type="text" runat="server" id="filter_users" class="txt" value="" onkeyup="filter_changed()" style="color: red;"/>
                             &nbsp;&nbsp;&nbsp;
 
                 <span class="lbl">hide inactive users:</span>

@@ -19,14 +19,17 @@ namespace BugTracker.Web.Administration
     public partial class BackupDb : Page
     {
         public string AppDataFolder;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - backup db";
 

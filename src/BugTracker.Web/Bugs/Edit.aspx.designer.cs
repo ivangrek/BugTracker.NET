@@ -13,6 +13,24 @@ namespace BugTracker.Web.Bugs {
     public partial class Edit {
         
         /// <summary>
+        /// MainMenu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
+        
+        /// <summary>
+        /// mainBlock control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl mainBlock;
+        
+        /// <summary>
         /// prev_next control.
         /// </summary>
         /// <remarks>
@@ -713,5 +731,32 @@ namespace BugTracker.Web.Bugs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl toggle_history;
+        
+        /// <summary>
+        /// errorBlock control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl errorBlock;
+        
+        /// <summary>
+        /// errorBlockPermissions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl errorBlockPermissions;
+        
+        /// <summary>
+        /// errorBlockIntegerId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl errorBlockIntegerId;
     }
 }

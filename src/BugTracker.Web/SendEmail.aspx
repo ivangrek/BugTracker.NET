@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="SendEmail.aspx.cs" Inherits="BugTracker.Web.SendEmail" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -13,7 +14,7 @@
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="my_on_load()">--%>
 
-    <% if (this.Security.User.UseFckeditor)
+    <% if (Security.User.UseFckeditor)
         { %>
     <script type="text/javascript" src="Scripts/ckeditor/ckeditor.js"></script>
     <% } %>
@@ -83,7 +84,7 @@
 
         function my_on_load() {
             <%
-        if (this.Security.User.UseFckeditor)
+        if (Security.User.UseFckeditor)
             Response.Write("CKEDITOR.replace( 'body' )");
             %>
 
@@ -98,7 +99,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -146,7 +147,7 @@
                             <tr>
                                 <td class="lbl">Subject:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="subject" maxlength="200" size="100">
+                                    <input runat="server" type="text" class="txt" id="subject" maxlength="200" size="100"/>
                                 </td>
                                 <td runat="server" class="err" id="subject_err">&nbsp;</td>
                             </tr>
@@ -154,7 +155,7 @@
                             <tr>
                                 <td class="lbl">Attachment:</td>
                                 <td>
-                                    <input runat="server" type="file" class="txt" id="attached_file" maxlength="255" size="100">
+                                    <input runat="server" type="file" class="txt" id="attached_file" maxlength="255" size="100"/>
                                 </td>
                                 <td runat="server" class="err" id="attached_file_err">&nbsp;</td>
                             </tr>
@@ -183,17 +184,17 @@
 
                             <tr>
                                 <td colspan="2">
-                                    <input runat="server" type="checkbox" class="txt" id="return_receipt">Return receipt</td>
+                                    <input runat="server" type="checkbox" class="txt" id="return_receipt"/>Return receipt</td>
                             </tr>
 
                             <tr>
                                 <td colspan="2">
-                                    <input runat="server" type="checkbox" class="txt" id="include_bug">Include print of <% Response.Write(Util.GetSetting("SingularBugLabel", "Bug")); %></td>
+                                    <input runat="server" type="checkbox" class="txt" id="include_bug"/>Include print of <% Response.Write(Util.GetSetting("SingularBugLabel", "Bug")); %></td>
                             </tr>
 
                             <tr>
                                 <td colspan="2">
-                                    <input runat="server" type="checkbox" class="txt" id="include_internal_posts"><span id="include_internal_posts_label" runat="server">Include comments visible to internal users only</span>
+                                    <input runat="server" type="checkbox" class="txt" id="include_internal_posts"/><span id="include_internal_posts_label" runat="server">Include comments visible to internal users only</span>
                                 </td>
                             </tr>
 
@@ -211,13 +212,13 @@
 
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input runat="server" class="btn" type="submit" id="sub" value="Send" style="font-size: larger; padding-left: 20px; padding-right: 20px;">
+                                    <input runat="server" class="btn" type="submit" id="sub" value="Send" style="font-size: larger; padding-left: 20px; padding-right: 20px;"/>
                                 </td>
                                 <td>&nbsp;</td>
                             </tr>
                         </table>
-                        <input type="hidden" id="bg_id" runat="server">
-                        <input type="hidden" id="short_desc" runat="server">
+                        <input type="hidden" id="bg_id" runat="server"/>
+                        <input type="hidden" id="short_desc" runat="server"/>
                     </form>
         </table>
     </div>
@@ -281,7 +282,7 @@
                             dictUsersForThisProject[(int)dr[0]] = 1;
                     }
 
-                    var dtRelatedUsers = Util.GetRelatedUsers(this.Security, true); // force full names
+                    var dtRelatedUsers = Util.GetRelatedUsers(Security, true); // force full names
                                                                                         // let's sort by email
                     var dvRelatedUsers = new DataView(dtRelatedUsers);
                     dvRelatedUsers.Sort = "us_email";

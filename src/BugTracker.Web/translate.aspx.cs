@@ -8,25 +8,26 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
 
     public partial class Translate : Page
     {
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "translate";
+            security.CheckSecurity(Security.AnyUserOk);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - translate";
 
             var stringBpId = Request["postid"];
             var stringBgId = Request["bugid"];
@@ -38,8 +39,8 @@ namespace BugTracker.Web
                     stringBpId = Util.SanitizeInteger(stringBpId);
 
                     this.Sql = @"select bp_bug, bp_comment
-						from bug_posts
-						where bp_id = $id";
+                        from bug_posts
+                        where bp_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", stringBpId);
 
@@ -54,8 +55,8 @@ namespace BugTracker.Web
                     stringBgId = Util.SanitizeInteger(stringBgId);
 
                     this.Sql = @"select bg_short_desc
-						from bugs
-						where bg_id = $id";
+                        from bugs
+                        where bg_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", stringBgId);
 
@@ -65,7 +66,7 @@ namespace BugTracker.Web
                 }
 
                 // added check for permission level - corey
-                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), this.Security);
+                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), security);
                 if (permissionLevel == Security.PermissionNone)
                 {
                     Response.Write("You are not allowed to view this item");

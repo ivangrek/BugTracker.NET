@@ -9,7 +9,6 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
@@ -18,22 +17,21 @@ namespace BugTracker.Web
     {
         public int Bugid;
         public DataSet Ds;
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "view subscribers";
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - view subscribers";
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
             if (permissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
@@ -64,7 +62,7 @@ namespace BugTracker.Web
                     DbUtil.ExecuteNonQuery(this.Sql);
 
                     // send a notification to this user only
-                    Bug.SendNotifications(Bug.Update, this.Bugid, this.Security, newSubscriberUserid);
+                    Bug.SendNotifications(Bug.Update, this.Bugid, security, newSubscriberUserid);
                 }
             }
 
@@ -74,7 +72,7 @@ namespace BugTracker.Web
 
             // show who is subscribed
 
-            if (this.Security.User.IsAdmin)
+            if (security.User.IsAdmin)
             {
                 this.Sql = @"
 select

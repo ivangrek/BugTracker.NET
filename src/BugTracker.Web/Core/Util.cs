@@ -1127,33 +1127,5 @@ order by tsk_sort_sequence, tsk_id";
 
             return ds;
         }
-
-        public static void DisplayBugNotFound(HttpResponse response, Security security, int id)
-        {
-            response.Write("<link rel=StyleSheet href=Content/btnet.css type=text/css>");
-            security.WriteMenu(response, GetSetting("PluralBugLabel", "bugs"));
-            response.Write("<p>&nbsp;</p><div class=align>");
-            response.Write("<div class=err>");
-            response.Write(CapitalizeFirstLetter(GetSetting("SingularBugLabel", "bug")));
-            response.Write(" not found:&nbsp;" + Convert.ToString(id) + "</div>");
-            response.Write("<p><a href='" + VirtualPathUtility.ToAbsolute("~/Bugs/List.aspx") +"'>View");
-            response.Write(GetSetting("PluralBugLabel", "bug"));
-            response.Write("</a>");
-            response.End();
-        }
-
-        public static void DisplayYouDontHavePermission(HttpResponse response, Security security)
-        {
-            response.Write("<link rel=StyleSheet href=Content/btnet.css type=text/css>");
-            security.WriteMenu(response, GetSetting("PluralBugLabel", "bugs"));
-            response.Write("<p>&nbsp;</p><div class=align>");
-            response.Write("<div class=err>You are not allowed to view this "
-                           + GetSetting("SingularBugLabel", "bug")
-                           + "</div>");
-            response.Write("<p><a href='" + VirtualPathUtility.ToAbsolute("~/Bugs/List.aspx") + "'>View "
-                           + CapitalizeFirstLetter(GetSetting
-                               ("PluralBugLabel", "bugs")) + "</a>");
-            response.End();
-        }
     }
 }

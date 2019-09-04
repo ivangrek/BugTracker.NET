@@ -9,15 +9,12 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class TasksAll : Page
     {
         public DataSet DsTasks;
-
-        public Security Security;
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -28,13 +25,13 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "all tasks";
+            security.CheckSecurity(Security.AnyUserOk);
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanViewTasks)
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - all tasks";
+
+            if (security.User.IsAdmin || security.User.CanViewTasks)
             {
                 // allowed
             }
@@ -44,7 +41,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            this.DsTasks = Util.GetAllTasks(this.Security, 0);
+            this.DsTasks = Util.GetAllTasks(security, 0);
         }
     }
 }

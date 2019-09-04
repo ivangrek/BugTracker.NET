@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Administration.UserDefinedAttributes
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
     using Core.Administration;
@@ -17,8 +16,6 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     public partial class Delete : Page
     {
         private readonly IUserDefinedAttributeService userDefinedAttributeService = new UserDefinedAttributeService(new ApplicationContext());
-
-        protected Security Security { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -29,8 +26,12 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
         {
             Util.DoNotCache(Response);
 
-            Security = new Security();
-            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             if (IsPostBack)
             {

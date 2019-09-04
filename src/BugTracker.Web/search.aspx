@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Search.aspx.cs" Inherits="BugTracker.Web.Search" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -25,7 +26,7 @@
         search_suggest_min_chars = <% Response.Write(Util.GetSetting("SearchSuggestMinChars", "3")); %>
 
         // start of mass edit javascript
-        <% if (this.Security.User.IsAdmin || this.Security.User.CanMassEditBugs)
+        <% if (Security.User.IsAdmin || Security.User.CanMassEditBugs)
         { %>
 
             function select_all(sel) {
@@ -264,7 +265,7 @@
                 "bg_project_custom_dropdown_value3");
 
         <%
-        if (this.Security.User.OtherOrgsPermissionLevel != 0)
+        if (Security.User.OtherOrgsPermissionLevel != 0)
         {
         %>
             var org_clause = build_clause_from_options(frm.org.options, "bg_org");
@@ -318,7 +319,7 @@
                 comments_clause =
                     " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and isnull(bp_comment_search,bp_comment) like";
                 comments_clause += " N'%" + like2_string + "%'";
-            <% if (this.Security.User.ExternalUser)
+            <% if (Security.User.ExternalUser)
         { %>
                 comments_clause += " and bp_hidden_from_external_users = 0";
             <% } %>
@@ -358,7 +359,7 @@
         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
             var columnName = (string)drcc["name"];
-            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
             {
                 continue;
             }
@@ -469,42 +470,42 @@
             select += ",\nbg_last_updated_date [last updated on]";
 
         <%
-        if (this.Security.User.TagsFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.TagsFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(bg_tags,'') [tags]";
         <%
         }
 
-        if (this.Security.User.ProjectFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.ProjectFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(pj_name,'') [project]";
         <%
         }
 
-        if (this.Security.User.OrgFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.OrgFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(og_name,'') [organization]";
         <%
         }
 
-        if (this.Security.User.CategoryFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.CategoryFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(ct_name,'') [category]";
         <%
         }
 
-        if (this.Security.User.PriorityFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.PriorityFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(pr_name,'') [priority]";
         <%
         }
 
-        if (this.Security.User.AssignedToFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.AssignedToFieldPermissionLevel != Security.PermissionNone)
         {
             if (this.UseFullNames)
             {
@@ -520,14 +521,14 @@
             }
         }
 
-        if (this.Security.User.StatusFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.StatusFieldPermissionLevel != Security.PermissionNone)
         {
         %>
             select += ",\nisnull(st_name,'') [status]";
         <%
         }
 
-        if (this.Security.User.UdfFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.UdfFieldPermissionLevel != Security.PermissionNone)
         {
             if (this.ShowUdf)
             {
@@ -541,7 +542,7 @@
         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
             var columnName = (string)drcc["name"];
-            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
             {
                 continue;
             }
@@ -595,7 +596,7 @@
         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
             var columnName = (string)drcc["name"];
-            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
             {
                 continue;
             }
@@ -684,7 +685,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "search"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -692,7 +693,7 @@
 
     <div class="align">
 
-        <% if (!this.Security.User.AddsNotAllowed)
+        <% if (!Security.User.AddsNotAllowed)
             { %>
         <a href="<%= ResolveUrl("~/Bugs/Edit.aspx") %>">
             <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
@@ -777,7 +778,7 @@
                                     <tr>
                                         <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> description contains:&nbsp;</span>
                                         <td colspan="2">
-                                            <input type="text" class="txt" id="like" runat="server" onkeydown="search_criteria_onkeydown(this,event)" onkeyup="search_criteria_onkeyup(this,event)" size="50" autocomplete="off">
+                                        <input type="text" class="txt" id="like" runat="server" onkeydown="search_criteria_onkeydown(this,event)" onkeyup="search_criteria_onkeyup(this,event)" size="50" autocomplete="off"/>
 
 
                                             <% if (this.ShowUdf)
@@ -804,7 +805,7 @@
                                     <tr>
                                         <td nowrap><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> comments since:&nbsp;</span>
                                         <td colspan="2">
-                                            <input type="text" class="txt date" id="comments_since" runat="server" onkeyup="on_change()" size="10">
+                                            <input type="text" class="txt date" id="comments_since" runat="server" onkeyup="on_change()" size="10"/>
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('comments_since')">[select]
                                             </a>
@@ -815,14 +816,14 @@
                                     <tr>
                                         <td nowrap><span class="lbl">"Reported on" from date:&nbsp;</span>
                                         <td colspan="2">
-                                            <input runat="server" type="text" class="txt date" id="from_date" maxlength="10" size="10" onchange="on_change()">
+                                            <input runat="server" type="text" class="txt date" id="from_date" maxlength="10" size="10" onchange="on_change()"/>
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('from_date')">[select]
                                             </a>
 
                                             &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="lbl">to:&nbsp;</span>
-                                            <input runat="server" type="text" class="txt date" id="to_date" maxlength="10" size="10" onchange="on_change()">
+                                            <input runat="server" type="text" class="txt date" id="to_date" maxlength="10" size="10" onchange="on_change()"/>
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('to_date')">[select]
                                             </a>
@@ -832,14 +833,14 @@
                                     <tr>
                                         <td nowrap><span class="lbl">"Last updated on" from date:&nbsp;</span>
                                         <td colspan="2">
-                                            <input runat="server" type="text" class="txt date" id="lu_from_date" maxlength="10" size="10" onchange="on_change()">
+                                            <input runat="server" type="text" class="txt date" id="lu_from_date" maxlength="10" size="10" onchange="on_change()"/>
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('lu_from_date')">[select]
                                             </a>
 
                                             &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="lbl">to:&nbsp;</span>
-                                            <input runat="server" type="text" class="txt date" id="lu_to_date" maxlength="10" size="10" onchange="on_change()">
+                                            <input runat="server" type="text" class="txt date" id="lu_to_date" maxlength="10" size="10" onchange="on_change()"/>
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('lu_to_date')">[select]
                                             </a>
@@ -856,7 +857,7 @@
                                         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                                         {
                                             var columnName = (string)drcc["name"];
-                                            if (this.Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+                                            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
                                             {
                                                 continue;
                                             }
@@ -1015,10 +1016,10 @@
 
                                     <tr>
                                         <td colspan="10" align="center">
-                                            <input type="hidden" runat="server" id="project_changed" value="0">
-                                            <input type="hidden" runat="server" id="hit_submit_button" value="0">
-                                            <input type="hidden" runat="server" id="hit_save_query_button" value="0">
-                                            <input class="btn" type="submit" onclick="set_hit_submit_button()" value="&nbsp;&nbsp;&nbsp;Search&nbsp;&nbsp;&nbsp;" runat="server">
+                                            <input type="hidden" runat="server" id="project_changed" value="0"/>
+                                            <input type="hidden" runat="server" id="hit_submit_button" value="0"/>
+                                            <input type="hidden" runat="server" id="hit_save_query_button" value="0"/>
+                                            <input class="btn" type="submit" onclick="set_hit_submit_button()" value="&nbsp;&nbsp;&nbsp;Search&nbsp;&nbsp;&nbsp;" runat="server"/>
                                         </td>
                                     </tr>
 
@@ -1032,7 +1033,7 @@
                                                     frm2.submit();
                                                 }
                                             </script>
-                                            <% if (this.Security.User.IsGuest) /* can't save search */
+                                            <% if (Security.User.IsGuest) /* can't save search */
                                                 { %>
                                             <span style="color: Gray; font-size: 7pt;">Save Search not available to "guest" user</span>
                                             <% }
@@ -1045,22 +1046,22 @@
 
                                 </table>
 
-                                <input type="hidden" name="new_page" id="new_page" runat="server" value="0">
-                                <input type="hidden" name="actn" id="actn" runat="server" value="">
-                                <input type="hidden" name="filter" id="filter" runat="server" value="">
-                                <input type="hidden" name="sort" id="sort" runat="server" value="-1">
-                                <input type="hidden" name="prev_sort" id="prev_sort" runat="server" value="-1">
-                                <input type="hidden" name="prev_dir" id="prev_dir" runat="server" value="ASC">
-                                <input type="hidden" name="tags" id="tags" value="">
+                            <input type="hidden" name="new_page" id="new_page" runat="server" value="0"/>
+                            <input type="hidden" name="actn" id="actn" runat="server" value=""/>
+                            <input type="hidden" name="filter" id="filter" runat="server" value=""/>
+                            <input type="hidden" name="sort" id="sort" runat="server" value="-1"/>
+                            <input type="hidden" name="prev_sort" id="prev_sort" runat="server" value="-1"/>
+                            <input type="hidden" name="prev_dir" id="prev_dir" runat="server" value="ASC"/>
+                            <input type="hidden" name="tags" id="tags" value=""/>
 
                                 <script>
-                                    var enable_popups = <% Response.Write(this.Security.User.EnablePopups ? "1" : "0"); %>;
+                                    var enable_popups = <% Response.Write(Security.User.EnablePopups ? "1" : "0"); %>;
                                     var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
                                 </script>
 
                                 <div id="popup" class="buglist_popup"></div>
 
-                                <input type="hidden" id="query" runat="server" value="">
+                            <input type="hidden" id="query" runat="server" value=""/>
                             </form>
                         </div>
 
@@ -1083,13 +1084,13 @@
 
                 if (Util.GetSetting("EnableTags", "0") == "1")
                 {
-                    BugList.DisplayBugListTagsLine(Response, this.Security);
+                    BugList.DisplayBugListTagsLine(Response, Security);
                 }
 
-                if (!this.Security.User.IsGuest && (this.Security.User.IsAdmin || this.Security.User.CanMassEditBugs))
+                if (!Security.User.IsGuest && (Security.User.IsAdmin || Security.User.CanMassEditBugs))
                 {
                     Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=MassEdit.aspx>");
-                    display_bugs(true);
+                    display_bugs(true, Security);
                     Response.Write("<p><table class=frm><tr><td colspan=5 class=smallnote>Update or delete all checked items");
                     Response.Write("<tr><td colspan=5>");
                     Response.Write("<a href=javascript:select_all(true)>select all</a>&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -1109,7 +1110,7 @@
                 else
                 {
                     // no checkboxes
-                    display_bugs(false);
+                    display_bugs(false, Security);
                 }
             }
             else

@@ -19,15 +19,15 @@ namespace BugTracker.Web.Versioning.Hg
 
         public string LogResult;
         public string Repo;
-        public Security Security;
         public string StringAffectedPathId;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             Page.Title = "hg log " + HttpUtility.HtmlEncode(this.FilePath);
 
@@ -50,7 +50,7 @@ order by hgrev_revision desc, hgap_path";
             // check if user has permission for this bug
             var bugid = (int) dr["hgrev_bug"];
 
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
             if (permissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");

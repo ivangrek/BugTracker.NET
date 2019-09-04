@@ -85,8 +85,8 @@
                             <tr>
                                 <td colspan="2">&nbsp;<span runat="server" class="err" id="add_err"></span>
                                 </table>
-                                <input runat="server" id="bgid" type="hidden" name="bgid" value="">
-                                <input id="actn" type="hidden" name="actn" value="add">
+                                <input runat="server" id="bgid" type="hidden" name="bgid" value=""/>
+                                <input id="actn" type="hidden" name="actn" value="add"/>
                                 <input id="ses" type="hidden" name="ses" value="<% Response.Write(this.Ses); %>">
                             </form>
                             <% } %>

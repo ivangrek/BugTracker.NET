@@ -9,7 +9,6 @@ namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -19,19 +18,21 @@ namespace BugTracker.Web.Bugs
         public DataView Dv;
         public bool HistoryInline;
         public bool ImagesInline;
-
-        public Security Security;
         public string Sql;
+
+        public Security Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "print " +
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Security = security;
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - print " +
                                                                         Util.GetSetting("PluralBugLabel", "bugs");
 
             // are we doing the query to get the bugs or are we using the cached dataview?
@@ -46,8 +47,8 @@ namespace BugTracker.Web.Bugs
                 var bugSql = (string) DbUtil.ExecuteScalar(this.Sql);
 
                 // replace magic variables
-                bugSql = bugSql.Replace("$ME", Convert.ToString(this.Security.User.Usid));
-                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, this.Security);
+                bugSql = bugSql.Replace("$ME", Convert.ToString(security.User.Usid));
+                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
 
                 // all we really need is the bugid, but let's do the same query as Bugs/Print.aspx
                 this.Ds = DbUtil.GetDataSet(bugSql);

@@ -6,13 +6,14 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Projects.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "admin"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -71,7 +72,7 @@
                                 <tr>
                                     <td class="lbl">Project Name:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="name" maxlength="30" size="30">
+                                        <input runat="server" type="text" class="txt" id="name" maxlength="30" size="30"/>
                                     </td>
                                     <td runat="server" class="err" id="name_err">&nbsp;</td>
                                 </tr>
@@ -156,7 +157,7 @@
                                 <tr>
                                     <td class="lbl">Pop3 Username:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="pop3_username" maxlength="50" size="30">
+                                        <input runat="server" type="text" class="txt" id="pop3_username" maxlength="50" size="30"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>
@@ -164,7 +165,7 @@
                                 <tr>
                                     <td class="lbl">Pop3 Password:</td>
                                     <td>
-                                        <input runat="server" type="password" class="txt" id="pop3_password" maxlength="20" size="20">
+                                        <input runat="server" type="password" class="txt" id="pop3_password" maxlength="20" size="20"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>
@@ -179,7 +180,7 @@
                                 <tr>
                                     <td class="lbl">From Email Address:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="pop3_email_from" maxlength="50" size="30">
+                                        <input runat="server" type="text" class="txt" id="pop3_email_from" maxlength="50" size="30"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>
@@ -265,7 +266,7 @@
                                 <tr>
                                     <td class="lbl">Custom Dropdown Label 1:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="custom_dropdown_label1" maxlength="30" size="30">
+                                        <input runat="server" type="text" class="txt" id="custom_dropdown_label1" maxlength="30" size="30"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>
@@ -295,7 +296,7 @@
                                 <tr>
                                     <td class="lbl">Custom Dropdown Label 2:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="custom_dropdown_label2" maxlength="30" size="30">
+                                        <input runat="server" type="text" class="txt" id="custom_dropdown_label2" maxlength="30" size="30"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>
@@ -325,7 +326,7 @@
                                 <tr>
                                     <td class="lbl">Custom Dropdown Label 3:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="custom_dropdown_label3" maxlength="30" size="30">
+                                        <input runat="server" type="text" class="txt" id="custom_dropdown_label3" maxlength="30" size="30"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>

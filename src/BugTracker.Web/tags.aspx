@@ -23,7 +23,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <p>
-        <% print_tags(); %>
+        <% print_tags(Security); %>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">

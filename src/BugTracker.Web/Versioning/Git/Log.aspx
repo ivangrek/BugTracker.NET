@@ -20,7 +20,7 @@
 
             <input type="hidden" name="rev_0" id="rev_0" value="0"/>
             <input type="hidden" name="rev_1" id="rev_1" value="0"/>
-            <input type="hidden" name="revpathid" id="revpathid" value="" runat="server"></input>
+            <input type="hidden" name="revpathid" id="revpathid" value="" runat="server"/>
 
         </form>
 

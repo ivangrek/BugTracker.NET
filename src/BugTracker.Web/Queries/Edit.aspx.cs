@@ -16,8 +16,6 @@ namespace BugTracker.Web.Queries
     public partial class Edit : Page
     {
         public int Id;
-
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -29,12 +27,14 @@ namespace BugTracker.Web.Queries
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
+            var security = new Security();
 
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            security.CheckSecurity(Security.AnyUserOk);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit query";
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "queries";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit query";
 
             this.msg.InnerText = "";
 
@@ -46,7 +46,7 @@ namespace BugTracker.Web.Queries
 
             if (!IsPostBack)
             {
-                if (this.Security.User.IsAdmin || this.Security.User.CanEditSql)
+                if (security.User.IsAdmin || security.User.CanEditSql)
                 {
                     // these guys can do everything
                     this.vis_everybody.Checked = true;
@@ -104,15 +104,15 @@ select us_id, us_username from users order by us_username";
                     // Get this entry's data from the db and fill in the form
 
                     this.Sql = @"select
-				qu_desc, qu_sql, isnull(qu_user,0) [qu_user], isnull(qu_org,0) [qu_org]
-				from queries where qu_id = $1";
+                qu_desc, qu_sql, isnull(qu_user,0) [qu_user], isnull(qu_org,0) [qu_org]
+                from queries where qu_id = $1";
 
                     this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
                     var dr = DbUtil.GetDataRow(this.Sql);
 
-                    if ((int) dr["qu_user"] != this.Security.User.Usid)
+                    if ((int) dr["qu_user"] != security.User.Usid)
                     {
-                        if (this.Security.User.IsAdmin || this.Security.User.CanEditSql)
+                        if (security.User.IsAdmin || security.User.CanEditSql)
                         {
                             // these guys can do everything
                         }
@@ -163,11 +163,11 @@ select us_id, us_username from users order by us_username";
             }
             else
             {
-                on_update();
+                on_update(security);
             }
         }
 
-        public bool validate()
+        public bool validate(Security security)
         {
             var good = true;
 
@@ -181,7 +181,7 @@ select us_id, us_username from users order by us_username";
                 this.desc_err.InnerText = "";
             }
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanEditSql)
+            if (security.User.IsAdmin || security.User.CanEditSql)
             {
                 if (this.vis_org.Checked)
                 {
@@ -246,26 +246,26 @@ select us_id, us_username from users order by us_username";
             return good;
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
-            var good = validate();
+            var good = validate(security);
 
             if (good)
             {
                 if (this.Id == 0) // insert new
                 {
                     this.Sql = @"insert into queries
-				(qu_desc, qu_sql, qu_default, qu_user, qu_org)
-				values (N'$de', N'$sq', 0, $us, $rl)";
+                (qu_desc, qu_sql, qu_default, qu_user, qu_org)
+                values (N'$de', N'$sq', 0, $us, $rl)";
                 }
                 else // edit existing
                 {
                     this.Sql = @"update queries set
-				qu_desc = N'$de',
-				qu_sql = N'$sq',
-				qu_user = $us,
-				qu_org = $rl
-				where qu_id = $id";
+                qu_desc = N'$de',
+                qu_sql = N'$sq',
+                qu_user = $us,
+                qu_org = $rl
+                where qu_id = $id";
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 }
@@ -280,7 +280,7 @@ select us_id, us_username from users order by us_username";
                 this.Sql = this.Sql.Replace("$sq", this.sql_text.Value.Replace("'", "''"));
                 //		}
 
-                if (this.Security.User.IsAdmin || this.Security.User.CanEditSql)
+                if (security.User.IsAdmin || security.User.CanEditSql)
                 {
                     if (this.vis_everybody.Checked)
                     {
@@ -300,7 +300,7 @@ select us_id, us_username from users order by us_username";
                 }
                 else
                 {
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
                     this.Sql = this.Sql.Replace("$rl", "0");
                 }
 

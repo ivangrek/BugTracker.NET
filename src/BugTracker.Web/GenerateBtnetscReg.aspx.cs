@@ -8,18 +8,16 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class GenerateBtnetscReg : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             Response.ContentType = "text/reg";
             Response.AddHeader("content-disposition", "attachment; filename=\"btnetsc.reg\"");
@@ -31,8 +29,8 @@ namespace BugTracker.Web
             url = url.Replace("generate_btnetsc_reg", "insert_bug");
             write_variable_value("Url", url);
             write_variable_value("Project", "0");
-            write_variable_value("Email", this.Security.User.Email);
-            write_variable_value("Username", this.Security.User.Username);
+            write_variable_value("Email", security.User.Email);
+            write_variable_value("Username", security.User.Username);
 
             var nvcSrvElements = Request.ServerVariables;
             var array1 = nvcSrvElements.AllKeys;

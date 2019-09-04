@@ -14,12 +14,11 @@ namespace BugTracker.Web.Administration
 
     public partial class DownloadFile : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
 
             var which = Request["which"];
             var filename = Request["filename"];

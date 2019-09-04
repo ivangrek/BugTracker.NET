@@ -18,14 +18,14 @@ namespace BugTracker.Web.Versioning.Git
         public string BlameText;
         public string Commit;
         public string Path;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             Page.Title = "git blame " + this.Commit + " -- " + HttpUtility.HtmlEncode(this.Path);
 
@@ -41,7 +41,7 @@ where gitap_id = $id";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], security);
             if (permissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");

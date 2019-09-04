@@ -9,21 +9,21 @@ namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class MobileList : Page
     {
         public DataSet Ds;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
+
             if (Util.GetSetting("EnableMobile", "0") == "0")
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
@@ -61,13 +61,13 @@ order by bg_last_updated_date desc";
             if (this.only_mine.Checked)
                 bugSql = bugSql.Replace("$WHERE$",
                     "where bg_reported_user = "
-                    + Convert.ToString(this.Security.User.Usid)
+                    + Convert.ToString(security.User.Usid)
                     + " or bg_assigned_to_user = "
-                    + Convert.ToString(this.Security.User.Usid));
+                    + Convert.ToString(security.User.Usid));
             else
                 bugSql = bugSql.Replace("$WHERE$", "");
 
-            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, this.Security);
+            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
 
             this.Ds = DbUtil.GetDataSet(bugSql);
         }

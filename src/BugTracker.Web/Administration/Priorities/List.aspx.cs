@@ -9,7 +9,6 @@ namespace BugTracker.Web.Administration.Priorities
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
     using Core.Administration;
@@ -20,14 +19,17 @@ namespace BugTracker.Web.Administration.Priorities
         private readonly IPriorityService priorityService = new PriorityService(new ApplicationContext());
 
         protected DataSet Ds;
-        protected Security Security { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            Security = new Security();
-            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - priorities";
 

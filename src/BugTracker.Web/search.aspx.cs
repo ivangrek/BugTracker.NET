@@ -25,20 +25,27 @@ namespace BugTracker.Web
         public Dictionary<int, BtnetProject> MapProjects = new Dictionary<int, BtnetProject>();
 
         public string ProjectDropdownSelectCols = "";
-        public Security Security;
         public bool ShowUdf;
 
         public string Sql;
         public bool UseFullNames;
 
+        public Security Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanSearch)
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Security = security;
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "search";
+
+            if (security.User.IsAdmin || security.User.CanSearch)
             {
                 //
             }
@@ -48,19 +55,18 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "search";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - search";
 
             this.ShowUdf = Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1";
             this.UseFullNames = Util.GetSetting("UseFullNames", "0") == "1";
 
             this.DsCustomCols = Util.GetCustomColumns();
 
-            this.DtUsers = Util.GetRelatedUsers(this.Security, false);
+            this.DtUsers = Util.GetRelatedUsers(security, false);
 
             if (!IsPostBack)
             {
-                load_drop_downs();
+                load_drop_downs(security);
                 this.project_custom_dropdown1_label.Style["display"] = "none";
                 this.project_custom_dropdown1.Style["display"] = "none";
 
@@ -142,12 +148,12 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 else if (this.hit_submit_button.Value == "1")
                 {
                     handle_project_custom_dropdowns();
-                    do_query();
+                    do_query(security);
                 }
                 else
                 {
                     this.Dv = (DataView) Session["bugs"];
-                    if (this.Dv == null) do_query();
+                    if (this.Dv == null) do_query(security);
                     call_sort_and_filter_buglist_dataview();
                 }
             }
@@ -155,7 +161,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             this.hit_submit_button.Value = "0";
             this.project_changed.Value = "0";
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanEditSql)
+            if (security.User.IsAdmin || security.User.CanEditSql)
             {
             }
             else
@@ -240,7 +246,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             return selectedProjects;
         }
 
-        public void do_query()
+        public void do_query(Security security)
         {
             this.prev_sort.Value = "-1";
             this.prev_dir.Value = "ASC";
@@ -294,7 +300,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 commentsClause =
                     " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and isnull(bp_comment_search,bp_comment) like";
                 commentsClause += " N'%" + like2String + "%'";
-                if (this.Security.User.ExternalUser) commentsClause += " and bp_hidden_from_external_users = 0";
+                if (security.User.ExternalUser) commentsClause += " and bp_hidden_from_external_users = 0";
                 commentsClause += ")\n";
             }
 
@@ -346,7 +352,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
             {
                 var columnName = (string) drcc["name"];
-                if (this.Security.User.DictCustomFieldPermissionLevel[columnName] ==
+                if (security.User.DictCustomFieldPermissionLevel[columnName] ==
                     Security.PermissionNone) continue;
 
                 var values = Request[columnName];
@@ -449,22 +455,22 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                     select += "\n,isnull(lu.us_username,'') [last updated by]";
                 select += "\n,bg_last_updated_date [last updated on]";
 
-                if (this.Security.User.TagsFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.TagsFieldPermissionLevel != Security.PermissionNone)
                     select += ",\nisnull(bg_tags,'') [tags]";
 
-                if (this.Security.User.ProjectFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.ProjectFieldPermissionLevel != Security.PermissionNone)
                     select += ",\nisnull(pj_name,'') [project]";
 
-                if (this.Security.User.OrgFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.OrgFieldPermissionLevel != Security.PermissionNone)
                     select += ",\nisnull(og_name,'') [organization]";
 
-                if (this.Security.User.CategoryFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.CategoryFieldPermissionLevel != Security.PermissionNone)
                     select += ",\nisnull(ct_name,'') [category]";
 
-                if (this.Security.User.PriorityFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.PriorityFieldPermissionLevel != Security.PermissionNone)
                     select += ",\nisnull(pr_name,'') [priority]";
 
-                if (this.Security.User.AssignedToFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.AssignedToFieldPermissionLevel != Security.PermissionNone)
                 {
                     if (this.UseFullNames)
                         select += ",\nisnull(asg.us_lastname + ', ' + asg.us_firstname,'') [assigned to]";
@@ -472,10 +478,10 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                         select += ",\nisnull(asg.us_username,'') [assigned to]";
                 }
 
-                if (this.Security.User.StatusFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.StatusFieldPermissionLevel != Security.PermissionNone)
                     select += ",\nisnull(st_name,'') [status]";
 
-                if (this.Security.User.UdfFieldPermissionLevel != Security.PermissionNone)
+                if (security.User.UdfFieldPermissionLevel != Security.PermissionNone)
                     if (this.ShowUdf)
                     {
                         var udfName = Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
@@ -488,7 +494,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                 {
                     var columnName = (string) drcc["name"];
-                    if (this.Security.User.DictCustomFieldPermissionLevel[columnName] ==
+                    if (security.User.DictCustomFieldPermissionLevel[columnName] ==
                         Security.PermissionNone) continue;
 
                     if (Convert.ToString(drcc["dropdown type"]) == "users")
@@ -575,21 +581,21 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 select += projectDropdownSelectColsServerSide;
 
                 select += @" from bugs
-			left outer join users rpt on rpt.us_id = bg_reported_user
-			left outer join users lu on lu.us_id = bg_last_updated_user
-			left outer join users asg on asg.us_id = bg_assigned_to_user
-			left outer join projects on pj_id = bg_project
-			left outer join orgs on og_id = bg_org
-			left outer join categories on ct_id = bg_category
-			left outer join priorities on pr_id = bg_priority
-			left outer join statuses on st_id = bg_status
-			";
+            left outer join users rpt on rpt.us_id = bg_reported_user
+            left outer join users lu on lu.us_id = bg_last_updated_user
+            left outer join users asg on asg.us_id = bg_assigned_to_user
+            left outer join projects on pj_id = bg_project
+            left outer join orgs on og_id = bg_org
+            left outer join categories on ct_id = bg_category
+            left outer join priorities on pr_id = bg_priority
+            left outer join statuses on st_id = bg_status
+            ";
 
                 userTypeCnt = 1;
                 foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                 {
                     var columnName = (string) drcc["name"];
-                    if (this.Security.User.DictCustomFieldPermissionLevel[columnName] ==
+                    if (security.User.DictCustomFieldPermissionLevel[columnName] ==
                         Security.PermissionNone) continue;
 
                     if (Convert.ToString(drcc["dropdown type"]) == "users")
@@ -616,7 +622,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 this.Sql = searchSql.Replace("$WHERE$", where);
             }
 
-            this.Sql = Util.AlterSqlPerProjectPermissions(this.Sql, this.Security);
+            this.Sql = Util.AlterSqlPerProjectPermissions(this.Sql, security);
 
             var ds = DbUtil.GetDataSet(this.Sql);
             this.Dv = new DataView(ds.Tables[0]);
@@ -809,7 +815,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 li.Selected = previousSelectionDictionaries[2].ContainsKey(li.Value);
         }
 
-        public void load_drop_downs()
+        public void load_drop_downs(Security security)
         {
             this.reported_by.DataSource = this.DtUsers;
             this.reported_by.DataTextField = "us_username";
@@ -817,41 +823,41 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             this.reported_by.DataBind();
 
             // only show projects where user has permissions
-            if (this.Security.User.IsAdmin)
+            if (security.User.IsAdmin)
             {
                 this.Sql = "/* drop downs */ select pj_id, pj_name from projects order by pj_name;";
             }
             else
             {
                 this.Sql = @"/* drop downs */ select pj_id, pj_name
-			from projects
-			left outer join project_user_xref on pj_id = pu_project
-			and pu_user = $us
-			where isnull(pu_permission_level,$dpl) <> 0
-			order by pj_name;";
+            from projects
+            left outer join project_user_xref on pj_id = pu_project
+            and pu_user = $us
+            where isnull(pu_permission_level,$dpl) <> 0
+            order by pj_name;";
 
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
                 this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
             }
 
-            if (this.Security.User.OtherOrgsPermissionLevel != 0)
+            if (security.User.OtherOrgsPermissionLevel != 0)
             {
                 this.Sql += " select og_id, og_name from orgs order by og_name;";
             }
             else
             {
                 this.Sql += " select og_id, og_name from orgs where og_id = " +
-                            Convert.ToInt32(this.Security.User.Org) +
+                            Convert.ToInt32(security.User.Org) +
                             " order by og_name;";
                 this.org.Visible = false;
                 this.org_label.Visible = false;
             }
 
             this.Sql += @"
-	select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
-	select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
-	select st_id, st_name from statuses order by st_sort_seq, st_name;
-	select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name";
+    select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
+    select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
+    select st_id, st_name from statuses order by st_sort_seq, st_name;
+    select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name";
 
             var dsDropdowns = DbUtil.GetDataSet(this.Sql);
 
@@ -900,43 +906,43 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 this.udf.Items.Insert(0, new ListItem("[none]", "0"));
             }
 
-            if (this.Security.User.ProjectFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.ProjectFieldPermissionLevel == Security.PermissionNone)
             {
                 this.project_label.Style["display"] = "none";
                 this.project.Style["display"] = "none";
             }
 
-            if (this.Security.User.OrgFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.OrgFieldPermissionLevel == Security.PermissionNone)
             {
                 this.org_label.Style["display"] = "none";
                 this.org.Style["display"] = "none";
             }
 
-            if (this.Security.User.CategoryFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.CategoryFieldPermissionLevel == Security.PermissionNone)
             {
                 this.category_label.Style["display"] = "none";
                 this.category.Style["display"] = "none";
             }
 
-            if (this.Security.User.PriorityFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.PriorityFieldPermissionLevel == Security.PermissionNone)
             {
                 this.priority_label.Style["display"] = "none";
                 this.priority.Style["display"] = "none";
             }
 
-            if (this.Security.User.StatusFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.StatusFieldPermissionLevel == Security.PermissionNone)
             {
                 this.status_label.Style["display"] = "none";
                 this.status.Style["display"] = "none";
             }
 
-            if (this.Security.User.AssignedToFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.AssignedToFieldPermissionLevel == Security.PermissionNone)
             {
                 this.assigned_to_label.Style["display"] = "none";
                 this.assigned_to.Style["display"] = "none";
             }
 
-            if (this.Security.User.UdfFieldPermissionLevel == Security.PermissionNone)
+            if (security.User.UdfFieldPermissionLevel == Security.PermissionNone)
             {
                 this.udf_label.Style["display"] = "none";
                 this.udf.Style["display"] = "none";
@@ -974,11 +980,11 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             write_custom_date_control("to__" + name); // magic
         }
 
-        public void display_bugs(bool showCheckboxes)
+        public void display_bugs(bool showCheckboxes, Security security)
         {
             BugList.DisplayBugs(
                 showCheckboxes, this.Dv,
-                Response, this.Security, this.new_page.Value,
+                Response, security, this.new_page.Value,
                 IsPostBack, this.DsCustomCols, this.filter.Value);
         }
 

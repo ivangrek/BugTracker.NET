@@ -6,13 +6,14 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Delete.aspx.cs" Inherits="BugTracker.Web.Attachments.Delete" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -36,7 +37,7 @@
             </script>
             <form runat="server" id="frm">
                 <a id="confirm_href" runat="server" href="javascript: submit_form()"></a>
-                <input type="hidden" id="row_id" runat="server">
+                <input type="hidden" id="row_id" runat="server"/>
             </form>
         </div>
 </asp:Content>

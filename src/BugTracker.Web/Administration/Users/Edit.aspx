@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Administration.Users.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -44,7 +45,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "admin"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -72,7 +73,7 @@
                                 <tr>
                                     <td class="lbl">Username:</td>
                                     <td colspan="2">
-                                        <input runat="server" type="text" class="txt" id="username" maxlength="20" size="20">
+                                        <input runat="server" type="text" class="txt" id="username" maxlength="20" size="20"/>
                                     </td>
                                 </tr>
 
@@ -85,7 +86,7 @@
                                 <tr>
                                     <td class="lbl">Password:</td>
                                     <td colspan="2">
-                                        <input runat="server" autocomplete="off" type="password" class="txt" id="pw" maxlength="20" size="20">
+                                        <input runat="server" autocomplete="off" type="password" class="txt" id="pw" maxlength="20" size="20"/>
                                     </td>
                                 </tr>
 
@@ -97,7 +98,7 @@
                                 <tr>
                                     <td class="lbl">Confirm Password:</td>
                                     <td colspan="2">
-                                        <input runat="server" autocomplete="off" type="password" class="txt" id="confirm_pw" maxlength="20" size="20">
+                                        <input runat="server" autocomplete="off" type="password" class="txt" id="confirm_pw" maxlength="20" size="20"/>
                                     </td>
                                 </tr>
 
@@ -124,7 +125,7 @@
                                 <tr>
                                     <td class="lbl">First Name:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="firstname" maxlength="20" size="20">
+                                        <input runat="server" type="text" class="txt" id="firstname" maxlength="20" size="20"/>
                                     </td>
                                     <td runat="server" class="err" id="firstname_err">&nbsp;</td>
                                 </tr>
@@ -132,7 +133,7 @@
                                 <tr>
                                     <td class="lbl">Last Name:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="lastname" maxlength="20" size="20">
+                                        <input runat="server" type="text" class="txt" id="lastname" maxlength="20" size="20"/>
                                     </td>
                                     <td runat="server" class="err" id="lastname_err">&nbsp;</td>
                                 </tr>
@@ -208,7 +209,7 @@
                                 <tr>
                                     <td class="lbl">Email:</td>
                                     <td colspan="2">
-                                        <input runat="server" type="text" class="txt" id="email" maxlength="60" size="60">
+                                        <input runat="server" type="text" class="txt" id="email" maxlength="60" size="60"/>
                                     </td>
                                 </tr>
 

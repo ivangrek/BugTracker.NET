@@ -54,14 +54,14 @@
                             <tr>
                                 <td class="lbl">User:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="user">
+                                    <input runat="server" type="text" class="txt" id="user"/>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td class="lbl">Password:</td>
                                 <td>
-                                    <input runat="server" type="password" class="txt" id="pw">
+                                    <input runat="server" type="password" class="txt" id="pw"/>
                                 </td>
                             </tr>
 
@@ -73,7 +73,7 @@
 
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input class="btn" type="submit" value="Logon" runat="server">
+                                    <input class="btn" type="submit" value="Logon" runat="server"/>
                                 </td>
                             </tr>
 

@@ -9,21 +9,20 @@ namespace BugTracker.Web.Administration
 {
     using System;
     using System.Threading;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class EditQueuedNotifications : Page
     {
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
 
             if (Request.QueryString["ses"] != (string) Session["session_cookie"])
             {

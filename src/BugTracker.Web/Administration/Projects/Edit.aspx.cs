@@ -16,8 +16,6 @@ namespace BugTracker.Web.Administration.Projects
     public partial class Edit : Page
     {
         public int Id;
-
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -29,11 +27,14 @@ namespace BugTracker.Web.Administration.Projects
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit project";
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit project";
 
             this.msg.InnerText = "";
 

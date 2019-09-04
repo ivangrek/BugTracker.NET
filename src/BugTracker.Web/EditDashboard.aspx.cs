@@ -9,27 +9,28 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class EditDashboard : Page
     {
         public DataSet Ds;
-        public Security Security;
         public string Ses = "";
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit dashboard";
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports)
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit dashboard";
+
+            if (security.User.IsAdmin || security.User.CanUseReports)
             {
                 //
             }
@@ -48,7 +49,7 @@ inner join reports on rp_id = ds_report
 where ds_user = $user
 order by ds_col, ds_row";
 
-            sql = sql.Replace("$user", Convert.ToString(this.Security.User.Usid));
+            sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
 
             this.Ds = DbUtil.GetDataSet(sql);
         }

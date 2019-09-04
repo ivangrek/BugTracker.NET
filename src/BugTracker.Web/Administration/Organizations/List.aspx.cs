@@ -9,21 +9,23 @@ namespace BugTracker.Web.Administration.Organizations
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class List : Page
     {
         public DataSet Ds;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - organizations";
 

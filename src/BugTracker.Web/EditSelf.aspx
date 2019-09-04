@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EditSelf.aspx.cs" Inherits="BugTracker.Web.EditSelf" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -29,7 +30,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "settings"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -53,7 +54,7 @@
                                 <tr>
                                     <td class="lbl">Password:</td>
                                     <td colspan="2">
-                                        <input runat="server" autocomplete="off" type="password" class="txt" id="pw" maxlength="20" size="20">
+                                        <input runat="server" autocomplete="off" type="password" class="txt" id="pw" maxlength="20" size="20"/>
                                     </td>
                                 </tr>
 
@@ -65,7 +66,7 @@
                                 <tr>
                                     <td class="lbl">Confirm Password:</td>
                                     <td colspan="2">
-                                        <input runat="server" autocomplete="off" type="password" class="txt" id="confirm_pw" maxlength="20" size="20">
+                                        <input runat="server" autocomplete="off" type="password" class="txt" id="confirm_pw" maxlength="20" size="20"/>
                                     </td>
                                 </tr>
 
@@ -78,7 +79,7 @@
                                 <tr>
                                     <td class="lbl">First Name:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="firstname" maxlength="20" size="20">
+                                        <input runat="server" type="text" class="txt" id="firstname" maxlength="20" size="20"/>
                                     </td>
                                     <td runat="server" class="err" id="firstname_err">&nbsp;</td>
                                 </tr>
@@ -86,7 +87,7 @@
                                 <tr>
                                     <td class="lbl">Last Name:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="lastname" maxlength="20" size="20">
+                                        <input runat="server" type="text" class="txt" id="lastname" maxlength="20" size="20"/>
                                     </td>
                                     <td runat="server" class="err" id="lastname_err">&nbsp;</td>
                                 </tr>
@@ -94,7 +95,7 @@
                                 <tr>
                                     <td class="lbl"><% Response.Write(Util.GetSetting("PluralBugLabel", "Bugs")); %> Per Page:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="bugs_per_page" maxlength="3" size="3">
+                                        <input runat="server" type="text" class="txt" id="bugs_per_page" maxlength="3" size="3"/>
                                     </td>
                                     <td runat="server" class="err" id="bugs_per_page_err">&nbsp;</td>
                                 </tr>
@@ -146,7 +147,7 @@
                                 <tr>
                                     <td class="lbl">Email:</td>
                                     <td colspan="2">
-                                        <input runat="server" type="text" class="txt" id="email" maxlength="60" size="60">
+                                        <input runat="server" type="text" class="txt" id="email" maxlength="60" size="60"/>
                                     </td>
                                 </tr>
 
@@ -321,7 +322,7 @@
                                 <td width="300px">
                                 &nbsp;
                                 <td align="center">
-                                    <input runat="server" class="btn" type="submit" id="sub" value="Update">
+                                <input runat="server" class="btn" type="submit" id="sub" value="Update"/>
                                     <td>&nbsp</td>
                                 </td>
                             </tr>

@@ -47,7 +47,7 @@
 
                 <label>Comment:</label>
                 <textarea id="comment" runat="server"></textarea>
-                <input data-role="button" id="submit_button" type="submit" value="Button" runat="server">
+                <input data-role="button" id="submit_button" type="submit" value="Button" runat="server"/>
 
                 <% if (this.Id != 0)
                     { %>
@@ -74,7 +74,7 @@
                             false, // images inline
                             true, // history inline
                             false, // internal_posts
-                            this.Security.User);
+                            Security.User);
                 %>
             </div>
 

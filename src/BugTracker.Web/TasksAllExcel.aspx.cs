@@ -9,14 +9,12 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class TasksAllExcel : Page
     {
         public DataSet DsTasks;
-        public Security Security;
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -27,10 +25,11 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanViewTasks)
+            security.CheckSecurity(Security.AnyUserOk);
+
+            if (security.User.IsAdmin || security.User.CanViewTasks)
             {
                 // allowed
             }
@@ -40,7 +39,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            this.DsTasks = Util.GetAllTasks(this.Security, 0);
+            this.DsTasks = Util.GetAllTasks(security, 0);
             var dv = new DataView(this.DsTasks.Tables[0]);
 
             Util.PrintAsExcel(Response, dv);

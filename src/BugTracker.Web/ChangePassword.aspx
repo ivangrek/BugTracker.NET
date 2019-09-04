@@ -35,14 +35,14 @@
                             <tr>
                                 <td class="lbl">New Password:</td>
                                 <td>
-                                    <input runat="server" type="password" class="txt" id="password" size="20" maxlength="20" autocomplete="off">
+                                    <input runat="server" type="password" class="txt" id="password" size="20" maxlength="20" autocomplete="off"/>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td class="lbl">Reenter Password:</td>
                                 <td>
-                                    <input runat="server" type="password" class="txt" id="confirm" size="20" maxlength="20" autocomplete="off">
+                                    <input runat="server" type="password" class="txt" id="confirm" size="20" maxlength="20" autocomplete="off"/>
                                 </td>
                             </tr>
 

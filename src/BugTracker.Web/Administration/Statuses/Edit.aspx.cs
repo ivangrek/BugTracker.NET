@@ -9,7 +9,6 @@ namespace BugTracker.Web.Administration.Statuses
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
     using System.Web.UI;
     using Core;
     using Core.Administration;
@@ -18,8 +17,6 @@ namespace BugTracker.Web.Administration.Statuses
     public partial class Edit : Page
     {
         private readonly IStatusService statusService = new StatusService(new ApplicationContext());
-
-        protected Security Security { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -30,8 +27,12 @@ namespace BugTracker.Web.Administration.Statuses
         {
             Util.DoNotCache(Response);
 
-            Security = new Security();
-            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             int.TryParse(Request.QueryString["id"], out var id);
 

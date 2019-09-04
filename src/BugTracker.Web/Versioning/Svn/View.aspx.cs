@@ -8,22 +8,20 @@
 namespace BugTracker.Web.Versioning.Svn
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class View : Page
     {
         public string Repo;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
             Response.ContentType = "text/plain";
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+            security.CheckSecurity(Security.AnyUserOk);
 
             // get info about revision
 
@@ -42,7 +40,7 @@ order by svnrev_revision desc, svnap_path";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["svnrev_bug"], this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["svnrev_bug"], security);
             if (permissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");

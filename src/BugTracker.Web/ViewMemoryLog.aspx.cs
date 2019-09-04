@@ -9,22 +9,20 @@ namespace BugTracker.Web
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class ViewMemoryLog : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             if (Util.GetSetting("MemoryLogEnabled", "1") != "1") Response.End();
 
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             Response.ContentType = "text/plain";
             Response.AddHeader("content-disposition", "inline; filename=\"memory_log.txt\"");

@@ -9,28 +9,29 @@ namespace BugTracker.Web
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class Tags : Page
     {
-        public Security Security;
+        public Security Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Security = security;
         }
 
-        public void print_tags()
+        public void print_tags(Security security)
         {
-            if (this.Security.User.CategoryFieldPermissionLevel == Security.PermissionNone) return;
+            if (security.User.CategoryFieldPermissionLevel == Security.PermissionNone) return;
 
-            var tags =
-                (SortedDictionary<string, List<int>>) Application["tags"];
+            var tags = (SortedDictionary<string, List<int>>) Application["tags"];
 
             var tagsByCount = new List<TagLabel>();
 

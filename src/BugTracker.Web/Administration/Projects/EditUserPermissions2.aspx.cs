@@ -8,14 +8,12 @@
 namespace BugTracker.Web.Administration.Projects
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
 
     public partial class EditUserPermissions2 : Page
     {
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -27,11 +25,14 @@ namespace BugTracker.Web.Administration.Projects
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit project per-user permissions";
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit project per-user permissions";
 
             if (!IsPostBack)
             {

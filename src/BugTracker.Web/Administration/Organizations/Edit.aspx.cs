@@ -10,7 +10,6 @@ namespace BugTracker.Web.Administration.Organizations
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -40,7 +39,6 @@ namespace BugTracker.Web.Administration.Organizations
         </table>
 <tr>";
 
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -52,8 +50,12 @@ namespace BugTracker.Web.Administration.Organizations
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit organization";
 

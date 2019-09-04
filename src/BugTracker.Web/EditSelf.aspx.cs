@@ -9,7 +9,6 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
@@ -17,8 +16,6 @@ namespace BugTracker.Web
     public partial class EditSelf : Page
     {
         public int Id;
-
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -30,29 +27,32 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit your settings";
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "settings";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit your settings";
 
             this.msg.InnerText = "";
 
-            this.Id = this.Security.User.Usid;
+            this.Id = security.User.Usid;
 
             if (!IsPostBack)
             {
                 this.Sql = @"declare @org int
-			select @org = us_org from users where us_id = $us
+            select @org = us_org from users where us_id = $us
 
-			select qu_id, qu_desc
-			from queries
-			where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
-			or isnull(qu_user,0) = $us
-			or isnull(qu_org,0) = @org
-			order by qu_desc";
+            select qu_id, qu_desc
+            from queries
+            where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
+            or isnull(qu_user,0) = $us
+            or isnull(qu_org,0) = @org
+            order by qu_desc";
 
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
 
                 this.query.DataSource = DbUtil.GetDataView(this.Sql);
                 this.query.DataTextField = "qu_desc";
@@ -60,12 +60,12 @@ namespace BugTracker.Web
                 this.query.DataBind();
 
                 this.Sql = @"select pj_id, pj_name, isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
-			from projects
-			left outer join project_user_xref on pj_id = pu_project and $us = pu_user
-			where isnull(pu_permission_level,$dpl) <> 0
-			order by pj_name";
+            from projects
+            left outer join project_user_xref on pj_id = pu_project and $us = pu_user
+            where isnull(pu_permission_level,$dpl) <> 0
+            order by pj_name";
 
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
                 this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
 
                 var projectsDv = DbUtil.GetDataView(this.Sql);
@@ -79,25 +79,25 @@ namespace BugTracker.Web
                 // MAW -- 2006/01/27 -- Converted to use new notification columns
 
                 this.Sql = @"select
-			us_username [username],
-			isnull(us_firstname,'') [firstname],
-			isnull(us_lastname,'') [lastname],
-			isnull(us_bugs_per_page,10) [us_bugs_per_page],
-			us_use_fckeditor,
-			us_enable_bug_list_popups,
-			isnull(us_email,'') [email],
-			us_enable_notifications,
-			us_send_notifications_to_self,
+            us_username [username],
+            isnull(us_firstname,'') [firstname],
+            isnull(us_lastname,'') [lastname],
+            isnull(us_bugs_per_page,10) [us_bugs_per_page],
+            us_use_fckeditor,
+            us_enable_bug_list_popups,
+            isnull(us_email,'') [email],
+            us_enable_notifications,
+            us_send_notifications_to_self,
             us_reported_notifications,
             us_assigned_notifications,
             us_subscribed_notifications,
-			us_auto_subscribe,
-			us_auto_subscribe_own_bugs,
-			us_auto_subscribe_reported_bugs,
-			us_default_query,
-			isnull(us_signature,'') [signature]
-			from users
-			where us_id = $id";
+            us_auto_subscribe,
+            us_auto_subscribe_own_bugs,
+            us_auto_subscribe_reported_bugs,
+            us_default_query,
+            isnull(us_signature,'') [signature]
+            from users
+            where us_id = $id";
 
                 this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
 
@@ -206,23 +206,23 @@ namespace BugTracker.Web
             if (good)
             {
                 this.Sql = @"update users set
-			us_firstname = N'$fn',
-			us_lastname = N'$ln',
-			us_bugs_per_page = N'$bp',
-			us_use_fckeditor = $fk,
-			us_enable_bug_list_popups = $pp,
-			us_email = N'$em',
-			us_enable_notifications = $en,
-			us_send_notifications_to_self = $ss,
+            us_firstname = N'$fn',
+            us_lastname = N'$ln',
+            us_bugs_per_page = N'$bp',
+            us_use_fckeditor = $fk,
+            us_enable_bug_list_popups = $pp,
+            us_email = N'$em',
+            us_enable_notifications = $en,
+            us_send_notifications_to_self = $ss,
             us_reported_notifications = $rn,
             us_assigned_notifications = $an,
             us_subscribed_notifications = $sn,
-			us_auto_subscribe = $as,
-			us_auto_subscribe_own_bugs = $ao,
-			us_auto_subscribe_reported_bugs = $ar,
-			us_default_query = $dq,
-			us_signature = N'$sg'
-			where us_id = $id";
+            us_auto_subscribe = $as,
+            us_auto_subscribe_own_bugs = $ao,
+            us_auto_subscribe_reported_bugs = $ar,
+            us_default_query = $dq,
+            us_signature = N'$sg'
+            where us_id = $id";
 
                 this.Sql = this.Sql.Replace("$fn", this.firstname.Value.Replace("'", "''"));
                 this.Sql = this.Sql.Replace("$ln", this.lastname.Value.Replace("'", "''"));
@@ -252,7 +252,7 @@ namespace BugTracker.Web
 
                 // First turn everything off, then turn selected ones on.
                 this.Sql = @"update project_user_xref
-				set pu_auto_subscribe = 0 where pu_user = $id";
+                set pu_auto_subscribe = 0 where pu_user = $id";
                 this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                 DbUtil.ExecuteNonQuery(this.Sql);
 
@@ -269,13 +269,13 @@ namespace BugTracker.Web
                 if (projects != "")
                 {
                     this.Sql = @"update project_user_xref
-				set pu_auto_subscribe = 1 where pu_user = $id and pu_project in ($projects)
+                set pu_auto_subscribe = 1 where pu_user = $id and pu_project in ($projects)
 
-			insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
-				select pj_id, $id, 1
-				from projects
-				where pj_id in ($projects)
-				and pj_id not in (select pu_project from project_user_xref where pu_user = $id)";
+            insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
+                select pj_id, $id, 1
+                from projects
+                where pj_id in ($projects)
+                and pj_id not in (select pu_project from project_user_xref where pu_user = $id)";
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
                     this.Sql = this.Sql.Replace("$projects", projects);
@@ -289,24 +289,24 @@ namespace BugTracker.Web
                     if (this.auto_subscribe.Checked)
                     {
                         this.Sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-					select bg_id, $id from bugs;";
+                    select bg_id, $id from bugs;";
                     }
                     else
                     {
                         if (this.auto_subscribe_reported.Checked)
                             this.Sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-						select bg_id, $id from bugs where bg_reported_user = $id
-						and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                        select bg_id, $id from bugs where bg_reported_user = $id
+                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
 
                         if (this.auto_subscribe_own.Checked)
                             this.Sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-						select bg_id, $id from bugs where bg_assigned_to_user = $id
-						and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                        select bg_id, $id from bugs where bg_assigned_to_user = $id
+                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
 
                         if (projects != "")
                             this.Sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-						select bg_id, $id from bugs where bg_project in ($projects)
-						and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                        select bg_id, $id from bugs where bg_project in ($projects)
+                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
                     }
 
                     this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));

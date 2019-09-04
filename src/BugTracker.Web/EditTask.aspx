@@ -58,7 +58,7 @@
                                 <tr runat="server" id="desc_tr">
                                     <td class="lbl" id="desc_label">Description:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="desc" maxlength="200" size="100">
+                                        <input runat="server" type="text" class="txt" id="desc" maxlength="200" size="100"/>
                                     </td>
                                     <td>&nbsp</td>
                                 </tr>
@@ -74,7 +74,7 @@
                                 <tr runat="server" id="planned_start_date_tr">
                                     <td class="lbl" id="planned_start_date_lbl">Planned start date:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt date" id="planned_start_date" maxlength="10" size="10">
+                                        <input runat="server" type="text" class="txt date" id="planned_start_date" maxlength="10" size="10"/>
                                         <a style="font-size: 8pt;"
                                             href="javascript:show_calendar('planned_start_date')">[?]
                                         </a>
@@ -120,7 +120,7 @@
                                 <tr runat="server" id="actual_start_date_tr">
                                     <td class="lbl" id="actual_start_date_lbl">Actual start date:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt date" id="actual_start_date" maxlength="10" size="10">
+                                        <input runat="server" type="text" class="txt date" id="actual_start_date" maxlength="10" size="10"/>
                                         <a style="font-size: 8pt;"
                                             href="javascript:show_calendar('actual_start_date')">[?]
                                         </a>
@@ -211,7 +211,7 @@
                                 <tr runat="server" id="actual_end_date_tr">
                                     <td class="lbl" id="actual_end_date_lbl">Actual end date:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt date" id="actual_end_date" maxlength="10" size="10">
+                                        <input runat="server" type="text" class="txt date" id="actual_end_date" maxlength="10" size="10"/>
                                         <a style="font-size: 8pt;"
                                             href="javascript:show_calendar('actual_end_date')">[?]
                                         </a>
@@ -256,7 +256,7 @@
                                 <tr runat="server" id="planned_duration_tr">
                                     <td class="lbl" id="planned_duration_lbl">Planned duration:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="planned_duration" maxlength="7" size="7">
+                                        <input runat="server" type="text" class="txt" id="planned_duration" maxlength="7" size="7"/>
                                     </td>
                                     <td runat="server" class="err" id="planned_duration_err">&nbsp;</td>
                                 </tr>
@@ -264,7 +264,7 @@
                                 <tr runat="server" id="actual_duration_tr">
                                     <td class="lbl" id="actual_duration_lbl">Actual duration:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="actual_duration" maxlength="7" size="7">
+                                        <input runat="server" type="text" class="txt" id="actual_duration" maxlength="7" size="7"/>
                                     </td>
                                     <td runat="server" class="err" id="actual_duration_err">&nbsp;</td>
                                 </tr>
@@ -284,7 +284,7 @@
                                 <tr runat="server" id="percent_complete_tr">
                                     <td class="lbl" id="percent_complete_lbl">Percent complete:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="percent_complete" maxlength="6" size="6">
+                                        <input runat="server" type="text" class="txt" id="percent_complete" maxlength="6" size="6"/>
                                     </td>
                                     <td runat="server" class="err" id="percent_complete_err">&nbsp;</td>
                                 </tr>
@@ -301,7 +301,7 @@
                                 <tr runat="server" id="sort_sequence_tr">
                                     <td class="lbl" id="sort_sequence_lbl">Sort Sequence:</td>
                                     <td>
-                                        <input runat="server" type="text" class="txt" id="sort_sequence" maxlength="3" size="3">
+                                        <input runat="server" type="text" class="txt" id="sort_sequence" maxlength="3" size="3"/>
                                     </td>
                                     <td runat="server" class="err" id="sort_sequence_err">&nbsp;</td>
                                 </tr>
@@ -314,7 +314,7 @@
 
                                 <tr>
                                     <td colspan="3" align="center">
-                                        <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit"/>
                                 </tr>
 
                             </table>

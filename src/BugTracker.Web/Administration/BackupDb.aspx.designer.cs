@@ -7,12 +7,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web.Administration
-{
-    public partial class BackupDb {
+namespace BugTracker.Web.Administration {
     
+    
+    public partial class BackupDb {
+        
+        /// <summary>
+        /// MainMenu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
+        
         /// <summary>
         /// MyDataGrid control.
         /// </summary>
@@ -21,7 +29,7 @@ namespace BugTracker.Web.Administration
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DataGrid MyDataGrid;
-    
+        
         /// <summary>
         /// msg control.
         /// </summary>

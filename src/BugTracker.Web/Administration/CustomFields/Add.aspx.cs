@@ -8,22 +8,24 @@
 namespace BugTracker.Web.Administration.CustomFields
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
 
     public partial class Add : Page
     {
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - custom field";
 

@@ -10,7 +10,6 @@ namespace BugTracker.Web.Administration.Users
     using System;
     using System.Collections;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
@@ -19,8 +18,6 @@ namespace BugTracker.Web.Administration.Users
     {
         public bool Copy;
         public int Id;
-
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -32,19 +29,23 @@ namespace BugTracker.Web.Administration.Users
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdminOrProjectAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdminOrProjectAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit user";
 
-            if (!this.Security.User.IsAdmin)
+            if (!security.User.IsAdmin)
             {
                 // Check if the current user is an admin for any project
                 this.Sql = @"select pu_project
             from project_user_xref
             where pu_user = $us
             and pu_admin = 1";
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
                 var dsProjects = DbUtil.GetDataSet(this.Sql);
 
                 if (dsProjects.Tables[0].Rows.Count == 0)
@@ -83,7 +84,7 @@ namespace BugTracker.Web.Administration.Users
 
             if (!IsPostBack)
             {
-                if (!this.Security.User.IsAdmin)
+                if (!security.User.IsAdmin)
                 {
                     // logged in user is a project level admin
 
@@ -102,7 +103,7 @@ namespace BugTracker.Web.Administration.Users
                 and a.pu_user = $us
                 order by pj_name;";
 
-                    this.Sql = this.Sql.Replace("$this_usid", Convert.ToString(this.Security.User.Usid));
+                    this.Sql = this.Sql.Replace("$this_usid", Convert.ToString(security.User.Usid));
                 }
                 else // user is a real admin
                 {
@@ -136,7 +137,7 @@ namespace BugTracker.Web.Administration.Users
 
                 // Table 2
 
-                if (this.Security.User.IsAdmin)
+                if (security.User.IsAdmin)
                 {
                     this.Sql += @"/* populate org dropdown 1 */
                 select og_id, og_name
@@ -145,7 +146,7 @@ namespace BugTracker.Web.Administration.Users
                 }
                 else
                 {
-                    if (this.Security.User.OtherOrgsPermissionLevel == Security.PermissionAll)
+                    if (security.User.OtherOrgsPermissionLevel == Security.PermissionAll)
                         this.Sql += @"/* populate org dropdown 2 */
                     select og_id, og_name
                     from orgs
@@ -206,8 +207,8 @@ namespace BugTracker.Web.Administration.Users
                 this.forced_project.Items.Insert(0, new ListItem("[no forced project]", "0"));
 
                 // org dropdown
-                if (this.Security.User.IsAdmin
-                    || this.Security.User.OtherOrgsPermissionLevel == Security.PermissionAll)
+                if (security.User.IsAdmin
+                    || security.User.OtherOrgsPermissionLevel == Security.PermissionAll)
                 {
                     this.org.DataSource = ds.Tables[2].DefaultView;
                     this.org.DataTextField = "og_name";
@@ -218,7 +219,7 @@ namespace BugTracker.Web.Administration.Users
                 else
                 {
                     this.org.Items.Insert(0,
-                        new ListItem(this.Security.User.OrgName, Convert.ToString(this.Security.User.Org)));
+                        new ListItem(security.User.OrgName, Convert.ToString(security.User.Org)));
                 }
 
                 // populate permissions grid
@@ -253,9 +254,9 @@ namespace BugTracker.Web.Administration.Users
                     var dr = ds.Tables[3].Rows[0];
 
                     // check if project admin is allowed to edit this user
-                    if (!this.Security.User.IsAdmin)
+                    if (!security.User.IsAdmin)
                     {
-                        if (this.Security.User.Usid != (int)dr["us_created_user"])
+                        if (security.User.Usid != (int)dr["us_created_user"])
                         {
                             Response.Write("You not allowed to edit this user, because you didn't create it.");
                             Response.End();
@@ -351,7 +352,7 @@ namespace BugTracker.Web.Administration.Users
             } // if !postback
             else
             {
-                on_update();
+                on_update(security);
             }
         }
 
@@ -428,7 +429,7 @@ namespace BugTracker.Web.Administration.Users
             return good;
         }
 
-        public string replace_vars_in_sql_statement(string sql)
+        public string replace_vars_in_sql_statement(string sql, Security security)
         {
             sql = sql.Replace("$un", this.username.Value.Replace("'", "''"));
             sql = sql.Replace("$fn", this.firstname.Value.Replace("'", "''"));
@@ -453,7 +454,7 @@ namespace BugTracker.Web.Administration.Users
             sql = sql.Replace("$id", Convert.ToString(this.Id));
 
             // only admins can create admins.
-            if (this.Security.User.IsAdmin)
+            if (security.User.IsAdmin)
                 sql = sql.Replace("$ad", Util.BoolToString(this.admin.Checked));
             else
                 sql = sql.Replace("$ad", "0");
@@ -461,7 +462,7 @@ namespace BugTracker.Web.Administration.Users
             return sql;
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
             var good = validate();
 
@@ -512,11 +513,11 @@ $createdby
 
 select scope_identity()";
 
-                        this.Sql = replace_vars_in_sql_statement(this.Sql);
-                        this.Sql = this.Sql.Replace("$createdby", Convert.ToString(this.Security.User.Usid));
+                        this.Sql = replace_vars_in_sql_statement(this.Sql, security);
+                        this.Sql = this.Sql.Replace("$createdby", Convert.ToString(security.User.Usid));
 
                         // only admins can create admins.
-                        if (this.Security.User.IsAdmin)
+                        if (security.User.IsAdmin)
                             this.Sql = this.Sql.Replace("$ad", Util.BoolToString(this.admin.Checked));
                         else
                             this.Sql = this.Sql.Replace("$ad", "0");
@@ -530,7 +531,7 @@ select scope_identity()";
                         // now encrypt the password and update the db
                         Util.UpdateUserPassword(this.Id, this.pw.Value);
 
-                        update_project_user_xref();
+                        update_project_user_xref(security);
 
                         Server.Transfer("~/Administration/Users/List.aspx");
                     }
@@ -576,14 +577,14 @@ us_signature = N'$sg',
 us_forced_project = $fp
 where us_id = $id";
 
-                        this.Sql = replace_vars_in_sql_statement(this.Sql);
+                        this.Sql = replace_vars_in_sql_statement(this.Sql, security);
 
                         DbUtil.ExecuteNonQuery(this.Sql);
 
                         // update the password
                         if (this.pw.Value != "") Util.UpdateUserPassword(this.Id, this.pw.Value);
 
-                        update_project_user_xref();
+                        update_project_user_xref(security);
 
                         Server.Transfer("~/Administration/Users/List.aspx");
                     }
@@ -603,7 +604,7 @@ where us_id = $id";
             }
         }
 
-        public void update_project_user_xref()
+        public void update_project_user_xref(Security security)
         {
             var hashProjects = new Hashtable();
 
@@ -727,7 +728,7 @@ where us_id = $id";
                 this.Sql = this.Sql.Replace("$projects", projects);
             }
 
-            if (this.Security.User.IsAdmin)
+            if (security.User.IsAdmin)
             {
                 projects = "";
                 foreach (Project p in hashProjects.Values)

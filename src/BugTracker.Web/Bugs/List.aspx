@@ -6,7 +6,10 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Bugs.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Import Namespace="BugTracker.Web.Core" %>
+<%@ Register Src="~/Core/Controls/MainMenu.ascx" TagPrefix="BugTracker" TagName="MainMenu" %>
+
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/bug_list.js") %>"></script>
@@ -25,7 +28,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -34,7 +37,7 @@
             <table border="0">
                 <tr>
                     <td nowrap>
-                        <% if (!this.Security.User.AddsNotAllowed)
+                        <% if (!Security.User.AddsNotAllowed)
                             { %>
                         <a href="<%= ResolveUrl("~/Bugs/Edit.aspx") %>">
                             <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
@@ -60,9 +63,9 @@
                     {
                         if (Util.GetSetting("EnableTags", "0") == "1")
                         {
-                            BugList.DisplayBugListTagsLine(Response, this.Security);
+                            BugList.DisplayBugListTagsLine(Response, Security);
                         }
-                        display_bugs(false);
+                        display_bugs(false, Security);
                     }
                     else
                     {
@@ -85,7 +88,7 @@
             <input type="hidden" name="tags" id="tags" value="">
 
             <script>
-                var enable_popups = <% Response.Write(this.Security.User.EnablePopups ? "1" : "0"); %>;
+                var enable_popups = <% Response.Write(Security.User.EnablePopups ? "1" : "0"); %>;
                 var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
             </script>
 

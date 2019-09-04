@@ -8,24 +8,23 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class Subscribe : Page
     {
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
             var bugid = Convert.ToInt32(Request["id"]);
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
             if (permissionLevel == Security.PermissionNone) Response.End();
 
             if (Request.QueryString["ses"] != (string) Session["session_cookie"])
@@ -42,7 +41,7 @@ namespace BugTracker.Web
 			where bs_bug = $bg and bs_user = $us";
 
             this.Sql = this.Sql.Replace("$bg", Util.SanitizeInteger(Request["id"]));
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
             DbUtil.ExecuteNonQuery(this.Sql);
         }
     }

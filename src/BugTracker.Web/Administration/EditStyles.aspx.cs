@@ -20,8 +20,6 @@ namespace BugTracker.Web.Administration
     {
         public DataSet Ds;
 
-        public Security Security;
-
         public void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
@@ -31,8 +29,12 @@ namespace BugTracker.Web.Administration
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             this.Ds = DbUtil.GetDataSet(
                 @"select

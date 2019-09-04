@@ -9,20 +9,18 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class Ajax2 : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             // will this be too slow?
 
@@ -31,11 +29,11 @@ namespace BugTracker.Web
             try
             {
                 var sql = @"select distinct top 10 bg_short_desc from bugs
-			where bg_short_desc like '%$str%'
-			order by 1";
+            where bg_short_desc like '%$str%'
+            order by 1";
 
                 // if you don't use permissions, comment out this line for speed?
-                sql = Util.AlterSqlPerProjectPermissions(sql, this.Security);
+                sql = Util.AlterSqlPerProjectPermissions(sql, security);
 
                 var text = Request["q"];
                 sql = sql.Replace("$str", text.Replace("'", "''"));

@@ -8,20 +8,18 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class DeleteSubscriber : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
 
             if (Request.QueryString["ses"] != (string) Session["session_cookie"])
             {

@@ -9,7 +9,6 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
     using Core.Administration;
@@ -26,8 +25,12 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
         {
             Util.DoNotCache(Response);
 
-            Security = new Security();
-            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - user defined attribute values";
 

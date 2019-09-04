@@ -12,27 +12,23 @@ namespace BugTracker.Web.Reports
     using System.Data;
     using System.Drawing;
     using System.Drawing.Imaging;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class View : Page
     {
         public int Scale = 1;
-
-        public Security Security;
-
         public string Sql;
-        //string parent_iframe;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports)
+            security.CheckSecurity(Security.AnyUserOk);
+
+            if (security.User.IsAdmin || security.User.CanUseReports)
             {
                 //
             }
@@ -66,7 +62,7 @@ namespace BugTracker.Web.Reports
             var desc = (string) dr["rp_desc"];
 
             // replace the magic pseudo variable
-            rpSql = rpSql.Replace("$ME", Convert.ToString(this.Security.User.Usid));
+            rpSql = rpSql.Replace("$ME", Convert.ToString(security.User.Usid));
 
             var ds = DbUtil.GetDataSet(rpSql);
 

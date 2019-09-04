@@ -8,24 +8,25 @@
 namespace BugTracker.Web.Administration
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class Home : Page
     {
         public bool Nag;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "admin";
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - admin";
 
             if (false) // change this to if(true) to make the donation nag message go away
             {

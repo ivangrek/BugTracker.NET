@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Administration.Statuses
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
     using Core.Administration;
@@ -29,8 +28,12 @@ namespace BugTracker.Web.Administration.Statuses
         {
             Util.DoNotCache(Response);
 
-            Security = new Security();
-            Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             if (IsPostBack)
             {

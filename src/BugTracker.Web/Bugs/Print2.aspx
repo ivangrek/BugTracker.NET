@@ -31,7 +31,6 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <%
-
         var firstrow = true;
 
         if (this.Dv != null)
@@ -44,9 +43,9 @@
                     firstrow = false;
 
                 var dr = Bug.GetBugDataRow(
-                    (int)drv[1], this.Security);
+                    (int)drv[1], Security);
 
-                PrintBug.print_bug(Response, dr, this.Security,
+                PrintBug.print_bug(Response, dr, Security,
                     false /* include style */, this.ImagesInline, this.HistoryInline,
                     true /*internal_posts */);
                 ;
@@ -64,9 +63,9 @@
                         firstrow = false;
 
                     var dr = Bug.GetBugDataRow(
-                        (int)dr2[1], this.Security);
+                        (int)dr2[1], Security);
 
-                    PrintBug.print_bug(Response, dr, this.Security,
+                    PrintBug.print_bug(Response, dr, Security,
                         false, // include style
                         this.ImagesInline, this.HistoryInline,
                         true); // internal_posts

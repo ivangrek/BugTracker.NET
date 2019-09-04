@@ -8,22 +8,20 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class UpdateDashboard : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            var security = new Security();
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports)
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
+
+            if (security.User.IsAdmin || security.User.CanUseReports)
             {
                 //
             }
@@ -65,7 +63,7 @@ insert into dashboard_items
 (ds_user, ds_report, ds_chart_type, ds_col, ds_row)
 values ($user, $report, '$chart_type', $col, @last_row)";
 
-                sql = sql.Replace("$user", Convert.ToString(this.Security.User.Usid));
+                sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
                 sql = sql.Replace("$report", Convert.ToString(rpId));
                 sql = sql.Replace("$chart_type", Request["rp_chart_type"].Replace("'", "''"));
                 sql = sql.Replace("$col", Convert.ToString(rpCol));
@@ -75,7 +73,7 @@ values ($user, $report, '$chart_type', $col, @last_row)";
                 var dsId = Convert.ToInt32(Util.SanitizeInteger(Request["ds_id"]));
                 sql = "delete from dashboard_items where ds_id = $ds_id and ds_user = $user";
                 sql = sql.Replace("$ds_id", Convert.ToString(dsId));
-                sql = sql.Replace("$user", Convert.ToString(this.Security.User.Usid));
+                sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
             }
             else if (action == "moveup" || action == "movedown")
             {
@@ -110,7 +108,7 @@ and ds_id = $ds_id
                 else
                     sql = sql.Replace("$delta", "1");
                 sql = sql.Replace("$ds_id", Convert.ToString(dsId));
-                sql = sql.Replace("$user", Convert.ToString(this.Security.User.Usid));
+                sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
             }
 
             if (action != "")

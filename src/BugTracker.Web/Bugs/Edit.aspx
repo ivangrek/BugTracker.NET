@@ -6,6 +6,8 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Bugs.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -17,7 +19,7 @@
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery.textarearesizer.compressed.js") %>"></script>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_bug.js") %>"></script>
-    <% if (this.Security.User.UseFckeditor)
+    <% if (Security.User.UseFckeditor)
         { %>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/ckeditor/ckeditor.js") %>"></script>
     <% } %>
@@ -35,7 +37,7 @@
 
             <%
 
-        if (this.Security.User.UseFckeditor)
+        if (Security.User.UseFckeditor)
         {
             Response.Write("CKEDITOR.replace( 'comment' )");
         }
@@ -45,18 +47,17 @@
         }
             %>	
         }
-
     </script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, Util.GetSetting("PluralBugLabel", "bugs")); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu" />
 </asp:Content>
 
-<asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+<asp:Content ContentPlaceHolderID="BodyContent" ID="BodyContent" runat="server">
+    <div runat="server" id="mainBlock" class="align">
 
-        <% if (!this.Security.User.AddsNotAllowed && this.Id > 0)
+        <% if (!Security.User.AddsNotAllowed && this.Id > 0)
             { %>
         <a class="warn" href="<%= ResolveUrl("~/Bugs/Edit.aspx?id=0") %>">
             <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
@@ -220,8 +221,8 @@
 
 
                                                                                 <%
-                                                                                    display_custom_fields();
-                                                                                    display_project_specific_custom_fields();
+                                                                                    display_custom_fields(Security);
+                                                                                    display_project_specific_custom_fields(Security);
                                                                                 %>
                                 </table>
 
@@ -286,7 +287,7 @@
                                 <%
                                     if (this.Id != 0)
                                     {
-                                        display_bug_relationships();
+                                        display_bug_relationships(Security);
                                     }
                                 %>
                             </form>
@@ -316,13 +317,50 @@
                         this.ImagesInline,
                         this.HistoryInline,
                         true, // internal_posts
-                        this.Security.User);
+                        Security.User);
                 }
             %>
         </div>
         <!-- posts -->
     </div>
-    <!-- class align -->
+
+    <div runat="server" id="errorBlock" class="align" Visible="False">
+        <div class="err">
+            <%= Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) %>
+                not found:&nbsp;<%= Convert.ToString(this.Id)%>
+        </div>
+
+        <p></p>
+
+        <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
+             <%= Util.GetSetting("PluralBugLabel", "bug")%>
+        </a>
+    </div>
+
+    <div runat="server" id="errorBlockPermissions" class="align" Visible="False">
+        <div class="err">
+            You are not allowed to view this <%= Util.GetSetting("SingularBugLabel", "bug") %>
+            not found:&nbsp;<%= Convert.ToString(this.Id)%>
+        </div>
+
+        <p></p>
+
+        <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
+            <%= Util.CapitalizeFirstLetter(Util.GetSetting("PluralBugLabel", "bug")) %>
+        </a>
+    </div>
+
+    <div runat="server" id="errorBlockIntegerId" class="align" Visible="False">
+        <div class="err">
+            Error: <%= Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) %> ID must be an integer.
+        </div>
+
+        <p></p>
+
+        <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
+            <%= Util.CapitalizeFirstLetter(Util.GetSetting("PluralBugLabel", "bug")) %>
+        </a>
+    </div>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">

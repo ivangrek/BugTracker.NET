@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Queries.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <script type="text/javascript" src="Scripts/edit_area/edit_area_full.js"></script>
@@ -28,7 +29,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "queries"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -83,7 +84,7 @@
 
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                                <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit"/>
                                     <td>&nbsp</td>
                                 </td>
                             </tr>

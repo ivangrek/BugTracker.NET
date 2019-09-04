@@ -9,14 +9,12 @@ namespace BugTracker.Web.Attachments
 {
     using System;
     using System.IO;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class Add : Page
     {
         public int Bugid;
-        public Security Security;
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -26,11 +24,12 @@ namespace BugTracker.Web.Attachments
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "add attachment";
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - add attachment";
 
             var stringId = Util.SanitizeInteger(Request.QueryString["id"]);
 
@@ -42,7 +41,7 @@ namespace BugTracker.Web.Attachments
             }
 
             this.Bugid = Convert.ToInt32(stringId);
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
 
             if (permissionLevel == Security.PermissionNone
                 || permissionLevel == Security.PermissionReadonly)
@@ -52,13 +51,13 @@ namespace BugTracker.Web.Attachments
                 return;
             }
 
-            if (this.Security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+            if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
             }
 
-            if (IsPostBack) on_update();
+            if (IsPostBack) on_update(security);
         }
 
         public void write_msg(string msg, bool rewritePosts)
@@ -78,7 +77,7 @@ namespace BugTracker.Web.Attachments
             Response.End();
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
             if (this.attached_file.PostedFile == null)
             {
@@ -114,7 +113,7 @@ namespace BugTracker.Web.Attachments
 
             try
             {
-                Bug.InsertPostAttachment(this.Security, this.Bugid, this.attached_file.PostedFile.InputStream,
+                Bug.InsertPostAttachment(security, this.Bugid, this.attached_file.PostedFile.InputStream,
                     contentLength,
                     filename, this.desc.Value, this.attached_file.PostedFile.ContentType,
                     -1, // parent

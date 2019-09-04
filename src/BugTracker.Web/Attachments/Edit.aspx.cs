@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Attachments
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -16,7 +15,6 @@ namespace BugTracker.Web.Attachments
     {
         public int Bugid;
         public int Id;
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -28,11 +26,14 @@ namespace BugTracker.Web.Attachments
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
+            var security = new Security();
 
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanEditAndDeletePosts)
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+
+            if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
             {
                 //
             }
@@ -52,14 +53,14 @@ namespace BugTracker.Web.Attachments
             var = Request.QueryString["bug_id"];
             this.Bugid = Convert.ToInt32(var);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
             if (permissionLevel != Security.PermissionAll)
             {
                 Response.Write("You are not allowed to edit this item");
                 Response.End();
             }
 
-            if (this.Security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+            if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
@@ -80,7 +81,7 @@ namespace BugTracker.Web.Attachments
             }
             else
             {
-                on_update();
+                on_update(security);
             }
         }
 
@@ -91,7 +92,7 @@ namespace BugTracker.Web.Attachments
             return good;
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
             var good = validate();
 
@@ -108,7 +109,7 @@ namespace BugTracker.Web.Attachments
 
                 DbUtil.ExecuteNonQuery(this.Sql);
 
-                if (!this.internal_only.Checked) Bug.SendNotifications(Bug.Update, this.Bugid, this.Security);
+                if (!this.internal_only.Checked) Bug.SendNotifications(Bug.Update, this.Bugid, security);
 
                 Response.Redirect($"~/Bugs/Edit.aspx?id={this.Bugid}");
             }

@@ -11,26 +11,26 @@ namespace BugTracker.Web.Bugs
     using System.Data;
     using System.IO;
     using System.Text;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class Merge : Page
     {
         public DataRow Dr;
-
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
+            var security = new Security();
 
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanMergeBugs)
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
+
+            if (security.User.IsAdmin || security.User.CanMergeBugs)
             {
                 //
             }
@@ -56,7 +56,7 @@ namespace BugTracker.Web.Bugs
             {
                 this.from_err.InnerText = "";
                 this.into_err.InnerText = "";
-                on_update();
+                on_update(security);
             }
         }
 
@@ -139,7 +139,7 @@ namespace BugTracker.Web.Bugs
             return true;
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
             // does it say "Merge" or "Confirm Merge"?
 
@@ -230,7 +230,7 @@ update git_commits   set gitcom_bug = $into where gitcom_bug = $from
 
                 this.Sql = this.Sql.Replace("$from", this.prev_from_bug.Value);
                 this.Sql = this.Sql.Replace("$into", this.prev_into_bug.Value);
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
 
                 var commentId = Convert.ToInt32(DbUtil.ExecuteScalar(this.Sql));
 
@@ -266,7 +266,7 @@ update git_commits   set gitcom_bug = $into where gitcom_bug = $from
                     }
                 }
 
-                Bug.SendNotifications(Bug.Update, Convert.ToInt32(this.prev_into_bug.Value), this.Security);
+                Bug.SendNotifications(Bug.Update, Convert.ToInt32(this.prev_into_bug.Value), security);
 
                 Response.Redirect($"~/Bugs/Edit.aspx?id={this.prev_into_bug.Value}");
             }

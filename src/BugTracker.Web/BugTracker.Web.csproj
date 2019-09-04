@@ -67,6 +67,7 @@
     </Reference>
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.Protocols" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -113,6 +114,7 @@
     <Content Include="Content\btnet_base.css" />
     <Content Include="Bugs\List.aspx" />
     <Content Include="Content\images\bugtracker_screen_capture.jpeg" />
+    <Content Include="Core\Controls\MainMenu.ascx" />
     <Content Include="Scripts\bug_list.js" />
     <Content Include="Content\images\camera.png" />
     <Content Include="Administration\Categories\List.aspx" />
@@ -695,6 +697,13 @@
     <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
     <Compile Include="Core\BugList.cs" />
+    <Compile Include="Core\Controls\MainMenu.ascx.cs">
+      <DependentUpon>MainMenu.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Core\Controls\MainMenu.ascx.designer.cs">
+      <DependentUpon>MainMenu.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Core\DbUtil.cs" />
     <Compile Include="Core\Email.cs" />
     <Compile Include="Core\Persistence\ApplicationContext.cs" />

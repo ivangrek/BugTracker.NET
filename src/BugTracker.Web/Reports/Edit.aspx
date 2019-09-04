@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Reports.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_area/edit_area_full.js")%>"></script>
@@ -28,7 +29,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <% this.Security.WriteMenu(Response, "reports"); %>
+    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -44,7 +45,7 @@
                             <tr>
                                 <td class="lbl">Description:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80">
+                                    <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80"/>
                                 </td>
                                 <td runat="server" class="err" id="desc_err">&nbsp;</td>
                             </tr>
@@ -81,7 +82,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit"/>
                                 </td>
                                 <td>&nbsp</td>
                             </tr>

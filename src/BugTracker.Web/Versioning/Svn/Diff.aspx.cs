@@ -64,16 +64,15 @@ the literal text (starting in the first column):
 '\ No newline at end of file'
 
 */
-
-        public Security Security;
         public string UnifiedDiffText = "";
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
 
             Page.Title = "svn diff " + HttpUtility.HtmlEncode(this.Path1);
 
@@ -89,7 +88,7 @@ where svnap_id = $id";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["svnrev_bug"], this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["svnrev_bug"], security);
             if (permissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");

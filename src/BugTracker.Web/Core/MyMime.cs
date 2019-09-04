@@ -11,7 +11,6 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.IO;
     using System.Text;
-    using System.Web;
     using anmar.SharpMimeTools;
 
     public class MyMime
@@ -390,7 +389,7 @@ where us_username = N'$us'";
 
             // simulate a user having logged in, for downstream code
             var security = new Security();
-            security.Context = HttpContext.Current;
+
             security.User.Username = username;
             security.User.Usid = (int)dr["us_id"];
             security.User.IsAdmin = Convert.ToBoolean(dr["us_admin"]);

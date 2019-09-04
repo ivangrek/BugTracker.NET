@@ -8,13 +8,11 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class DeleteTask : Page
     {
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -26,9 +24,9 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
+            var security = new Security();
 
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            security.CheckSecurity(Security.MustBeAdmin);
 
             if (Request.QueryString["ses"] != (string) Session["session_cookie"])
             {
@@ -39,7 +37,7 @@ namespace BugTracker.Web
             var stringBugid = Util.SanitizeInteger(Request["bugid"]);
             var bugid = Convert.ToInt32(stringBugid);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
 
             if (permissionLevel != Security.PermissionAll)
             {

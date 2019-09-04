@@ -8,20 +8,18 @@
 namespace BugTracker.Web.Administration
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class ViewWebConfig : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
 
             // create path
             var path = Request.MapPath(Request.Path);

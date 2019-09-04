@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Administration.CustomFields
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -16,7 +15,6 @@ namespace BugTracker.Web.Administration.CustomFields
     {
         public int Id;
 
-        public Security Security;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -28,8 +26,12 @@ namespace BugTracker.Web.Administration.CustomFields
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit custom column metadata";
 

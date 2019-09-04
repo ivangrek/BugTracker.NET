@@ -9,7 +9,6 @@ namespace BugTracker.Web.Administration
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -18,7 +17,6 @@ namespace BugTracker.Web.Administration
         public DataSet Ds;
 
         public string ExceptionMessage;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -28,15 +26,16 @@ namespace BugTracker.Web.Administration
             try
             {
                 DbUtil.ExecuteNonQuery("select count(1) from users");
-                this.Security = new Security();
-                this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdmin);
+
+                var security = new Security();
+
+                security.CheckSecurity(Security.MustBeAdmin);
             }
             catch (Exception)
             {
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "run query";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - run query";
 
             if (IsPostBack)
             {

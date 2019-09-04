@@ -9,7 +9,6 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.HtmlControls;
     using System.Web.UI.WebControls;
@@ -19,7 +18,6 @@ namespace BugTracker.Web
     {
         public int Bugid;
 
-        public Security Security;
         public string Sql;
         public int TskId;
 
@@ -32,15 +30,16 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
             this.msg.InnerText = "";
 
             var stringBugid = Util.SanitizeInteger(Request["bugid"]);
             this.Bugid = Convert.ToInt32(stringBugid);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
 
             if (permissionLevel != Security.PermissionAll)
             {
@@ -48,7 +47,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanEditTasks)
+            if (security.User.IsAdmin || security.User.CanEditTasks)
             {
                 // allowed	
             }
@@ -71,7 +70,7 @@ namespace BugTracker.Web
                     Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) + " ID:";
                 this.bugid_static.InnerHtml = Convert.ToString(this.Bugid);
 
-                load_users_dropdowns(this.Bugid);
+                load_users_dropdowns(this.Bugid, security);
 
                 if (Util.GetSetting("ShowTaskAssignedTo", "1") == "0") this.assigned_to_tr.Visible = false;
 
@@ -149,7 +148,7 @@ namespace BugTracker.Web
             }
             else
             {
-                on_update();
+                on_update(security);
             }
         }
 
@@ -173,7 +172,7 @@ namespace BugTracker.Web
             }
         }
 
-        public void load_users_dropdowns(int bugid)
+        public void load_users_dropdowns(int bugid, Security security)
         {
             // What's selected now?   Save it before we refresh the dropdown.
             var currentValue = "";
@@ -199,7 +198,7 @@ and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or og_external_user 
 and us_id in
     (select pu_user from project_user_xref
         where pu_project = @project
-	    and pu_permission_level <> 0)
+        and pu_permission_level <> 0)
 order by us_username; ";
             // Only users explictly DISallowed will be omitted
             else
@@ -212,17 +211,17 @@ and og_can_be_assigned_to = 1
 and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or og_external_user = 0)
 and us_id not in
     (select pu_user from project_user_xref
-	    where pu_project = @project
-		and pu_permission_level = 0)
+        where pu_project = @project
+        and pu_permission_level = 0)
 order by us_username; ";
 
             this.Sql += "\nselect st_id, st_name from statuses order by st_sort_seq, st_name";
 
             this.Sql += "\nselect isnull(@assigned_to,0) ";
 
-            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(this.Security.User.Org));
+            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(security.User.Org));
             this.Sql = this.Sql.Replace("$og_other_orgs_permission_level",
-                Convert.ToString(this.Security.User.OtherOrgsPermissionLevel));
+                Convert.ToString(security.User.OtherOrgsPermissionLevel));
             this.Sql = this.Sql.Replace("$bg_id", Convert.ToString(bugid));
 
             if (Util.GetSetting("UseFullNames", "0") == "0")
@@ -397,7 +396,7 @@ order by us_username; ";
             return s;
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
             var good = validate();
 
@@ -452,7 +451,7 @@ insert into bug_posts
 (bp_bug, bp_user, bp_date, bp_comment, bp_type)
 values($tsk_bug, $tsk_last_updated_user, getdate(), N'added task ' + convert(varchar, @tsk_id), 'update')";
 
-                    this.Sql = this.Sql.Replace("$tsk_created_user", Convert.ToString(this.Security.User.Usid));
+                    this.Sql = this.Sql.Replace("$tsk_created_user", Convert.ToString(security.User.Usid));
                 }
                 else // edit existing
                 {
@@ -482,7 +481,7 @@ values($tsk_bug, $tsk_last_updated_user, getdate(), N'updated task $tsk_id', 'up
                 }
 
                 this.Sql = this.Sql.Replace("$tsk_bug", Convert.ToString(this.Bugid));
-                this.Sql = this.Sql.Replace("$tsk_last_updated_user", Convert.ToString(this.Security.User.Usid));
+                this.Sql = this.Sql.Replace("$tsk_last_updated_user", Convert.ToString(security.User.Usid));
 
                 this.Sql = this.Sql.Replace("$tsk_planned_start_date",
                     format_date_hour_min(this.planned_start_date.Value, this.planned_start_hour.SelectedItem.Value,
@@ -513,7 +512,7 @@ values($tsk_bug, $tsk_last_updated_user, getdate(), N'updated task $tsk_id', 'up
 
                 DbUtil.ExecuteNonQuery(this.Sql);
 
-                Bug.SendNotifications(Bug.Update, this.Bugid, this.Security);
+                Bug.SendNotifications(Bug.Update, this.Bugid, security);
 
                 Response.Redirect("Tasks.aspx?bugid=" + Convert.ToString(this.Bugid));
             }

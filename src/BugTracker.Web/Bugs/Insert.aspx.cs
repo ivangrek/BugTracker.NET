@@ -227,7 +227,7 @@ namespace BugTracker.Web.Bugs
                 Bug.ApplyPostInsertRules(newIds.Bugid);
 
                 Bug.SendNotifications(Bug.Insert, newIds.Bugid, security);
-                Core.WhatsNew.AddNews(newIds.Bugid, shortDesc, "added", security);
+                WhatsNew.AddNews(newIds.Bugid, shortDesc, "added", security);
 
                 Response.AddHeader("BTNET", "OK:" + Convert.ToString(newIds.Bugid));
                 Response.Write("OK:" + Convert.ToString(newIds.Bugid));
@@ -292,7 +292,7 @@ namespace BugTracker.Web.Bugs
                 }
 
                 Bug.SendNotifications(Bug.Update, bugid, security);
-                Core.WhatsNew.AddNews(bugid, (string)dr2["bg_short_desc"], "updated", security);
+                WhatsNew.AddNews(bugid, (string)dr2["bg_short_desc"], "updated", security);
 
                 Response.AddHeader("BTNET", "OK:" + Convert.ToString(bugid));
                 Response.Write("OK:" + Convert.ToString(bugid));

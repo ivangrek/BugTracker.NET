@@ -35,7 +35,7 @@
         %>
         <p>
 
-            <% if (this.PermissionLevel == Security.PermissionAll && (this.Security.User.IsAdmin || this.Security.User.CanEditTasks))
+            <% if (this.PermissionLevel == Security.PermissionAll && (Security.User.IsAdmin || Security.User.CanEditTasks))
                 { %>
             <a href="EditTask?id=0&bugid=" <% Response.Write(Convert.ToString(this.Bugid)); %>>add new task</a>
             &nbsp;&nbsp;&nbsp;&nbsp;

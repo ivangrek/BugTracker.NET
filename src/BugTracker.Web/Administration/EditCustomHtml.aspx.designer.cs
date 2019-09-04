@@ -13,6 +13,15 @@ namespace BugTracker.Web.Administration {
     public partial class EditCustomHtml {
         
         /// <summary>
+        /// MainMenu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
+        
+        /// <summary>
         /// which control.
         /// </summary>
         /// <remarks>

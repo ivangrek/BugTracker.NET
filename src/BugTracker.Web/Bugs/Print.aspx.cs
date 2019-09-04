@@ -9,7 +9,6 @@ namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -17,17 +16,15 @@ namespace BugTracker.Web.Bugs
     {
         public DataSet Ds;
         public DataView Dv;
-
-        public Security Security;
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (Request["format"] != "excel") Util.DoNotCache(Response);
 
-            this.Security = new Security();
+            var security = new Security();
 
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            security.CheckSecurity(Security.AnyUserOk);
 
             // fetch the sql
             var quIdString = Util.SanitizeInteger(Request["qu_id"]);
@@ -44,9 +41,9 @@ namespace BugTracker.Web.Bugs
                 var bugSql = (string) DbUtil.ExecuteScalar(this.Sql);
 
                 // replace magic variables
-                bugSql = bugSql.Replace("$ME", Convert.ToString(this.Security.User.Usid));
+                bugSql = bugSql.Replace("$ME", Convert.ToString(security.User.Usid));
 
-                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, this.Security);
+                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
 
                 this.Ds = DbUtil.GetDataSet(bugSql);
                 this.Dv = new DataView(this.Ds.Tables[0]);

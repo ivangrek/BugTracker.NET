@@ -12,7 +12,6 @@ namespace BugTracker.Web
     using System.Data;
     using System.IO;
     using System.Text;
-    using System.Web;
     using System.Web.UI;
     using Core;
     using Lucene.Net.Highlight;
@@ -22,14 +21,13 @@ namespace BugTracker.Web
     {
 #pragma warning disable 618
 
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Lucene.Net.Search.Query query = null;
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Query query = null;
 
             try
             {
@@ -149,7 +147,7 @@ drop table #$GUID
 ");
 
             var sql = sb.ToString().Replace("$GUID", guid);
-            sql = Util.AlterSqlPerProjectPermissions(sql, this.Security);
+            sql = Util.AlterSqlPerProjectPermissions(sql, security);
 
             var ds = DbUtil.GetDataSet(sql);
             Session["bugs_unfiltered"] = ds.Tables[0];

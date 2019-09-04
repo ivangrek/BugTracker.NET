@@ -7,13 +7,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web.Administration.Organizations
-{
-
-
-    public partial class Delete
-    {
-
+namespace BugTracker.Web.Administration.Organizations {
+    
+    
+    public partial class Delete {
+        
+        /// <summary>
+        /// MainMenu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
+        
         /// <summary>
         /// frm control.
         /// </summary>
@@ -22,7 +29,7 @@ namespace BugTracker.Web.Administration.Organizations
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm frm;
-
+        
         /// <summary>
         /// confirm_href control.
         /// </summary>
@@ -31,7 +38,7 @@ namespace BugTracker.Web.Administration.Organizations
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
-
+        
         /// <summary>
         /// row_id control.
         /// </summary>

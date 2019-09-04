@@ -9,27 +9,29 @@ namespace BugTracker.Web.Administration.Users
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class List : Page
     {
         public DataSet Ds;
-        public Security Security;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.MustBeAdminOrProjectAdmin);
+            var security = new Security();
+
+            security.CheckSecurity(Security.MustBeAdminOrProjectAdmin);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "admin";
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - users";
 
             string sql;
 
-            if (this.Security.User.IsAdmin)
+            if (security.User.IsAdmin)
                 sql = @"
             select distinct pu_user
             into #t
@@ -129,7 +131,7 @@ namespace BugTracker.Web.Administration.Users
             else
                 sql = sql.Replace("$filter_users", "");
 
-            sql = sql.Replace("$us", Convert.ToString(this.Security.User.Usid));
+            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
             this.Ds = DbUtil.GetDataSet(sql);
 
             // cookies

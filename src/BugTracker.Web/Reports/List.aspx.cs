@@ -9,24 +9,30 @@ namespace BugTracker.Web.Reports
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class List : Page
     {
         public DataSet Ds;
-        public Security Security;
+
+        public Security Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanUseReports ||
-                this.Security.User.CanEditReports)
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Security = security;
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "reports";
+
+            if (security.User.IsAdmin || security.User.CanUseReports ||
+                security.User.CanEditReports)
             {
                 //
             }
@@ -55,7 +61,7 @@ case
 $adm
 from reports order by rp_desc";
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanEditReports)
+            if (security.User.IsAdmin || security.User.CanEditReports)
                 sql = sql.Replace("$adm", ", " +
                                           "'<a href=''" + ResolveUrl("~/Reports/Edit.aspx") +"?id=' + convert(varchar, rp_id) + '''>edit</a>' [edit], " +
                                           "'<a href=''" + ResolveUrl("~/Reports/Delete.aspx") + "?id=' + convert(varchar, rp_id) + '''>delete</a>' [delete] ");

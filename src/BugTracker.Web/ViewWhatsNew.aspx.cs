@@ -8,25 +8,28 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
     public partial class ViewWhatsNew : Page
     {
-        public Security Security;
-
         public void Page_Load(object sender, EventArgs e)
         {
-            if (Util.GetSetting("EnableWhatsNewPage", "0") != "1") Response.End();
+            if (Util.GetSetting("EnableWhatsNewPage", "0") != "1")
+            {
+                Response.End();
+            }
 
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "news?";
+            security.CheckSecurity(Security.AnyUserOk);
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = "news";
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - news?";
         }
     }
 }

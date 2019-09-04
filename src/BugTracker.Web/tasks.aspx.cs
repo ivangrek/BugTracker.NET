@@ -9,7 +9,6 @@ namespace BugTracker.Web
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -18,9 +17,9 @@ namespace BugTracker.Web
         public int Bugid;
         public DataSet Ds;
         public int PermissionLevel;
-
-        public Security Security;
         public string Ses;
+
+        public Security Security { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -31,22 +30,24 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "tasks";
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Security = security;
+
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - tasks";
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["bugid"]));
 
-            this.PermissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            this.PermissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
             if (this.PermissionLevel == Security.PermissionNone)
             {
                 Response.Write("You are not allowed to view tasks for this item");
                 Response.End();
             }
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanViewTasks)
+            if (security.User.IsAdmin || security.User.CanViewTasks)
             {
                 // allowed
             }
@@ -60,8 +61,8 @@ namespace BugTracker.Web
 
             var sql = "select tsk_id [id],";
 
-            if (this.PermissionLevel == Security.PermissionAll && !this.Security.User.IsGuest &&
-                (this.Security.User.IsAdmin || this.Security.User.CanEditTasks))
+            if (this.PermissionLevel == Security.PermissionAll && !security.User.IsGuest &&
+                (security.User.IsAdmin || security.User.CanEditTasks))
                 sql += @"
 '<a   href=EditTask.aspx?bugid=$bugid&id=' + convert(varchar,tsk_id) + '>edit</a>'   [$no_sort_edit],
 '<a href=DeleteTask.aspx?ses=$ses&bugid=$bugid&id=' + convert(varchar,tsk_id) + '>delete</a>' [$no_sort_delete],";

@@ -17,9 +17,10 @@ namespace BugTracker.Web.Comments
         public int Bugid;
         public int Id;
 
-        public Security Security;
         public string Sql;
         public bool UseFckeditor;
+
+        public Security Security { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -30,11 +31,16 @@ namespace BugTracker.Web.Comments
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
+            var security = new Security();
 
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOkExceptGuest);
+            security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
-            if (this.Security.User.IsAdmin || this.Security.User.CanEditAndDeletePosts)
+            Security = security;
+
+            MainMenu.Security = security;
+            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+
+            if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
             {
                 //
             }
@@ -44,8 +50,7 @@ namespace BugTracker.Web.Comments
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit comment";
+            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit comment";
 
             this.msg.InnerText = "";
 
@@ -68,7 +73,7 @@ namespace BugTracker.Web.Comments
 
             this.Bugid = (int) dr["bp_bug"];
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, this.Security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
             if (permissionLevel == Security.PermissionNone
                 || permissionLevel == Security.PermissionReadonly
                 || (string) dr["bp_type"] != "comment")
@@ -79,13 +84,13 @@ namespace BugTracker.Web.Comments
 
             var contentType = (string) dr["bp_content_type"];
 
-            if (this.Security.User.UseFckeditor && contentType == "text/html" &&
+            if (security.User.UseFckeditor && contentType == "text/html" &&
                 Util.GetSetting("DisableFCKEditor", "0") == "0")
                 this.UseFckeditor = true;
             else
                 this.UseFckeditor = false;
 
-            if (this.Security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+            if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
@@ -102,7 +107,7 @@ namespace BugTracker.Web.Comments
             }
             else
             {
-                on_update();
+                on_update(security);
             }
         }
 
@@ -119,7 +124,7 @@ namespace BugTracker.Web.Comments
             return good;
         }
 
-        public void on_update()
+        public void on_update(Security security)
         {
             var good = validate();
 
@@ -158,8 +163,8 @@ namespace BugTracker.Web.Comments
                 // easier for them to accidently get forwarded to the "wrong" people...
                 if (!this.internal_only.Checked)
                 {
-                    Bug.SendNotifications(Bug.Update, this.Bugid, this.Security);
-                    Core.WhatsNew.AddNews(this.Bugid, (string) dr["bg_short_desc"], "updated", this.Security);
+                    Bug.SendNotifications(Bug.Update, this.Bugid, security);
+                    WhatsNew.AddNews(this.Bugid, (string) dr["bg_short_desc"], "updated", security);
                 }
 
                 Response.Redirect($"~/Bugs/Edit.aspx?id={this.Bugid}");

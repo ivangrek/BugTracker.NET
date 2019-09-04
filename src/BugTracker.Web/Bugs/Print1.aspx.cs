@@ -9,7 +9,6 @@ namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
-    using System.Web;
     using System.Web.UI;
     using Core;
 
@@ -18,24 +17,35 @@ namespace BugTracker.Web.Bugs
         public DataRow Dr;
         public bool HistoryInline;
         public bool ImagesInline;
-        public Security Security;
+        public int Id;
+
+        public Security Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            this.Security = new Security();
-            this.Security.CheckSecurity(HttpContext.Current, Security.AnyUserOk);
+            var security = new Security();
+
+            security.CheckSecurity(Security.AnyUserOk);
+
+            Security = security;
 
             var stringBugid = Request.QueryString["id"];
-
             var bugid = Convert.ToInt32(stringBugid);
 
-            this.Dr = Bug.GetBugDataRow(bugid, this.Security);
+            Id = bugid;
+            this.Dr = Bug.GetBugDataRow(bugid, security);
 
             if (this.Dr == null)
             {
-                Util.DisplayBugNotFound(Response, this.Security, bugid);
+                this.mainBlock.Visible = false;
+                this.errorBlock.Visible = true;
+                this.errorBlockPermissions.Visible = false;
+
+                MainMenu.Security = security;
+                MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+
                 return;
             }
 
@@ -49,7 +59,13 @@ namespace BugTracker.Web.Bugs
             // don't allow user to view a bug he is not allowed to view
             if ((int) this.Dr["pu_permission_level"] == 0)
             {
-                Util.DisplayYouDontHavePermission(Response, this.Security);
+                this.mainBlock.Visible = false;
+                this.errorBlock.Visible = false;
+                this.errorBlockPermissions.Visible = true;
+
+                MainMenu.Security = security;
+                MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+
                 return;
             }
 
