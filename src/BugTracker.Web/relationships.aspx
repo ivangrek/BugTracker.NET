@@ -11,7 +11,7 @@
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="body_on_load()">--%>
 
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js") %>"></script>
 
     <script>
         var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';

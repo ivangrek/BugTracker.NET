@@ -14,13 +14,13 @@
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="on_change()">--%>
 
-    <link rel="StyleSheet" href="Scripts/jquery/jquery-ui-1.7.2.custom.css" type="text/css">
+    <link rel="StyleSheet" href="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.css") %>" type="text/css">
     <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on Search.aspx  -->
-    <link rel="StyleSheet" href="Content/custom/btnet_search.css" type="text/css">
-    <script type="text/javascript" src="Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" src="Scripts/bug_list.js"></script>
-    <script type="text/javascript" src="Scripts/suggest.js"></script>
-    <script type="text/javascript" src="Scripts/datejs/date.js"></script>
+    <link rel="StyleSheet" href="<%= ResolveUrl("~/Content/custom/btnet_search.css") %>" type="text/css">
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/bug_list.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/suggest.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/datejs/date.js") %>"></script>
 
     <script>
         search_suggest_min_chars = <% Response.Write(Util.GetSetting("SearchSuggestMinChars", "3")); %>

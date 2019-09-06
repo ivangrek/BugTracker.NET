@@ -127,6 +127,6 @@
 <html>
 <title>hg diff <% Response.Write(HttpUtility.HtmlEncode(this.Path)); %></title>
 
-<link rel="StyleSheet" href="Content/btnet.css" type="text/css">
+<link rel="StyleSheet" href="<%= ResolveUrl("~/Content/btnet.css") %>" type="text/css">
 </body>
 </html>

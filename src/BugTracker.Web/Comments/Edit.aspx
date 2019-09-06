@@ -10,13 +10,12 @@
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/jquery/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" src="Scripts/jquery/jquery.textarearesizer.compressed.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery.textarearesizer.compressed.js") %>"></script>
     <% if (Security.User.UseFckeditor)
         { %>
-    <script type="text/javascript" src="Scripts/ckeditor/ckeditor.js"></script>
-    <% } %>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/ckeditor/ckeditor.js") %>"></script>
+            <% } %>
 
     <script>
 

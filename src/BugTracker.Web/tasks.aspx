@@ -12,7 +12,7 @@
     <%--TODO
     <body onload="body_on_load()">--%>
 
-    <script type="text/javascript" src="Scripts/sortable.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js") %>"></script>
     <script>
 
         function body_on_load() {

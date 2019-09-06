@@ -9,7 +9,7 @@
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <script type="text/javascript" src="Scripts/edit_area/edit_area_full.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_area/edit_area_full.js") %>"></script>
 
     <script>
         editAreaLoader.init({

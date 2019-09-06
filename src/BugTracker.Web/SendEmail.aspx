@@ -16,7 +16,7 @@
 
     <% if (Security.User.UseFckeditor)
         { %>
-    <script type="text/javascript" src="Scripts/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/ckeditor/ckeditor.js") %>"></script>
     <% } %>
 
 

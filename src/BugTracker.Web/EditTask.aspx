@@ -9,11 +9,10 @@
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-    <link rel="StyleSheet" href="Scripts/jquery/jquery-ui-1.7.2.custom.css" type="text/css">
+    <link rel="StyleSheet" href="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.css") %>" type="text/css">
 
-    <script type="text/javascript" src="Scripts/jquery/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" src="Scripts/datejs/date.js"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
+    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/datejs/date.js") %>"></script>
 
     <script>
         $(document).ready(do_doc_ready);
