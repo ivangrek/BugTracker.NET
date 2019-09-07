@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
     using System;
     using System.Web;
@@ -32,8 +32,8 @@ namespace BugTracker.Web
                 var seId = cookie.Value.Replace("'", "''");
 
                 var sql = @"delete from sessions
-			where se_id = N'$se'
-			or datediff(d, se_date, getdate()) > 2";
+            where se_id = N'$se'
+            or datediff(d, se_date, getdate()) > 2";
                 sql = sql.Replace("$se", seId);
                 DbUtil.ExecuteNonQuery(sql);
 
@@ -45,7 +45,7 @@ namespace BugTracker.Web
                 Session["project"] = null;
             }
 
-            Response.Redirect("Home.aspx?msg=logged+off");
+            Response.Redirect("~/Accounts/Login.aspx?msg=logged+off");
         }
     }
 }

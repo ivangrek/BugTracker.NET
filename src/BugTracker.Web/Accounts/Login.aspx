@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="BugTracker.Web.Home" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="BugTracker.Web.Accounts.Home" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -92,14 +92,14 @@
                             <% if (Util.GetSetting("AllowSelfRegistration", "0") == "1")
                                 { %>
                         <p>
-                            <a style="font-size: 8pt;" href="Register.aspx">Register</a>
+                            <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Accounts/Register.aspx") %>">Register</a>
                         <p>
                             <% } %>
 
                             <% if (Util.GetSetting("ShowForgotPasswordLink", "1") == "1")
                                 { %>
                         <p>
-                            <a style="font-size: 8pt;" href="Forgot.aspx">Forgot your username or password?</a>
+                            <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Accounts/Forgot.aspx") %>">Forgot your username or password?</a>
                         <p>
                             <% } %>
                     </span>

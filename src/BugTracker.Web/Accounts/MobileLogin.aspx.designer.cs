@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+namespace BugTracker.Web.Accounts {
     
     
-    public partial class MLogin {
+    public partial class MobileLogin {
         
         /// <summary>
         /// my_header control.

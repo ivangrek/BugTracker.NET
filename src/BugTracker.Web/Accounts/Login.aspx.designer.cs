@@ -7,29 +7,31 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
+
+
+namespace BugTracker.Web.Accounts
+{
+    public partial class Home
+    {
     
-    
-    public partial class Forgot {
-        
         /// <summary>
-        /// username control.
+        /// user control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText username;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlInputText user;
+    
         /// <summary>
-        /// email control.
+        /// pw control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText email;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlInputPassword pw;
+    
         /// <summary>
         /// msg control.
         /// </summary>

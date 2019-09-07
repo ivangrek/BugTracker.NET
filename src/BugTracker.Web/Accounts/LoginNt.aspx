@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginNt.aspx.cs" Inherits="BugTracker.Web.LoginNt" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginNt.aspx.cs" Inherits="BugTracker.Web.Accounts.LoginNt" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 </asp:Content>
@@ -21,12 +21,12 @@
         Please contact your web administrator.
     </p>
     <p>
-        Windows Integrated Authentication requires that this page (LoginNt.aspx) does not
+        Windows Integrated Authentication requires that this page (Accounts/LoginNt.aspx) does not
         permit anonymous access and Windows Integrated Security is selected as the authentication
         protocol.
     </p>
     <p>
-        <a href="Home.aspx?msg=configuration+problem">Go to logon page.</a>
+        <a href="<%= ResolveUrl("~/Accounts/Login.aspx?msg=configuration+problem") %>">Go to logon page.</a>
     </p>
 </asp:Content>
 

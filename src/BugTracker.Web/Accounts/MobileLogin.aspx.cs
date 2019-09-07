@@ -5,14 +5,14 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
     using System;
     using System.Web;
     using System.Web.UI;
     using Core;
 
-    public partial class MLogin : Page
+    public partial class MobileLogin : Page
     {
         public string Sql;
 

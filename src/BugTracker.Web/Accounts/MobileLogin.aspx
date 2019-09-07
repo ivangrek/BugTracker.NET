@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="MLogin.aspx.cs" Inherits="BugTracker.Web.MLogin" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="MobileLogin.aspx.cs" Inherits="BugTracker.Web.Accounts.MobileLogin" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <meta name="viewport" content="width=device-width, initial-scale=1">

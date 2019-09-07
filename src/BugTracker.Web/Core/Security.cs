@@ -45,14 +45,14 @@ namespace BugTracker.Web.Core
 
             // This logic allows somebody to put a link in an email, like
             // Bugs/Edit.aspx?id=66
-            // The user would click on the link, go to the logon page (Home.aspx),
+            // The user would click on the link, go to the logon page (Accounts/Login.aspx),
             // and then after logging in continue on to Bugs/Edit.aspx?id=66
             var originalUrl = request.ServerVariables["URL"].ToLower();
             var originalQuerystring = request.ServerVariables["QUERY_STRING"].ToLower();
 
-            var target = "Home.aspx";
+            var target = "~/Accounts/Home.aspx";
 
-            if (originalUrl.EndsWith("MobileEdit.aspx")) target = "MLogin.aspx";
+            if (originalUrl.EndsWith("MobileEdit.aspx")) target = "~/Accounts/MobileLogin.aspx";
 
             target += "?url=" + originalUrl + "&qs=" + HttpUtility.UrlEncode(originalQuerystring);
 
@@ -163,17 +163,17 @@ and us_active = 1";
             if (level == MustBeAdmin && !this.User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
-                response.Redirect("~/Home.aspx");
+                response.Redirect("~/Accounts/Login.aspx");
             }
             else if (level == AnyUserOkExceptGuest && this.User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
-                response.Redirect("~/Home.aspx");
+                response.Redirect("~/Accounts/Login.aspx");
             }
             else if (level == MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
-                response.Redirect("~/Home.aspx");
+                response.Redirect("~/Accounts/Login.aspx");
             }
 
             if (Util.GetSetting("WindowsAuthentication", "0") == "1")

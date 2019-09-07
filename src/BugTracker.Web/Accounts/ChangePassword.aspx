@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="ChangePassword.aspx.cs" Inherits="BugTracker.Web.ChangePassword" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="ChangePassword.aspx.cs" Inherits="BugTracker.Web.Accounts.ChangePassword" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="document.forms[0].password.focus()">--%>
@@ -61,7 +61,7 @@
                         </table>
                     </form>
 
-                    <a href="Home.aspx">Go to login page</a>
+                    <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>">Go to login page</a>
 
                 </td>
             </tr>

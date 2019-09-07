@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
     using System;
     using System.Web;
@@ -117,7 +117,7 @@ select @username us_username, @email us_email";
                             "reset password",
                             "Click to <a href='"
                             + Util.GetSetting("AbsoluteUrlPrefix", "")
-                            + "ChangePassword.aspx?id="
+                            + ResolveUrl("~/Accounts/ChangePassword.aspx?id=")
                             + guid
                             + "'>reset password</a> for user \""
                             + (string) dr["us_username"]

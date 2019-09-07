@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
     using System;
     using System.Web;

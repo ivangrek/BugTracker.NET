@@ -9,8 +9,8 @@
 
 
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
-    public partial class Logoff {
+    public partial class LoginNt {
     }
 }

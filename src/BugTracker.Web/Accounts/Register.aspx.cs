@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
     using System;
     using System.Web;
@@ -78,7 +78,7 @@ insert into emailed_links
                         "Please complete registration",
                         "Click to <a href='"
                         + Util.GetSetting("AbsoluteUrlPrefix", "")
-                        + "CompleteRegistration.aspx?id="
+                        + ResolveUrl("~/Accounts/CompleteRegistration.aspx?id=")
                         + guid
                         + "'>complete registration</a>.",
                         BtnetMailFormat.Html);

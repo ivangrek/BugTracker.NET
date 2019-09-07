@@ -124,13 +124,13 @@
                if (Security.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
                { %>
                     <td class="menu_td">
-                        <a href="<%= ResolveUrl("~/Home.aspx") %>"><span class="<%= SelectedItem == "login" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">login</span></a>
+                        <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>"><span class="<%= SelectedItem == "login" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">login</span></a>
                     </td>
             <% }
                else
                { %>
                     <td class="menu_td">
-                        <a href="<%= ResolveUrl("~/Logoff.aspx") %>"><span class="<%= SelectedItem == "logoff" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">logoff</span></a>
+                        <a href="<%= ResolveUrl("~/Accounts/Logoff.aspx") %>"><span class="<%= SelectedItem == "logoff" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">logoff</span></a>
                     </td>
             <% }
            } %>

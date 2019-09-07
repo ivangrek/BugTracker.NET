@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Forgot.aspx.cs" Inherits="BugTracker.Web.Forgot" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Forgot.aspx.cs" Inherits="BugTracker.Web.Accounts.Forgot" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="document.forms[0].email.focus()">--%>
@@ -70,7 +70,7 @@
                         </table>
                     </form>
 
-                    <a href="Home.aspx">Return to login page</a>
+                    <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>">Return to login page</a>
 
                 </td>
             </tr>

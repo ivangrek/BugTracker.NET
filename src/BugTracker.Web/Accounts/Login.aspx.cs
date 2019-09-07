@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Accounts
 {
     using System;
     using System.Data.SqlClient;
@@ -65,14 +65,14 @@ namespace BugTracker.Web
             if (Request.QueryString["msg"] == null)
             {
                 // If windows authentication only, then redirect
-                if (authMode == "1") Util.Redirect("LoginNt.aspx", Request, Response);
+                if (authMode == "1") Util.Redirect("~/Accounts/LoginNt.aspx", Request, Response);
 
                 // If previous login was with windows authentication, then try it again
                 if (previousAuthMode == "1" && authMode == "2")
                 {
                     Response.Cookies["user"]["name"] = "";
                     Response.Cookies["user"]["NTLM"] = "0";
-                    Util.Redirect("LoginNt.aspx", Request, Response);
+                    Util.Redirect("~/Accounts/LoginNt.aspx", Request, Response);
                 }
             }
             else
@@ -118,7 +118,7 @@ namespace BugTracker.Web
             var authMode = Util.GetSetting("WindowsAuthentication", "0");
             if (authMode != "0")
                 if (this.user.Value.Trim() == "")
-                    Util.Redirect("LoginNt.aspx", Request, Response);
+                    Util.Redirect("~/Accounts/LoginNt.aspx", Request, Response);
 
             var authenticated = Authenticate.CheckPassword(this.user.Value, this.pw.Value);
 
