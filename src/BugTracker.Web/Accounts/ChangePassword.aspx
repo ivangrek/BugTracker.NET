@@ -12,26 +12,20 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
+    <table style="border-spacing: 0;">
+        <tr>
+            <% Response.Write(Application["custom_logo"]); %>
+        </tr>
+    </table>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <table border="0">
-        <tr>
-
-            <%
-
-                Response.Write(Application["custom_logo"]);
-            %>
-    </table>
-
-
-    <div align="center">
-        <table border="0">
+    <div>
+        <table style="border-spacing: 0; margin: 0 auto;">
             <tr>
                 <td>
                     <form class="frm" runat="server">
-                        <table border="0">
-
+                        <table style="border-spacing: 0;">
                             <tr>
                                 <td class="lbl">New Password:</td>
                                 <td>
@@ -47,26 +41,23 @@
                             </tr>
 
                             <tr>
-                                <td colspan="2" align="left">
+                                <td colspan="2" style="text-align: left;">
                                     <span runat="server" class="err" id="msg">&nbsp;</span>
                                 </td>
                             </tr>
 
                             <tr>
-                                <td colspan="2" align="center">
+                                <td colspan="2" style="text-align: center;">
                                     <input class="btn" type="submit" value="Change password" runat="server" />
                                 </td>
                             </tr>
-
                         </table>
                     </form>
 
                     <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>">Go to login page</a>
-
                 </td>
             </tr>
         </table>
-
     </div>
 </asp:Content>
 

@@ -11,31 +11,24 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
+    <table style="border-spacing: 0;">
+        <tr>
+            <% Response.Write(Application["custom_logo"]); %>
+        </tr>
+    </table>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <table border="0">
-        <tr>
-
-            <%
-
-                Response.Write(Application["custom_logo"]);
-            %>
-    </table>
-
-
-    <div align="center">
-        <table border="0">
+    <div>
+        <table style="border-spacing: 0; margin: 0 auto;">
             <tr>
                 <td>
-
                     <div runat="server" class="err" id="msg">&nbsp;</div>
-                    <p>
-                        <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>">Go to login page</a>
+                    <p />
+                    <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>">Go to login page</a>
                 </td>
             </tr>
         </table>
-
     </div>
 </asp:Content>
 

@@ -26,12 +26,12 @@ declare @expiration datetime
 set @expiration = dateadd(n,-$minutes,getdate())
 
 select *,
-	case when el_date < @expiration then 1 else 0 end [expired]
-	from emailed_links
-	where el_id = '$guid'
+    case when el_date < @expiration then 1 else 0 end [expired]
+    from emailed_links
+    where el_id = '$guid'
 
 delete from emailed_links
-	where el_date < dateadd(n,-240,getdate())";
+    where el_date < dateadd(n,-240,getdate())";
 
             sql = sql.Replace("$minutes", Util.GetSetting("RegistrationExpiration", "20"));
             sql = sql.Replace("$guid", guid.Replace("'", "''"));

@@ -46,9 +46,9 @@ namespace BugTracker.Web.Accounts
 
                 // Fetch the user's information from the users table
                 this.Sql = @"select us_id, us_username
-			from users
-			where us_username = N'$us'
-			and us_active = 1";
+            from users
+            where us_username = N'$us'
+            and us_active = 1";
                 this.Sql = this.Sql.Replace("$us", windowsUsername.Replace("'", "''"));
 
                 var dr = DbUtil.GetDataRow(this.Sql);
@@ -109,15 +109,15 @@ namespace BugTracker.Web.Accounts
                                     result = search.FindOne();
                                     if (result != null)
                                     {
-                                        firstName = get_ldap_property_value(result,
+                                        firstName = GetLdapPropertyValue(result,
                                             Util.GetSetting("LdapFirstName", "gn"), firstName);
-                                        lastName = get_ldap_property_value(result,
+                                        lastName = GetLdapPropertyValue(result,
                                             Util.GetSetting("LdapLastName", "sn"),
                                             lastName);
-                                        email = get_ldap_property_value(result, Util.GetSetting("LdapEmail", "mail"),
+                                        email = GetLdapPropertyValue(result, Util.GetSetting("LdapEmail", "mail"),
                                             email);
                                         ;
-                                        signature = get_ldap_property_value(result,
+                                        signature = GetLdapPropertyValue(result,
                                             Util.GetSetting("LdapEmailSigniture", "cn"), signature);
                                         ;
                                     }
@@ -171,9 +171,9 @@ namespace BugTracker.Web.Accounts
 
                 // Try fetching the guest user.
                 this.Sql = @"select us_id, us_username
-			from users
-			where us_username = 'guest'
-			and us_active = 1";
+            from users
+            where us_username = 'guest'
+            and us_active = 1";
 
                 dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
@@ -203,7 +203,7 @@ namespace BugTracker.Web.Accounts
             }
         }
 
-        public string get_ldap_property_value(SearchResult result, string propertyName, string defaultValue)
+        public string GetLdapPropertyValue(SearchResult result, string propertyName, string defaultValue)
         {
             var values = result.Properties[propertyName];
             if (values != null && values.Count == 1 && values[0] is string)

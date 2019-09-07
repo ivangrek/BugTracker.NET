@@ -20,7 +20,6 @@ namespace BugTracker.Web.Accounts
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
-
             Util.DoNotCache(Response);
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - logon";
@@ -103,17 +102,17 @@ namespace BugTracker.Web.Accounts
                         this.user.Value = Request.QueryString["user"];
                         this.pw.Value = Request.QueryString["password"];
 
-                        on_logon();
+                        OnLogon();
                     }
                 }
             }
             else
             {
-                on_logon();
+                OnLogon();
             }
         }
 
-        public void on_logon()
+        public void OnLogon()
         {
             var authMode = Util.GetSetting("WindowsAuthentication", "0");
             if (authMode != "0")

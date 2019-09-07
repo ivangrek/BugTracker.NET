@@ -27,16 +27,16 @@ namespace BugTracker.Web.Accounts
                 Response.End();
             }
 
-            this.msg.InnerText = "";
+            this.msg.InnerText = string.Empty;
 
             Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Logon";
             this.my_header.InnerText = Page.Title;
 
             // fill in the username first time in
-            if (IsPostBack) on_logon();
+            if (IsPostBack) OnLogon();
         }
 
-        public void on_logon()
+        public void OnLogon()
         {
             var authenticated = Authenticate.CheckPassword(this.user.Value, this.pw.Value);
 

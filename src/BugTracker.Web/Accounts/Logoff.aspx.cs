@@ -14,11 +14,9 @@ namespace BugTracker.Web.Accounts
 
     public partial class Logoff : Page
     {
-        ///////////////////////////////////////////////////////////////////
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
-
             Util.SetContext(HttpContext.Current);
 
             DbUtil.GetSqlConnection();

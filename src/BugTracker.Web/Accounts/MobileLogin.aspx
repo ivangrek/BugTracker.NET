@@ -20,14 +20,11 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div data-role="page">
-
         <div data-role="header">
             <h1 id="my_header" runat="server">Header</h1>
         </div>
-        <!-- /header -->
 
         <div data-role="content">
-
             <form data-ajax="false" id="Form1" class="frm" runat="server">
                 <div class="err" runat="server" id="msg">&nbsp;</div>
                 <label>User:</label>
@@ -37,12 +34,8 @@
                 <input data-role="button" id="Submit1" type="submit" value="Logon" runat="server" />
                 <input type="hidden" id="mobile" name="mobile" value="1" />
             </form>
-
         </div>
-        <!-- /content -->
-
     </div>
-    <!-- /page -->
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">

@@ -27,8 +27,7 @@ namespace BugTracker.Web.Accounts
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "forgot password";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - forgot password";
             }
             else
             {
@@ -97,11 +96,11 @@ declare @username nvarchar(255)
 declare @email nvarchar(255)
 
 select @username = us_username, @email = us_email
-	from users where us_id = $user_id
+    from users where us_id = $user_id
 
 insert into emailed_links
-	(el_id, el_date, el_email, el_action, el_user_id)
-	values ('$guid', getdate(), @email, N'forgot', $user_id)
+    (el_id, el_date, el_email, el_action, el_user_id)
+    values ('$guid', getdate(), @email, N'forgot', $user_id)
 
 select @username us_username, @email us_email";
 

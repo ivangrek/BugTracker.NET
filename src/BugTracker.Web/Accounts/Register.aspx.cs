@@ -27,8 +27,7 @@ namespace BugTracker.Web.Accounts
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "register";
+                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - register";
             }
             else
             {
@@ -40,7 +39,7 @@ namespace BugTracker.Web.Accounts
                 this.firstname_err.InnerHtml = "&nbsp;";
                 this.lastname_err.InnerHtml = "&nbsp;";
 
-                var valid = validate();
+                var valid = ValidateForm();
 
                 if (!valid)
                 {
@@ -57,10 +56,10 @@ namespace BugTracker.Web.Accounts
 
                     var sql = @"
 insert into emailed_links
-	(el_id, el_date, el_email, el_action,
-		el_username, el_salt, el_password, el_firstname, el_lastname)
-	values ('$guid', getdate(), N'$email', N'register',
-		N'$username', $salt, N'$password', N'$firstname', N'$lastname')";
+    (el_id, el_date, el_email, el_action,
+        el_username, el_salt, el_password, el_firstname, el_lastname)
+    values ('$guid', getdate(), N'$email', N'register',
+        N'$username', $salt, N'$password', N'$firstname', N'$lastname')";
 
                     sql = sql.Replace("$guid", guid);
                     sql = sql.Replace("$password", encrypted);
@@ -89,7 +88,7 @@ insert into emailed_links
             }
         }
 
-        public bool validate()
+        public bool ValidateForm()
         {
             var valid = true;
 
