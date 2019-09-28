@@ -43,7 +43,7 @@ namespace BugTracker.Web.Core
             Util.SetContext(aspNetContext);
             var request = aspNetContext.Request;
             var response = aspNetContext.Response;
-            var cookie = request.Cookies["se_id"];
+            var cookie = request.Cookies["se_id2"];
 
             // This logic allows somebody to put a link in an email, like
             // Bugs/Edit.aspx?id=66
@@ -52,7 +52,7 @@ namespace BugTracker.Web.Core
             var originalUrl = request.ServerVariables["URL"].ToLower();
             var originalQuerystring = request.ServerVariables["QUERY_STRING"].ToLower();
 
-            var target = "~/Accounts/Home.aspx";
+            var target = "~/Accounts/Login.aspx";
 
             if (originalUrl.EndsWith("MobileEdit.aspx")) target = "~/Accounts/MobileLogin.aspx";
 
@@ -205,11 +205,11 @@ and us_active = 1";
             sAppPath = sAppPath.Substring(0, sAppPath.LastIndexOf('/'));
             Util.WriteToLog("AppPath:" + sAppPath);
 
-            response.Cookies["se_id"].Value = guid;
-            response.Cookies["se_id"].Path = sAppPath;
+            response.Cookies.Set(new HttpCookie("se_id2", guid));
+            //response.Cookies["se_id"].Path = sAppPath;
             response.Cookies["user"]["name"] = username;
             response.Cookies["user"]["NTLM"] = ntlm;
-            response.Cookies["user"].Path = sAppPath;
+            //response.Cookies["user"].Path = sAppPath;
             var dt = DateTime.Now;
             var ts = new TimeSpan(365, 0, 0, 0);
             response.Cookies["user"].Expires = dt.Add(ts);

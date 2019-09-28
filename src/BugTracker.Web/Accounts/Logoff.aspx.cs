@@ -23,7 +23,7 @@ namespace BugTracker.Web.Accounts
 
             // delete the session row
 
-            var cookie = Request.Cookies["se_id"];
+            var cookie = Request.Cookies["se_id2"];
 
             if (cookie != null)
             {
@@ -41,9 +41,16 @@ namespace BugTracker.Web.Accounts
                 Session["bugs"] = null;
                 Session["bugs_unfiltered"] = null;
                 Session["project"] = null;
+
+                Session.Abandon();
+
+                foreach (string key in Request.Cookies.AllKeys)
+                {
+                    Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
+                }
             }
 
-            Response.Redirect("~/Accounts/Login.aspx?msg=logged+off");
+            Response.Redirect("~/");
         }
     }
 }

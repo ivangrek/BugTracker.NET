@@ -79,9 +79,7 @@ namespace BugTracker.Web.Accounts
             }
             else
             {
-                if (Request.QueryString["msg"] != "logged off")
-                    this.msg.InnerHtml = "Error during windows authentication:<br>"
-                                         + HttpUtility.HtmlEncode(Request.QueryString["msg"]);
+                this.msg.InnerHtml = "Error during windows authentication:<br>" + HttpUtility.HtmlEncode(Request.QueryString["msg"]);
             }
 
             // fill in the username first time in
