@@ -15,6 +15,8 @@ namespace BugTracker.Web.Queries
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Id;
         public string Sql;
 
@@ -34,7 +36,7 @@ namespace BugTracker.Web.Queries
             MainMenu.Security = security;
             MainMenu.SelectedItem = "queries";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit query";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit query";
 
             this.msg.InnerText = "";
 
@@ -305,7 +307,7 @@ select us_id, us_username from users order by us_username";
                 }
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Queries/List.aspx");
+                Response.Redirect("~/Queries/List.aspx");
             }
             else
             {

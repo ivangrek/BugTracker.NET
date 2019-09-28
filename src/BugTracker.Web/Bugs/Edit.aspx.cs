@@ -19,6 +19,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public bool AssignedToChanged;
 
         public string CommentFormated;
@@ -58,7 +60,7 @@ namespace BugTracker.Web.Bugs
             Security = security;
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             set_msg("");
             set_custom_field_msg("");
@@ -87,8 +89,7 @@ namespace BugTracker.Web.Bugs
                 this.Id = Convert.ToInt32(stringBugid);
 
                 this.bugid_label.Visible = true;
-                this.bugid_label.InnerHtml = Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) +
-                                             " ID:&nbsp;";
+                this.bugid_label.InnerHtml = Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " ID:&nbsp;";
             }
 
             // Get list of custom fields
@@ -113,7 +114,7 @@ namespace BugTracker.Web.Bugs
                     prepare_for_update(security);
                 }
 
-                if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+                if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
                 {
                     this.internal_only.Visible = false;
                     this.internal_only_label.Visible = false;
@@ -143,11 +144,9 @@ namespace BugTracker.Web.Bugs
                     {
                         // Say we didn't do anything.
                         if (this.Id == 0)
-                            set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) +
-                                    " was not created.");
+                            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not created.");
                         else
-                            set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) +
-                                    " was not updated.");
+                            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not updated.");
                         load_user_dropdown(security);
                     }
                 }
@@ -191,12 +190,15 @@ namespace BugTracker.Web.Bugs
                 return;
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Create ";
-            Page.Title += Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"));
+            Page.Title = $"{ApplicationSettings.AppTitle} - Create ";
+            Page.Title += Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel);
 
             this.submit_button.Value = "Create";
 
-            if (Util.GetSetting("DisplayAnotherButtonInEditBugPage", "0") == "1") this.submit_button2.Value = "Create";
+            if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
+            {
+                this.submit_button2.Value = "Create";
+            }
 
             load_dropdowns_for_insert(security);
 
@@ -279,7 +281,7 @@ namespace BugTracker.Web.Bugs
             // Fill in this form
             this.short_desc.Value = (string) this.DrBug["short_desc"];
             this.tags.Value = (string) this.DrBug["bg_tags"];
-            Page.Title = Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
+            Page.Title = Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
                          + " ID " + Convert.ToString(this.DrBug["id"]) + " " + (string) this.DrBug["short_desc"];
 
             // reported by
@@ -402,7 +404,7 @@ namespace BugTracker.Web.Bugs
                 this.subscribers.Visible = false;
             }
 
-            if (Util.GetSetting("EnableRelationships", "0") == "1")
+            if (ApplicationSettings.EnableRelationships)
             {
                 var relationshipCnt = 0;
                 if (this.Id != 0) relationshipCnt = (int) this.DrBug["relationship_cnt"];
@@ -417,7 +419,7 @@ namespace BugTracker.Web.Bugs
                 this.relationships.Visible = false;
             }
 
-            if (Util.GetSetting("EnableSubversionIntegration", "0") == "1")
+            if (ApplicationSettings.EnableSubversionIntegration)
             {
                 var revisionCnt = 0;
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["svn_revision_cnt"];
@@ -432,7 +434,7 @@ namespace BugTracker.Web.Bugs
                 this.svn_revisions.Visible = false;
             }
 
-            if (Util.GetSetting("EnableGitIntegration", "0") == "1")
+            if (ApplicationSettings.EnableGitIntegration)
             {
                 var revisionCnt = 0;
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["git_commit_cnt"];
@@ -447,7 +449,7 @@ namespace BugTracker.Web.Bugs
                 this.git_commits.Visible = false;
             }
 
-            if (Util.GetSetting("EnableMercurialIntegration", "0") == "1")
+            if (ApplicationSettings.EnableMercurialIntegration)
             {
                 var revisionCnt = 0;
                 if (this.Id != 0) revisionCnt = (int) this.DrBug["hg_commit_cnt"];
@@ -464,7 +466,7 @@ namespace BugTracker.Web.Bugs
 
             if (security.User.IsAdmin || security.User.CanViewTasks)
             {
-                if (Util.GetSetting("EnableTasks", "0") == "1")
+                if (ApplicationSettings.EnableTasks)
                 {
                     var taskCnt = 0;
                     if (this.Id != 0) taskCnt = (int) this.DrBug["task_cnt"];
@@ -535,14 +537,14 @@ namespace BugTracker.Web.Bugs
             }
 
             // custom bug link
-            if (Util.GetSetting("CustomBugLinkLabel", "") != "")
+            if (ApplicationSettings.CustomBugLinkLabel != "")
             {
                 var customBugLink = "<a href="
-                                      + Util.GetSetting("CustomBugLinkUrl", "")
+                                      + ApplicationSettings.CustomBugLinkUrl
                                       + "?bugid="
                                       + Convert.ToString(this.Id)
                                       + "><img src=" + ResolveUrl("~/Content/images/brick.png") + " border=0 align=top>&nbsp;"
-                                      + Util.GetSetting("CustomBugLinkLabel", "")
+                                      + ApplicationSettings.CustomBugLinkLabel
                                       + "</a>";
 
                 this.custom.InnerHtml = customBugLink;
@@ -673,14 +675,17 @@ namespace BugTracker.Web.Bugs
                 this.CommentType, this.internal_only.Checked, this.HashCustomCols,
                 true); // send notifications
 
-            if (this.tags.Value != "" && Util.GetSetting("EnableTags", "0") == "1") Tags.BuildTagIndex(Application);
+            if (this.tags.Value != "" && ApplicationSettings.EnableTags)
+            {
+                Tags.BuildTagIndex(Application);
+            }
 
             this.Id = newIds.Bugid;
 
             WhatsNew.AddNews(this.Id, this.short_desc.Value, "added", security);
 
             this.new_id.Value = Convert.ToString(this.Id);
-            set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) + " was created.");
+            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was created.");
 
             // save for next bug
             Session["project"] = this.project.SelectedItem.Value;
@@ -710,9 +715,9 @@ namespace BugTracker.Web.Bugs
                 if (Security.PermissionNone == permissionLevelOnNewProject
                     || Security.PermissionReadonly == permissionLevelOnNewProject)
                 {
-                    set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
+                    set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
                             + " was not updated. You do not have the necessary permissions to change this "
-                            + Util.GetSetting("SingularBugLabel", "bug") + " to the specified Project.");
+                            + ApplicationSettings.SingularBugLabel + " to the specified Project.");
                     return;
                 }
 
@@ -845,7 +850,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
             }
             else
             {
-                set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
+                set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
                         + " was NOT updated.<br>"
                         + " Somebody changed it while you were editing it.<br>"
                         + " Click <a href=" + ResolveUrl("~/Bugs/Edit.aspx") + "?id="
@@ -865,7 +870,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                     this.AssignedToChanged,
                     Convert.ToInt32(this.assigned_to.SelectedItem.Value));
 
-            set_msg(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) + " was updated.");
+            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was updated.");
 
             this.comment.Value = "";
 
@@ -1014,7 +1019,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
 
             // Load the user dropdown, which changes per project
             // Only users explicitly allowed will be listed
-            if (Util.GetSetting("DefaultPermissionLevel", "2") == "0")
+            if (ApplicationSettings.DefaultPermissionLevel == 0)
                 this.Sql = @"
 /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
 from users
@@ -1042,7 +1047,7 @@ and us_id not in
         and pu_permission_level = 0)
 order by us_username; ";
 
-            if (Util.GetSetting("UseFullNames", "0") == "0")
+            if (!ApplicationSettings.UseFullNames)
                 // false condition
                 this.Sql = this.Sql.Replace("$fullnames", "0 = 1");
             else
@@ -1141,7 +1146,7 @@ order by us_username; ";
 
         public void format_subcribe_cancel_link(Security security)
         {
-            var notificationEmailEnabled = Util.GetSetting("NotificationEmailEnabled", "1") == "1";
+            var notificationEmailEnabled = ApplicationSettings.NotificationEmailEnabled;
             if (notificationEmailEnabled)
             {
                 int subscribed;
@@ -1404,7 +1409,7 @@ order by us_username; ";
                 {
                     this.submit_button.Disabled = true;
                     this.submit_button.Visible = false;
-                    if (Util.GetSetting("DisplayAnotherButtonInEditBugPage", "0") == "1")
+                    if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
                     {
                         this.submit_button2.Disabled = true;
                         this.submit_button2.Visible = false;
@@ -1529,7 +1534,7 @@ order by us_username; ";
         order by pj_name;";
 
             this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
-            this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
             // 1
             this.Sql += "\nselect og_id, og_name from orgs where og_active = 1 order by og_name;";
@@ -1554,7 +1559,7 @@ order by us_username; ";
             this.project.DataValueField = "pj_id";
             this.project.DataBind();
 
-            if (Util.GetSetting("DefaultPermissionLevel", "2") == "2")
+            if (ApplicationSettings.DefaultPermissionLevel == 2)
                 this.project.Items.Insert(0, new ListItem("[no project]", "0"));
 
             this.org.DataSource = dsDropdowns.Tables[1];
@@ -1611,7 +1616,7 @@ order by us_username; ";
                 || this.prev_priority.Value != this.priority.SelectedItem.Value
                 || this.prev_assigned_to.Value != this.assigned_to.SelectedItem.Value
                 || this.prev_status.Value != this.status.SelectedItem.Value
-                || Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1" &&
+                || ApplicationSettings.ShowUserDefinedBugAttribute &&
                 this.prev_udf.Value != this.udf.SelectedItem.Value)
             {
                 this.clone_ignore_bugid.Value = "0";
@@ -1682,7 +1687,10 @@ order by us_username; ";
 
                 this.prev_tags.Value = this.tags.Value;
 
-                if (Util.GetSetting("EnableTags", "0") == "1") Tags.BuildTagIndex(Application);
+                if (ApplicationSettings.EnableTags)
+                {
+                    Tags.BuildTagIndex(Application);
+                }
             }
 
             if (this.project.SelectedItem.Value != this.prev_project.Value)
@@ -1777,7 +1785,7 @@ order by us_username; ";
                 this.prev_status.Value = this.status.SelectedItem.Value;
             }
 
-            if (Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1")
+            if (ApplicationSettings.ShowUserDefinedBugAttribute)
                 if (this.prev_udf.Value != this.udf.SelectedItem.Value)
                 {
                     from = get_dropdown_text_from_value(this.udf, this.prev_udf.Value);
@@ -1785,7 +1793,7 @@ order by us_username; ";
                     doUpdate = true;
                     this.Sql += baseSql.Replace(
                         "$update_msg",
-                        "changed " + Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")
+                        "changed " + ApplicationSettings.UserDefinedBugAttributeName
                                    + " from \""
                                    + from.Replace("'", "''") + "\" to \""
                                    + this.udf.SelectedItem.Text.Replace("'", "''") + "\"");
@@ -1883,9 +1891,10 @@ order by us_username; ";
                 this.prev_pcd3.Value = Request["pcd3"];
             }
 
-            if (doUpdate
-                && Util.GetSetting("TrackBugHistory", "1") == "1") // you might not want the debris to grow
+            if (doUpdate && ApplicationSettings.TrackBugHistory) // you might not want the debris to grow
+            {
                 DbUtil.ExecuteNonQuery(this.Sql);
+            }
 
             if (this.project.SelectedItem.Value != this.prev_project.Value)
                 this.PermissionLevel = fetch_permission_level(this.project.SelectedItem.Value, security);
@@ -1906,7 +1915,7 @@ order by us_username; ";
         if @permission_level = -1 set @permission_level = $dpl
         select @permission_level";
 
-            this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             this.Sql = this.Sql.Replace("$pj", projectToCheck);
             this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
             var pl = (int) DbUtil.ExecuteScalar(this.Sql);
@@ -2047,26 +2056,34 @@ where us_id = @us_id";
         public void set_msg(string s)
         {
             this.msg.InnerHtml = s;
-            if (Util.GetSetting("DisplayAnotherButtonInEditBugPage", "0") == "1") this.msg2.InnerHtml = s;
+            if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
+            {
+                this.msg2.InnerHtml = s;
+            }
         }
 
         private void set_custom_field_msg(string s)
         {
             this.custom_field_msg.InnerHtml = s;
-            if (Util.GetSetting("DisplayAnotherButtonInEditBugPage", "0") == "1") this.custom_field_msg2.InnerHtml = s;
+            if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
+            {
+                this.custom_field_msg2.InnerHtml = s;
+            }
         }
 
         public void append_custom_field_msg(string s)
         {
             this.custom_field_msg.InnerHtml += s;
-            if (Util.GetSetting("DisplayAnotherButtonInEditBugPage", "0") == "1")
+            if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
+            {
                 this.custom_field_msg2.InnerHtml += s;
+            }
         }
 
         public void display_custom_fields(Security security)
         {
-            var minTextAreaSize = int.Parse(Util.GetSetting("TextAreaThreshold", "100"));
-            var maxTextAreaRows = int.Parse(Util.GetSetting("MaxTextAreaRows", "5"));
+            var minTextAreaSize = ApplicationSettings.TextAreaThreshold;
+            var maxTextAreaRows = ApplicationSettings.MaxTextAreaRows;
 
             // Create the custom column INPUT elements
             foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
@@ -2387,7 +2404,7 @@ where us_id = @us_id";
         public void display_bug_relationships(Security security)
         {
             this.DsPosts = PrintBug.GetBugPosts(this.Id, security.User.ExternalUser, this.HistoryInline);
-            var linkMarker = Util.GetSetting("BugLinkMarker", "bugid#");
+            var linkMarker = ApplicationSettings.BugLinkMarker;
             var reLinkMarker = new Regex(linkMarker + "([0-9]+)");
             var dictLinkedBugs = new SortedDictionary<int, int>();
 

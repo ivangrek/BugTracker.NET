@@ -37,6 +37,8 @@ namespace BugTracker.Web.Core
 
     public class Email
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public enum AddrType
         {
             To,
@@ -159,12 +161,12 @@ namespace BugTracker.Web.Core
                 priority = BtnetMailPriority.Low;
 
             // This fixes a bug for a couple people, but make it configurable, just in case.
-            if (Util.GetSetting("BodyEncodingUTF8", "1") == "1") msg.BodyEncoding = Encoding.UTF8;
+            if (ApplicationSettings.BodyEncodingUTF8) msg.BodyEncoding = Encoding.UTF8;
 
             if (returnReceipt) msg.Headers.Add("Disposition-Notification-To", from);
 
             // workaround for a bug I don't understand...
-            if (Util.GetSetting("SmtpForceReplaceOfBareLineFeeds", "0") == "1") body = body.Replace("\n", "\r\n");
+            if (ApplicationSettings.SmtpForceReplaceOfBareLineFeeds) body = body.Replace("\n", "\r\n");
 
             msg.Body = body;
             msg.IsBodyHtml = bodyFormat == BtnetMailFormat.Html;
@@ -205,7 +207,7 @@ namespace BugTracker.Web.Core
                 var smtpClient = new SmtpClient();
 
                 // SSL or not
-                var forceSsl = Util.GetSetting("SmtpForceSsl", "");
+                var forceSsl = ApplicationSettings.SmtpForceSsl;
 
                 if (forceSsl == "")
                 {
@@ -291,7 +293,7 @@ namespace BugTracker.Web.Core
         {
             Util.WriteToLog("to email addr: " + addrs);
 
-            var separatorChar = Util.GetSetting("EmailAddressSeparatorCharacter", ",");
+            var separatorChar = ApplicationSettings.EmailAddressSeparatorCharacter;
 
             var addrArray = addrs.Replace(separatorChar + " ", separatorChar).Split(separatorChar[0]);
 

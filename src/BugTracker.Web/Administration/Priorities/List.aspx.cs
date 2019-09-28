@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.Priorities
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class List : Page
     {
-        private readonly IPriorityService priorityService = new PriorityService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IPriorityService PriorityService { get; set; }
 
         protected DataSet Ds;
 
@@ -31,9 +31,9 @@ namespace BugTracker.Web.Administration.Priorities
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - priorities";
+            Page.Title = $"{ApplicationSettings.AppTitle} - priorities";
 
-            Ds = this.priorityService.LoadList();
+            Ds = PriorityService.LoadList();
         }
     }
 }

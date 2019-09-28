@@ -14,6 +14,8 @@ namespace BugTracker.Web.Versioning.Hg
 
     public partial class ViewRevisions : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public DataSet Ds;
 
@@ -34,7 +36,7 @@ namespace BugTracker.Web.Versioning.Hg
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - view hg file revisions";
+            Page.Title = $"{ApplicationSettings.AppTitle} - view hg file revisions";
 
             var sql = @"
 select 

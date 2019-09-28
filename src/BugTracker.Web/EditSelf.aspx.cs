@@ -15,6 +15,8 @@ namespace BugTracker.Web
 
     public partial class EditSelf : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Id;
         public string Sql;
 
@@ -34,7 +36,7 @@ namespace BugTracker.Web
             MainMenu.Security = security;
             MainMenu.SelectedItem = "settings";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit your settings";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit your settings";
 
             this.msg.InnerText = "";
 
@@ -66,7 +68,7 @@ namespace BugTracker.Web
             order by pj_name";
 
                 this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
-                this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
                 var projectsDv = DbUtil.GetDataView(this.Sql);
 
@@ -108,7 +110,7 @@ namespace BugTracker.Web
                 this.lastname.Value = (string) dr["lastname"];
                 this.bugs_per_page.Value = Convert.ToString(dr["us_bugs_per_page"]);
 
-                if (Util.GetSetting("DisableFCKEditor", "0") == "1")
+                if (ApplicationSettings.DisableFCKEditor)
                 {
                     this.use_fckeditor.Visible = false;
                     this.use_fckeditor_label.Visible = false;
@@ -181,7 +183,7 @@ namespace BugTracker.Web
             {
                 good = false;
                 this.bugs_per_page_err.InnerText =
-                    Util.GetSetting("PluralBugLabel", "Bugs") + " Per Page must be a number.";
+                    ApplicationSettings.PluralBugLabel + " Per Page must be a number.";
             }
             else
             {

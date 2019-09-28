@@ -13,6 +13,8 @@ namespace BugTracker.Web.Reports
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Id;
         public string Sql;
 
@@ -42,8 +44,7 @@ namespace BugTracker.Web.Reports
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "edit report";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit report";
 
             this.msg.InnerText = "";
 
@@ -175,7 +176,7 @@ namespace BugTracker.Web.Reports
                 this.Sql = this.Sql.Replace("$ct", ct);
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Reports/List.aspx");
+                Response.Redirect("~/Reports/List.aspx");
             }
             else
             {

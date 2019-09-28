@@ -15,6 +15,8 @@ namespace BugTracker.Web.Administration.Projects
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Id;
         public string Sql;
 
@@ -34,7 +36,7 @@ namespace BugTracker.Web.Administration.Projects
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit project";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit project";
 
             this.msg.InnerText = "";
 
@@ -280,7 +282,7 @@ namespace BugTracker.Web.Administration.Projects
                 this.Sql = this.Sql.Replace("$cdv3", this.custom_dropdown_values3.Value.Replace("'", "''"));
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Administration/Projects/List.aspx");
+                Response.Redirect("~/Administration/Projects/List.aspx");
             }
             else
             {

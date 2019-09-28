@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class Translate : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
@@ -25,9 +27,9 @@ namespace BugTracker.Web
             security.CheckSecurity(Security.AnyUserOk);
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - translate";
+            Page.Title = $"{ApplicationSettings.AppTitle} - translate";
 
             var stringBpId = Request["postid"];
             var stringBgId = Request["bugid"];

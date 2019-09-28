@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration
 
     public partial class Query : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public string ExceptionMessage;
@@ -35,7 +37,7 @@ namespace BugTracker.Web.Administration
             {
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - run query";
+            Page.Title = $"{ApplicationSettings.AppTitle} - run query";
 
             if (IsPostBack)
             {

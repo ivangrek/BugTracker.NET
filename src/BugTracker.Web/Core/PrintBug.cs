@@ -39,6 +39,8 @@ namespace BugTracker.Web.Core
             bool historyInline,
             bool internalPosts)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             var bugid = Convert.ToInt32(dr["id"]);
             var stringBugid = Convert.ToString(bugid);
 
@@ -89,23 +91,23 @@ namespace BugTracker.Web.Core
 
             response.Write("<body style='background:white'>");
             response.Write("<b>"
-                           + Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))
+                           + Util.CapitalizeFirstLetter(applicationSettings.SingularBugLabel)
                            + " ID:&nbsp;<a href="
-                           + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                           + applicationSettings.AbsoluteUrlPrefix
                            + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                            + stringBugid
                            + ">"
                            + stringBugid
                            + "</a>");
 
-            if (Util.GetSetting("EnableMobile", "0") == "1")
+            if (applicationSettings.EnableMobile)
                 response.Write(
                     "&nbsp;&nbsp;&nbsp;&nbsp;Mobile link:&nbsp;<a href="
-                    + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                    + applicationSettings.AbsoluteUrlPrefix
                     + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
                     + stringBugid
                     + ">"
-                    + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                    + applicationSettings.AbsoluteUrlPrefix
                     + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
                     + stringBugid
                     + "</a>");
@@ -113,7 +115,7 @@ namespace BugTracker.Web.Core
             response.Write("<br>");
 
             response.Write("Short desc:&nbsp;<a href="
-                           + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                           + applicationSettings.AbsoluteUrlPrefix
                            + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                            + stringBugid
                            + ">"
@@ -155,9 +157,9 @@ namespace BugTracker.Web.Core
                 response.Write("\n<tr><td>Status<td>" + dr["status_name"] + "&nbsp;");
 
             if (security.User.UdfFieldPermissionLevel > 0)
-                if (Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1")
+                if (applicationSettings.ShowUserDefinedBugAttribute)
                     response.Write("\n<tr><td>"
-                                   + Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")
+                                   + applicationSettings.UserDefinedBugAttributeName
                                    + "<td>"
                                    + dr["udf_name"] + "&nbsp;");
 
@@ -248,10 +250,16 @@ namespace BugTracker.Web.Core
             response.Write("\n</table><p>"); // end of the table with the bug fields
 
             // Relationships
-            if (Util.GetSetting("EnableRelationships", "0") == "1") WriteRelationships(response, bugid);
+            if (applicationSettings.EnableRelationships)
+            {
+                WriteRelationships(response, bugid);
+            }
 
             // Tasks
-            if (Util.GetSetting("EnableTasks", "0") == "1") WriteTasks(response, bugid);
+            if (applicationSettings.EnableTasks)
+            {
+                WriteTasks(response, bugid);
+            }
 
             var dsPosts = GetBugPosts(bugid, security.User.ExternalUser, historyInline);
             WritePosts(
@@ -338,7 +346,9 @@ namespace BugTracker.Web.Core
             bool internalPosts,
             User user)
         {
-            if (Util.GetSetting("ForceBordersInEmails", "0") == "1")
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (applicationSettings.ForceBordersInEmails)
                 response.Write("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
             else
                 response.Write("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
@@ -390,7 +400,7 @@ namespace BugTracker.Web.Core
 
                     if (user.UdfFieldPermissionLevel == Security.PermissionNone
                         && comment.StartsWith("changed " +
-                                              Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE") +
+                                              applicationSettings.UserDefinedBugAttributeName +
                                               " from"))
                         continue;
 
@@ -576,6 +586,7 @@ namespace BugTracker.Web.Core
             response.Write("</span>");
 
             // Write the links
+            IApplicationSettings applicationSettings = new ApplicationSettings();
 
             if (writeLinks)
             {
@@ -656,14 +667,14 @@ namespace BugTracker.Web.Core
                 }
 
                 // custom bug link
-                if (Util.GetSetting("CustomPostLinkLabel", "") != "")
+                if (applicationSettings.CustomPostLinkLabel != "")
                 {
                     var customPostLink = "&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;' href="
-                                           + Util.GetSetting("CustomPostLinkUrl", "")
+                                           + applicationSettings.CustomPostLinkUrl
                                            + "?postid="
                                            + stringPostId
                                            + ">"
-                                           + Util.GetSetting("CustomPostLinkLabel", "")
+                                           + applicationSettings.CustomPostLinkLabel
                                            + "</a>";
 
                     response.Write(customPostLink);
@@ -697,7 +708,7 @@ namespace BugTracker.Web.Core
                 if (writeLinks)
                 {
                     if ((string)dr["bp_content_type"] != "text/html" ||
-                        Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
+                        applicationSettings.ShowPotentiallyDangerousHtml)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
                         response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
@@ -745,8 +756,10 @@ namespace BugTracker.Web.Core
 
             if (writeLinks)
             {
+                IApplicationSettings applicationSettings = new ApplicationSettings();
+
                 if ((string)dr["bp_content_type"] != "text/html" ||
-                    Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
+                    applicationSettings.ShowPotentiallyDangerousHtml)
                 {
                     response.Write("<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id=");
                     response.Write(stringPostId);
@@ -782,6 +795,8 @@ namespace BugTracker.Web.Core
             string stringBugId,
             string contentType)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             if (contentType == "image/gif"
                 || contentType == "image/jpg"
                 || contentType == "image/jpeg"
@@ -801,7 +816,7 @@ namespace BugTracker.Web.Core
                      || contentType == "text/xml"
                      || contentType == "text/css"
                      || contentType == "text/js"
-                     || contentType == "text/html" && Util.GetSetting("ShowPotentiallyDangerousHtml", "0") == "1")
+                     || contentType == "text/html" && applicationSettings.ShowPotentiallyDangerousHtml)
                 response.Write("<p>"
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',200)>" + "[+]</a>&nbsp;"
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',-200)>" + "[-]</a>"
@@ -820,9 +835,11 @@ namespace BugTracker.Web.Core
             string username,
             string fullname)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             if (email != null && email != "" && writeLinks && permissionLevel != Security.PermissionReadonly)
                 return "<a href="
-                       + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                       + applicationSettings.AbsoluteUrlPrefix
                        + "SendEmail.aspx?bg_id="
                        + Convert.ToString(bugid)
                        + "&to="
@@ -835,8 +852,10 @@ namespace BugTracker.Web.Core
 
         private static string FormatEmailTo(int bugid, string email)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             return "<a href="
-                   + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                   + applicationSettings.AbsoluteUrlPrefix
                    + "SendEmail.aspx?bg_id=" + Convert.ToString(bugid)
                    + "&to=" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(email)) + ">"
                    + email
@@ -859,9 +878,11 @@ namespace BugTracker.Web.Core
                 emailPart = from;
             }
 
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             return displayPart
                    + " <a href="
-                   + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                   + applicationSettings.AbsoluteUrlPrefix
                    + "SendEmail.aspx?bp_id="
                    + Convert.ToString(commentId)
                    + ">"
@@ -913,8 +934,10 @@ namespace BugTracker.Web.Core
                 s2 = s1;
             }
 
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             // convert references to other bugs to links
-            linkMarker = Util.GetSetting("BugLinkMarker", "bugid#");
+            linkMarker = applicationSettings.BugLinkMarker;
             var reLinkMarker = new Regex(linkMarker + "([0-9]+)");
             s2 = reLinkMarker.Replace(
                 s2,
@@ -931,8 +954,10 @@ namespace BugTracker.Web.Core
 
         private static string ConvertBugLink(Match m)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             return "<a href="
-                   + Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/")
+                   + applicationSettings.AbsoluteUrlPrefix
                    + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                    + m.Groups[1]
                    + ">"
@@ -947,8 +972,11 @@ namespace BugTracker.Web.Core
 
         private static string FormatUserName(string username, string fullname)
         {
-            if (Util.GetSetting("UseFullNames", "0") == "0")
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (!applicationSettings.UseFullNames)
                 return username;
+
             return fullname;
         }
 
@@ -991,8 +1019,10 @@ and a.bp_parent is null";
 
             if (externalUser) sql += "\n and a.bp_hidden_from_external_users = 0";
 
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             sql += "\n order by a.bp_id ";
-            sql += Util.GetSetting("CommentSortOrder", "desc");
+            sql += applicationSettings.CommentSortOrder;
             sql += ", ba.bp_parent, ba.bp_id";
 
             sql = sql.Replace("$id", Convert.ToString(bugid));

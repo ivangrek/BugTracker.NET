@@ -18,12 +18,16 @@ namespace BugTracker.Web.Core
 
     public class Bug
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public const int Insert = 1;
         public const int Update = 2;
         private static readonly object Dummy = new object(); // for a lock
 
         public static void AutoSubscribe(int bugid)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             // clean up bug subscriptions that no longer fit security rules
             // subscribe per auto_subscribe
             // subscribe project's default user
@@ -132,7 +136,7 @@ and us_id not in
 where bs_bug = $id)";
 
             sql = sql.Replace("$id", Convert.ToString(bugid));
-            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", applicationSettings.DefaultPermissionLevel.ToString());
 
             DbUtil.ExecuteNonQuery(sql);
         }
@@ -240,13 +244,15 @@ delete from bugs where bg_id = $bg";
             bool hiddenFromExternalUsers,
             bool sendNotifications)
         {
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             // Note that this method does not perform any security check nor does
             // it check that content_length is less than MaxUploadSize.
             // These are left up to the caller.
 
             var uploadFolder = Util.GetUploadFolder();
             string sql;
-            var storeAttachmentsInDatabase = Util.GetSetting("StoreAttachmentsInDatabase", "0") == "1";
+            var storeAttachmentsInDatabase = applicationSettings.StoreAttachmentsInDatabase;
             var effectiveFile = file;
             var effectiveContentLength = contentLength;
             var effectiveContentType = contentType;
@@ -337,7 +343,7 @@ insert into bug_posts
                         {
                             cmd.Parameters.AddWithValue("@bp", bpId);
                             cmd.Parameters.Add("@bc", SqlDbType.Image).Value = data;
-                            cmd.CommandTimeout = Convert.ToInt32(Util.GetSetting("SqlCommand.CommandTimeout", "30"));
+                            cmd.CommandTimeout = ApplicationSettings.SqlCommandCommandTimeout;
                             DbUtil.ExecuteNonQuery(cmd);
                         }
                     }
@@ -397,7 +403,7 @@ insert into bug_posts
 
             var uploadFolder = Util.GetUploadFolder();
             string sql;
-            var storeAttachmentsInDatabase = Util.GetSetting("StoreAttachmentsInDatabase", "0") == "1";
+            var storeAttachmentsInDatabase = ApplicationSettings.StoreAttachmentsInDatabase;
             int bugid;
             string file;
             int contentLength;
@@ -480,7 +486,7 @@ insert into bug_posts
         {
             var sql = @" /* get_bug_datarow */";
 
-            if (Util.GetSetting("EnableSeen", "0") == "1")
+            if (ApplicationSettings.EnableSeen)
                 sql += @"
 if not exists (select bu_bug from bug_user where bu_bug = $id and bu_user = $this_usid)
     insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($id, $this_usid, 0, 1, 0) 
@@ -498,34 +504,34 @@ set @hg_revisions = 0
 set @tasks = 0
 set @related = 0";
 
-            if (Util.GetSetting("EnableSubversionIntegration", "0") == "1")
+            if (ApplicationSettings.EnableSubversionIntegration)
                 sql += @"
 select @svn_revisions = count(1)
 from svn_affected_paths
 inner join svn_revisions on svnap_svnrev_id = svnrev_id
 where svnrev_bug = $id;";
 
-            if (Util.GetSetting("EnableGitIntegration", "0") == "1")
+            if (ApplicationSettings.EnableGitIntegration)
                 sql += @"
 select @git_commits = count(1)
 from git_affected_paths
 inner join git_commits on gitap_gitcom_id = gitcom_id
 where gitcom_bug = $id;";
 
-            if (Util.GetSetting("EnableMercurialIntegration", "0") == "1")
+            if (ApplicationSettings.EnableMercurialIntegration)
                 sql += @"
 select @hg_revisions = count(1)
 from hg_affected_paths
 inner join hg_revisions on hgap_hgrev_id = hgrev_id
 where hgrev_bug = $id;";
 
-            if (Util.GetSetting("EnableTasks", "0") == "1")
+            if (ApplicationSettings.EnableTasks)
                 sql += @"
 select @tasks = count(1)
 from bug_tasks
 where tsk_bug = $id;";
 
-            if (Util.GetSetting("EnableRelationships", "0") == "1")
+            if (ApplicationSettings.EnableRelationships)
                 sql += @"
 select @related = count(1)
 from bug_relationships
@@ -634,14 +640,14 @@ where bg_id = $id";
             sql = sql.Replace("$id", Convert.ToString(bugid));
             sql = sql.Replace("$this_usid", Convert.ToString(security.User.Usid));
             sql = sql.Replace("$this_org", Convert.ToString(security.User.Org));
-            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
             return DbUtil.GetDataRow(sql);
         }
 
         public static void ApplyPostInsertRules(int bugid)
         {
-            var sql = Util.GetSetting("UpdateBugAfterInsertBugAspxSql", "");
+            var sql = ApplicationSettings.UpdateBugAfterInsertBugAspxSql;
 
             if (sql != "")
             {
@@ -695,7 +701,7 @@ and pu_user = $us
 where bg_id = $bg";
             ;
 
-            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             sql = sql.Replace("$bg", Convert.ToString(bugid));
             sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
 
@@ -939,9 +945,9 @@ select scope_identity();";
             // probably something worth updating the index about.
             // Really, though, we wouldn't want to update the index if it were
             // just the status that were changing...
-            if (Util.GetSetting("EnableLucene", "1") == "1") MyLucene.UpdateLuceneIndex(bugid);
+            if (ApplicationSettings.EnableLucene) MyLucene.UpdateLuceneIndex(bugid);
 
-            var notificationEmailEnabled = Util.GetSetting("NotificationEmailEnabled", "1") == "1";
+            var notificationEmailEnabled = ApplicationSettings.NotificationEmailEnabled;
 
             if (!notificationEmailEnabled) return;
             // MAW -- 2006/01/27 -- Determine level of change detected
@@ -1024,7 +1030,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
             sql = sql.Replace("$cl", changeLevel.ToString());
             sql = sql.Replace("$pau", prevAssignedToUser.ToString());
             sql = sql.Replace("$id", Convert.ToString(bugid));
-            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
 
             var dsSubscribers = DbUtil.GetDataSet(sql);
@@ -1036,14 +1042,13 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                 // Get bug html
                 var bugDr = GetBugDataRow(bugid, security);
 
-                var from = Util.GetSetting("NotificationEmailFrom", "");
+                var from = ApplicationSettings.NotificationEmailFrom;
 
                 // Format the subject line
-                var subject = Util.GetSetting("NotificationSubjectFormat",
-                    "$THING$:$BUGID$ was $ACTION$ - $SHORTDESC$ $TRACKINGID$");
+                var subject = ApplicationSettings.NotificationSubjectFormat;
 
                 subject = subject.Replace("$THING$",
-                    Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")));
+                    Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel));
 
                 var action = "";
                 if (insertOrUpdate == Insert)
@@ -1056,7 +1061,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                 subject = subject.Replace("$SHORTDESC$", (string)bugDr["short_desc"]);
 
                 var trackingId = " (";
-                trackingId += Util.GetSetting("TrackingIdString", "DO NOT EDIT THIS:");
+                trackingId += ApplicationSettings.TrackingIdString;
                 trackingId += Convert.ToString(bugid);
                 trackingId += ")";
                 subject = subject.Replace("$TRACKINGID$", trackingId);
@@ -1079,7 +1084,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                     var myResponse = new HttpResponse(writer);
                     myResponse.Write("<html>");
                     myResponse.Write("<base href=\"" +
-                                      Util.GetSetting("AbsoluteUrlPrefix", "http://127.0.0.1/") + "\"/>");
+                                     ApplicationSettings.AbsoluteUrlPrefix + "\"/>");
 
                     // create a security rec for the user receiving the email
                     var sec2 = new Security();

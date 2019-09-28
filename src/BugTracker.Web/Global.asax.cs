@@ -13,12 +13,56 @@ namespace BugTracker.Web
     using System.Text;
     using System.Web;
     using System.Web.Caching;
+    using Autofac;
+    using Autofac.Integration.Web;
     using Core;
+    using Core.Administration;
+    using Core.Persistence;
 
-    public class Global : HttpApplication
+    public class Global : HttpApplication, IContainerProviderAccessor
     {
+        // Provider that holds the application container.
+        static IContainerProvider _containerProvider;
+
+        // Instance property that will be used by Autofac HttpModules
+        // to resolve and inject dependencies.
+        public IContainerProvider ContainerProvider
+        {
+            get { return _containerProvider; }
+        }
+
         protected void Application_Start(object sender, EventArgs e)
         {
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<ApplicationSettings>()
+                .As<IApplicationSettings>();
+
+            builder.RegisterType<Authenticate>()
+                .As<IAuthenticate>()
+                .InstancePerRequest();
+
+            builder.RegisterType<ApplicationContext>()
+                .InstancePerRequest();
+
+            builder.RegisterType<CategoryService>()
+                .As<ICategoryService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<PriorityService>()
+                .As<IPriorityService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<StatusService>()
+                .As<IStatusService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<UserDefinedAttributeService>()
+                .As<IUserDefinedAttributeService>()
+                .InstancePerRequest();
+
+            _containerProvider = new ContainerProvider(builder.Build());
+
             var path = HttpContext.Current.Server.MapPath("~/");
 
             HttpRuntime.Cache.Add("MapPath", path, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration,
@@ -72,22 +116,25 @@ namespace BugTracker.Web
             Application["custom_welcome"] = sr.ReadToEnd();
             sr.Close();
 
-            if (Util.GetSetting("EnableVotes", "0") == "1")
+            var applicationSettings = ContainerProvider.ApplicationContainer
+                .Resolve<IApplicationSettings>();
+
+            if (applicationSettings.EnableVotes)
             {
                 Core.Tags.CountVotes(Application); // in tags file for convenience for me....
             }
 
-            if (Util.GetSetting("EnableTags", "0") == "1")
+            if (applicationSettings.EnableTags)
             {
                 Core.Tags.BuildTagIndex(Application);
             }
 
-            if (Util.GetSetting("EnableLucene", "1") == "1")
+            if (applicationSettings.EnableLucene)
             {
                 MyLucene.BuildLuceneIndex(Application);
             }
 
-            if (Util.GetSetting("EnablePop3", "0") == "1")
+            if (applicationSettings.EnablePop3)
             {
                 MyPop3.StartPop3(Application);
             }
@@ -155,7 +202,10 @@ namespace BugTracker.Web
 
             var exc = Server.GetLastError().GetBaseException();
 
-            var logEnabled = Util.GetSetting("LogEnabled", "1") == "1";
+            var applicationSettings = ContainerProvider.ApplicationContainer
+                .Resolve<IApplicationSettings>();
+
+            var logEnabled = applicationSettings.LogEnabled;
             if (logEnabled)
             {
                 var path = Util.GetLogFilePath();
@@ -171,7 +221,7 @@ namespace BugTracker.Web
                 w.Close();
             }
 
-            var errorEmailEnabled = Util.GetSetting("ErrorEmailEnabled", "1") == "1";
+            var errorEmailEnabled = applicationSettings.ErrorEmailEnabled;
             if (errorEmailEnabled)
             {
                 if (exc.Message == "Expected integer.  Possible SQL injection attempt?")
@@ -184,8 +234,8 @@ namespace BugTracker.Web
                 }
                 else
                 {
-                    var to = Util.GetSetting("ErrorEmailTo", "");
-                    var from = Util.GetSetting("ErrorEmailFrom", "");
+                    var to = applicationSettings.ErrorEmailTo;
+                    var from = applicationSettings.ErrorEmailFrom;
                     var subject = "Error: " + exc.Message;
 
                     var body = new StringBuilder();

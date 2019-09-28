@@ -155,7 +155,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="lbl"><% Response.Write(Util.GetSetting("PluralBugLabel", "Bugs")); %> Per Page:</td>
+                                    <td class="lbl"><% Response.Write(ApplicationSettings.PluralBugLabel); %> Per Page:</td>
                                     <td>
                                         <input runat="server" type="text" class="txt" id="bugs_per_page" maxlength="3" size="3">
                                     </td>
@@ -163,7 +163,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="lbl">Enable <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>list popups:</td>
+                                    <td class="lbl">Enable <% Response.Write(ApplicationSettings.SingularBugLabel); %>list popups:</td>
                                     <td>
                                         <asp:CheckBox runat="server" class="cb" ID="enable_popups" />
                                     </td>
@@ -186,13 +186,13 @@
                                 <tr>
                                     <td colspan="3">
                                         <div class="smallnote" style="width: 400px;">
-                                            Default <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %> Query is what you see when you click on the "<% Response.Write(Util.GetSetting("PluralBugLabel", "bug")); %>" link
+                                            Default <% Response.Write(ApplicationSettings.SingularBugLabel); %> Query is what you see when you click on the "<% Response.Write(ApplicationSettings.PluralBugLabel); %>" link
                                         </div>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td class="lbl">Default <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %> Query:</td>
+                                    <td class="lbl">Default <% Response.Write(ApplicationSettings.SingularBugLabel); %> Query:</td>
                                     <td>
                                         <asp:DropDownList ID="query" runat="server">
                                         </asp:DropDownList>
@@ -320,7 +320,7 @@
 
                                 <!-- MAW -- 2006/01/27 -- Added new notification controls -->
                                 <tr>
-                                    <td class="lbl">Notifications for subscribed <% Response.Write(Util.GetSetting("PluralBugLabel", "bugs")); %> reported by me:</td>
+                                    <td class="lbl">Notifications for subscribed <% Response.Write(ApplicationSettings.PluralBugLabel); %> reported by me:</td>
                                     <td>
                                         <asp:DropDownList runat="server" ID="reported_notifications">
                                             <asp:ListItem Value="0" Text="no notifications" />
@@ -334,7 +334,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="lbl">Notifications for subscribed <% Response.Write(Util.GetSetting("PluralBugLabel", "bugs")); %> assigned to me:</td>
+                                    <td class="lbl">Notifications for subscribed <% Response.Write(ApplicationSettings.PluralBugLabel); %> assigned to me:</td>
                                     <td>
                                         <asp:DropDownList runat="server" ID="assigned_notifications">
                                             <asp:ListItem Value="0" Text="no notifications" />
@@ -348,7 +348,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="lbl">Notifications for all other subscribed <% Response.Write(Util.GetSetting("PluralBugLabel", "bugs")); %>:</td>
+                                    <td class="lbl">Notifications for all other subscribed <% Response.Write(ApplicationSettings.PluralBugLabel); %>:</td>
                                     <td>
                                         <asp:DropDownList runat="server" ID="subscribed_notifications">
                                             <asp:ListItem Value="0" Text="no notifications" />
@@ -382,7 +382,7 @@
 
 
         <tr>
-            <td colspan="2" class="lbl">Force user to add new <% Response.Write(Util.GetSetting("PluralBugLabel", "bugs")); %> to this project:&nbsp;&nbsp;
+            <td colspan="2" class="lbl">Force user to add new <% Response.Write(ApplicationSettings.PluralBugLabel); %> to this project:&nbsp;&nbsp;
                 <asp:DropDownList ID="forced_project" runat="server">
                 </asp:DropDownList>
             </td>

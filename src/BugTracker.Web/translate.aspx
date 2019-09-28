@@ -22,7 +22,7 @@
             <tbody>
                 <tr>
                     <td>
-                        <a id="back_href" href="" runat="server">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                        <a id="back_href" href="" runat="server">back to <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
                         <form enctype="multipart/form-data" runat="server">
                             <table border="0" class="frm">
                                 <tbody>

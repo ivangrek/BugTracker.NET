@@ -17,6 +17,8 @@ namespace BugTracker.Web
 
     public partial class Search : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet DsCustomCols;
 
         public DataTable DtUsers;
@@ -55,10 +57,10 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - search";
+            Page.Title = $"{ApplicationSettings.AppTitle} - search";
 
-            this.ShowUdf = Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1";
-            this.UseFullNames = Util.GetSetting("UseFullNames", "0") == "1";
+            this.ShowUdf = ApplicationSettings.ShowUserDefinedBugAttribute;
+            this.UseFullNames = ApplicationSettings.UseFullNames;
 
             this.DsCustomCols = Util.GetCustomColumns();
 
@@ -409,7 +411,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
             // The rest of the SQL is either built in or comes from Web.config
 
-            var searchSql = Util.GetSetting("SearchSQL", "");
+            var searchSql = ApplicationSettings.SearchSQL;
 
             if (searchSql == "")
             {
@@ -484,7 +486,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 if (security.User.UdfFieldPermissionLevel != Security.PermissionNone)
                     if (this.ShowUdf)
                     {
-                        var udfName = Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
+                        var udfName = ApplicationSettings.UserDefinedBugAttributeName;
                         select += ",\nisnull(udf_name,'') [" + udfName + "]";
                     }
 
@@ -837,7 +839,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             order by pj_name;";
 
                 this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
-                this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             }
 
             if (security.User.OtherOrgsPermissionLevel != 0)

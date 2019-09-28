@@ -13,6 +13,8 @@ namespace BugTracker.Web.Administration.Projects
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -37,12 +39,11 @@ namespace BugTracker.Web.Administration.Projects
                 this.Sql = @"delete projects where pj_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Administration/Projects/List.aspx");
+                Response.Redirect("~/Administration/Projects/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete project";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete project";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 

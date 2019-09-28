@@ -15,6 +15,9 @@ namespace BugTracker.Web.Accounts
 
     public partial class Home : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IAuthenticate Authenticate { get; set; }
+
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
@@ -22,7 +25,7 @@ namespace BugTracker.Web.Accounts
             Util.SetContext(HttpContext.Current);
             Util.DoNotCache(Response);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - logon";
+            Page.Title = $"{ApplicationSettings.AppTitle} - logon";
 
             this.msg.InnerText = "";
 
@@ -40,7 +43,7 @@ namespace BugTracker.Web.Accounts
                 catch (SqlException e1)
                 {
                     Util.WriteToLog(e1.Message);
-                    Util.WriteToLog(Util.GetSetting("ConnectionString", "?"));
+                    Util.WriteToLog(ApplicationSettings.ConnectionString);
                     this.msg.InnerHtml = "Unable to find \"bugs\" table.<br>"
                                          + "Click to <a href=Install.aspx>setup database tables</a>";
                 }
@@ -55,7 +58,7 @@ namespace BugTracker.Web.Accounts
             }
 
             // Get authentication mode
-            var authMode = Util.GetSetting("WindowsAuthentication", "0");
+            var authMode = ApplicationSettings.WindowsAuthentication;
             var usernameCookie = Request.Cookies["user"];
             var previousAuthMode = "0";
             if (usernameCookie != null) previousAuthMode = usernameCookie["NTLM"];
@@ -64,10 +67,10 @@ namespace BugTracker.Web.Accounts
             if (Request.QueryString["msg"] == null)
             {
                 // If windows authentication only, then redirect
-                if (authMode == "1") Util.Redirect("~/Accounts/LoginNt.aspx", Request, Response);
+                if (authMode == 1) Util.Redirect("~/Accounts/LoginNt.aspx", Request, Response);
 
                 // If previous login was with windows authentication, then try it again
-                if (previousAuthMode == "1" && authMode == "2")
+                if (previousAuthMode == "1" && authMode == 2)
                 {
                     Response.Cookies["user"]["name"] = "";
                     Response.Cookies["user"]["NTLM"] = "0";
@@ -114,8 +117,8 @@ namespace BugTracker.Web.Accounts
 
         public void OnLogon()
         {
-            var authMode = Util.GetSetting("WindowsAuthentication", "0");
-            if (authMode != "0")
+            var authMode = ApplicationSettings.WindowsAuthentication;
+            if (authMode != 0)
                 if (this.user.Value.Trim() == "")
                     Util.Redirect("~/Accounts/LoginNt.aspx", Request, Response);
 

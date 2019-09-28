@@ -14,6 +14,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class MobileList : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public void Page_Load(object sender, EventArgs e)
@@ -24,17 +26,17 @@ namespace BugTracker.Web.Bugs
 
             security.CheckSecurity(Security.AnyUserOk);
 
-            if (Util.GetSetting("EnableMobile", "0") == "0")
+            if (!ApplicationSettings.EnableMobile)
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - List ";
+            Page.Title = $"{ApplicationSettings.AppTitle} - List";
             this.my_header.InnerText = Page.Title;
             this.create.InnerText =
-                "Create " + Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"));
-            this.only_mine_label.InnerText = "Show only " + Util.GetSetting("PluralBugLabel", "bugs") +
+                "Create " + Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel);
+            this.only_mine_label.InnerText = "Show only " + ApplicationSettings.PluralBugLabel +
                                              " reported by or assigned to me";
 
             var bugSql = @"

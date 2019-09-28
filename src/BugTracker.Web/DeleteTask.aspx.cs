@@ -13,6 +13,8 @@ namespace BugTracker.Web
 
     public partial class DeleteTask : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -60,8 +62,7 @@ namespace BugTracker.Web
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete task";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete task";
 
                 this.back_href.HRef = "Tasks.aspx?bugid=" + stringBugid;
 

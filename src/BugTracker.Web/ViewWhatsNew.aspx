@@ -141,7 +141,7 @@
                         process_json(data);
                         setTimeout(get_news,
                             1000 *
-                        <% Response.Write(Util.GetSetting("WhatsNewPageIntervalInSeconds", "20"));%> );
+                        <% Response.Write(ApplicationSettings.WhatsNewPageIntervalInSeconds);%> );
                     },
 
                     error: function (xmlHttpRequest, textStatus, errorThrown) {

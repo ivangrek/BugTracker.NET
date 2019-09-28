@@ -14,6 +14,8 @@ namespace BugTracker.Web.Accounts
 
     public partial class LoginNt : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
@@ -23,11 +25,11 @@ namespace BugTracker.Web.Accounts
             Util.DoNotCache(Response);
 
             // Get authentication mode
-            var authMode = Util.GetSetting("WindowsAuthentication", "0");
+            var authMode = ApplicationSettings.WindowsAuthentication;
 
             // If manual authentication only, we shouldn't be here, so redirect to manual screen
 
-            if (authMode == "0") Util.Redirect("~/Accounts/Login.aspx", Request, Response);
+            if (authMode == 0) Util.Redirect("~/Accounts/Login.aspx", Request, Response);
 
             // Get the logon user from IIS
             var domainWindowsUsername = Request.ServerVariables["LOGON_USER"];
@@ -70,10 +72,10 @@ namespace BugTracker.Web.Accounts
 
                 // Is self register enabled for users authenticated by windows?
                 // If yes, then automatically insert a row in the user table
-                var enableAutoRegistration = Util.GetSetting("EnableWindowsUserAutoRegistration", "1") == "1";
+                var enableAutoRegistration = ApplicationSettings.EnableWindowsUserAutoRegistration;
                 if (enableAutoRegistration)
                 {
-                    var templateUser = Util.GetSetting("WindowsUserAutoRegistrationUserTemplate", "guest");
+                    var templateUser = ApplicationSettings.WindowsUserAutoRegistrationUserTemplate;
 
                     var firstName = windowsUsername;
                     var lastName = windowsUsername;
@@ -82,25 +84,23 @@ namespace BugTracker.Web.Accounts
 
                     // From the browser, we only know the Windows username.  Maybe we can get the other
                     // info from LDAP?
-                    if (Util.GetSetting("EnableWindowsUserAutoRegistrationLdapSearch", "0") == "1")
+                    if (ApplicationSettings.EnableWindowsUserAutoRegistrationLdapSearch)
                         using (var de = new DirectoryEntry())
                         {
-                            de.Path = Util.GetSetting("LdapDirectoryEntryPath",
-                                "LDAP://127.0.0.1/DC=mycompany,DC=com");
+                            de.Path = ApplicationSettings.LdapDirectoryEntryPath;
 
                             de.AuthenticationType =
                                 (AuthenticationTypes) Enum.Parse(
                                     typeof(AuthenticationTypes),
-                                    Util.GetSetting("LdapDirectoryEntryAuthenticationType", "Anonymous"));
+                                    ApplicationSettings.LdapDirectoryEntryAuthenticationType);
 
-                            de.Username = Util.GetSetting("LdapDirectoryEntryUsername", "");
-                            de.Password = Util.GetSetting("LdapDirectoryEntryPassword", "");
+                            de.Username = ApplicationSettings.LdapDirectoryEntryUsername;
+                            de.Password = ApplicationSettings.LdapDirectoryEntryPassword;
 
                             using (var search =
                                 new DirectorySearcher(de))
                             {
-                                var searchFilter = Util.GetSetting("LdapDirectorySearcherFilter",
-                                    "(uid=$REPLACE_WITH_USERNAME$)");
+                                var searchFilter = ApplicationSettings.LdapDirectorySearcherFilter;
                                 search.Filter = searchFilter.Replace("$REPLACE_WITH_USERNAME$", windowsUsername);
                                 SearchResult result = null;
 
@@ -110,16 +110,13 @@ namespace BugTracker.Web.Accounts
                                     if (result != null)
                                     {
                                         firstName = GetLdapPropertyValue(result,
-                                            Util.GetSetting("LdapFirstName", "gn"), firstName);
+                                            ApplicationSettings.LdapFirstName, firstName);
                                         lastName = GetLdapPropertyValue(result,
-                                            Util.GetSetting("LdapLastName", "sn"),
+                                            ApplicationSettings.LdapLastName,
                                             lastName);
-                                        email = GetLdapPropertyValue(result, Util.GetSetting("LdapEmail", "mail"),
-                                            email);
-                                        ;
+                                        email = GetLdapPropertyValue(result, ApplicationSettings.LdapEmail, email);
                                         signature = GetLdapPropertyValue(result,
-                                            Util.GetSetting("LdapEmailSigniture", "cn"), signature);
-                                        ;
+                                            ApplicationSettings.LdapEmailSignature, signature);
                                     }
                                     else
                                     {
@@ -195,7 +192,7 @@ namespace BugTracker.Web.Accounts
                 // If using mixed-mode authentication and we got this far,
                 // then we can't sign in using integrated security. Redirect
                 // to the manual screen.
-                if (authMode != "1") Util.Redirect("~/Accounts/Login.aspx?msg=user+not+valid", Request, Response);
+                if (authMode != 1) Util.Redirect("~/Accounts/Login.aspx?msg=user+not+valid", Request, Response);
 
                 // If we are still here, then toss a 401 error.
                 Response.StatusCode = 401;

@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class EditDashboard : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
         public string Ses = "";
 
@@ -28,7 +30,7 @@ namespace BugTracker.Web
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit dashboard";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit dashboard";
 
             if (security.User.IsAdmin || security.User.CanUseReports)
             {

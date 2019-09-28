@@ -20,6 +20,9 @@ namespace BugTracker.Web
 
     public partial class SendEmail : Page
     {
+
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public bool EnableInternalPosts;
         public int Project = -1;
         public string Sql;
@@ -37,9 +40,9 @@ namespace BugTracker.Web
             Security = security;
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - send email";
+            Page.Title = $"{ApplicationSettings.AppTitle} - send email";
 
             this.msg.InnerText = "";
 
@@ -48,7 +51,7 @@ namespace BugTracker.Web
             var requestTo = Request["to"];
             var reply = Request["reply"];
 
-            this.EnableInternalPosts = Util.GetSetting("EnableInternalOnlyPosts", "0") == "1";
+            this.EnableInternalPosts = ApplicationSettings.EnableInternalOnlyPosts;
 
             if (!this.EnableInternalPosts)
             {
@@ -126,8 +129,11 @@ namespace BugTracker.Web
 
                     // Work around for a mysterious bug:
                     // http://sourceforge.net/tracker/?func=detail&aid=2815733&group_id=66812&atid=515837
-                    if (Util.GetSetting("StripDisplayNameFromEmailAddress", "0") == "1")
+                    if (ApplicationSettings.StripDisplayNameFromEmailAddress)
+                    {
                         this.to.Value = Email.SimplifyEmailAddress(this.to.Value);
+                    }
+                        
 
                     load_from_dropdown(dr, true); // list the project's email address first
 
@@ -292,7 +298,7 @@ namespace BugTracker.Web
 
                     // Work around for a mysterious bug:
                     // http://sourceforge.net/tracker/?func=detail&aid=2815733&group_id=66812&atid=515837
-                    if (Util.GetSetting("StripDisplayNameFromEmailAddress", "0") == "1")
+                    if (ApplicationSettings.StripDisplayNameFromEmailAddress)
                         this.to.Value = Email.SimplifyEmailAddress(this.to.Value);
 
                     if (dr["us_signature"].ToString() != "")
@@ -315,7 +321,7 @@ namespace BugTracker.Web
                 if (stringBpId != null || stringBgId != null)
                 {
                     this.subject.Value = (string) dr["bg_short_desc"]
-                                         + "  (" + Util.GetSetting("TrackingIdString", "DO NOT EDIT THIS:")
+                                         + "  (" + ApplicationSettings.TrackingIdString
                                          + this.bg_id.Value
                                          + ")";
 
@@ -578,7 +584,7 @@ update bugs set
             if (filename != "")
             {
                 //add attachment
-                var maxUploadSize = Convert.ToInt32(Util.GetSetting("MaxUploadSize", "100000"));
+                var maxUploadSize = ApplicationSettings.MaxUploadSize;
                 var contentLength = this.attached_file.PostedFile.ContentLength;
                 if (contentLength > maxUploadSize)
                 {

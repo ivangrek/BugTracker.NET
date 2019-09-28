@@ -16,6 +16,8 @@ namespace BugTracker.Web
 
     public partial class EditTask : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
 
         public string Sql;
@@ -63,34 +65,68 @@ namespace BugTracker.Web
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "edit task";
+                Page.Title = $"{ApplicationSettings.AppTitle} - edit task";
 
                 this.bugid_label.InnerHtml =
-                    Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) + " ID:";
+                    Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " ID:";
                 this.bugid_static.InnerHtml = Convert.ToString(this.Bugid);
 
                 load_users_dropdowns(this.Bugid, security);
 
-                if (Util.GetSetting("ShowTaskAssignedTo", "1") == "0") this.assigned_to_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskAssignedTo)
+                {
+                    this.assigned_to_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskPlannedStartDate", "1") == "0")
+                if (!ApplicationSettings.ShowTaskPlannedStartDate)
+                {
                     this.planned_start_date_tr.Visible = false;
-                if (Util.GetSetting("ShowTaskActualStartDate", "1") == "0") this.actual_start_date_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskPlannedEndDate", "1") == "0") this.planned_end_date_tr.Visible = false;
-                if (Util.GetSetting("ShowTaskActualEndDate", "1") == "0") this.actual_end_date_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskActualStartDate)
+                {
+                    this.actual_start_date_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskPlannedDuration", "1") == "0") this.planned_duration_tr.Visible = false;
-                if (Util.GetSetting("ShowTaskActualDuration", "1") == "0") this.actual_duration_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskPlannedEndDate)
+                {
+                    this.planned_end_date_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskDurationUnits", "1") == "0") this.duration_units_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskActualEndDate)
+                {
+                    this.actual_end_date_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskPercentComplete", "1") == "0") this.percent_complete_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskPlannedDuration)
+                {
+                    this.planned_duration_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskStatus", "1") == "0") this.status_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskActualDuration)
+                {
+                    this.actual_duration_tr.Visible = false;
+                }
 
-                if (Util.GetSetting("ShowTaskSortSequence", "1") == "0") this.sort_sequence_tr.Visible = false;
+                if (!ApplicationSettings.ShowTaskDurationUnits)
+                {
+                    this.duration_units_tr.Visible = false;
+                }
+
+                if (!ApplicationSettings.ShowTaskPercentComplete)
+                {
+                    this.percent_complete_tr.Visible = false;
+                }
+
+                if (!ApplicationSettings.ShowTaskStatus)
+                {
+                    this.status_tr.Visible = false;
+                }
+
+                if (!ApplicationSettings.ShowTaskSortSequence)
+                {
+                    this.sort_sequence_tr.Visible = false;
+                }
 
                 // add or edit?
                 if (this.TskId == 0)
@@ -98,16 +134,16 @@ namespace BugTracker.Web
                     this.tsk_id_tr.Visible = false;
                     this.sub.Value = "Create";
 
-                    var defaultDurationUnits = Util.GetSetting("TaskDefaultDurationUnits", "hours");
+                    var defaultDurationUnits = ApplicationSettings.TaskDefaultDurationUnits;
                     this.duration_units.Items.FindByText(defaultDurationUnits).Selected = true;
 
-                    var defaultHour = Util.GetSetting("TaskDefaultHour", "09");
+                    var defaultHour = ApplicationSettings.TaskDefaultHour;
                     this.planned_start_hour.Items.FindByText(defaultHour).Selected = true;
                     this.actual_start_hour.Items.FindByText(defaultHour).Selected = true;
                     this.planned_end_hour.Items.FindByText(defaultHour).Selected = true;
                     this.actual_end_hour.Items.FindByText(defaultHour).Selected = true;
 
-                    var defaultStatus = Util.GetSetting("TaskDefaultStatus", "[no status]");
+                    var defaultStatus = ApplicationSettings.TaskDefaultStatus;
                     this.status.Items.FindByText(defaultStatus).Selected = true;
                 }
                 else
@@ -186,7 +222,7 @@ select @project = bg_project, @assigned_to = bg_assigned_to_user from bugs where
 
             // Load the user dropdown, which changes per project
             // Only users explicitly allowed will be listed
-            if (Util.GetSetting("DefaultPermissionLevel", "2") == "0")
+            if (ApplicationSettings.DefaultPermissionLevel == 0)
                 this.Sql += @"
 
 /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
@@ -224,7 +260,7 @@ order by us_username; ";
                 Convert.ToString(security.User.OtherOrgsPermissionLevel));
             this.Sql = this.Sql.Replace("$bg_id", Convert.ToString(bugid));
 
-            if (Util.GetSetting("UseFullNames", "0") == "0")
+            if (!ApplicationSettings.UseFullNames)
                 // false condition
                 this.Sql = this.Sql.Replace("$fullnames", "0 = 1");
             else

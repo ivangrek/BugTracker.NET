@@ -16,6 +16,8 @@ namespace BugTracker.Web
 
     public partial class MassEdit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -48,8 +50,7 @@ namespace BugTracker.Web
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "massedit";
+                Page.Title = $"{ApplicationSettings.AppTitle} - massedit";
 
                 if (Request["mass_delete"] != null)
                     this.update_or_delete.Value = "delete";

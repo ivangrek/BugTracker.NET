@@ -15,6 +15,8 @@ namespace BugTracker.Web.Versioning.Svn
 
     public partial class Diff : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string LeftOut = "";
         public string LeftTitle = "";
         public string Path0 = "";
@@ -97,7 +99,7 @@ where svnap_id = $id";
 
             this.Repo = (string) dr["svnrev_repository"];
 
-            if (Util.GetSetting("SvnTrustPathsInUrls", "0") == "1")
+            if (ApplicationSettings.SvnTrustPathsInUrls)
             {
                 this.Path0 = Request["path_0"];
                 this.Path1 = Request["path_1"];

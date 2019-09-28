@@ -22,6 +22,8 @@ namespace BugTracker.Web.Core
 
     public class Util
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public static HttpContext Context;
 
         private static HttpRequest _request;
@@ -55,10 +57,10 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static string GetFormName()
-        {
-            return GetSetting("AspNetFormId", "ctl00");
-        }
+        //public static string GetFormName()
+        //{
+        //    return ApplicationSettings.AspNetFormId;
+        //}
 
         public static string GetLogFilePath()
         {
@@ -84,7 +86,12 @@ namespace BugTracker.Web.Core
 
         public static void WriteToLog(string s)
         {
-            if (GetSetting("LogEnabled", "1") == "0") return;
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (!applicationSettings.LogEnabled)
+            {
+                return;
+            }
 
             var path = GetLogFilePath();
 
@@ -117,31 +124,32 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static void WriteToMemoryLog(string s)
-        {
-            if (HttpContext.Current == null) return;
+        // TODO research
+        //public static void WriteToMemoryLog(string s)
+        //{
+        //    if (HttpContext.Current == null) return;
 
-            if (GetSetting("MemoryLogEnabled", "0") == "0") return;
+        //    if (GetSetting("MemoryLogEnabled", "0") == "0") return;
 
-            var url = "";
-            if (HttpContext.Current.Request != null) url = HttpContext.Current.Request.Url.ToString();
+        //    var url = "";
+        //    if (HttpContext.Current.Request != null) url = HttpContext.Current.Request.Url.ToString();
 
-            var line = DateTime.Now.ToString("yyy-MM-dd HH:mm:ss:fff")
-                       + " "
-                       + url
-                       + " "
-                       + s;
+        //    var line = DateTime.Now.ToString("yyy-MM-dd HH:mm:ss:fff")
+        //               + " "
+        //               + url
+        //               + " "
+        //               + s;
 
-            var list = (List<string>)HttpContext.Current.Application["log"];
+        //    var list = (List<string>)HttpContext.Current.Application["log"];
 
-            if (list == null)
-            {
-                list = new List<string>();
-                HttpContext.Current.Application["log"] = list;
-            }
+        //    if (list == null)
+        //    {
+        //        list = new List<string>();
+        //        HttpContext.Current.Application["log"] = list;
+        //    }
 
-            list.Add(line);
-        }
+        //    list.Add(line);
+        //}
 
         public static void DoNotCache(HttpResponse response)
         {
@@ -150,14 +158,14 @@ namespace BugTracker.Web.Core
             response.Expires = -1;
         }
 
-        public static string GetSetting(string name, string defaultValue)
-        {
-            var nameValues
-                = (NameValueCollection)ConfigurationManager.GetSection("appSettings");
-            if (string.IsNullOrEmpty(nameValues[name]))
-                return defaultValue;
-            return nameValues[name];
-        }
+        //public static string GetSetting(string name, string defaultValue)
+        //{
+        //    var nameValues
+        //        = (NameValueCollection)ConfigurationManager.GetSection("appSettings");
+        //    if (string.IsNullOrEmpty(nameValues[name]))
+        //        return defaultValue;
+        //    return nameValues[name];
+        //}
 
         public static bool IsInt(string maybeInt)
         {
@@ -216,7 +224,9 @@ namespace BugTracker.Web.Core
 
         public static string StripHtml(string textWithTags)
         {
-            if (GetSetting("StripHtmlTagsFromSearchableText", "1") == "1")
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (applicationSettings.StripHtmlTagsFromSearchableText)
                 return HttpUtility.HtmlDecode(Regex.Replace(textWithTags, @"<(.|\n)*?>", string.Empty));
             return textWithTags;
         }
@@ -284,13 +294,15 @@ namespace BugTracker.Web.Core
 
             if (dt.Year == 1900) return "";
 
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             var dateTimeFormat = "";
             if ((dt.Hour == 0 || dt.Hour == 12) && dt.Minute == 0 && dt.Second == 0)
-                dateTimeFormat = GetSetting("JustDateFormat", "g");
+                dateTimeFormat = applicationSettings.JustDateFormat;
             else
-                dateTimeFormat = GetSetting("DateTimeFormat", "g");
+                dateTimeFormat = applicationSettings.DateTimeFormat;
 
-            var hoursOffset = Convert.ToInt32(GetSetting("DisplayTimeOffsetInHours", "0"));
+            var hoursOffset = applicationSettings.DisplayTimeOffsetInHours;
 
             if (hoursOffset != 0) dt = dt.AddHours(hoursOffset);
             return dt.ToString(dateTimeFormat, GetCultureInfo());
@@ -332,8 +344,10 @@ namespace BugTracker.Web.Core
                 return "";
             }
 
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             // Note that yyyyMMdd HH:mm:ss is a universal SQL dateformat for strings.
-            return d.ToString(GetSetting("SQLServerDateFormat", "yyyyMMdd HH:mm:ss"));
+            return d.ToString(applicationSettings.SQLServerDateFormat);
         }
 
         public static string FormatLocalDecimalIntoDbFormat(string val)
@@ -347,31 +361,32 @@ namespace BugTracker.Web.Core
         {
             string projectPermissionsSql;
 
-            var dpl = GetSetting("DefaultPermissionLevel", "2");
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+            var dpl = applicationSettings.DefaultPermissionLevel;
 
-            if (dpl == "0")
+            if (dpl == 0)
                 projectPermissionsSql = @" (bugs.bg_project in (
-					select pu_project
-					from project_user_xref
-					where pu_user = $user
-					and pu_permission_level > 0)) ";
+                    select pu_project
+                    from project_user_xref
+                    where pu_user = $user
+                    and pu_permission_level > 0)) ";
             else
                 projectPermissionsSql = @" (bugs.bg_project not in (
-					select pu_project
-					from project_user_xref
-					where pu_user = $user
-					and pu_permission_level = 0)) ";
+                    select pu_project
+                    from project_user_xref
+                    where pu_user = $user
+                    and pu_permission_level = 0)) ";
 
             if (security.User.CanOnlySeeOwnReported)
             {
                 projectPermissionsSql += @"
-					    and bugs.bg_reported_user = $user ";
+                        and bugs.bg_reported_user = $user ";
             }
             else
             {
                 if (security.User.OtherOrgsPermissionLevel == 0)
                     projectPermissionsSql += @"
-					    and bugs.bg_org = $user.org ";
+                        and bugs.bg_org = $user.org ";
             }
 
             projectPermissionsSql
@@ -467,7 +482,9 @@ namespace BugTracker.Web.Core
 
         public static string CapitalizeFirstLetter(string s)
         {
-            if (s.Length > 0 && GetSetting("NoCapitalization", "0") == "0")
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (s.Length > 0 && !applicationSettings.NoCapitalization)
                 return s.Substring(0, 1).ToUpper() + s.Substring(1, s.Length - 1);
             return s;
         }
@@ -517,7 +534,7 @@ namespace BugTracker.Web.Core
 
         public static string GetFolder(string name, string dflt)
         {
-            var folder = GetSetting(name, "");
+            var folder = ApplicationSettings[name];
             if (folder == "")
                 return dflt;
 
@@ -617,7 +634,9 @@ namespace BugTracker.Web.Core
         {
             string sql;
 
-            if (GetSetting("DefaultPermissionLevel", "2") == "0")
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (applicationSettings.DefaultPermissionLevel == 0)
                 // only show users who have explicit permission
                 // for projects that this user has permissions for
 
@@ -627,7 +646,7 @@ namespace BugTracker.Web.Core
 select us_id,
 case when $fullnames then
     case when len(isnull(us_firstname,'') + ' ' + isnull(us_lastname,'')) > 1
-	then isnull(us_firstname,'') + ' ' + isnull(us_lastname,'')
+    then isnull(us_firstname,'') + ' ' + isnull(us_lastname,'')
     else us_username end
 else us_username end us_username,
 isnull(us_email,'') us_email,
@@ -637,19 +656,19 @@ into #temp
 from users
 inner join orgs on us_org = og_id
 where us_id in
-	(select pu1.pu_user from project_user_xref pu1
-	where pu1.pu_project in
-		(select pu2.pu_project from project_user_xref pu2
-		where pu2.pu_user = $user.usid
-		and pu2.pu_permission_level <> 0
-		)
-	and pu1.pu_permission_level <> 0
-	)
+    (select pu1.pu_user from project_user_xref pu1
+    where pu1.pu_project in
+        (select pu2.pu_project from project_user_xref pu2
+        where pu2.pu_user = $user.usid
+        and pu2.pu_permission_level <> 0
+        )
+    and pu1.pu_permission_level <> 0
+    )
 
 if $og_external_user = 1 -- external
 and $og_other_orgs_permission_level = 0 -- other orgs
 begin
-	delete from #temp where og_external_user = 1 and us_org <> $user.org 
+    delete from #temp where og_external_user = 1 and us_org <> $user.org 
 end
 
 $limit_users
@@ -668,7 +687,7 @@ drop table #temp";
 select  pj_id, us_id,
 case when $fullnames then
     case when len(isnull(us_firstname,'') + ' ' + isnull(us_lastname,'')) > 1
-	then isnull(us_firstname,'') + ' ' + isnull(us_lastname,'')
+    then isnull(us_firstname,'') + ' ' + isnull(us_lastname,'')
     else us_username end
 else us_username end us_username,
 isnull(us_email,'') us_email
@@ -676,8 +695,8 @@ into #temp
 from projects, users
 where pj_id not in
 (
-	select pu_project from project_user_xref
-	where pu_permission_level = 0 and pu_user = $user.usid
+    select pu_project from project_user_xref
+    where pu_permission_level = 0 and pu_user = $user.usid
 )
 
 
@@ -687,27 +706,27 @@ $limit_users
 if $og_external_user = 1 -- external
 and $og_other_orgs_permission_level = 0 -- other orgs
 begin
-	select distinct a.us_id, a.us_username, a.us_email
-	from #temp a
-	inner join users b on a.us_id = b.us_id
-	inner join orgs on b.us_org = og_id
-	where og_external_user = 0 or b.us_org = $user.org
-	order by a.us_username
+    select distinct a.us_id, a.us_username, a.us_email
+    from #temp a
+    inner join users b on a.us_id = b.us_id
+    inner join orgs on b.us_org = og_id
+    where og_external_user = 0 or b.us_org = $user.org
+    order by a.us_username
 end
 else
 begin
 
-	select distinct us_id, us_username, us_email
-		from #temp
-		left outer join project_user_xref on pj_id = pu_project
-		and us_id = pu_user
-		where isnull(pu_permission_level,2) <> 0
-		order by us_username
+    select distinct us_id, us_username, us_email
+        from #temp
+        left outer join project_user_xref on pj_id = pu_project
+        and us_id = pu_user
+        where isnull(pu_permission_level,2) <> 0
+        order by us_username
 end
 
 drop table #temp";
 
-            if (GetSetting("LimitUsernameDropdownsInSearch", "0") == "1")
+            if (applicationSettings.LimitUsernameDropdownsInSearch)
             {
                 var sqlLimitUserNames = @"
 
@@ -728,7 +747,7 @@ drop table #temp2";
                 sql = sql.Replace("$limit_users", "");
             }
 
-            if (forceFullNames || GetSetting("UseFullNames", "0") == "1")
+            if (forceFullNames || applicationSettings.UseFullNames)
                 // true condition
                 sql = sql.Replace("$fullnames", "1 = 1");
             else
@@ -749,8 +768,8 @@ drop table #temp2";
             if (projectid == 0) return 0;
 
             var sql = @"select isnull(pj_default_user,0)
-					from projects
-					where pj_id = $pj";
+                    from projects
+                    where pj_id = $pj";
 
             sql = sql.Replace("$pj", Convert.ToString(projectid));
             var obj = DbUtil.ExecuteScalar(sql);
@@ -810,7 +829,12 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
         public static bool CheckPasswordStrength(string pw)
         {
-            if (GetSetting("RequireStrongPasswords", "0") == "0") return true;
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (!applicationSettings.RequireStrongPasswords)
+            {
+                return true;
+            }
 
             if (pw.Length < 8) return false;
             if (pw.IndexOf("password") > -1) return false;
@@ -1008,7 +1032,12 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             response.ContentType = "application/ms-excel";
             response.ContentEncoding = Encoding.UTF8;
 
-            if (GetSetting("WriteUtf8Preamble", "1") == "1") response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (applicationSettings.WriteUtf8Preamble)
+            {
+                response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            }
 
             int col;
             bool firstColumn;
@@ -1082,26 +1111,62 @@ bug_users.us_username as [assigned to],";
 
             sql += "tsk_id [task<br>id], tsk_description [task<br>description] ";
 
-            if (GetSetting("ShowTaskAssignedTo", "1") == "1") sql += ", task_users.us_username [task<br>assigned to]";
+            IApplicationSettings applicationSettings = new ApplicationSettings();
 
-            if (GetSetting("ShowTaskPlannedStartDate", "1") == "1") sql += ", tsk_planned_start_date [planned start]";
-            if (GetSetting("ShowTaskActualStartDate", "1") == "1") sql += ", tsk_actual_start_date [actual start]";
+            if (applicationSettings.ShowTaskAssignedTo)
+            {
+                sql += ", task_users.us_username [task<br>assigned to]";
+            }
 
-            if (GetSetting("ShowTaskPlannedEndDate", "1") == "1") sql += ", tsk_planned_end_date [planned end]";
-            if (GetSetting("ShowTaskActualEndDate", "1") == "1") sql += ", tsk_actual_end_date [actual end]";
+            if (applicationSettings.ShowTaskPlannedStartDate)
+            {
+                sql += ", tsk_planned_start_date [planned start]";
+            }
 
-            if (GetSetting("ShowTaskPlannedDuration", "1") == "1")
+            if (applicationSettings.ShowTaskActualStartDate)
+            {
+                sql += ", tsk_actual_start_date [actual start]";
+            }
+
+            if (applicationSettings.ShowTaskPlannedEndDate)
+            {
+                sql += ", tsk_planned_end_date [planned end]";
+            }
+
+            if (applicationSettings.ShowTaskActualEndDate)
+            {
+                sql += ", tsk_actual_end_date [actual end]";
+            }
+
+            if (applicationSettings.ShowTaskPlannedDuration)
+            {
                 sql += ", tsk_planned_duration [planned<br>duration]";
-            if (GetSetting("ShowTaskActualDuration", "1") == "1") sql += ", tsk_actual_duration  [actual<br>duration]";
+            }
 
-            if (GetSetting("ShowTaskDurationUnits", "1") == "1") sql += ", tsk_duration_units [duration<br>units]";
+            if (applicationSettings.ShowTaskActualDuration)
+            {
+                sql += ", tsk_actual_duration  [actual<br>duration]";
+            }
 
-            if (GetSetting("ShowTaskPercentComplete", "1") == "1")
+            if (applicationSettings.ShowTaskDurationUnits)
+            {
+                sql += ", tsk_duration_units [duration<br>units]";
+            }
+
+            if (applicationSettings.ShowTaskPercentComplete)
+            {
                 sql += ", tsk_percent_complete [percent<br>complete]";
+            }
 
-            if (GetSetting("ShowTaskStatus", "1") == "1") sql += ", task_statuses.st_name  [task<br>status]";
+            if (applicationSettings.ShowTaskStatus)
+            {
+                sql += ", task_statuses.st_name  [task<br>status]";
+            }
 
-            if (GetSetting("ShowTaskSortSequence", "1") == "1") sql += ", tsk_sort_sequence  [seq]";
+            if (applicationSettings.ShowTaskSortSequence)
+            {
+                sql += ", tsk_sort_sequence  [seq]";
+            }
 
             sql += @"
 from bug_tasks 

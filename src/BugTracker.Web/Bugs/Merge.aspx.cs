@@ -16,6 +16,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class Merge : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataRow Dr;
         public string Sql;
 
@@ -40,10 +42,7 @@ namespace BugTracker.Web.Bugs
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "merge " +
-                                                                        Util.GetSetting("SingularBugLabel",
-                                                                            "bug");
+            Page.Title = $"{ApplicationSettings.AppTitle} - merge {ApplicationSettings.SingularBugLabel}";
 
             if (!IsPostBack)
             {

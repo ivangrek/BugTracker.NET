@@ -14,6 +14,8 @@ namespace BugTracker.Web.Versioning.Svn
 
     public partial class ViewRevisions : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public DataSet Ds;
 
@@ -34,7 +36,7 @@ namespace BugTracker.Web.Versioning.Svn
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - view svn file revisions";
+            Page.Title = $"{ApplicationSettings.AppTitle} - view svn file revisions";
 
             var sql = @"
 select

@@ -14,6 +14,8 @@ namespace BugTracker.Web.Accounts
 
     public partial class ChangePassword : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
@@ -21,7 +23,7 @@ namespace BugTracker.Web.Accounts
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - change password";
+                Page.Title = $"{ApplicationSettings.AppTitle}- change password";
             }
             else
             {
@@ -64,7 +66,7 @@ select *,
 delete from emailed_links
     where el_date < dateadd(n,-240,getdate())";
 
-                    sql = sql.Replace("$minutes", Util.GetSetting("RegistrationExpiration", "20"));
+                    sql = sql.Replace("$minutes", ApplicationSettings.RegistrationExpiration.ToString());
                     sql = sql.Replace("$guid", guid.Replace("'", "''"));
 
                     var dr = DbUtil.GetDataRow(sql);

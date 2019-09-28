@@ -13,6 +13,8 @@ namespace BugTracker.Web.Administration.Users
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -66,12 +68,11 @@ delete dashboard_items where ds_user = $us";
 
                 this.Sql = this.Sql.Replace("$us", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Administration/Users/List.aspx");
+                Response.Redirect("~/Administration/Users/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete user";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete user";
 
                 this.Sql = @"declare @cnt int
 select @cnt = count(1) from bugs where bg_reported_user = $us or bg_assigned_to_user = $us

@@ -13,6 +13,8 @@ namespace BugTracker.Web.Administration.Organizations
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -37,20 +39,19 @@ namespace BugTracker.Web.Administration.Organizations
                 this.Sql = @"delete orgs where og_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Administration/Organizations/List.aspx");
+                Response.Redirect("~/Administration/Organizations/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete organization";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete organization";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 
                 this.Sql = @"declare @cnt int
-			select @cnt = count(1) from users where us_org = $1;
-			select @cnt = @cnt + count(1) from queries where qu_org = $1;
-			select @cnt = @cnt + count(1) from bugs where bg_org = $1;
-			select og_name, @cnt [cnt] from orgs where og_id = $1";
+            select @cnt = count(1) from users where us_org = $1;
+            select @cnt = @cnt + count(1) from queries where qu_org = $1;
+            select @cnt = @cnt + count(1) from bugs where bg_org = $1;
+            select og_name, @cnt [cnt] from orgs where og_id = $1";
                 this.Sql = this.Sql.Replace("$1", id);
 
                 var dr = DbUtil.GetDataRow(this.Sql);

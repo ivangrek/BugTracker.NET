@@ -29,7 +29,7 @@
     <div class="align">
         Tasks for
         <%
-            Response.Write(Util.GetSetting("SingularBugLabel", "bug")
+            Response.Write(ApplicationSettings.SingularBugLabel
                            + " "
                            + Convert.ToString(this.Bugid));
         %>

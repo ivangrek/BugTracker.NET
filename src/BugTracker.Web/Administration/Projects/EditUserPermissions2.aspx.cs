@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration.Projects
 
     public partial class EditUserPermissions2 : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -32,7 +34,7 @@ namespace BugTracker.Web.Administration.Projects
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit project per-user permissions";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit project per-user permissions";
 
             if (!IsPostBack)
             {
@@ -57,7 +59,7 @@ namespace BugTracker.Web.Administration.Projects
             select pj_name from projects where pj_id = $pj;";
 
                 this.Sql = this.Sql.Replace("$pj", projectIdString);
-                this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
                 var ds = DbUtil.GetDataSet(this.Sql);
 

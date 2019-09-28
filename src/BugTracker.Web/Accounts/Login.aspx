@@ -40,7 +40,7 @@
                 <td>
                     <form class="frm" runat="server">
                         <table style="border-spacing: 0;">
-                            <% if (Util.GetSetting("WindowsAuthentication", "0") != "0")
+                            <% if (ApplicationSettings.WindowsAuthentication != 0)
                                 { %>
                             <tr>
                                 <td colspan="2" class="smallnote">To login using your Windows ID, leave User blank</td>
@@ -77,21 +77,21 @@
 
                     <span>
 
-                        <% if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
+                        <% if (ApplicationSettings.AllowGuestWithoutLogin)
                             { %>
                         <p>
                             <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Bugs/List.aspx") %>">Continue as "guest" without logging in</a>
                         <p>
                             <% } %>
 
-                            <% if (Util.GetSetting("AllowSelfRegistration", "0") == "1")
+                            <% if (ApplicationSettings.AllowSelfRegistration)
                                 { %>
                         <p>
                             <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Accounts/Register.aspx") %>">Register</a>
                         <p>
                             <% } %>
 
-                            <% if (Util.GetSetting("ShowForgotPasswordLink", "1") == "1")
+                            <% if (ApplicationSettings.ShowForgotPasswordLink)
                                 { %>
                         <p>
                             <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Accounts/Forgot.aspx") %>">Forgot your username or password?</a>

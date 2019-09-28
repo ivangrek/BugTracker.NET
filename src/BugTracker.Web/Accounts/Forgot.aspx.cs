@@ -14,12 +14,14 @@ namespace BugTracker.Web.Accounts
 
     public partial class Forgot : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
             Util.DoNotCache(Response);
 
-            if (Util.GetSetting("ShowForgotPasswordLink", "0") == "0")
+            if (!ApplicationSettings.ShowForgotPasswordLink)
             {
                 Response.Write("Sorry, Web.config ShowForgotPasswordLink is set to 0");
                 Response.End();
@@ -27,7 +29,7 @@ namespace BugTracker.Web.Accounts
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - forgot password";
+                Page.Title = $"{ApplicationSettings.AppTitle} - forgot password";
             }
             else
             {
@@ -111,11 +113,11 @@ select @username us_username, @email us_email";
 
                         var result = Email.SendEmail(
                             (string) dr["us_email"],
-                            Util.GetSetting("NotificationEmailFrom", ""),
+                            ApplicationSettings.NotificationEmailFrom,
                             "", // cc
                             "reset password",
                             "Click to <a href='"
-                            + Util.GetSetting("AbsoluteUrlPrefix", "")
+                            + ApplicationSettings.AbsoluteUrlPrefix
                             + ResolveUrl("~/Accounts/ChangePassword.aspx?id=")
                             + guid
                             + "'>reset password</a> for user \""

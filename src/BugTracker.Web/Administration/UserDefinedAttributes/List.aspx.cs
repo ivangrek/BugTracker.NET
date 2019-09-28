@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class List : Page
     {
-        private readonly IUserDefinedAttributeService userDefinedAttributeService = new UserDefinedAttributeService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IUserDefinedAttributeService UserDefinedAttributeService { get; set; }
 
         protected DataSet Ds;
         protected Security Security { get; set; }
@@ -32,9 +32,9 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - user defined attribute values";
+            Page.Title = $"{ApplicationSettings.AppTitle} - user defined attribute values";
 
-            Ds = this.userDefinedAttributeService.LoadList();
+            Ds = UserDefinedAttributeService.LoadList();
         }
     }
 }

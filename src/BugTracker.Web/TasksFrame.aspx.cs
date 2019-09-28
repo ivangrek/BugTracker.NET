@@ -13,14 +13,15 @@ namespace BugTracker.Web
 
     public partial class TasksFrame : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string StringBugid;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "tasks";
+            Page.Title = $"{ApplicationSettings.AppTitle} - tasks";
 
             this.StringBugid = Util.SanitizeInteger(Request["bugid"]);
         }

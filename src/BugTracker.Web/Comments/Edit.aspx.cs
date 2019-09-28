@@ -14,6 +14,8 @@ namespace BugTracker.Web.Comments
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public int Id;
 
@@ -38,7 +40,7 @@ namespace BugTracker.Web.Comments
             Security = security;
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
             {
@@ -50,7 +52,7 @@ namespace BugTracker.Web.Comments
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit comment";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit comment";
 
             this.msg.InnerText = "";
 
@@ -85,12 +87,12 @@ namespace BugTracker.Web.Comments
             var contentType = (string) dr["bp_content_type"];
 
             if (security.User.UseFckeditor && contentType == "text/html" &&
-                Util.GetSetting("DisableFCKEditor", "0") == "0")
+                !ApplicationSettings.DisableFCKEditor)
                 this.UseFckeditor = true;
             else
                 this.UseFckeditor = false;
 
-            if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+            if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;

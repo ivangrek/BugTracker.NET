@@ -13,6 +13,8 @@ namespace BugTracker.Web.Attachments
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public int Id;
         public string Sql;
@@ -31,7 +33,7 @@ namespace BugTracker.Web.Attachments
             security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
             {
@@ -43,7 +45,7 @@ namespace BugTracker.Web.Attachments
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit attachment";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit attachment";
 
             this.msg.InnerText = "";
 
@@ -60,7 +62,7 @@ namespace BugTracker.Web.Attachments
                 Response.End();
             }
 
-            if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+            if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;

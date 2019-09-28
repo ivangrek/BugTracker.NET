@@ -15,6 +15,8 @@ namespace BugTracker.Web.Administration.Organizations
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public Dictionary<string, int> DictCustomFieldPermissionLevel = new Dictionary<string, int>();
         public DataSet DsCustom;
         public int Id;
@@ -57,7 +59,7 @@ namespace BugTracker.Web.Administration.Organizations
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit organization";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit organization";
 
             this.msg.InnerText = "";
 
@@ -360,7 +362,7 @@ update orgs set
                 }
 
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Administration/Organizations/List.aspx");
+                Response.Redirect("~/Administration/Organizations/List.aspx");
             }
             else
             {

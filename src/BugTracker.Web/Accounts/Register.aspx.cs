@@ -14,12 +14,14 @@ namespace BugTracker.Web.Accounts
 
     public partial class Register : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
             Util.DoNotCache(Response);
 
-            if (Util.GetSetting("AllowSelfRegistration", "0") == "0")
+            if (!ApplicationSettings.AllowSelfRegistration)
             {
                 Response.Write("Sorry, Web.config AllowSelfRegistration is set to 0");
                 Response.End();
@@ -27,7 +29,7 @@ namespace BugTracker.Web.Accounts
 
             if (!IsPostBack)
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - register";
+                Page.Title = $"{ApplicationSettings.AppTitle} - register";
             }
             else
             {
@@ -72,11 +74,11 @@ insert into emailed_links
                     DbUtil.ExecuteNonQuery(sql);
 
                     var result = Email.SendEmail(this.email.Value,
-                        Util.GetSetting("NotificationEmailFrom", ""),
+                        ApplicationSettings.NotificationEmailFrom,
                         "", // cc
                         "Please complete registration",
                         "Click to <a href='"
-                        + Util.GetSetting("AbsoluteUrlPrefix", "")
+                        + ApplicationSettings.AbsoluteUrlPrefix
                         + ResolveUrl("~/Accounts/CompleteRegistration.aspx?id=")
                         + guid
                         + "'>complete registration</a>.",

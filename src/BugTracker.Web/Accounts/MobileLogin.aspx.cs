@@ -14,6 +14,9 @@ namespace BugTracker.Web.Accounts
 
     public partial class MobileLogin : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IAuthenticate Authenticate { get; set; }
+
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
@@ -21,7 +24,7 @@ namespace BugTracker.Web.Accounts
             Util.SetContext(HttpContext.Current);
             Util.DoNotCache(Response);
 
-            if (Util.GetSetting("EnableMobile", "0") == "0")
+            if (!ApplicationSettings.EnableMobile)
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
                 Response.End();
@@ -29,7 +32,7 @@ namespace BugTracker.Web.Accounts
 
             this.msg.InnerText = string.Empty;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Logon";
+            Page.Title = $"{ApplicationSettings.AppTitle} - Logon";
             this.my_header.InnerText = Page.Title;
 
             // fill in the username first time in

@@ -16,6 +16,8 @@ namespace BugTracker.Web.Versioning.Svn
 
     public partial class Blame : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string BlameText;
         public string Path;
         public string RawText;
@@ -60,7 +62,7 @@ order by svnrev_revision desc, svnap_path";
 
             this.Repo = (string) dr["svnrev_repository"];
 
-            if (Util.GetSetting("SvnTrustPathsInUrls", "0") == "1")
+            if (ApplicationSettings.SvnTrustPathsInUrls)
                 this.Path = Request["path"];
             else
                 this.Path = (string) dr["svnap_path"];

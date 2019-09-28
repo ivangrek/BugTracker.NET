@@ -16,6 +16,9 @@ namespace BugTracker.Web.Versioning.Git
 
     public partial class Hook : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IAuthenticate Authenticate { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
@@ -35,7 +38,7 @@ namespace BugTracker.Web.Versioning.Git
                 Response.End();
             }
 
-            if (username != Util.GetSetting("GitHookUsername", ""))
+            if (username != ApplicationSettings.GitHookUsername)
             {
                 Response.AddHeader("BTNET", "ERROR: wrong username. See Web.config GitHookUsername");
                 Response.Write("ERROR: wrong username. See Web.config GitHookUsernam");
@@ -79,7 +82,7 @@ namespace BugTracker.Web.Versioning.Git
             var actions = new List<string>();
             var paths = new List<string>();
 
-            var regexPattern = Util.GetSetting("GitBugidRegexPattern", "(^[0-9]+)");
+            var regexPattern = ApplicationSettings.GitBugidRegexPattern;
             var reInteger = new Regex(regexPattern);
 
             for (var i = 0; i < lines.Length; i++)

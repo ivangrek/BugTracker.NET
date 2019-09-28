@@ -44,7 +44,7 @@
     <div class="align">
         Relationships for
     <%
-        Response.Write(Util.GetSetting("SingularBugLabel", "bug")
+        Response.Write(ApplicationSettings.SingularBugLabel
                        + " "
                        + Convert.ToString(this.Bugid));
     %>
@@ -106,7 +106,7 @@
             }
             else
             {
-                Response.Write("No related " + Util.GetSetting("PluralBugLabel", "bugs"));
+                Response.Write("No related " + ApplicationSettings.PluralBugLabel);
             }
         %>
     </div>

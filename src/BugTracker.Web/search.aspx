@@ -23,7 +23,7 @@
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/datejs/date.js") %>"></script>
 
     <script>
-        search_suggest_min_chars = <% Response.Write(Util.GetSetting("SearchSuggestMinChars", "3")); %>
+        search_suggest_min_chars = <% Response.Write(ApplicationSettings.SearchSuggestMinChars); %>
 
         // start of mass edit javascript
         <% if (Security.User.IsAdmin || Security.User.CanMassEditBugs)
@@ -239,7 +239,7 @@
 
         }
 
-        var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
+        var asp_form_id = '<% Response.Write(ApplicationSettings.AspNetFormId); %>';
 
 
         function on_change() {
@@ -430,7 +430,7 @@
             where = build_where(where, udf_clause);
 
         <%
-        var searchSql = Util.GetSetting("SearchSQL", "");
+        var searchSql = ApplicationSettings.SearchSQL;
 
         if (searchSql == "")
         {
@@ -532,7 +532,7 @@
         {
             if (this.ShowUdf)
             {
-                var udfName = Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
+                var udfName = ApplicationSettings.UserDefinedBugAttributeName;
                 Response.Write("select += \",\\nisnull(udf_name,'') [" + udfName + "]\"");
             }
         }
@@ -649,7 +649,7 @@
         var shown = true;
 
         function showhide_form() {
-            var frm = document.getElementById("<% Response.Write(Util.GetFormName()); %>");
+            var frm = document.getElementById("<% Response.Write(ApplicationSettings.AspNetFormId); %>");
             if (shown) {
                 frm.style.display = "none";
                 shown = false;
@@ -675,7 +675,7 @@
         }
 
         function do_doc_ready() {
-            date_format = '<% Response.Write(Util.GetSetting("DatepickerDateFormat", "yy-mm-dd")); %>';
+            date_format = '<% Response.Write(ApplicationSettings.DatepickerDateFormat); %>';
             $('.date').datepicker({ dateFormat: date_format, duration: 'fast' });
             $('.date').change(on_change);
             $('.filter').click(on_invert_filter);
@@ -696,7 +696,7 @@
         <% if (!Security.User.AddsNotAllowed)
             { %>
         <a href="<%= ResolveUrl("~/Bugs/Edit.aspx") %>">
-            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
         <% } %>
 
         <a style="margin-left: 40px;" href="javascript:showhide_form()" id="showhide">hide form</a>
@@ -776,7 +776,7 @@
                                 <br>
                                 <table border="0" cellpadding="3" cellspacing="0">
                                     <tr>
-                                        <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> description contains:&nbsp;</span>
+                                        <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)); %> description contains:&nbsp;</span>
                                         <td colspan="2">
                                         <input type="text" class="txt" id="like" runat="server" onkeydown="search_criteria_onkeydown(this,event)" onkeyup="search_criteria_onkeyup(this,event)" size="50" autocomplete="off"/>
 
@@ -785,7 +785,7 @@
                                                 {
                                             %>
                                         <td nowrap rowspan="2">
-                                            <span class="lbl" id="udf_label" runat="server"><% Response.Write(Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")); %></span><br>
+                                            <span class="lbl" id="udf_label" runat="server"><% Response.Write(ApplicationSettings.UserDefinedBugAttributeName); %></span><br>
                                             <asp:ListBox Rows="4" SelectionMode="Multiple" ID="udf" runat="server" onchange="on_change()"></asp:ListBox>
 
                                             <%
@@ -795,15 +795,15 @@
                                     </tr>
 
                                     <tr>
-                                        <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> comments contain:&nbsp;</span>
+                                        <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)); %> comments contain:&nbsp;</span>
                                         <td colspan="2">
-                                            <input type="text" class="txt" id="like2" runat="server" onkeyup="on_change()" size="50" autocomplete="off">
+                                            <input type="text" class="txt" id="like2" runat="server" onkeyup="on_change()" size="50" autocomplete="off"/>
                                         </td>
                                     </tr>
 
 
                                     <tr>
-                                        <td nowrap><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug"))); %> comments since:&nbsp;</span>
+                                        <td nowrap><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)); %> comments since:&nbsp;</span>
                                         <td colspan="2">
                                             <input type="text" class="txt date" id="comments_since" runat="server" onkeyup="on_change()" size="10"/>
                                             <a style="font-size: 8pt;"
@@ -850,8 +850,8 @@
 
                                     <%
 
-                                        var minTextAreaSize = int.Parse(Util.GetSetting("TextAreaThreshold", "100"));
-                                        var maxTextAreaRows = int.Parse(Util.GetSetting("MaxTextAreaRows", "5"));
+                                        var minTextAreaSize = ApplicationSettings.TextAreaThreshold;
+                                        var maxTextAreaRows = ApplicationSettings.MaxTextAreaRows;
 
                                         // Create the custom column INPUT elements
                                         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
@@ -1008,9 +1008,9 @@
                                     %>
 
                                     <tr>
-                                        <td colspan="10" nowrap>Use "and" logic:<input type="radio" runat="server" name="and_or" value="and" id="and" onchange="on_change()" checked>
+                                        <td colspan="10" nowrap>Use "and" logic:<input type="radio" runat="server" name="and_or" value="and" id="and" onchange="on_change()" checked/>
                                             &nbsp;&nbsp;
-        Use "or" logic:<input type="radio" runat="server" name="and_or" value="or" id="or" onchange="on_change()">
+                                            Use "or" logic:<input type="radio" runat="server" name="and_or" value="or" id="or" onchange="on_change()"/>
                                         </td>
                                     </tr>
 
@@ -1056,7 +1056,7 @@
 
                                 <script>
                                     var enable_popups = <% Response.Write(Security.User.EnablePopups ? "1" : "0"); %>;
-                                    var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
+                                    var asp_form_id = '<% Response.Write(ApplicationSettings.AspNetFormId); %>';
                                 </script>
 
                                 <div id="popup" class="buglist_popup"></div>
@@ -1082,7 +1082,7 @@
                 Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + ResolveUrl("~/Bugs/Print2.aspx") + ">print detail</a>");
                 Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + "?format=excel>export to excel</a><br>");
 
-                if (Util.GetSetting("EnableTags", "0") == "1")
+                if (ApplicationSettings.EnableTags)
                 {
                     BugList.DisplayBugListTagsLine(Response, Security);
                 }
@@ -1116,7 +1116,7 @@
             else
             {
                 Response.Write("<p>No ");
-                Response.Write(Util.GetSetting("PluralBugLabel", "bug"));
+                Response.Write(ApplicationSettings.PluralBugLabel);
                 Response.Write("<p>");
             }
         }

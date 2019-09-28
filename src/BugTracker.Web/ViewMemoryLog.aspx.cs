@@ -14,9 +14,14 @@ namespace BugTracker.Web
 
     public partial class ViewMemoryLog : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
-            if (Util.GetSetting("MemoryLogEnabled", "1") != "1") Response.End();
+            if (!ApplicationSettings.MemoryLogEnabled)
+            {
+                Response.End();
+            }
 
             Util.DoNotCache(Response);
 

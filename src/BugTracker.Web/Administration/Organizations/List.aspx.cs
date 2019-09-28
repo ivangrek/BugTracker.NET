@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration.Organizations
 
     public partial class List : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public void Page_Load(object sender, EventArgs e)
@@ -27,7 +29,7 @@ namespace BugTracker.Web.Administration.Organizations
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - organizations";
+            Page.Title = $"{ApplicationSettings.AppTitle} - organizations";
 
             this.Ds = DbUtil.GetDataSet(
                 @"select og_id [id],

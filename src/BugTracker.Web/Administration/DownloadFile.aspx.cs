@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration
 
     public partial class DownloadFile : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             var security = new Security();
@@ -37,7 +39,7 @@ namespace BugTracker.Web.Administration
             Response.ContentType = Util.FilenameToContentType(filename);
             Response.AddHeader("content-disposition", "attachment; filename=\"" + filename + "\"");
 
-            if (Util.GetSetting("UseTransmitFileInsteadOfWriteFile", "0") == "1")
+            if (ApplicationSettings.UseTransmitFileInsteadOfWriteFile)
                 Response.TransmitFile(path);
             else
                 Response.WriteFile(path);

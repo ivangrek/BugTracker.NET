@@ -16,6 +16,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class MobileEdit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public bool AssignedToChanged;
         public DataSet DsPosts;
         public string ErrText;
@@ -45,7 +47,7 @@ namespace BugTracker.Web.Bugs
 
             Security = security;
 
-            if (Util.GetSetting("EnableMobile", "0") == "0")
+            if (!ApplicationSettings.EnableMobile)
             {
                 Response.Write("BugTracker.NET EnableMobile is not set to 1 in Web.config");
                 Response.End();
@@ -61,7 +63,7 @@ namespace BugTracker.Web.Bugs
                 this.Id = 0;
 
                 this.submit_button.Value = "Create";
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Create ";
+                Page.Title = $"{ApplicationSettings.AppTitle} - Create";
                 this.my_header.InnerText = Page.Title;
 
                 if (IsPostBack)
@@ -138,7 +140,7 @@ namespace BugTracker.Web.Bugs
                 this.Id = Convert.ToInt32(stringBugid);
 
                 this.submit_button.Value = "Update";
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - Update";
+                Page.Title = $"{ApplicationSettings.AppTitle} - Update";
                 this.my_header.InnerText = Page.Title;
 
                 if (IsPostBack)
@@ -221,7 +223,7 @@ namespace BugTracker.Web.Bugs
         order by pj_name;";
 
             sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
-            sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+            sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
             //1
             sql += "\nselect us_id, us_username from users order by us_username;";
@@ -372,7 +374,7 @@ namespace BugTracker.Web.Bugs
             }
 
             if (doUpdate
-                && Util.GetSetting("TrackBugHistory", "1") == "1") // you might not want the debris to grow
+                && ApplicationSettings.TrackBugHistory) // you might not want the debris to grow
                 DbUtil.ExecuteNonQuery(this.Sql);
 
             // return true if something did change

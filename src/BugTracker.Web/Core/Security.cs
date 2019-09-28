@@ -13,6 +13,8 @@ namespace BugTracker.Web.Core
 
     public class Security
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public const int MustBeAdmin = 1;
         public const int AnyUserOk = 2;
         public const int AnyUserOkExceptGuest = 3;
@@ -60,7 +62,7 @@ namespace BugTracker.Web.Core
 
             if (cookie == null)
             {
-                if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "0")
+                if (!ApplicationSettings.AllowGuestWithoutLogin)
                 {
                     Util.WriteToLog("se_id cookie is null, so redirecting");
                     response.Redirect(target);
@@ -105,12 +107,12 @@ where se_id = '$se'
 and us_active = 1";
 
                 sql = sql.Replace("$se", seId);
-                sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
                 dr = DbUtil.GetDataRow(sql);
             }
 
             if (dr == null)
-                if (Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
+                if (ApplicationSettings.AllowGuestWithoutLogin)
                 {
                     // allow users in, even without logging on.
                     // The user will have the permissions of the "guest" user.
@@ -135,7 +137,7 @@ left outer join project_user_xref
 where us_username = 'guest'
 and us_active = 1";
 
-                    sql = sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                    sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
                     dr = DbUtil.GetDataRow(sql);
                 }
 
@@ -176,7 +178,7 @@ and us_active = 1";
                 response.Redirect("~/Accounts/Login.aspx");
             }
 
-            if (Util.GetSetting("WindowsAuthentication", "0") == "1")
+            if (ApplicationSettings.WindowsAuthentication == 1)
                 this.AuthMethod = "windows";
             else
                 this.AuthMethod = "plain";

@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class SelectReport : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public void Page_Load(object sender, EventArgs e)
@@ -34,20 +36,20 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - reports";
+            Page.Title = $"{ApplicationSettings.AppTitle} - reports";
 
             var sql = @"
 select
 rp_desc [report],
 case
-	when rp_chart_type = 'pie' then
-		'<a href=''javascript:select_report(""pie"",' + convert(varchar, rp_id) + ')''>select pie</a>'
-	when rp_chart_type = 'line' then
-		'<a href=''javascript:select_report(""line"",' + convert(varchar, rp_id) + ')''>select line</a>'
-	when rp_chart_type = 'bar' then
-		'<a href=''javascript:select_report(""bar"",' + convert(varchar, rp_id) + ')''>select bar</a>'
-	else
-		'&nbsp;' end [chart],
+    when rp_chart_type = 'pie' then
+        '<a href=''javascript:select_report(""pie"",' + convert(varchar, rp_id) + ')''>select pie</a>'
+    when rp_chart_type = 'line' then
+        '<a href=''javascript:select_report(""line"",' + convert(varchar, rp_id) + ')''>select line</a>'
+    when rp_chart_type = 'bar' then
+        '<a href=''javascript:select_report(""bar"",' + convert(varchar, rp_id) + ')''>select bar</a>'
+    else
+        '&nbsp;' end [chart],
 '<a href=''javascript:select_report(""data"",' + convert(varchar, rp_id) + ')''>select data</a>' [data]
 from reports order by rp_desc";
 

@@ -11,11 +11,11 @@ namespace BugTracker.Web.Administration.Categories
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Delete : Page
     {
-        private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public ICategoryService CategoryService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -37,16 +37,16 @@ namespace BugTracker.Web.Administration.Categories
             {
                 var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
 
-                this.categoryService.Delete(id);
+                CategoryService.Delete(id);
 
-                Server.Transfer("~/Administration/Categories/List.aspx");
+                Response.Redirect("~/Administration/Categories/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete category";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete category";
 
                 var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
-                var (valid, name) = this.categoryService.CheckDeleting(id);
+                var (valid, name) = CategoryService.CheckDeleting(id);
 
                 if (valid)
                 {

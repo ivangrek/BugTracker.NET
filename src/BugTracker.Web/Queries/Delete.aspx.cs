@@ -13,6 +13,8 @@ namespace BugTracker.Web.Queries
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -37,12 +39,11 @@ namespace BugTracker.Web.Queries
                 this.Sql = @"delete queries where qu_id = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Queries/List.aspx");
+                Response.Redirect("~/Queries/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete query";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete query";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 

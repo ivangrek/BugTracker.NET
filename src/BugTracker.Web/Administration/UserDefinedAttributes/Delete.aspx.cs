@@ -11,11 +11,11 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Delete : Page
     {
-        private readonly IUserDefinedAttributeService userDefinedAttributeService = new UserDefinedAttributeService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IUserDefinedAttributeService UserDefinedAttributeService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -37,16 +37,16 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
             {
                 var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
 
-                this.userDefinedAttributeService.Delete(id);
+                UserDefinedAttributeService.Delete(id);
 
-                Server.Transfer("~/Administration/UserDefinedAttributes/List.aspx");
+                Response.Redirect("~/Administration/UserDefinedAttributes/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete user defined attribute value";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete user defined attribute value";
 
                 var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
-                var (valid, name) = this.userDefinedAttributeService.CheckDeleting(id);
+                var (valid, name) = UserDefinedAttributeService.CheckDeleting(id);
 
                 if (valid)
                 {

@@ -16,6 +16,9 @@ namespace BugTracker.Web.Versioning.Svn
 
     public partial class Hook : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IAuthenticate Authenticate { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
@@ -35,7 +38,7 @@ namespace BugTracker.Web.Versioning.Svn
                 Response.End();
             }
 
-            if (username != Util.GetSetting("SvnHookUsername", ""))
+            if (username != ApplicationSettings.SvnHookUsername)
             {
                 Response.AddHeader("BTNET", "ERROR: wrong username. See Web.config SvnHookUsername");
                 Response.Write("ERROR: wrong username. See Web.config SvnHookUsername");
@@ -180,14 +183,14 @@ N'$svnap_path'
         {
             var withoutLineBreaks = msg.Replace("\r\n", "").Replace("\n", "");
 
-            var regexPattern1 = Util.GetSetting("SvnBugidRegexPattern1", "([0-9,]+$)"); // at end
+            var regexPattern1 = ApplicationSettings.SvnBugidRegexPattern1; // at end
 
             var reIntegerAtEnd = new Regex(regexPattern1);
             var m = reIntegerAtEnd.Match(withoutLineBreaks);
 
             if (m.Success) return m.Groups[1].ToString();
 
-            var regexPattern2 = Util.GetSetting("SvnBugidRegexPattern2", "(^[0-9,]+ )"); // comma delimited at start
+            var regexPattern2 = ApplicationSettings.SvnBugidRegexPattern2; // comma delimited at start
             var reIntegerAtStart = new Regex(regexPattern2);
             var m2 = reIntegerAtStart.Match(withoutLineBreaks);
 

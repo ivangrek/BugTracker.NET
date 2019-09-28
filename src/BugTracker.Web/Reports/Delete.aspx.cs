@@ -13,6 +13,8 @@ namespace BugTracker.Web.Reports
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -49,12 +51,11 @@ delete reports where rp_id = $1;
 delete dashboard_items where ds_report = $1";
                 this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
                 DbUtil.ExecuteNonQuery(this.Sql);
-                Server.Transfer("~/Reports/List.aspx");
+                Response.Redirect("~/Reports/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete report";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete report";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 

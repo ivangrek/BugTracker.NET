@@ -40,7 +40,7 @@
                         <% if (!Security.User.AddsNotAllowed)
                             { %>
                         <a href="<%= ResolveUrl("~/Bugs/Edit.aspx") %>">
-                            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <% } %>
 
@@ -61,7 +61,7 @@
                 {
                     if (this.Dv.Table.Rows.Count > 0)
                     {
-                        if (Util.GetSetting("EnableTags", "0") == "1")
+                        if (ApplicationSettings.EnableTags)
                         {
                             BugList.DisplayBugListTagsLine(Response, Security);
                         }
@@ -70,7 +70,7 @@
                     else
                     {
                         Response.Write("<p>No ");
-                        Response.Write(Util.GetSetting("PluralBugLabel", "bugs"));
+                        Response.Write(ApplicationSettings.PluralBugLabel);
                         Response.Write(" yet.<p>");
                     }
                 }
@@ -89,7 +89,7 @@
 
             <script>
                 var enable_popups = <% Response.Write(Security.User.EnablePopups ? "1" : "0"); %>;
-                var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
+                var asp_form_id = '<% Response.Write(ApplicationSettings.AspNetFormId); %>';
             </script>
 
             <div id="popup" class="buglist_popup"></div>

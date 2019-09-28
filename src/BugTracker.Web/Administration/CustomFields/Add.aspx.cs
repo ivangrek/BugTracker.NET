@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration.CustomFields
 
     public partial class Add : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
@@ -27,7 +29,7 @@ namespace BugTracker.Web.Administration.CustomFields
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - custom field";
+            Page.Title = $"{ApplicationSettings.AppTitle} - custom field";
 
             this.msg.InnerText = "";
 
@@ -265,7 +267,7 @@ alter table bugs add [$nm] $dt $ln $null $df";
 
                     DbUtil.ExecuteNonQuery(this.Sql);
                     Application["custom_columns_dataset"] = null;
-                    Server.Transfer("~/Administration/CustomFields/List.aspx");
+                    Response.Redirect("~/Administration/CustomFields/List.aspx");
                 }
             }
             else

@@ -16,6 +16,8 @@ namespace BugTracker.Web.Administration.Users
 
     public partial class Edit : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public bool Copy;
         public int Id;
         public string Sql;
@@ -36,7 +38,7 @@ namespace BugTracker.Web.Administration.Users
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit user";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit user";
 
             if (!security.User.IsAdmin)
             {
@@ -189,7 +191,7 @@ namespace BugTracker.Web.Administration.Users
                 where us_id = $us";
 
                 this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Id));
-                this.Sql = this.Sql.Replace("$dpl", Util.GetSetting("DefaultPermissionLevel", "2"));
+                this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
                 var ds = DbUtil.GetDataSet(this.Sql);
 
@@ -411,7 +413,7 @@ namespace BugTracker.Web.Administration.Users
             {
                 good = false;
                 this.bugs_per_page_err.InnerText =
-                    Util.GetSetting("PluralBugLabel", "Bugs") + " Per Page must be a number.";
+                    ApplicationSettings.PluralBugLabel + " Per Page must be a number.";
             }
             else
             {
@@ -533,7 +535,7 @@ select scope_identity()";
 
                         update_project_user_xref(security);
 
-                        Server.Transfer("~/Administration/Users/List.aspx");
+                        Response.Redirect("~/Administration/Users/List.aspx");
                     }
                     else
                     {
@@ -586,7 +588,7 @@ where us_id = $id";
 
                         update_project_user_xref(security);
 
-                        Server.Transfer("~/Administration/Users/List.aspx");
+                        Response.Redirect("~/Administration/Users/List.aspx");
                     }
                     else
                     {
@@ -641,7 +643,7 @@ where us_id = $id";
 
             RadioButton rb;
             int permissionLevel;
-            var defaultPermissionLevel = Convert.ToInt32(Util.GetSetting("DefaultPermissionLevel", "2"));
+            var defaultPermissionLevel = ApplicationSettings.DefaultPermissionLevel;
 
             foreach (DataGridItem dgi in this.MyDataGrid.Items)
             {
@@ -873,7 +875,7 @@ where us_id = $id";
             }
 
             this.Sql = this.Sql.Replace("$us", Convert.ToString(this.Id));
-            this.Sql = this.Sql.Replace("$dpl", Convert.ToString(defaultPermissionLevel));
+            this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             DbUtil.ExecuteNonQuery(this.Sql);
         }
 

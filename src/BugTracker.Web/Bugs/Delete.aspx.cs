@@ -13,6 +13,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -53,14 +55,11 @@ namespace BugTracker.Web.Bugs
             if (IsPostBack)
             {
                 Bug.DeleteBug(Convert.ToInt32(this.row_id.Value));
-                Server.Transfer("~/Bugs/List.aspx");
+                Response.Redirect("~/Bugs/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                            + "delete " +
-                                                                            Util.GetSetting("SingularBugLabel",
-                                                                                "bug");
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete {ApplicationSettings.SingularBugLabel}";
 
                 this.back_href.HRef = ResolveUrl($"~/Bugs/Edit.aspx?id={id}");
 
@@ -70,7 +69,7 @@ namespace BugTracker.Web.Bugs
                 var dr = DbUtil.GetDataRow(this.Sql);
 
                 this.confirm_href.InnerText = "confirm delete of "
-                                              + Util.GetSetting("SingularBugLabel", "bug")
+                                              + ApplicationSettings.SingularBugLabel
                                               + ": "
                                               + Convert.ToString(dr["bg_short_desc"]);
 

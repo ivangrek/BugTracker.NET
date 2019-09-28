@@ -13,9 +13,11 @@ namespace BugTracker.Web
 
     public partial class ViewWhatsNew : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
-            if (Util.GetSetting("EnableWhatsNewPage", "0") != "1")
+            if (ApplicationSettings.EnableWhatsNewPage)
             {
                 Response.End();
             }
@@ -29,7 +31,7 @@ namespace BugTracker.Web
             MainMenu.Security = security;
             MainMenu.SelectedItem = "news";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - news?";
+            Page.Title = $"{ApplicationSettings.AppTitle} - news?";
         }
     }
 }

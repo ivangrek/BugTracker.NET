@@ -14,6 +14,8 @@ namespace BugTracker.Web.Attachments
 
     public partial class Add : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
 
         public void Page_Init(object sender, EventArgs e)
@@ -29,7 +31,7 @@ namespace BugTracker.Web.Attachments
 
             security.CheckSecurity(Security.AnyUserOk);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - add attachment";
+            Page.Title = $"{ApplicationSettings.AppTitle} - add attachment";
 
             var stringId = Util.SanitizeInteger(Request.QueryString["id"]);
 
@@ -51,7 +53,7 @@ namespace BugTracker.Web.Attachments
                 return;
             }
 
-            if (security.User.ExternalUser || Util.GetSetting("EnableInternalOnlyPosts", "0") == "0")
+            if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
@@ -92,7 +94,7 @@ namespace BugTracker.Web.Attachments
                 return;
             }
 
-            var maxUploadSize = Convert.ToInt32(Util.GetSetting("MaxUploadSize", "100000"));
+            var maxUploadSize = ApplicationSettings.MaxUploadSize;
             var contentLength = this.attached_file.PostedFile.ContentLength;
 
             if (contentLength > maxUploadSize)

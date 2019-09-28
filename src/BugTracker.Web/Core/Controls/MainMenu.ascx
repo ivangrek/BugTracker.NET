@@ -31,7 +31,7 @@
         <td width="20">&nbsp;</td>
 
         <td class="menu_td">
-            <a href="<%= ResolveUrl("~/Bugs/List.aspx") %>"><span class="<%= SelectedItem == Util.GetSetting("PluralBugLabel", "bugs") ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;"><%= Util.GetSetting("PluralBugLabel", "bugs") %></span></a>
+            <a href="<%= ResolveUrl("~/Bugs/List.aspx") %>"><span class="<%= SelectedItem == ApplicationSettings.PluralBugLabel ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;"><%= ApplicationSettings.PluralBugLabel %></span></a>
         </td>
 
         <% if (Security.User.CanSearch)
@@ -42,7 +42,7 @@
             
         <% } %>
         
-        <% if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
+        <% if (ApplicationSettings.EnableWhatsNewPage)
            { %>
             <td class="menu_td">
                 <a href="<%= ResolveUrl("~/ViewWhatsNew.aspx") %>"><span class="<%= SelectedItem == "news" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">news</span></a>
@@ -66,10 +66,10 @@
             
         <% } %>
         
-        <% if (Util.GetSetting("CustomMenuLinkLabel", string.Empty) != string.Empty)
+        <% if (ApplicationSettings.CustomMenuLinkLabel != string.Empty)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl(Util.GetSetting("CustomMenuLinkUrl", string.Empty)) %>"><span class="<%= SelectedItem == Util.GetSetting("CustomMenuLinkLabel", "") ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;"><%= Util.GetSetting("CustomMenuLinkLabel", string.Empty) %></span></a>
+                <a href="<%= ResolveUrl(ApplicationSettings.CustomMenuLinkUrl) %>"><span class="<%= SelectedItem == ApplicationSettings.CustomMenuLinkLabel ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;"><%= ApplicationSettings.CustomMenuLinkLabel %></span></a>
             </td>
             
         <% } %>
@@ -94,7 +94,7 @@
             </form>
         </td>
 
-        <% if (Util.GetSetting("EnableLucene", "1") == "1" && Security.User.CanSearch)
+        <% if (ApplicationSettings.EnableLucene && Security.User.CanSearch)
             {
                 var query = (string)HttpContext.Current.Session["query"] ?? string.Empty;
         %>
@@ -109,7 +109,7 @@
         <% } %>
         
         <td nowrap valign="middle">
-            <% if (Security.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
+            <% if (Security.User.IsGuest && ApplicationSettings.AllowGuestWithoutLogin)
                { %>
                 <span class="smallnote">using as<br><%= Security.User.Username %></span>
                 
@@ -121,7 +121,7 @@
 
         <% if (Security.AuthMethod == "plain")
            {
-               if (Security.User.IsGuest && Util.GetSetting("AllowGuestWithoutLogin", "0") == "1")
+               if (Security.User.IsGuest && ApplicationSettings.AllowGuestWithoutLogin)
                { %>
                     <td class="menu_td">
                         <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>"><span class="<%= SelectedItem == "login" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">login</span></a>

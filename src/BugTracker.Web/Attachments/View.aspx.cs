@@ -17,6 +17,8 @@ namespace BugTracker.Web.Attachments
 
     public partial class View : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(Request["bug_id"]))
@@ -144,7 +146,7 @@ and bp_bug = $bug_id";
                     }
                     else if (foundAtPath != null)
                     {
-                        if (Util.GetSetting("UseTransmitFileInsteadOfWriteFile", "0") == "1")
+                        if (ApplicationSettings.UseTransmitFileInsteadOfWriteFile)
                             Response.TransmitFile(foundAtPath);
                         else
                             Response.WriteFile(foundAtPath);

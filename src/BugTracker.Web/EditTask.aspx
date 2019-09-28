@@ -18,7 +18,7 @@
         $(document).ready(do_doc_ready);
 
         function do_doc_ready() {
-            date_format = '<% Response.Write(Util.GetSetting("DatepickerDateFormat", "yy-mm-dd")); %>';
+            date_format = '<% Response.Write(ApplicationSettings.DatepickerDateFormat); %>';
             $(".date").datepicker({ dateFormat: date_format, duration: 'fast' });
         }
 

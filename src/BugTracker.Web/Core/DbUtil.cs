@@ -15,9 +15,14 @@ namespace BugTracker.Web.Core
 
     public class DbUtil
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public static object ExecuteScalar(string sql)
         {
-            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
 
             using (var conn = GetSqlConnection())
             {
@@ -41,7 +46,10 @@ namespace BugTracker.Web.Core
 
         public static void ExecuteNonQuery(string sql)
         {
-            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
 
             using (var conn = GetSqlConnection())
             {
@@ -73,7 +81,10 @@ namespace BugTracker.Web.Core
 
         public static SqlDataReader ExecuteReader(string sql, CommandBehavior behavior)
         {
-            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
 
             var conn = GetSqlConnection();
             try
@@ -113,7 +124,10 @@ namespace BugTracker.Web.Core
 
         public static DataSet GetDataSet(string sql)
         {
-            if (Util.GetSetting("LogSqlEnabled", "1") == "1") Util.WriteToLog("sql=\n" + sql);
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
 
             var ds = new DataSet();
             using (var conn = GetSqlConnection())
@@ -133,8 +147,10 @@ namespace BugTracker.Web.Core
 
         public static void LogStopwatchTime(Stopwatch stopwatch)
         {
-            if (Util.GetSetting("LogSqlEnabled", "1") == "1")
+            if (ApplicationSettings.LogSqlEnabled)
+            {
                 Util.WriteToLog("elapsed milliseconds:" + stopwatch.ElapsedMilliseconds.ToString("0000"));
+            }
         }
 
         public static DataView GetDataView(string sql)
@@ -153,7 +169,10 @@ namespace BugTracker.Web.Core
 
         public static SqlConnection GetSqlConnection()
         {
-            var connectionString = Util.GetSetting("ConnectionString", "MISSING CONNECTION STRING");
+            var connectionString = ApplicationSettings.ConnectionString == " ?"
+                ? "MISSING CONNECTION STRING"
+                : ApplicationSettings.ConnectionString;
+
             var conn = new SqlConnection(connectionString);
             conn.Open();
             return conn;
@@ -161,7 +180,7 @@ namespace BugTracker.Web.Core
 
         private static void LogCommand(SqlCommand cmd)
         {
-            if (Util.GetSetting("LogSqlEnabled", "1") == "1")
+            if (ApplicationSettings.LogSqlEnabled)
             {
                 var sb = new StringBuilder();
                 sb.Append("sql=\n" + cmd.CommandText);

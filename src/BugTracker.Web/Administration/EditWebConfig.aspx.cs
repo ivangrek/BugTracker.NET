@@ -16,6 +16,8 @@ namespace BugTracker.Web.Administration
 
     public partial class EditWebConfig : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
@@ -27,7 +29,7 @@ namespace BugTracker.Web.Administration
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit Web.config";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit Web.config";
 
             var path = HttpContext.Current.Server.MapPath("~/");
             path += "\\Web.config";

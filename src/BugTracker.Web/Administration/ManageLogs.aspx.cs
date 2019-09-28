@@ -18,6 +18,8 @@ namespace BugTracker.Web.Administration
 
     public partial class ManageLogs : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string AppDataFolder;
 
         public void Page_Load(object sender, EventArgs e)
@@ -31,7 +33,7 @@ namespace BugTracker.Web.Administration
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - manage logs";
+            Page.Title = $"{ApplicationSettings.AppTitle} - manage logs";
 
             this.AppDataFolder = HttpContext.Current.Server.MapPath("~/");
             this.AppDataFolder += "\\App_Data\\logs\\";

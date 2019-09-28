@@ -13,6 +13,8 @@ namespace BugTracker.Web.Comments
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -29,7 +31,7 @@ namespace BugTracker.Web.Comments
             security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
             {
@@ -62,7 +64,7 @@ namespace BugTracker.Web.Comments
                     Response.End();
                 }
 
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete comment";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete comment";
 
                 var id = Util.SanitizeInteger(Request["id"]);
 

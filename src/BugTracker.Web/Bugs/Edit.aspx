@@ -29,7 +29,7 @@
             $(document).ready(do_doc_ready);
 
         function do_doc_ready() {
-            date_format = '<% Response.Write(Util.GetSetting("DatepickerDateFormat", "yy-mm-dd")); %>';
+            date_format = '<% Response.Write(ApplicationSettings.DatepickerDateFormat); %>';
             $(".date").datepicker({ dateFormat: date_format, duration: 'fast' });
             $(".date").change(mark_dirty);
             $(".warn").click(warn_if_dirty);
@@ -60,7 +60,7 @@
         <% if (!Security.User.AddsNotAllowed && this.Id > 0)
             { %>
         <a class="warn" href="<%= ResolveUrl("~/Bugs/Edit.aspx?id=0") %>">
-            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+            <img src="<%= ResolveUrl("~/Content/images/add.png") %>" border="0" align="top">&nbsp;add new <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <% } %>
 
@@ -98,7 +98,7 @@
                         <div id="bugform_div">
                             <form class="frm" runat="server">
 
-                                <% if (Util.GetSetting("DisplayAnotherButtonInEditBugPage", "0") == "1")
+                                <% if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
                                     { %>
                                 <div>
                                     <span runat="server" class="err" id="custom_field_msg2">&nbsp;</span>
@@ -206,12 +206,12 @@
                                                                         <span class="stat" id="static_status" runat="server"></span>
                                                                         <asp:DropDownList ID="status" runat="server"></asp:DropDownList>
 
-                                                                        <% if (Util.GetSetting("ShowUserDefinedBugAttribute", "1") == "1")
+                                                                        <% if (ApplicationSettings.ShowUserDefinedBugAttribute)
                                                                             { %>
                                                                     <tr id="row7">
                                                                         <td nowrap>
                                                                             <span class="lbl" id="udf_label" runat="server">
-                                                                                <% Response.Write(Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE")); %>:&nbsp;
+                                                                                <% Response.Write(ApplicationSettings.UserDefinedBugAttributeName); %>:&nbsp;
                                                                             </span>
                                                                             <td nowrap>
                                                                                 <span class="stat" id="static_udf" runat="server"></span>
@@ -237,7 +237,7 @@
                                                     if (this.PermissionLevel != Security.PermissionReadonly)
                                                     {
                                                         Response.Write("Entering \""
-                                                                       + Util.GetSetting("BugLinkMarker", "bugid#")
+                                                                       + ApplicationSettings.BugLinkMarker
                                                                        + "999\" in comment creates link to id 999");
                                                     }
                                                 %>
@@ -326,39 +326,39 @@
 
     <div runat="server" id="errorBlock" class="align" Visible="False">
         <div class="err">
-            <%= Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) %>
+            <%= Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) %>
                 not found:&nbsp;<%= Convert.ToString(this.Id)%>
         </div>
 
         <p></p>
 
         <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
-             <%= Util.GetSetting("PluralBugLabel", "bug")%>
+             <%= ApplicationSettings.PluralBugLabel%>
         </a>
     </div>
 
     <div runat="server" id="errorBlockPermissions" class="align" Visible="False">
         <div class="err">
-            You are not allowed to view this <%= Util.GetSetting("SingularBugLabel", "bug") %>
+            You are not allowed to view this <%= ApplicationSettings.SingularBugLabel %>
             not found:&nbsp;<%= Convert.ToString(this.Id)%>
         </div>
 
         <p></p>
 
         <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
-            <%= Util.CapitalizeFirstLetter(Util.GetSetting("PluralBugLabel", "bug")) %>
+            <%= Util.CapitalizeFirstLetter(ApplicationSettings.PluralBugLabel) %>
         </a>
     </div>
 
     <div runat="server" id="errorBlockIntegerId" class="align" Visible="False">
         <div class="err">
-            Error: <%= Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) %> ID must be an integer.
+            Error: <%= Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) %> ID must be an integer.
         </div>
 
         <p></p>
 
         <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
-            <%= Util.CapitalizeFirstLetter(Util.GetSetting("PluralBugLabel", "bug")) %>
+            <%= Util.CapitalizeFirstLetter(ApplicationSettings.PluralBugLabel) %>
         </a>
     </div>
 </asp:Content>

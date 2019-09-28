@@ -15,23 +15,24 @@ namespace BugTracker.Web.Core
 
     public class MyPop3
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public static int ErrorCount = 0;
-        public static string Pop3Server = Util.GetSetting("Pop3Server", "pop.gmail.com");
-        public static int Pop3Port = Convert.ToInt32(Util.GetSetting("Pop3Port", "995"));
-        public static bool Pop3UseSsl = Util.GetSetting("Pop3UseSSL", "1") == "1";
-        public static string Pop3ServiceUsername = Util.GetSetting("Pop3ServiceUsername", "admin");
-        public static int Pop3TotalErrorsAllowed = Convert.ToInt32(Util.GetSetting("Pop3TotalErrorsAllowed", "100"));
+        public static string Pop3Server = ApplicationSettings.Pop3Server;
+        public static int Pop3Port = ApplicationSettings.Pop3Port;
+        public static bool Pop3UseSsl = ApplicationSettings.Pop3UseSSL;
+        public static string Pop3ServiceUsername = ApplicationSettings.Pop3ServiceUsername;
+        public static int Pop3TotalErrorsAllowed = ApplicationSettings.Pop3TotalErrorsAllowed;
 
-        public static bool Pop3ReadInputStreamCharByChar =
-            Util.GetSetting("Pop3ReadInputStreamCharByChar", "0") == "1";
+        public static bool Pop3ReadInputStreamCharByChar = ApplicationSettings.Pop3ReadInputStreamCharByChar;
 
-        public static string Pop3SubjectMustContain = Util.GetSetting("Pop3SubjectMustContain", "");
-        public static string Pop3SubjectCannotContain = Util.GetSetting("Pop3SubjectCannotContain", "");
-        public static string Pop3FromMustContain = Util.GetSetting("Pop3FromMustContain", "");
-        public static string Pop3FromCannotContain = Util.GetSetting("Pop3FromCannotContain", "");
+        public static string Pop3SubjectMustContain = ApplicationSettings.Pop3SubjectMustContain;
+        public static string Pop3SubjectCannotContain = ApplicationSettings.Pop3SubjectCannotContain;
+        public static string Pop3FromMustContain = ApplicationSettings.Pop3FromMustContain;
+        public static string Pop3FromCannotContain = ApplicationSettings.Pop3FromCannotContain;
 
-        public static bool Pop3DeleteMessagesOnServer = Util.GetSetting("Pop3DeleteMessagesOnServer", "0") == "1";
-        public static bool Pop3WriteRawMessagesToLog = Util.GetSetting("Pop3WriteRawMessagesToLog", "0") == "1";
+        public static bool Pop3DeleteMessagesOnServer = ApplicationSettings.Pop3DeleteMessagesOnServer;
+        public static bool Pop3WriteRawMessagesToLog = ApplicationSettings.Pop3WriteRawMessagesToLog;
 
         //*************************************************************
         public static void StartPop3(HttpApplicationState app)
@@ -189,18 +190,18 @@ namespace BugTracker.Web.Core
                     else // update existing
                     {
                         var statusResultingFromIncomingEmail =
-                            Util.GetSetting("StatusResultingFromIncomingEmail", "0");
+                            ApplicationSettings.StatusResultingFromIncomingEmail;
 
                         var sql = "";
 
-                        if (statusResultingFromIncomingEmail != "0")
+                        if (statusResultingFromIncomingEmail != 0)
                         {
                             sql = @"update bugs
-				                set bg_status = $st
-				                where bg_id = $bg
-				                ";
+                                set bg_status = $st
+                                where bg_id = $bg
+                                ";
 
-                            sql = sql.Replace("$st", statusResultingFromIncomingEmail);
+                            sql = sql.Replace("$st", statusResultingFromIncomingEmail.ToString());
                         }
 
                         sql += "select bg_short_desc from bugs where bg_id = $bg";
@@ -252,7 +253,7 @@ namespace BugTracker.Web.Core
 
             while (true)
             {
-                var pop3FetchIntervalInMinutes = Convert.ToInt32(Util.GetSetting("Pop3FetchIntervalInMinutes", "15"));
+                var pop3FetchIntervalInMinutes = ApplicationSettings.Pop3FetchIntervalInMinutes;
 
                 try
                 {
@@ -293,16 +294,16 @@ namespace BugTracker.Web.Core
         //*************************************************************
         public static void AutoReply(int bugid, string fromAddr, string shortDesc, int projectid)
         {
-            var autoReplyText = Util.GetSetting("AutoReplyText", "");
+            var autoReplyText = ApplicationSettings.AutoReplyText;
             if (autoReplyText == "")
                 return;
 
             autoReplyText = autoReplyText.Replace("$BUGID$", Convert.ToString(bugid));
 
             var sql = @"select
-						pj_pop3_email_from
-						from projects
-						where pj_id = $pj";
+                        pj_pop3_email_from
+                        from projects
+                        where pj_id = $pj";
 
             sql = sql.Replace("$pj", Convert.ToString(projectid));
 
@@ -331,10 +332,10 @@ namespace BugTracker.Web.Core
             }
 
             var outgoingSubject = shortDesc + "  ("
-                                              + Util.GetSetting("TrackingIdString", "DO NOT EDIT THIS:")
+                                              + ApplicationSettings.TrackingIdString
                                               + Convert.ToString(bugid) + ")";
 
-            var useHtmlFormat = Util.GetSetting("AutoReplyUseHtmlEmailFormat", "0") == "1";
+            var useHtmlFormat = ApplicationSettings.AutoReplyUseHtmlEmailFormat;
 
             // commas cause trouble
             var cleanerFromAddr = fromAddr.Replace(",", " ");

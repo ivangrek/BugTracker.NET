@@ -108,7 +108,7 @@
             <tr>
                 <td>
 
-                    <a id="back_href" runat="server" href="">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                    <a id="back_href" runat="server" href="">back to <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
 
                     <form class="frm" runat="server" enctype="multipart/form-data">
                         <table border="0">
@@ -189,7 +189,7 @@
 
                             <tr>
                                 <td colspan="2">
-                                    <input runat="server" type="checkbox" class="txt" id="include_bug"/>Include print of <% Response.Write(Util.GetSetting("SingularBugLabel", "Bug")); %></td>
+                                    <input runat="server" type="checkbox" class="txt" id="include_bug"/>Include print of <% Response.Write(ApplicationSettings.SingularBugLabel); %></td>
                             </tr>
 
                             <tr>
@@ -243,35 +243,35 @@
                         if (this.Project == 0)
                         {
                             this.Sql = @"select us_id
-					from users
-					where us_active = 1
-					and len(us_email) > 0
-					order by us_email";
+                    from users
+                    where us_active = 1
+                    and len(us_email) > 0
+                    order by us_email";
                         }
                         else
                         {
                             // Only users explicitly allowed will be listed
-                            if (Util.GetSetting("DefaultPermissionLevel", "2") == "0")
+                            if (ApplicationSettings.DefaultPermissionLevel == 0)
                                 this.Sql = @"select us_id
-						from users
-						where us_active = 1
-						and len(us_email) > 0
-						and us_id in
-							(select pu_user from project_user_xref
-							where pu_project = $pr
-							and pu_permission_level <> 0)
-						order by us_email";
+                        from users
+                        where us_active = 1
+                        and len(us_email) > 0
+                        and us_id in
+                            (select pu_user from project_user_xref
+                            where pu_project = $pr
+                            and pu_permission_level <> 0)
+                        order by us_email";
                             // Only users explictly DISallowed will be omitted
                             else
                                 this.Sql = @"select us_id
-						from users
-						where us_active = 1
-						and len(us_email) > 0
-						and us_id not in
-							(select pu_user from project_user_xref
-							where pu_project = $pr
-							and pu_permission_level = 0)
-						order by us_email";
+                        from users
+                        where us_active = 1
+                        and len(us_email) > 0
+                        and us_id not in
+                            (select pu_user from project_user_xref
+                            where pu_project = $pr
+                            and pu_permission_level = 0)
+                        order by us_email";
                         }
 
                         this.Sql = this.Sql.Replace("$pr", Convert.ToString(this.Project));

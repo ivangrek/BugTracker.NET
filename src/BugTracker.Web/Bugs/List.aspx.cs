@@ -16,6 +16,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class List : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet DsCustomCols = null;
         public DataView Dv;
         public string QuIdString;
@@ -36,9 +38,9 @@ namespace BugTracker.Web.Bugs
             Security = security;
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - " + Util.GetSetting("PluralBugLabel", "bugs");
+            Page.Title = $"{ApplicationSettings.AppTitle} - {ApplicationSettings.PluralBugLabel}";
 
             if (!IsPostBack)
             {
@@ -189,7 +191,7 @@ namespace BugTracker.Web.Bugs
 
             bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
 
-            if (Util.GetSetting("UseFullNames", "0") == "0")
+            if (!ApplicationSettings.UseFullNames)
                 // false condition
                 bugSql = bugSql.Replace("$fullnames", "0 = 1");
             else

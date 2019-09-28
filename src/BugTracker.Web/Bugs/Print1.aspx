@@ -43,28 +43,28 @@
 
         <div class="align">
             <div class="err">
-                <%= Util.CapitalizeFirstLetter(Util.GetSetting("SingularBugLabel", "bug")) %>
+                <%= Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) %>
                 not found:&nbsp;<%= Convert.ToString(this.Id)%>
             </div>
 
             <p></p>
 
             <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
-                <%= Util.GetSetting("PluralBugLabel", "bug")%>
+                <%= ApplicationSettings.PluralBugLabel%>
             </a>
         </div>
     </div>
     
     <div runat="server" id="errorBlockPermissions" class="align" Visible="False">
         <div class="err">
-            You are not allowed to view this <%= Util.GetSetting("SingularBugLabel", "bug") %>
+            You are not allowed to view this <%= ApplicationSettings.SingularBugLabel %>
             not found:&nbsp;<%= Convert.ToString(this.Id)%>
         </div>
 
         <p></p>
 
         <a href='<%= ResolveUrl("~/Bugs/List.aspx")%>'>View
-            <%= Util.CapitalizeFirstLetter(Util.GetSetting("PluralBugLabel", "bug")) %>
+            <%= Util.CapitalizeFirstLetter(ApplicationSettings.PluralBugLabel) %>
         </a>
     </div>
 </asp:Content>

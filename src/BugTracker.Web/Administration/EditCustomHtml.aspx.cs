@@ -15,6 +15,8 @@ namespace BugTracker.Web.Administration
 
     public partial class EditCustomHtml : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
@@ -26,7 +28,7 @@ namespace BugTracker.Web.Administration
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit web config";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit web config";
 
             var whichFile = "";
             var fileName = "";

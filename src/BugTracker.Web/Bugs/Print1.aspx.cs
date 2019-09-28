@@ -14,6 +14,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class Print1 : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataRow Dr;
         public bool HistoryInline;
         public bool ImagesInline;
@@ -44,15 +46,14 @@ namespace BugTracker.Web.Bugs
                 this.errorBlockPermissions.Visible = false;
 
                 MainMenu.Security = security;
-                MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+                MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
                 return;
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
+            Page.Title = $"{ApplicationSettings.AppTitle} - "
                                                                         + Util.CapitalizeFirstLetter(
-                                                                            Util.GetSetting("SingularBugLabel",
-                                                                                "bug"))
+                                                                            ApplicationSettings.SingularBugLabel)
                                                                         + " ID" + stringBugid + " " +
                                                                         (string) this.Dr["short_desc"];
 
@@ -64,7 +65,7 @@ namespace BugTracker.Web.Bugs
                 this.errorBlockPermissions.Visible = true;
 
                 MainMenu.Security = security;
-                MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+                MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
                 return;
             }

@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.Categories
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Edit : Page
     {
-        private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public ICategoryService CategoryService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -44,7 +44,7 @@ namespace BugTracker.Web.Administration.Categories
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit category";
+                Page.Title = $"{ApplicationSettings.AppTitle} - edit category";
 
                 // add or edit?
                 if (id == 0)
@@ -56,7 +56,7 @@ namespace BugTracker.Web.Administration.Categories
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
-                    var dataRow = this.categoryService.LoadOne(id);
+                    var dataRow = CategoryService.LoadOne(id);
 
                     // Fill in this form
                     this.name.Value = dataRow.Name;
@@ -82,14 +82,14 @@ namespace BugTracker.Web.Administration.Categories
 
                 if (id == 0) // insert new
                 {
-                    this.categoryService.Create(parameters);
+                    CategoryService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    this.categoryService.Update(parameters);
+                    CategoryService.Update(parameters);
                 }
 
-                Server.Transfer("~/Administration/Categories/List.aspx");
+                Response.Redirect("~/Administration/Categories/List.aspx");
             }
             else
             {

@@ -14,6 +14,8 @@ namespace BugTracker.Web.Core
 
     public class User
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public bool AddsNotAllowed;
 
         public int AssignedToFieldPermissionLevel = Security.PermissionAll;
@@ -67,7 +69,7 @@ namespace BugTracker.Web.Core
             this.Email = (string) dr["us_email"];
 
             this.BugsPerPage = Convert.ToInt32(dr["us_bugs_per_page"]);
-            if (Util.GetSetting("DisableFCKEditor", "0") == "1")
+            if (ApplicationSettings.DisableFCKEditor)
                 this.UseFckeditor = false;
             else
                 this.UseFckeditor = Convert.ToBoolean(dr["us_use_fckeditor"]);
@@ -94,7 +96,7 @@ namespace BugTracker.Web.Core
 
             this.CategoryFieldPermissionLevel = (int) dr["og_category_field_permission_level"];
 
-            if (Util.GetSetting("EnableTags", "0") == "1")
+            if (ApplicationSettings.EnableTags)
                 this.TagsFieldPermissionLevel = (int) dr["og_tags_field_permission_level"];
             else
                 this.TagsFieldPermissionLevel = Security.PermissionNone;

@@ -16,6 +16,9 @@ namespace BugTracker.Web.Versioning.Hg
 
     public partial class Hook : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IAuthenticate Authenticate { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
@@ -35,7 +38,7 @@ namespace BugTracker.Web.Versioning.Hg
                 Response.End();
             }
 
-            if (username != Util.GetSetting("MercurialHookUsername", ""))
+            if (username != ApplicationSettings.MercurialHookUsername)
             {
                 Response.AddHeader("BTNET", "ERROR: wrong username. See Web.config MercurialHookUsername");
                 Response.Write("ERROR: wrong username. See Web.config MercurialHookUsernam");
@@ -169,7 +172,7 @@ N'$hgap_path'
 
         public string get_bugid_from_desc(string desc)
         {
-            var regexPattern = Util.GetSetting("MercurialBugidRegexPattern", "(^[0-9]+)");
+            var regexPattern = ApplicationSettings.MercurialBugidRegexPattern;
             var reInteger = new Regex(regexPattern);
             var m = reInteger.Match(desc);
             if (m.Success)

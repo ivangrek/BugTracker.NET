@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class TasksAll : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet DsTasks;
 
         public void Page_Init(object sender, EventArgs e)
@@ -29,7 +31,7 @@ namespace BugTracker.Web
 
             security.CheckSecurity(Security.AnyUserOk);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - all tasks";
+            Page.Title = $"{ApplicationSettings.AppTitle} - all tasks";
 
             if (security.User.IsAdmin || security.User.CanViewTasks)
             {

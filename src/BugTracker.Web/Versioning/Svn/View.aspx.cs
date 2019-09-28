@@ -13,6 +13,8 @@ namespace BugTracker.Web.Versioning.Svn
 
     public partial class View : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Repo;
 
         public void Page_Load(object sender, EventArgs e)
@@ -51,7 +53,7 @@ order by svnrev_revision desc, svnap_path";
 
             this.Repo = (string)dr["svnrev_repository"];
             string path;
-            if (Util.GetSetting("SvnTrustPathsInUrls", "0") == "1")
+            if (ApplicationSettings.SvnTrustPathsInUrls)
                 path = Request["path"];
             else
                 path = (string)dr["svnap_path"];

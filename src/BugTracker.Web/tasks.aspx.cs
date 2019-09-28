@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class Tasks : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public DataSet Ds;
         public int PermissionLevel;
@@ -36,7 +38,7 @@ namespace BugTracker.Web
 
             Security = security;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - tasks";
+            Page.Title = $"{ApplicationSettings.AppTitle} - tasks";
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["bugid"]));
 
@@ -69,30 +71,60 @@ namespace BugTracker.Web
 
             sql += "tsk_description [description]";
 
-            if (Util.GetSetting("ShowTaskAssignedTo", "1") == "1") sql += ",us_username [assigned to]";
+            if (ApplicationSettings.ShowTaskAssignedTo)
+            {
+                sql += ",us_username [assigned to]";
+            }
 
-            if (Util.GetSetting("ShowTaskPlannedStartDate", "1") == "1")
+            if (ApplicationSettings.ShowTaskPlannedStartDate)
+            {
                 sql += ", tsk_planned_start_date [planned start]";
-            if (Util.GetSetting("ShowTaskActualStartDate", "1") == "1")
+            }
+
+            if (ApplicationSettings.ShowTaskActualStartDate)
+            {
                 sql += ", tsk_actual_start_date [actual start]";
+            }
 
-            if (Util.GetSetting("ShowTaskPlannedEndDate", "1") == "1") sql += ", tsk_planned_end_date [planned end]";
-            if (Util.GetSetting("ShowTaskActualEndDate", "1") == "1") sql += ", tsk_actual_end_date [actual end]";
+            if (ApplicationSettings.ShowTaskPlannedEndDate)
+            {
+                sql += ", tsk_planned_end_date [planned end]";
+            }
 
-            if (Util.GetSetting("ShowTaskPlannedDuration", "1") == "1")
+            if (ApplicationSettings.ShowTaskActualEndDate)
+            {
+                sql += ", tsk_actual_end_date [actual end]";
+            }
+
+            if (ApplicationSettings.ShowTaskPlannedDuration)
+            {
                 sql += ", tsk_planned_duration [planned<br>duration]";
-            if (Util.GetSetting("ShowTaskActualDuration", "1") == "1")
+            }
+
+            if (ApplicationSettings.ShowTaskActualDuration)
+            {
                 sql += ", tsk_actual_duration  [actual<br>duration]";
+            }
 
-            if (Util.GetSetting("ShowTaskDurationUnits", "1") == "1")
+            if (ApplicationSettings.ShowTaskDurationUnits)
+            {
                 sql += ", tsk_duration_units [duration<br>units]";
+            }
 
-            if (Util.GetSetting("ShowTaskPercentComplete", "1") == "1")
+            if (ApplicationSettings.ShowTaskPercentComplete)
+            {
                 sql += ", tsk_percent_complete [percent<br>complete]";
+            }
 
-            if (Util.GetSetting("ShowTaskStatus", "1") == "1") sql += ", st_name  [status]";
+            if (ApplicationSettings.ShowTaskStatus)
+            {
+                sql += ", st_name  [status]";
+            }
 
-            if (Util.GetSetting("ShowTaskSortSequence", "1") == "1") sql += ", tsk_sort_sequence  [seq]";
+            if (ApplicationSettings.ShowTaskSortSequence)
+            {
+                sql += ", tsk_sort_sequence  [seq]";
+            }
 
             sql += @"
 from bug_tasks 

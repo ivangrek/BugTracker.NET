@@ -18,7 +18,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        SVN File Revisions for <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>&nbsp;<% Response.Write(Convert.ToString(this.Bugid)); %>
+        SVN File Revisions for <% Response.Write(ApplicationSettings.SingularBugLabel); %>&nbsp;<% Response.Write(Convert.ToString(this.Bugid)); %>
         <p>
             <%
                 if (this.Ds.Tables[0].Rows.Count > 0)

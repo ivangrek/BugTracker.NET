@@ -21,7 +21,7 @@
         <div class="align">
 
             <p>&nbsp</p>
-            <a id="back_href" runat="server" href="">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
+            <a id="back_href" runat="server" href="">back to <% Response.Write(ApplicationSettings.SingularBugLabel); %>
             </a>
 
             <p>

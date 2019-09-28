@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.Statuses
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class List : Page
     {
-        private readonly IStatusService statusService = new StatusService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IStatusService StatusService { get; set; }
 
         protected DataSet Ds { get; set; }
 
@@ -31,9 +31,9 @@ namespace BugTracker.Web.Administration.Statuses
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - statuses";
+            Page.Title = $"{ApplicationSettings.AppTitle} - statuses";
 
-            Ds = this.statusService.LoadList();
+            Ds = StatusService.LoadList();
         }
     }
 }

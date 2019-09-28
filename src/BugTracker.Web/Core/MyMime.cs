@@ -15,6 +15,8 @@ namespace BugTracker.Web.Core
 
     public class MyMime
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         public static SharpMimeMessage GetSharpMimeMessage(string messageRawString)
         {
             // feed a stream to MIME parser
@@ -28,7 +30,7 @@ namespace BugTracker.Web.Core
             var bugid = 0;
 
             // Try to parse out the bugid from the subject line
-            var bugidString = Util.GetSetting("TrackingIdString", "DO NOT EDIT THIS:");
+            var bugidString = ApplicationSettings.TrackingIdString;
 
             var pos = subject.IndexOf(bugidString);
 
@@ -158,7 +160,7 @@ inner join orgs on us_org = og_id
 where us_username = N'$us'";
 
             // Create a new user from the "from" email address    
-            var btnetServiceUsername = Util.GetSetting("CreateUserFromEmailAddressIfThisUsername", "");
+            var btnetServiceUsername = ApplicationSettings.CreateUserFromEmailAddressIfThisUsername;
             if (!string.IsNullOrEmpty(fromAddr) && username == btnetServiceUsername)
             {
                 // We can do a better job of parsing the from_addr here than we did in btnet_service.exe    
@@ -184,7 +186,7 @@ where us_username = N'$us'";
                 if (dr == null)
                 {
                     var useDomainAsOrgName =
-                        Util.GetSetting("UseEmailDomainAsNewOrgNameWhenCreatingNewUser", "0") == "1";
+                        ApplicationSettings.UseEmailDomainAsNewOrgNameWhenCreatingNewUser;
 
                     User.CopyUser(
                         username,
@@ -192,7 +194,7 @@ where us_username = N'$us'";
                         "", "", "", // first, last, signature
                         0, // salt
                         Guid.NewGuid().ToString(), // random value for password,
-                        Util.GetSetting("CreateUsersFromEmailTemplate", "[error - missing user template]"),
+                        ApplicationSettings.CreateUsersFromEmailTemplate,
                         useDomainAsOrgName);
 
                     // now that we have created a user, try again
@@ -338,7 +340,7 @@ where us_username = N'$us'";
 
             var missingAttachmentMsg = "";
 
-            var maxUploadSize = Convert.ToInt32(Util.GetSetting("MaxUploadSize", "100000"));
+            var maxUploadSize = ApplicationSettings.MaxUploadSize;
             if (part.Size > maxUploadSize) missingAttachmentMsg = "ERROR: email attachment exceeds size limit.";
 
             var contentType = part.Header.TopLevelMediaType + "/" + part.Header.SubType;

@@ -13,7 +13,7 @@ namespace BugTracker.Web.Core.Administration
     using Persistence;
     using Persistence.Models;
 
-    internal interface ICategoryService
+    public interface ICategoryService
     {
         DataSet LoadList();
 

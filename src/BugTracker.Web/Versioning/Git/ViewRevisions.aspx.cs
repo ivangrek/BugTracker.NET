@@ -14,6 +14,8 @@ namespace BugTracker.Web.Versioning.Git
 
     public partial class ViewRevisions : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public DataSet Ds;
 
@@ -34,7 +36,7 @@ namespace BugTracker.Web.Versioning.Git
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - view git file commits";
+            Page.Title = $"{ApplicationSettings.AppTitle} - view git file commits";
 
             var sql = @"
 select 

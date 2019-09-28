@@ -15,6 +15,8 @@ namespace BugTracker.Web.Attachments
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -31,7 +33,7 @@ namespace BugTracker.Web.Attachments
             security.CheckSecurity(Security.AnyUserOkExceptGuest);
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
             {
@@ -84,7 +86,7 @@ namespace BugTracker.Web.Attachments
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete attachment";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete attachment";
 
                 this.back_href.HRef = $"~/Bugs/Edit.aspx?id={bugIdString}" ;
 

@@ -20,7 +20,9 @@ namespace BugTracker.Web.Core
 
         public static void AddNews(int bugid, string desc, string action, Security security)
         {
-            if (Util.GetSetting("EnableWhatsNewPage", "0") == "1")
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (applicationSettings.EnableWhatsNewPage)
             {
                 var seconds = DateTime.Now.Ticks / TenMillion;
                 if (seconds == _prevSeconds) seconds++; // prevent dupes, even if we have to lie.
@@ -50,7 +52,7 @@ namespace BugTracker.Web.Core
                     list.Add(bn);
 
                     // Trim the old items
-                    var max = Convert.ToInt32(Util.GetSetting("WhatsNewMaxItemsCount", "200"));
+                    var max = applicationSettings.WhatsNewMaxItemsCount;
                     while (list.Count > max) list.RemoveAt(0);
                 }
             }

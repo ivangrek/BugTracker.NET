@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class Dashboard : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public Security Security { get; set; }
@@ -31,7 +33,7 @@ namespace BugTracker.Web
             MainMenu.Security = security;
             MainMenu.SelectedItem = "reports";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - dashboard";
+            Page.Title = $"{ApplicationSettings.AppTitle} - dashboard";
 
             if (security.User.IsAdmin || security.User.CanUseReports)
             {

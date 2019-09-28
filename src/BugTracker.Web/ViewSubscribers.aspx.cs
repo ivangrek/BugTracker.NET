@@ -15,6 +15,8 @@ namespace BugTracker.Web
 
     public partial class ViewSubscribers : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public DataSet Ds;
         public string Sql;
@@ -27,7 +29,7 @@ namespace BugTracker.Web
 
             security.CheckSecurity(Security.AnyUserOk);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - view subscribers";
+            Page.Title = $"{ApplicationSettings.AppTitle} - view subscribers";
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
 
@@ -55,7 +57,7 @@ namespace BugTracker.Web
                     var newSubscriberUserid = Convert.ToInt32(Request["userid"]);
 
                     this.Sql = @"delete from bug_subscriptions where bs_bug = $bg and bs_user = $us;
-			insert into bug_subscriptions (bs_bug, bs_user) values($bg, $us)";
+            insert into bug_subscriptions (bs_bug, bs_user) values($bg, $us)";
                     ;
                     this.Sql = this.Sql.Replace("$bg", Convert.ToString(this.Bugid));
                     this.Sql = this.Sql.Replace("$us", Convert.ToString(newSubscriberUserid));
@@ -117,58 +119,60 @@ declare @org int;
 select @project = bg_project, @org = bg_org from bugs where bg_id = $bg;";
 
             // Only users explicitly allowed will be listed
-            if (Util.GetSetting("DefaultPermissionLevel", "2") == "0")
+            if (ApplicationSettings.DefaultPermissionLevel == 0)
                 this.Sql +=
                     @"select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
-			from users
-			where us_active = 1
-			and us_enable_notifications = 1
-			and us_id in
-				(select pu_user from project_user_xref
-				where pu_project = @project
-				and pu_permission_level <> 0)
-			and us_id not in (
-				select us_id
-				from bug_subscriptions
-				inner join users on bs_user = us_id
-				where bs_bug = $bg
-				and us_enable_notifications = 1
-				and us_active = 1)
-			and us_id not in (
-				select us_id from users
-				inner join orgs on us_org = og_id
-				where us_org <> @org
-				and og_other_orgs_permission_level = 0)
+            from users
+            where us_active = 1
+            and us_enable_notifications = 1
+            and us_id in
+                (select pu_user from project_user_xref
+                where pu_project = @project
+                and pu_permission_level <> 0)
+            and us_id not in (
+                select us_id
+                from bug_subscriptions
+                inner join users on bs_user = us_id
+                where bs_bug = $bg
+                and us_enable_notifications = 1
+                and us_active = 1)
+            and us_id not in (
+                select us_id from users
+                inner join orgs on us_org = og_id
+                where us_org <> @org
+                and og_other_orgs_permission_level = 0)
 
-			order by us_username; ";
+            order by us_username; ";
             // Only users explictly DISallowed will be omitted
             else
                 this.Sql +=
                     @"select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
-			from users
-			where us_active = 1
-			and us_enable_notifications = 1
-			and us_id not in
-				(select pu_user from project_user_xref
-				where pu_project = @project
-				and pu_permission_level = 0)
-			and us_id not in (
-				select us_id
-				from bug_subscriptions
-				inner join users on bs_user = us_id
-				where bs_bug = $bg
-				and us_enable_notifications = 1
-				and us_active = 1)
-			and us_id not in (
-				select us_id from users
-				inner join orgs on us_org = og_id
-				where us_org <> @org
-				and og_other_orgs_permission_level = 0)
-			order by us_username; ";
+            from users
+            where us_active = 1
+            and us_enable_notifications = 1
+            and us_id not in
+                (select pu_user from project_user_xref
+                where pu_project = @project
+                and pu_permission_level = 0)
+            and us_id not in (
+                select us_id
+                from bug_subscriptions
+                inner join users on bs_user = us_id
+                where bs_bug = $bg
+                and us_enable_notifications = 1
+                and us_active = 1)
+            and us_id not in (
+                select us_id from users
+                inner join orgs on us_org = og_id
+                where us_org <> @org
+                and og_other_orgs_permission_level = 0)
+            order by us_username; ";
 
-            if (Util.GetSetting("UseFullNames", "0") == "0")
+            if (!ApplicationSettings.UseFullNames)
+            {
                 // false condition
                 this.Sql = this.Sql.Replace("$fullnames", "0 = 1");
+            }
             else
                 // true condition
                 this.Sql = this.Sql.Replace("$fullnames", "1 = 1");

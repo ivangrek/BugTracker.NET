@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration.CustomFields
 
     public partial class List : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public void Page_Load(object sender, EventArgs e)
@@ -27,7 +29,7 @@ namespace BugTracker.Web.Administration.CustomFields
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - custom fields";
+            Page.Title = $"{ApplicationSettings.AppTitle} - custom fields";
 
             this.Ds = Util.GetCustomColumns();
         }

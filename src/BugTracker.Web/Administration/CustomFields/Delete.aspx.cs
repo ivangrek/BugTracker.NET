@@ -13,6 +13,8 @@ namespace BugTracker.Web.Administration.CustomFields
 
     public partial class Delete : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -31,7 +33,7 @@ namespace BugTracker.Web.Administration.CustomFields
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete custom field";
+            Page.Title = $"{ApplicationSettings.AppTitle} - delete custom field";
 
             if (IsPostBack)
             {

@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.Priorities
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Edit : Page
     {
-        private readonly IPriorityService priorityService = new PriorityService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IPriorityService PriorityService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -44,7 +44,7 @@ namespace BugTracker.Web.Administration.Priorities
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit priority";
+                Page.Title = $"{ApplicationSettings.AppTitle} - edit priority";
 
                 // add or edit?
                 if (id == 0)
@@ -56,7 +56,7 @@ namespace BugTracker.Web.Administration.Priorities
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
-                    var dataRow = this.priorityService.LoadOne(id);
+                    var dataRow = PriorityService.LoadOne(id);
 
                     // Fill in this form
                     this.name.Value = dataRow.Name;
@@ -86,14 +86,14 @@ namespace BugTracker.Web.Administration.Priorities
 
                 if (id == 0) // insert new
                 {
-                    this.priorityService.Create(parameters);
+                    PriorityService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    this.priorityService.Update(parameters);
+                    PriorityService.Update(parameters);
                 }
 
-                Server.Transfer("~/Administration/Priorities/List.aspx");
+                Response.Redirect("~/Administration/Priorities/List.aspx");
             }
             else
             {

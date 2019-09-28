@@ -45,7 +45,7 @@
             <tr>
                 <td>
 
-                    <a href="<%= ResolveUrl($"~/Bugs/Edit.aspx?id={this.Bugid}") %>">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                    <a href="<%= ResolveUrl($"~/Bugs/Edit.aspx?id={this.Bugid}") %>">back to <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
                     <form class="frm" runat="server">
 
                         <table border="0">

@@ -24,33 +24,35 @@ bugs since the "since" value.   The data is formated as JSON.
 {
 "now" : 9999,
 "news_list" : [ 
-		  	{
-		  		"seconds":12,
-		  		"bugid": 34,
-		  		"desc": "foo",
-		  		"action": "add",
-		  		"who" : "ctrager",
-		  	},
+            {
+                "seconds":12,
+                "bugid": 34,
+                "desc": "foo",
+                "action": "add",
+                "who" : "ctrager",
+            },
 
-		  	{
-		  		"seconds":12,
-		  		"bugid": 34,
-		  		"desc": "foo",
-		  		"action": "add",
-		  		"who" : "ctrager",
-		  	},
-		  	
-		  ]
+            {
+                "seconds":12,
+                "bugid": 34,
+                "desc": "foo",
+                "action": "add",
+                "who" : "ctrager",
+            },
+            
+          ]
 
 }
 
 */
 
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            if (Util.GetSetting("EnableWhatsNewPage", "0") == "0")
+            if (!ApplicationSettings.EnableWhatsNewPage)
             {
                 Response.Write("Sorry, Web.config EnableWhatsNewPage is set to 0");
                 Response.End();

@@ -14,6 +14,8 @@ namespace BugTracker.Web.Reports
 
     public partial class List : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public Security Security { get; set; }
@@ -42,8 +44,7 @@ namespace BugTracker.Web.Reports
                 Response.End();
             }
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - "
-                                                                        + "reports";
+            Page.Title = $"{ApplicationSettings.AppTitle} - reports";
 
             var sql = @"
 select

@@ -11,11 +11,11 @@ namespace BugTracker.Web.Administration.Priorities
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Delete : Page
     {
-        private readonly IPriorityService priorityService = new PriorityService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IPriorityService PriorityService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -38,16 +38,16 @@ namespace BugTracker.Web.Administration.Priorities
                 // do delete here
                 var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
 
-                this.priorityService.Delete(id);
+                PriorityService.Delete(id);
 
-                Server.Transfer("~/Administration/Priorities/List.aspx");
+                Response.Redirect("~/Administration/Priorities/List.aspx");
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - delete priority";
+                Page.Title = $"{ApplicationSettings.AppTitle} - delete priority";
 
                 var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
-                var (valid, name) = this.priorityService.CheckDeleting(id);
+                var (valid, name) = PriorityService.CheckDeleting(id);
 
                 if (valid)
                 {

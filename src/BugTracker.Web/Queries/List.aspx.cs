@@ -14,6 +14,8 @@ namespace BugTracker.Web.Queries
 
     public partial class List : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
 
         public Security Security { get; set; }
@@ -31,7 +33,7 @@ namespace BugTracker.Web.Queries
 
             Security = security;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - queries";
+            Page.Title = $"{ApplicationSettings.AppTitle} - queries";
 
             var sql = "";
 

@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.Statuses
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Edit : Page
     {
-        private readonly IStatusService statusService = new StatusService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IStatusService StatusService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -44,7 +44,7 @@ namespace BugTracker.Web.Administration.Statuses
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit status";
+                Page.Title = $"{ApplicationSettings.AppTitle} - edit status";
 
                 // add or edit?
                 if (id == 0)
@@ -56,7 +56,7 @@ namespace BugTracker.Web.Administration.Statuses
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
-                    var dataRow = this.statusService.LoadOne(id);
+                    var dataRow = StatusService.LoadOne(id);
 
                     // Fill in this form
                     this.name.Value = dataRow.Name;
@@ -84,14 +84,14 @@ namespace BugTracker.Web.Administration.Statuses
 
                 if (id == 0) // insert new
                 {
-                    this.statusService.Create(parameters);
+                    StatusService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    this.statusService.Update(parameters);
+                    StatusService.Update(parameters);
                 }
 
-                Server.Transfer("~/Administration/Statuses/List.aspx");
+                Response.Redirect("~/Administration/Statuses/List.aspx");
             }
             else
             {

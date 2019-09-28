@@ -14,6 +14,8 @@ namespace BugTracker.Web.Administration
 
     public partial class Notifications : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
         public string Ses;
 
@@ -28,7 +30,7 @@ namespace BugTracker.Web.Administration
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - queued notifications";
+            Page.Title = $"{ApplicationSettings.AppTitle} - queued notifications";
 
             this.Ds = DbUtil.GetDataSet(
                 @"select

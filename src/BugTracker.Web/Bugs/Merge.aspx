@@ -22,15 +22,15 @@
             <table border="0">
                 <tr>
                     <td>
-                        <a id="back_href" runat="server" href="">back to <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %></a>
+                        <a id="back_href" runat="server" href="">back to <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
                         <!--<a id="confirm_href" runat="server" href="">confirm delete</a>
                 </a>-->
                         <p>
                             Merge all comments, attachments, and subscriptions
-                from "FROM" <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
-                into "INTO" <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>.
+                from "FROM" <% Response.Write(ApplicationSettings.SingularBugLabel); %>
+                into "INTO" <% Response.Write(ApplicationSettings.SingularBugLabel); %>.
                 <br>
-                            <span class="err">Note:&nbsp;&nbsp;"FROM" <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
+                            <span class="err">Note:&nbsp;&nbsp;"FROM" <% Response.Write(ApplicationSettings.SingularBugLabel); %>
                         will be deleted!</err>
                 <p>
 
@@ -38,7 +38,7 @@
                         <table border="0">
 
                             <tr>
-                                <td class="lbl" align="right">FROM <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
+                                <td class="lbl" align="right">FROM <% Response.Write(ApplicationSettings.SingularBugLabel); %>
                                 :
                         <td align="left" valign="bottom">
                         <input type="text" class="txt" id="from_bug" runat="server" size="8"/>
@@ -49,7 +49,7 @@
                             <tr>
                                 <td colspan="2"><span class="err" id="from_err" runat="server">&nbsp;</span>
                                 <tr>
-                                    <td class="lbl" align="right">INTO <% Response.Write(Util.GetSetting("SingularBugLabel", "bug")); %>
+                                    <td class="lbl" align="right">INTO <% Response.Write(ApplicationSettings.SingularBugLabel); %>
                                     :
                         <td align="left" valign="bottom">
                         <input type="text" class="txt" id="into_bug" runat="server" size="8"/>

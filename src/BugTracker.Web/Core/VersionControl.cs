@@ -16,6 +16,8 @@ namespace BugTracker.Web.Core
 
     public class VersionControl
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         private static void ConfigureStartInfo(ProcessStartInfo startInfo)
         {
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -68,13 +70,17 @@ namespace BugTracker.Web.Core
 
         public static string RunGit(string args, string workingDir)
         {
-            var filename = Util.GetSetting("GitPathToGit", "[path to git.exe?]");
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            var filename = applicationSettings.GitPathToGit;
             return RunAndCapture(filename, args, workingDir);
         }
 
         public static string RunHg(string args, string workingDir)
         {
-            var filename = Util.GetSetting("MercurialPathToHg", "[path to hg.exe?]");
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            var filename = applicationSettings.MercurialPathToHg;
             return RunAndCapture(filename, args, workingDir);
         }
 
@@ -82,15 +88,17 @@ namespace BugTracker.Web.Core
         {
             // run "svn.exe" and capture its output
 
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
             var p = new Process();
-            var filename = Util.GetSetting("SubversionPathToSvn", "svn");
+            var filename = applicationSettings.SubversionPathToSvn;
             p.StartInfo.FileName = filename;
 
             ConfigureStartInfo(p.StartInfo);
 
             argsWithoutPassword += " --non-interactive";
 
-            var moreArgs = Util.GetSetting("SubversionAdditionalArgs", "");
+            var moreArgs = applicationSettings.SubversionAdditionalArgs;
             if (moreArgs != "") argsWithoutPassword += " " + moreArgs;
 
             Util.WriteToLog(filename + " " + argsWithoutPassword);
@@ -98,7 +106,7 @@ namespace BugTracker.Web.Core
             var argsWithPassword = argsWithoutPassword;
 
             // add a username and password to the args
-            var usernameAndPasswordAndWebsvn = Util.GetSetting(repo, "");
+            var usernameAndPasswordAndWebsvn = ApplicationSettings[repo];
 
             var parts = Util.RePipes.Split(usernameAndPasswordAndWebsvn);
             if (parts.Length > 1)

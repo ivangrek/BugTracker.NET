@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.Categories
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class List : Page
     {
-        private readonly ICategoryService categoryService = new CategoryService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public ICategoryService CategoryService { get; set; }
 
         protected DataSet Ds { get; set; }
 
@@ -31,9 +31,9 @@ namespace BugTracker.Web.Administration.Categories
             MainMenu.Security = security;
             MainMenu.SelectedItem = "admin";
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - categories";
+            Page.Title = $"{ApplicationSettings.AppTitle} - categories";
 
-            Ds = this.categoryService.LoadList();
+            Ds = CategoryService.LoadList();
         }
     }
 }

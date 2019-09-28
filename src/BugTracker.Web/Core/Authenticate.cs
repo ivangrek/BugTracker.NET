@@ -14,9 +14,21 @@ namespace BugTracker.Web.Core
     using System.Net;
     using System.Web;
 
-    public class Authenticate
+    public interface IAuthenticate
     {
-        public static bool CheckPassword(string username, string password)
+        bool CheckPassword(string username, string password);
+    }
+
+    internal sealed class Authenticate : IAuthenticate
+    {
+        private readonly IApplicationSettings applicationSettings;
+
+        public Authenticate(IApplicationSettings applicationSettings)
+        {
+            this.applicationSettings = applicationSettings;
+        }
+
+        public bool CheckPassword(string username, string password)
         {
             var sql = @"
 select us_username, us_id, us_password, isnull(us_salt,0) us_salt, us_active
@@ -51,8 +63,8 @@ where us_username = N'$username'";
             if (failedAttempts != null)
             {
                 // Don't count attempts older than N minutes ago.
-                var minutesAgo = Convert.ToInt32(Util.GetSetting("FailedLoginAttemptsMinutes", "10"));
-                var failedAttemptsAllowed = Convert.ToInt32(Util.GetSetting("FailedLoginAttemptsAllowed", "10"));
+                var minutesAgo = this.applicationSettings.FailedLoginAttemptsMinutes;
+                var failedAttemptsAllowed = this.applicationSettings.FailedLoginAttemptsAllowed;
 
                 var nMinutesAgo = DateTime.Now.AddMinutes(-1 * minutesAgo);
                 while (true)
@@ -87,7 +99,7 @@ where us_username = N'$username'";
                 HttpRuntime.Cache[username] = failedAttempts;
             }
 
-            if (Util.GetSetting("AuthenticateUsingLdap", "0") == "1")
+            if (this.applicationSettings.AuthenticateUsingLdap)
                 authenticated = CheckPasswordWithLdap(username, password);
             else
                 authenticated = CheckPasswordWithDb(username, password, dr);
@@ -114,18 +126,13 @@ where us_username = N'$username'";
             return false;
         }
 
-        public static bool CheckPasswordWithLdap(string username, string password)
+        private bool CheckPasswordWithLdap(string username, string password)
         {
             // allow multiple, seperated by a pipe character
-            var dns = Util.GetSetting(
-                "LdapUserDistinguishedName",
-                "uid=$REPLACE_WITH_USERNAME$,ou=people,dc=mycompany,dc=com");
-
+            var dns = this.applicationSettings.LdapUserDistinguishedName;
             var dnArray = dns.Split('|');
 
-            var ldapServer = Util.GetSetting(
-                "LdapServer",
-                "127.0.0.1");
+            var ldapServer = this.applicationSettings.LdapServer;
 
             using (var ldap = new LdapConnection(ldapServer))
             {
@@ -137,7 +144,7 @@ where us_username = N'$username'";
 
                     ldap.AuthType = (AuthType) Enum.Parse
                     (typeof(AuthType),
-                        Util.GetSetting("LdapAuthType", "Basic"));
+                        this.applicationSettings.LdapAuthType);
 
                     try
                     {
@@ -163,7 +170,7 @@ where us_username = N'$username'";
             return false;
         }
 
-        public static bool CheckPasswordWithDb(string username, string password, DataRow dr)
+        private static bool CheckPasswordWithDb(string username, string password, DataRow dr)
         {
             var usSalt = (int) dr["us_salt"];
 

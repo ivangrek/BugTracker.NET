@@ -13,8 +13,9 @@ namespace BugTracker.Web.Administration.CustomFields
 
     public partial class Edit : Page
     {
-        public int Id;
+        public IApplicationSettings ApplicationSettings { get; set; }
 
+        public int Id;
         public string Sql;
 
         public void Page_Init(object sender, EventArgs e)
@@ -31,9 +32,9 @@ namespace BugTracker.Web.Administration.CustomFields
             security.CheckSecurity(Security.MustBeAdmin);
 
             MainMenu.Security = security;
-            MainMenu.SelectedItem = Util.GetSetting("PluralBugLabel", "bugs");
+            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit custom column metadata";
+            Page.Title = $"{ApplicationSettings.AppTitle} - edit custom column metadata";
 
             this.msg.InnerText = "";
 
@@ -173,7 +174,7 @@ and sc.colorder = $co";
                     }
                 }
 
-                Server.Transfer("~/Administration/CustomFields/List.aspx");
+                Response.Redirect("~/Administration/CustomFields/List.aspx");
             }
             else
             {

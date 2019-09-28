@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class Relationships : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public int Bugid;
         public DataSet Ds;
         public int PermissionLevel;
@@ -33,7 +35,7 @@ namespace BugTracker.Web
 
             security.CheckSecurity(Security.AnyUserOk);
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - relationships";
+            Page.Title = $"{ApplicationSettings.AppTitle} - relationships";
 
             string sql;
             this.add_err.InnerText = "";

@@ -14,6 +14,8 @@ namespace BugTracker.Web.Accounts
 
     public partial class CompleteRegistration : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
@@ -33,7 +35,7 @@ select *,
 delete from emailed_links
     where el_date < dateadd(n,-240,getdate())";
 
-            sql = sql.Replace("$minutes", Util.GetSetting("RegistrationExpiration", "20"));
+            sql = sql.Replace("$minutes", ApplicationSettings.RegistrationExpiration.ToString());
             sql = sql.Replace("$guid", guid.Replace("'", "''"));
 
             var dr = DbUtil.GetDataRow(sql);
@@ -56,7 +58,7 @@ delete from emailed_links
                     "",
                     (int) dr["el_salt"],
                     (string) dr["el_password"],
-                    Util.GetSetting("SelfRegisteredUserTemplate", "[error - missing user template]"),
+                    ApplicationSettings.SelfRegisteredUserTemplate,
                     false);
 
                 //  Delete the temp link

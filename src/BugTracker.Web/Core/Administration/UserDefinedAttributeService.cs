@@ -13,7 +13,7 @@ namespace BugTracker.Web.Core.Administration
     using Persistence;
     using Persistence.Models;
 
-    internal interface IUserDefinedAttributeService
+    public interface IUserDefinedAttributeService
     {
         DataSet LoadList();
 

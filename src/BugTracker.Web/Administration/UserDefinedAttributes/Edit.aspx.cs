@@ -12,11 +12,11 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     using System.Web.UI;
     using Core;
     using Core.Administration;
-    using Core.Persistence;
 
     public partial class Edit : Page
     {
-        private readonly IUserDefinedAttributeService userDefinedAttributeService = new UserDefinedAttributeService(new ApplicationContext());
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IUserDefinedAttributeService UserDefinedAttributeService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -44,7 +44,7 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
             }
             else
             {
-                Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - edit user defined attribute value";
+                Page.Title = $"{ApplicationSettings.AppTitle} - edit user defined attribute value";
 
                 // add or edit?
                 if (id == 0)
@@ -56,7 +56,7 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
-                    var dataRow = this.userDefinedAttributeService.LoadOne(id);
+                    var dataRow = UserDefinedAttributeService.LoadOne(id);
 
                     // Fill in this form
                     this.name.Value = dataRow.Name;
@@ -82,14 +82,14 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
 
                 if (id == 0) // insert new
                 {
-                    this.userDefinedAttributeService.Create(parameters);
+                    UserDefinedAttributeService.Create(parameters);
                 }
                 else // edit existing
                 {
-                    this.userDefinedAttributeService.Update(parameters);
+                    UserDefinedAttributeService.Update(parameters);
                 }
 
-                Server.Transfer("~/Administration/UserDefinedAttributes/List.aspx");
+                Response.Redirect("~/Administration/UserDefinedAttributes/List.aspx");
             }
             else
             {

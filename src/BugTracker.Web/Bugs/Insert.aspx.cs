@@ -16,6 +16,9 @@ namespace BugTracker.Web.Bugs
 
     public partial class Insert : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+        public IAuthenticate Authenticate { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.SetContext(HttpContext.Current);
@@ -116,8 +119,8 @@ namespace BugTracker.Web.Bugs
                 // In this case a new bug is created, this to prevent possible loss of information
 
                 sql = @"select count(bg_id)
-			from bugs
-			where bg_id = $id";
+            from bugs
+            where bg_id = $id";
 
                 sql = sql.Replace("$id", Convert.ToString(bugid));
 
@@ -133,7 +136,7 @@ namespace BugTracker.Web.Bugs
                 if (mimeMessage != null)
                 {
                     // in case somebody is replying to a bug that has been deleted or merged
-                    subject = subject.Replace(Util.GetSetting("TrackingIdString", "DO NOT EDIT THIS:"), "PREVIOUS:");
+                    subject = subject.Replace(ApplicationSettings.TrackingIdString, "PREVIOUS:");
 
                     shortDesc = subject;
                     if (shortDesc.Length > 200) shortDesc = shortDesc.Substring(0, 200);
@@ -235,18 +238,18 @@ namespace BugTracker.Web.Bugs
             }
             else // update existing bug
             {
-                var statusResultingFromIncomingEmail = Util.GetSetting("StatusResultingFromIncomingEmail", "0");
+                var statusResultingFromIncomingEmail = ApplicationSettings.StatusResultingFromIncomingEmail;
 
                 sql = "";
 
-                if (statusResultingFromIncomingEmail != "0")
+                if (statusResultingFromIncomingEmail != 0)
                 {
                     sql = @"update bugs
-				set bg_status = $st
-				where bg_id = $bg
-				";
+                set bg_status = $st
+                where bg_id = $bg
+                ";
 
-                    sql = sql.Replace("$st", statusResultingFromIncomingEmail);
+                    sql = sql.Replace("$st", statusResultingFromIncomingEmail.ToString());
                 }
 
                 sql += "select bg_short_desc from bugs where bg_id = $bg";

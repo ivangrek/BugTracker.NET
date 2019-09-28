@@ -14,6 +14,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class Print2 : Page
     {
+        public IApplicationSettings ApplicationSettings { get; set; }
+
         public DataSet Ds;
         public DataView Dv;
         public bool HistoryInline;
@@ -32,8 +34,7 @@ namespace BugTracker.Web.Bugs
 
             Security = security;
 
-            Page.Title = Util.GetSetting("AppTitle", "BugTracker.NET") + " - print " +
-                                                                        Util.GetSetting("PluralBugLabel", "bugs");
+            Page.Title = $"{ApplicationSettings.AppTitle} - print {ApplicationSettings.PluralBugLabel}";
 
             // are we doing the query to get the bugs or are we using the cached dataview?
             var quIdString = Request.QueryString["qu_id"];

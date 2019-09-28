@@ -14,6 +14,8 @@ namespace BugTracker.Web.Core
 
     public class BugList
     {
+        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+
         private static string GetDistinctValsFromDataset(DataTable dt, int col)
         {
             var dict = new SortedDictionary<string, int>();
@@ -38,7 +40,7 @@ namespace BugTracker.Web.Core
                 return "<br><br>"
                        + Convert.ToString(dv.Table.Rows.Count)
                        + " "
-                       + Util.GetSetting("PluralBugLabel", "bugs")
+                       + ApplicationSettings.PluralBugLabel
                        + " returned by query<br>";
             return "<br><br>"
                    + "Showing "
@@ -46,7 +48,7 @@ namespace BugTracker.Web.Core
                    + " out of "
                    + Convert.ToString(dv.Table.Rows.Count)
                    + " "
-                   + Util.GetSetting("PluralBugLabel", "bugs")
+                   + ApplicationSettings.PluralBugLabel
                    + " returned by query<br>";
         }
 
@@ -506,7 +508,7 @@ namespace BugTracker.Web.Core
             if (dsCustomCols == null) dsCustomCols = Util.GetCustomColumns();
 
             dbColumnCount = 0;
-            var udfColumnName = Util.GetSetting("UserDefinedBugAttributeName", "YOUR ATTRIBUTE");
+            var udfColumnName = ApplicationSettings.UserDefinedBugAttributeName;
 
             foreach (DataColumn dc in dv.Table.Columns)
             {
