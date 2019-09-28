@@ -74,7 +74,7 @@
             Assert.That(applicationSettings.ShowTaskStatus, Is.EqualTo(ApplicationSettings.ShowTaskStatusDefault));
             Assert.That(applicationSettings.ShowTaskSortSequence, Is.EqualTo(ApplicationSettings.ShowTaskSortSequenceDefault));
             Assert.That(applicationSettings.TaskDefaultDurationUnits, Is.EqualTo(ApplicationSettings.TaskDefaultDurationUnitsDefault));
-            Assert.That(applicationSettings.TaskDefaultHour, Is.EqualTo(ApplicationSettings.TaskDefaultDurationUnitsDefault));
+            Assert.That(applicationSettings.TaskDefaultHour, Is.EqualTo(ApplicationSettings.TaskDefaultHourDefault));
             Assert.That(applicationSettings.TaskDefaultStatus, Is.EqualTo(ApplicationSettings.TaskDefaultStatusDefault));
             Assert.That(applicationSettings.StripDisplayNameFromEmailAddress, Is.EqualTo(ApplicationSettings.StripDisplayNameFromEmailAddressDefault));
             Assert.That(applicationSettings.TrackingIdString, Is.EqualTo(ApplicationSettings.TrackingIdStringDefault));
