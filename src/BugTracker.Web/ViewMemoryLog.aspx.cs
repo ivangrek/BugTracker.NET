@@ -15,6 +15,7 @@ namespace BugTracker.Web
     public partial class ViewMemoryLog : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -25,9 +26,7 @@ namespace BugTracker.Web
 
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Response.ContentType = "text/plain";
             Response.AddHeader("content-disposition", "inline; filename=\"memory_log.txt\"");

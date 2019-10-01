@@ -5,24 +5,20 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Reports
 {
     using System;
     using System.Data;
     using System.Web.UI;
     using Core;
 
-    public partial class TasksAll : Page
+    public partial class Select : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
+        public IReportService ReportService { get; set; }
 
-        public DataSet DsTasks;
-
-        public void Page_Init(object sender, EventArgs e)
-        {
-            ViewStateUserKey = Session.SessionID;
-        }
+        public DataSet Ds;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -30,19 +26,18 @@ namespace BugTracker.Web
 
             Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            Page.Title = $"{ApplicationSettings.AppTitle} - all tasks";
-
-            if (Security.User.IsAdmin || Security.User.CanViewTasks)
+            if (!IsAuthorized)
             {
-                // allowed
-            }
-            else
-            {
-                Response.Write("You are not allowed to view tasks");
+                Response.Write("You are not allowed to use this page.");
                 Response.End();
             }
 
-            this.DsTasks = Util.GetAllTasks(Security, 0);
+            Page.Title = $"{ApplicationSettings.AppTitle} - reports";
+
+            Ds = ReportService.LoadSelectList();
         }
+
+        private bool IsAuthorized => Security.User.IsAdmin
+            || Security.User.CanUseReports;
     }
 }

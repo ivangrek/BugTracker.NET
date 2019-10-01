@@ -18,6 +18,7 @@ namespace BugTracker.Web.Attachments
     public partial class View : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -26,9 +27,7 @@ namespace BugTracker.Web.Attachments
                 // by "Microsoft Office Existence Discovery".  Google it for more info.
                 Response.End();
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var bpId = Util.SanitizeInteger(Request["id"]);
             var bugId = Util.SanitizeInteger(Request["bug_id"]);
@@ -46,8 +45,8 @@ and bp_bug = $bug_id";
 
             if (dr == null) Response.End();
 
-            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugId), security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugId), Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

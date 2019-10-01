@@ -15,6 +15,7 @@ namespace BugTracker.Web.Bugs
     public partial class MobileList : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
 
@@ -22,9 +23,7 @@ namespace BugTracker.Web.Bugs
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (!ApplicationSettings.EnableMobile)
             {
@@ -63,13 +62,13 @@ order by bg_last_updated_date desc";
             if (this.only_mine.Checked)
                 bugSql = bugSql.Replace("$WHERE$",
                     "where bg_reported_user = "
-                    + Convert.ToString(security.User.Usid)
+                    + Convert.ToString(Security.User.Usid)
                     + " or bg_assigned_to_user = "
-                    + Convert.ToString(security.User.Usid));
+                    + Convert.ToString(Security.User.Usid));
             else
                 bugSql = bugSql.Replace("$WHERE$", "");
 
-            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
+            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, Security);
 
             this.Ds = DbUtil.GetDataSet(bugSql);
         }

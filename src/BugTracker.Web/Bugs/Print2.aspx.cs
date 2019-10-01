@@ -15,6 +15,7 @@ namespace BugTracker.Web.Bugs
     public partial class Print2 : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
         public DataView Dv;
@@ -22,17 +23,11 @@ namespace BugTracker.Web.Bugs
         public bool ImagesInline;
         public string Sql;
 
-        public Security Security { get; set; }
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
-
-            Security = security;
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = $"{ApplicationSettings.AppTitle} - print {ApplicationSettings.PluralBugLabel}";
 
@@ -48,8 +43,8 @@ namespace BugTracker.Web.Bugs
                 var bugSql = (string) DbUtil.ExecuteScalar(this.Sql);
 
                 // replace magic variables
-                bugSql = bugSql.Replace("$ME", Convert.ToString(security.User.Usid));
-                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
+                bugSql = bugSql.Replace("$ME", Convert.ToString(Security.User.Usid));
+                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, Security);
 
                 // all we really need is the bugid, but let's do the same query as Bugs/Print.aspx
                 this.Ds = DbUtil.GetDataSet(bugSql);

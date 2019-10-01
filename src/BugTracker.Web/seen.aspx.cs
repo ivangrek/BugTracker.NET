@@ -14,17 +14,17 @@ namespace BugTracker.Web
 
     public partial class Seen : Page
     {
+        public ISecurity Security { get; set; }
+
         public string Sql;
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            if (!security.User.IsGuest)
+            if (!Security.User.IsGuest)
                 if (Request.QueryString["ses"] != (string) Session["session_cookie"])
                 {
                     Response.Write("session in URL doesn't match session cookie");
@@ -36,8 +36,8 @@ namespace BugTracker.Web
 
             var bugid = Convert.ToInt32(Util.SanitizeInteger(Request["bugid"]));
 
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
-            if (permissionLevel == Security.PermissionNone) Response.End();
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone) Response.End();
 
             for (var i = 0; i < dv.Count; i++)
                 if ((int) dv[i][1] == bugid)
@@ -51,7 +51,7 @@ update bug_user set bu_seen = $seen, bu_seen_datetime = getdate() where bu_bug =
 
                     this.Sql = this.Sql.Replace("$seen", Convert.ToString(seen));
                     this.Sql = this.Sql.Replace("$bg", Convert.ToString(bugid));
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
 
                     DbUtil.ExecuteNonQuery(this.Sql);
 

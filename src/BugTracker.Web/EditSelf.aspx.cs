@@ -11,11 +11,13 @@ namespace BugTracker.Web
     using System.Data;
     using System.Web.UI;
     using System.Web.UI.WebControls;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class EditSelf : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Id;
         public string Sql;
@@ -29,18 +31,15 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "settings";
+            MainMenu.SelectedItem = MainMenuSections.Settings;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - edit your settings";
 
             this.msg.InnerText = "";
 
-            this.Id = security.User.Usid;
+            this.Id = Security.User.Usid;
 
             if (!IsPostBack)
             {
@@ -54,7 +53,7 @@ namespace BugTracker.Web
             or isnull(qu_org,0) = @org
             order by qu_desc";
 
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
 
                 this.query.DataSource = DbUtil.GetDataView(this.Sql);
                 this.query.DataTextField = "qu_desc";
@@ -67,7 +66,7 @@ namespace BugTracker.Web
             where isnull(pu_permission_level,$dpl) <> 0
             order by pj_name";
 
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
                 this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
                 var projectsDv = DbUtil.GetDataView(this.Sql);

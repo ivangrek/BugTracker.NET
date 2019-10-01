@@ -16,6 +16,7 @@ namespace BugTracker.Web
     public partial class ViewSubscribers : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
         public DataSet Ds;
@@ -25,16 +26,14 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = $"{ApplicationSettings.AppTitle} - view subscribers";
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();
@@ -46,7 +45,7 @@ namespace BugTracker.Web
 
             if (action != "")
             {
-                if (permissionLevel == Security.PermissionReadonly)
+                if (permissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {
                     Response.Write("You are not allowed to edit this item");
                     Response.End();
@@ -64,7 +63,7 @@ namespace BugTracker.Web
                     DbUtil.ExecuteNonQuery(this.Sql);
 
                     // send a notification to this user only
-                    Bug.SendNotifications(Bug.Update, this.Bugid, security, newSubscriberUserid);
+                    Bug.SendNotifications(Bug.Update, this.Bugid, Security, newSubscriberUserid);
                 }
             }
 
@@ -74,7 +73,7 @@ namespace BugTracker.Web
 
             // show who is subscribed
 
-            if (security.User.IsAdmin)
+            if (Security.User.IsAdmin)
             {
                 this.Sql = @"
 select

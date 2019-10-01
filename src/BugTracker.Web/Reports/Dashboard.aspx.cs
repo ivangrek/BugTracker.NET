@@ -5,45 +5,36 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Reports
 {
     using System;
     using System.Data;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Dashboard : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
-
-        public Security Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            Security = security;
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "reports";
-
-            Page.Title = $"{ApplicationSettings.AppTitle} - dashboard";
-
-            if (security.User.IsAdmin || security.User.CanUseReports)
-            {
-                //
-            }
-            else
+            if (!IsAuthorized)
             {
                 Response.Write("You are not allowed to use this page.");
                 Response.End();
             }
+
+            MainMenu.SelectedItem = MainMenuSections.Reports;
+
+            Page.Title = $"{ApplicationSettings.AppTitle} - dashboard";
 
             var sql = @"
 select ds.*, rp_desc
@@ -52,18 +43,18 @@ inner join reports on rp_id = ds_report
 where ds_user = $us
 order by ds_col, ds_row";
 
-            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$us", Convert.ToString(Security.User.Usid));
             this.Ds = DbUtil.GetDataSet(sql);
         }
 
-        public void write_column(int col)
+        protected void WriteColumn(int col)
         {
             var iframeId = 0;
 
             foreach (DataRow dr in this.Ds.Tables[0].Rows)
-                if ((int) dr["ds_col"] == col)
+                if ((int)dr["ds_col"] == col)
                 {
-                    if ((string) dr["ds_chart_type"] == "data")
+                    if ((string)dr["ds_chart_type"] == "data")
                     {
                         iframeId++;
                         Response.Write("\n<div class=panel>");
@@ -86,5 +77,8 @@ order by ds_col, ds_row";
                     }
                 }
         }
+
+        private bool IsAuthorized => Security.User.IsAdmin
+            || Security.User.CanUseReports;
     }
 }

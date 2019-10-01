@@ -17,6 +17,7 @@ namespace BugTracker.Web.Bugs
     public partial class MobileEdit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public bool AssignedToChanged;
         public DataSet DsPosts;
@@ -30,8 +31,6 @@ namespace BugTracker.Web.Bugs
         //SortedDictionary<string, string> hash_custom_cols = new SortedDictionary<string, string>();
         //SortedDictionary<string, string> hash_prev_custom_cols = new SortedDictionary<string, string>();
 
-        public Security Security { get; set; }
-
         public void Page_Init(object sender, EventArgs e)
         {
             ViewStateUserKey = Session.SessionID;
@@ -41,11 +40,7 @@ namespace BugTracker.Web.Bugs
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
-
-            Security = security;
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (!ApplicationSettings.EnableMobile)
             {
@@ -74,7 +69,7 @@ namespace BugTracker.Web.Bugs
                     }
                     else
                     {
-                        var result = insert_bug(security);
+                        var result = insert_bug(Security);
                         if (result != "")
                             this.msg.InnerHtml = this.ErrText;
                         else
@@ -83,7 +78,7 @@ namespace BugTracker.Web.Bugs
                 }
                 else
                 {
-                    load_dropdowns(security.User, security);
+                    load_dropdowns(Security.User, Security);
 
                     this.Sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
                     this.Sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 1
@@ -109,8 +104,8 @@ namespace BugTracker.Web.Bugs
                     var initialProject = (string) Session["project"];
 
                     // project
-                    if (security.User.ForcedProject != 0)
-                        initialProject = Convert.ToString(security.User.ForcedProject);
+                    if (Security.User.ForcedProject != 0)
+                        initialProject = Convert.ToString(Security.User.ForcedProject);
 
                     if (initialProject != null && initialProject != "0")
                     {
@@ -151,7 +146,7 @@ namespace BugTracker.Web.Bugs
                     }
                     else
                     {
-                        var result = update_bug(security);
+                        var result = update_bug(Security);
                         if (result != "")
                             this.msg.InnerHtml = this.ErrText;
                         else
@@ -159,7 +154,7 @@ namespace BugTracker.Web.Bugs
                     }
                 }
 
-                var dr = Bug.GetBugDataRow(this.Id, security);
+                var dr = Bug.GetBugDataRow(this.Id, Security);
 
                 if (dr == null)
                 {
@@ -175,7 +170,7 @@ namespace BugTracker.Web.Bugs
                 this.short_desc.Value = Convert.ToString(dr["short_desc"]);
 
                 // load dropdowns
-                load_dropdowns(security.User, security);
+                load_dropdowns(Security.User, Security);
 
                 // project
                 foreach (ListItem li in this.project.Items)
@@ -200,7 +195,7 @@ namespace BugTracker.Web.Bugs
 
                 // Posts
                 this.PermissionLevel = (int) dr["pu_permission_level"];
-                this.DsPosts = PrintBug.GetBugPosts(this.Id, security.User.ExternalUser, true);
+                this.DsPosts = PrintBug.GetBugPosts(this.Id, Security.User.ExternalUser, true);
 
                 // save current values in previous, so that later we can write the audit trail when things change
                 this.prev_short_desc.Value = (string) dr["short_desc"];
@@ -210,7 +205,7 @@ namespace BugTracker.Web.Bugs
             }
         }
 
-        public void load_dropdowns(User user, Security security)
+        public void load_dropdowns(User user, ISecurity security)
         {
             // only show projects where user has permissions
             // 0
@@ -222,7 +217,7 @@ namespace BugTracker.Web.Bugs
         and isnull(pu_permission_level,$dpl) not in (0, 1)
         order by pj_name;";
 
-            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$us", Convert.ToString(Security.User.Usid));
             sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
             //1
@@ -253,7 +248,7 @@ namespace BugTracker.Web.Bugs
             this.status.Items.Insert(0, new ListItem("[no status]", "0"));
         }
 
-        public string update_bug(Security security)
+        public string update_bug(ISecurity security)
         {
             this.StatusChanged = false;
             this.AssignedToChanged = false;
@@ -270,7 +265,7 @@ namespace BugTracker.Web.Bugs
             this.Sql = this.Sql.Replace("$pj$", this.project.SelectedItem.Value);
             this.Sql = this.Sql.Replace("$au$", this.assigned_to.SelectedItem.Value);
             this.Sql = this.Sql.Replace("$st$", this.status.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$lu$", Convert.ToString(security.User.Usid));
+            this.Sql = this.Sql.Replace("$lu$", Convert.ToString(Security.User.Usid));
             this.Sql = this.Sql.Replace("$sd$", this.short_desc.Value.Replace("'", "''"));
             this.Sql = this.Sql.Replace("$id$", Convert.ToString(this.Id));
 
@@ -280,7 +275,7 @@ namespace BugTracker.Web.Bugs
 
             var commentText = HttpUtility.HtmlDecode(this.comment.Value);
 
-            var bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, security.User.Usid,
+            var bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, Security.User.Usid,
                                                   commentText,
                                                   commentText,
                                                   null, // from
@@ -299,7 +294,7 @@ namespace BugTracker.Web.Bugs
         }
 
         // returns true if there was a change
-        public bool record_changes(Security security)
+        public bool record_changes(ISecurity security)
         {
             var baseSql = @"
         insert into bug_posts
@@ -307,7 +302,7 @@ namespace BugTracker.Web.Bugs
         values($id, $us, getdate(), N'$3', 'update')";
 
             baseSql = baseSql.Replace("$id", Convert.ToString(this.Id));
-            baseSql = baseSql.Replace("$us", Convert.ToString(security.User.Usid));
+            baseSql = baseSql.Replace("$us", Convert.ToString(Security.User.Usid));
 
             string from;
             this.Sql = "";
@@ -381,7 +376,7 @@ namespace BugTracker.Web.Bugs
             return doUpdate;
         }
 
-        public string insert_bug(Security security)
+        public string insert_bug(ISecurity security)
         {
             var commentText = HttpUtility.HtmlDecode(this.comment.Value);
 

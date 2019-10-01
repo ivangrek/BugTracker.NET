@@ -17,6 +17,7 @@ namespace BugTracker.Web
     public partial class EditTask : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
 
@@ -32,24 +33,22 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             this.msg.InnerText = "";
 
             var stringBugid = Util.SanitizeInteger(Request["bugid"]);
             this.Bugid = Convert.ToInt32(stringBugid);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
 
-            if (permissionLevel != Security.PermissionAll)
+            if (permissionLevel != SecurityPermissionLevel.PermissionAll)
             {
                 Response.Write("You are not allowed to edit tasks for this item");
                 Response.End();
             }
 
-            if (security.User.IsAdmin || security.User.CanEditTasks)
+            if (Security.User.IsAdmin || Security.User.CanEditTasks)
             {
                 // allowed	
             }
@@ -71,7 +70,7 @@ namespace BugTracker.Web
                     Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " ID:";
                 this.bugid_static.InnerHtml = Convert.ToString(this.Bugid);
 
-                load_users_dropdowns(this.Bugid, security);
+                load_users_dropdowns(this.Bugid, Security);
 
                 if (!ApplicationSettings.ShowTaskAssignedTo)
                 {
@@ -184,7 +183,7 @@ namespace BugTracker.Web
             }
             else
             {
-                on_update(security);
+                on_update(Security);
             }
         }
 
@@ -208,7 +207,7 @@ namespace BugTracker.Web
             }
         }
 
-        public void load_users_dropdowns(int bugid, Security security)
+        public void load_users_dropdowns(int bugid, ISecurity security)
         {
             // What's selected now?   Save it before we refresh the dropdown.
             var currentValue = "";
@@ -255,9 +254,9 @@ order by us_username; ";
 
             this.Sql += "\nselect isnull(@assigned_to,0) ";
 
-            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(security.User.Org));
+            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(Security.User.Org));
             this.Sql = this.Sql.Replace("$og_other_orgs_permission_level",
-                Convert.ToString(security.User.OtherOrgsPermissionLevel));
+                Convert.ToString((int)Security.User.OtherOrgsPermissionLevel));
             this.Sql = this.Sql.Replace("$bg_id", Convert.ToString(bugid));
 
             if (!ApplicationSettings.UseFullNames)
@@ -432,7 +431,7 @@ order by us_username; ";
             return s;
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             var good = validate();
 
@@ -487,7 +486,7 @@ insert into bug_posts
 (bp_bug, bp_user, bp_date, bp_comment, bp_type)
 values($tsk_bug, $tsk_last_updated_user, getdate(), N'added task ' + convert(varchar, @tsk_id), 'update')";
 
-                    this.Sql = this.Sql.Replace("$tsk_created_user", Convert.ToString(security.User.Usid));
+                    this.Sql = this.Sql.Replace("$tsk_created_user", Convert.ToString(Security.User.Usid));
                 }
                 else // edit existing
                 {
@@ -517,7 +516,7 @@ values($tsk_bug, $tsk_last_updated_user, getdate(), N'updated task $tsk_id', 'up
                 }
 
                 this.Sql = this.Sql.Replace("$tsk_bug", Convert.ToString(this.Bugid));
-                this.Sql = this.Sql.Replace("$tsk_last_updated_user", Convert.ToString(security.User.Usid));
+                this.Sql = this.Sql.Replace("$tsk_last_updated_user", Convert.ToString(Security.User.Usid));
 
                 this.Sql = this.Sql.Replace("$tsk_planned_start_date",
                     format_date_hour_min(this.planned_start_date.Value, this.planned_start_hour.SelectedItem.Value,

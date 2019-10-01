@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web.Reports {
-    
-    
-    public partial class Edit {
-        
+namespace BugTracker.Web.Reports
+{
+
+
+    public partial class Edit
+    {
+
         /// <summary>
         /// MainMenu control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
-        
+
         /// <summary>
         /// desc control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText desc;
-        
+
         /// <summary>
         /// desc_err control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableCell desc_err;
-        
+
         /// <summary>
         /// table control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton table;
-        
+
         /// <summary>
         /// pie control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton pie;
-        
+
         /// <summary>
         /// bar control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton bar;
-        
+
         /// <summary>
         /// line control.
         /// </summary>
@@ -74,25 +76,25 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton line;
-        
+
         /// <summary>
-        /// chart_type_err control.
+        /// chartTypeErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell chart_type_err;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell chartTypeErr;
+
         /// <summary>
-        /// sql_text control.
+        /// sqlText control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea sql_text;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea sqlText;
+
         /// <summary>
         /// msg control.
         /// </summary>
@@ -101,7 +103,7 @@ namespace BugTracker.Web.Reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
-        
+
         /// <summary>
         /// sub control.
         /// </summary>

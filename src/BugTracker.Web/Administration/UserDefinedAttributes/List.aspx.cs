@@ -10,27 +10,25 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     using System;
     using System.Data;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
     using Core.Administration;
 
     public partial class List : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
         public IUserDefinedAttributeService UserDefinedAttributeService { get; set; }
 
         protected DataSet Ds;
-        protected Security Security { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - user defined attribute values";
 

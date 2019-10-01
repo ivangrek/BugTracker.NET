@@ -11,18 +11,36 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.Web;
 
-    public class Security
+    public enum SecurityLevel
+    {
+        MustBeAdmin = 1,
+        AnyUserOk = 2,
+        AnyUserOkExceptGuest = 3,
+        MustBeAdminOrProjectAdmin = 4
+    }
+
+    public enum SecurityPermissionLevel
+    {
+        PermissionNone = 0,
+        PermissionReadonly = 1,
+        PermissionAll = 2,
+        PermissionReporter = 3
+    }
+
+    public interface ISecurity
+    {
+        string AuthMethod { get; }
+
+        User User { get; }
+
+        void CheckSecurity(SecurityLevel level);
+
+        void CreateSession(HttpRequest request, HttpResponse response, int userid, string username, string ntlm);
+    }
+
+    public sealed class Security : ISecurity
     {
         public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
-
-        public const int MustBeAdmin = 1;
-        public const int AnyUserOk = 2;
-        public const int AnyUserOkExceptGuest = 3;
-        public const int MustBeAdminOrProjectAdmin = 4;
-        public const int PermissionNone = 0;
-        public const int PermissionReadonly = 1;
-        public const int PermissionReporter = 3;
-        public const int PermissionAll = 2;
 
         public static readonly string GotoForm = @"
 <td nowrap valign=middle>
@@ -32,11 +50,11 @@ namespace BugTracker.Web.Core
     </form>
 </td>";
 
-        public string AuthMethod = string.Empty;
+        public string AuthMethod { get; private set; } = string.Empty;
 
         public User User { get; } = new User();
 
-        public void CheckSecurity(int level)
+        public void CheckSecurity(SecurityLevel level)
         {
             var aspNetContext = HttpContext.Current;
 
@@ -81,10 +99,10 @@ namespace BugTracker.Web.Core
 /* check session */
 declare @project_admin int
 select @project_admin = count(1)
-	from sessions
-	inner join project_user_xref on pu_user = se_user
-	and pu_admin = 1
-	where se_id = '$se';
+    from sessions
+    inner join project_user_xref on pu_user = se_user
+    and pu_admin = 1
+    where se_id = '$se';
 
 select us_id, us_admin,
 us_username, us_firstname, us_lastname,
@@ -101,8 +119,8 @@ from sessions
 inner join users on se_user = us_id
 inner join orgs og on us_org = og_id
 left outer join project_user_xref
-	on pu_project = us_forced_project
-	and pu_user = us_id
+    on pu_project = us_forced_project
+    and pu_user = us_id
 where se_id = '$se'
 and us_active = 1";
 
@@ -132,8 +150,8 @@ isnull(pu_permission_level, $dpl) pu_permission_level,
 from users
 inner join orgs og on us_org = og_id
 left outer join project_user_xref
-	on pu_project = us_forced_project
-	and pu_user = us_id
+    on pu_project = us_forced_project
+    and pu_user = us_id
 where us_username = 'guest'
 and us_active = 1";
 
@@ -162,29 +180,33 @@ and us_active = 1";
                 aspNetContext.Session["session_cookie"] = "";
             }
 
-            if (level == MustBeAdmin && !this.User.IsAdmin)
+            if (level == SecurityLevel.MustBeAdmin && !this.User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
                 response.Redirect("~/Accounts/Login.aspx");
             }
-            else if (level == AnyUserOkExceptGuest && this.User.IsGuest)
+            else if (level == SecurityLevel.AnyUserOkExceptGuest && this.User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
                 response.Redirect("~/Accounts/Login.aspx");
             }
-            else if (level == MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
+            else if (level == SecurityLevel.MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
                 response.Redirect("~/Accounts/Login.aspx");
             }
 
             if (ApplicationSettings.WindowsAuthentication == 1)
-                this.AuthMethod = "windows";
+            {
+                AuthMethod = "windows";
+            }
             else
-                this.AuthMethod = "plain";
+            {
+                AuthMethod = "plain";
+            }
         }
 
-        public static void CreateSession(HttpRequest request, HttpResponse response, int userid, string username, string ntlm)
+        public void CreateSession(HttpRequest request, HttpResponse response, int userid, string username, string ntlm)
         {
             // Generate a random session id
             // Don't use a regularly incrementing identity

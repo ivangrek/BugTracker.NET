@@ -13,14 +13,14 @@ namespace BugTracker.Web.Versioning.Git
 
     public partial class View : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
             Response.ContentType = "text/plain";
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var sql = @"
 select gitcom_commit, gitcom_bug, gitcom_repository, gitap_path 
@@ -34,8 +34,8 @@ where gitap_id = $id";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

@@ -20,16 +20,12 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
-
-            Security = security;
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
         }
 
-        public void print_tags(Security security)
+        public void print_tags(ISecurity security)
         {
-            if (security.User.CategoryFieldPermissionLevel == Security.PermissionNone) return;
+            if (Security.User.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionNone) return;
 
             var tags = (SortedDictionary<string, List<int>>) Application["tags"];
 

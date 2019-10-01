@@ -9,11 +9,13 @@ namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -26,14 +28,11 @@ namespace BugTracker.Web.Bugs
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
-
-            if (security.User.IsAdmin || security.User.CanDeleteBug)
+            if (Security.User.IsAdmin || Security.User.CanDeleteBug)
             {
                 //
             }
@@ -45,8 +44,8 @@ namespace BugTracker.Web.Bugs
 
             var id = Util.SanitizeInteger(Request["id"]);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(id), security);
-            if (permissionLevel != Security.PermissionAll)
+            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(id), Security);
+            if (permissionLevel != SecurityPermissionLevel.PermissionAll)
             {
                 Response.Write("You are not allowed to edit this item");
                 Response.End();

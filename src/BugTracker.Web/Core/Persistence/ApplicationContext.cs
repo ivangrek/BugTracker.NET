@@ -23,12 +23,19 @@ namespace BugTracker.Web.Core.Persistence
 
         public DbSet<UserDefinedAttribute> UserDefinedAttributes { get; set; }
 
+        public DbSet<Report> Reports { get; set; }
+
+        public DbSet<DashboardItem> DashboardItems { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new CategoryConfiguration());
             modelBuilder.Configurations.Add(new PriorityConfiguration());
             modelBuilder.Configurations.Add(new StatusConfiguration());
             modelBuilder.Configurations.Add(new UserDefinedAttributeConfiguration());
+
+            modelBuilder.Configurations.Add(new ReportConfiguration());
+            modelBuilder.Configurations.Add(new DashboardItemConfiguration());
         }
     }
 }

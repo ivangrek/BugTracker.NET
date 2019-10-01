@@ -101,7 +101,7 @@ var current_element;
 var current_bug;
 
 function get_bug_comment(bugid) {
-    var url = "Ajax.aspx?bugid=" + bugid;
+    var url = "/Ajax.aspx?bugid=" + bugid;
     $.get(url, "", handle_popup);
 }
 

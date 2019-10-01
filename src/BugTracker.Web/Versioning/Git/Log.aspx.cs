@@ -15,6 +15,8 @@ namespace BugTracker.Web.Versioning.Git
 
     public partial class Log : Page
     {
+        public ISecurity Security { get; set; }
+
         public string FilePath;
 
         public string LogResult;
@@ -25,9 +27,7 @@ namespace BugTracker.Web.Versioning.Git
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = "git log " + HttpUtility.HtmlEncode(this.FilePath);
 
@@ -50,8 +50,8 @@ order by gitcom_commit desc, gitap_path";
             // check if user has permission for this bug
             var bugid = (int) dr["gitcom_bug"];
 
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

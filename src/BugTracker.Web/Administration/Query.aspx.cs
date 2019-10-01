@@ -15,6 +15,7 @@ namespace BugTracker.Web.Administration
     public partial class Query : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
 
@@ -29,9 +30,7 @@ namespace BugTracker.Web.Administration
             {
                 DbUtil.ExecuteNonQuery("select count(1) from users");
 
-                var security = new Security();
-
-                security.CheckSecurity(Security.MustBeAdmin);
+                Security.CheckSecurity(SecurityLevel.MustBeAdmin);
             }
             catch (Exception)
             {

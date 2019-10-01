@@ -16,6 +16,7 @@ namespace BugTracker.Web.Attachments
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -28,14 +29,11 @@ namespace BugTracker.Web.Attachments
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
+            if (Security.User.IsAdmin || Security.User.CanEditAndDeletePosts)
             {
                 //
             }
@@ -48,8 +46,8 @@ namespace BugTracker.Web.Attachments
             var attachmentIdString = Util.SanitizeInteger(Request["id"]);
             var bugIdString = Util.SanitizeInteger(Request["bug_id"]);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugIdString), security);
-            if (permissionLevel != Security.PermissionAll)
+            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugIdString), Security);
+            if (permissionLevel != SecurityPermissionLevel.PermissionAll)
             {
                 Response.Write("You are not allowed to edit this item");
                 Response.End();

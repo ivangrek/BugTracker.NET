@@ -10,11 +10,13 @@ namespace BugTracker.Web.Administration.CustomFields
     using System;
     using System.Web.UI;
     using System.Web.UI.WebControls;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Add : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -22,12 +24,9 @@ namespace BugTracker.Web.Administration.CustomFields
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - custom field";
 

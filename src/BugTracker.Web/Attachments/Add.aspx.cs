@@ -15,6 +15,7 @@ namespace BugTracker.Web.Attachments
     public partial class Add : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
 
@@ -27,9 +28,7 @@ namespace BugTracker.Web.Attachments
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = $"{ApplicationSettings.AppTitle} - add attachment";
 
@@ -43,23 +42,23 @@ namespace BugTracker.Web.Attachments
             }
 
             this.Bugid = Convert.ToInt32(stringId);
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
 
-            if (permissionLevel == Security.PermissionNone
-                || permissionLevel == Security.PermissionReadonly)
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone
+                || permissionLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 write_msg("You are not allowed to edit this item", false);
                 Response.End();
                 return;
             }
 
-            if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
+            if (Security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
             }
 
-            if (IsPostBack) on_update(security);
+            if (IsPostBack) on_update(Security);
         }
 
         public void write_msg(string msg, bool rewritePosts)
@@ -79,7 +78,7 @@ namespace BugTracker.Web.Attachments
             Response.End();
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             if (this.attached_file.PostedFile == null)
             {

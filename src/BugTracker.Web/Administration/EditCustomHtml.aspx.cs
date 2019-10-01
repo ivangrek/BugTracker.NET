@@ -11,22 +11,21 @@ namespace BugTracker.Web.Administration
     using System.IO;
     using System.Web;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class EditCustomHtml : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - edit web config";
 

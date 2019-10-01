@@ -10,34 +10,29 @@ namespace BugTracker.Web.Queries
     using System;
     using System.Data;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class List : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
-
-        public Security Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "queries";
-
-            Security = security;
+            MainMenu.SelectedItem = MainMenuSections.Queries;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - queries";
 
             var sql = "";
 
-            if (security.User.IsAdmin || security.User.CanEditSql)
+            if (Security.User.IsAdmin || Security.User.CanEditSql)
             {
                 // allow admin to edit all queries
 
@@ -84,7 +79,7 @@ namespace BugTracker.Web.Queries
             order by qu_desc";
             }
 
-            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$us", Convert.ToString(Security.User.Usid));
             this.Ds = DbUtil.GetDataSet(sql);
         }
     }

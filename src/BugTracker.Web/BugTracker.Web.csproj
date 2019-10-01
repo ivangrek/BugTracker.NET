@@ -1,4 +1,9 @@
 ﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
+  <Import Project="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props')" />
+  <Import Project="..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props')" />
+  <Import Project="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\build\Microsoft.CodeQuality.Analyzers.props')" />
+  <Import Project="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
   <Import Project="..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -15,7 +20,7 @@
     <AssemblyName>BugTracker.Web</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>true</Use64BitIISExpress>
     <IISExpressSSLPort>44351</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -400,7 +405,7 @@
     <Content Include="Content\images\comment.png" />
     <Content Include="Accounts\CompleteRegistration.aspx" />
     <Content Include="Administration\CustomFields\List.aspx" />
-    <Content Include="Dashboard.aspx" />
+    <Content Include="Reports\Dashboard.aspx" />
     <Content Include="Content\images\database.png" />
     <Content Include="Content\images\database_link.png" />
     <Content Include="Content\images\database_refresh.png" />
@@ -592,7 +597,7 @@
     <Content Include="Search.aspx" />
     <Content Include="SearchText.aspx" />
     <Content Include="Seen.aspx" />
-    <Content Include="SelectReport.aspx" />
+    <Content Include="Reports\Select.aspx" />
     <Content Include="SendEmail.aspx" />
     <Content Include="Administration\ServerVariables.aspx" />
     <Content Include="setup.sql" />
@@ -704,9 +709,11 @@
     <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
     <Compile Include="Core\BugList.cs" />
+    <Compile Include="Core\Persistence\Configurations\DashboardItemConfiguration.cs" />
+    <Compile Include="Core\Persistence\Models\DashboardItem.cs" />
+    <Compile Include="Core\ReportService.cs" />
     <Compile Include="Core\Controls\MainMenu.ascx.cs">
       <DependentUpon>MainMenu.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Core\Controls\MainMenu.ascx.designer.cs">
       <DependentUpon>MainMenu.ascx</DependentUpon>
@@ -714,10 +721,12 @@
     <Compile Include="Core\DbUtil.cs" />
     <Compile Include="Core\Email.cs" />
     <Compile Include="Core\Persistence\ApplicationContext.cs" />
+    <Compile Include="Core\Persistence\Configurations\ReportConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\UserDefinedAttributeConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\CategoryConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\PriorityConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\StatusConfiguration.cs" />
+    <Compile Include="Core\Persistence\Models\Report.cs" />
     <Compile Include="Core\Persistence\Models\UserDefinedAttribute.cs" />
     <Compile Include="Core\Persistence\Models\Category.cs" />
     <Compile Include="Core\Persistence\Models\Priority.cs" />
@@ -750,11 +759,11 @@
     <Compile Include="Administration\CustomFields\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Dashboard.aspx.cs">
+    <Compile Include="Reports\Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Dashboard.aspx.designer.cs">
+    <Compile Include="Reports\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Accounts\Login.aspx.cs">
@@ -1322,12 +1331,12 @@
     <Compile Include="Seen.aspx.designer.cs">
       <DependentUpon>Seen.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SelectReport.aspx.cs">
-      <DependentUpon>SelectReport.aspx</DependentUpon>
+    <Compile Include="Reports\Select.aspx.cs">
+      <DependentUpon>Select.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SelectReport.aspx.designer.cs">
-      <DependentUpon>SelectReport.aspx</DependentUpon>
+    <Compile Include="Reports\Select.aspx.designer.cs">
+      <DependentUpon>Select.aspx</DependentUpon>
     </Compile>
     <Compile Include="SendEmail.aspx.cs">
       <DependentUpon>SendEmail.aspx</DependentUpon>
@@ -1555,6 +1564,16 @@
     <None Include="packages.config" />
     <Content Include="Site.Master" />
   </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\analyzers\dotnet\cs\Humanizer.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -1586,6 +1605,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\build\Microsoft.CodeQuality.Analyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
   </Target>
   <Import Project="..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets" Condition="Exists('..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

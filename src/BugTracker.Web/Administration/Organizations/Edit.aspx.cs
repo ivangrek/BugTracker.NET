@@ -11,13 +11,15 @@ namespace BugTracker.Web.Administration.Organizations
     using System.Collections.Generic;
     using System.Data;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
-        public Dictionary<string, int> DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+        public Dictionary<string, SecurityPermissionLevel> DictCustomFieldPermissionLevel = new Dictionary<string, SecurityPermissionLevel>();
         public DataSet DsCustom;
         public int Id;
 
@@ -52,12 +54,9 @@ namespace BugTracker.Web.Administration.Organizations
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - edit organization";
 
@@ -95,7 +94,7 @@ namespace BugTracker.Web.Administration.Organizations
                     foreach (DataRow drCustom in this.DsCustom.Tables[0].Rows)
                     {
                         var bgName = (string) drCustom["name"];
-                        this.DictCustomFieldPermissionLevel[bgName] = 2;
+                        this.DictCustomFieldPermissionLevel[bgName] = SecurityPermissionLevel.PermissionAll;
                     }
                 }
                 else
@@ -149,11 +148,11 @@ namespace BugTracker.Web.Administration.Organizations
                     {
                         var bgName = (string) drCustom["name"];
                         var obj = dr["og_" + bgName + "_field_permission_level"];
-                        int permission;
+                        SecurityPermissionLevel permission;
                         if (Convert.IsDBNull(obj))
-                            permission = Security.PermissionAll;
+                            permission = SecurityPermissionLevel.PermissionAll;
                         else
-                            permission = (int) obj;
+                            permission = (SecurityPermissionLevel)(int) obj;
                         this.DictCustomFieldPermissionLevel[bgName] = permission;
                     }
                 }
@@ -163,7 +162,7 @@ namespace BugTracker.Web.Administration.Organizations
                 foreach (DataRow drCustom in this.DsCustom.Tables[0].Rows)
                 {
                     var bgName = (string) drCustom["name"];
-                    this.DictCustomFieldPermissionLevel[bgName] = Convert.ToInt32(Request[bgName]);
+                    this.DictCustomFieldPermissionLevel[bgName] = (SecurityPermissionLevel)Convert.ToInt32(Request[bgName]);
                 }
 
                 on_update();

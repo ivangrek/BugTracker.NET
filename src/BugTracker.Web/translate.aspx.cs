@@ -15,6 +15,7 @@ namespace BugTracker.Web
     public partial class Translate : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -22,11 +23,8 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - translate";
@@ -68,8 +66,8 @@ namespace BugTracker.Web
                 }
 
                 // added check for permission level - corey
-                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), security);
-                if (permissionLevel == Security.PermissionNone)
+                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), Security);
+                if (permissionLevel == SecurityPermissionLevel.PermissionNone)
                 {
                     Response.Write("You are not allowed to view this item");
                     Response.End();

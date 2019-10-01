@@ -15,29 +15,24 @@ namespace BugTracker.Web.Bugs
     public partial class Print1 : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataRow Dr;
         public bool HistoryInline;
         public bool ImagesInline;
         public int Id;
 
-        public Security Security { get; set; }
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
-
-            Security = security;
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var stringBugid = Request.QueryString["id"];
             var bugid = Convert.ToInt32(stringBugid);
 
             Id = bugid;
-            this.Dr = Bug.GetBugDataRow(bugid, security);
+            this.Dr = Bug.GetBugDataRow(bugid, Security);
 
             if (this.Dr == null)
             {
@@ -45,7 +40,6 @@ namespace BugTracker.Web.Bugs
                 this.errorBlock.Visible = true;
                 this.errorBlockPermissions.Visible = false;
 
-                MainMenu.Security = security;
                 MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
                 return;
@@ -64,7 +58,6 @@ namespace BugTracker.Web.Bugs
                 this.errorBlock.Visible = false;
                 this.errorBlockPermissions.Visible = true;
 
-                MainMenu.Security = security;
                 MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
                 return;

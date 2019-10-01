@@ -359,7 +359,7 @@
         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
             var columnName = (string)drcc["name"];
-            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+            if (Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
             {
                 continue;
             }
@@ -470,42 +470,42 @@
             select += ",\nbg_last_updated_date [last updated on]";
 
         <%
-        if (Security.User.TagsFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.TagsFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
         %>
             select += ",\nisnull(bg_tags,'') [tags]";
         <%
         }
 
-        if (Security.User.ProjectFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.ProjectFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
         %>
             select += ",\nisnull(pj_name,'') [project]";
         <%
         }
 
-        if (Security.User.OrgFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.OrgFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
         %>
             select += ",\nisnull(og_name,'') [organization]";
         <%
         }
 
-        if (Security.User.CategoryFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.CategoryFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
         %>
             select += ",\nisnull(ct_name,'') [category]";
         <%
         }
 
-        if (Security.User.PriorityFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.PriorityFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
         %>
             select += ",\nisnull(pr_name,'') [priority]";
         <%
         }
 
-        if (Security.User.AssignedToFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.AssignedToFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
             if (this.UseFullNames)
             {
@@ -521,14 +521,14 @@
             }
         }
 
-        if (Security.User.StatusFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.StatusFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
         %>
             select += ",\nisnull(st_name,'') [status]";
         <%
         }
 
-        if (Security.User.UdfFieldPermissionLevel != Security.PermissionNone)
+        if (Security.User.UdfFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
         {
             if (this.ShowUdf)
             {
@@ -542,7 +542,7 @@
         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
             var columnName = (string)drcc["name"];
-            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+            if (Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
             {
                 continue;
             }
@@ -596,7 +596,7 @@
         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
         {
             var columnName = (string)drcc["name"];
-            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+            if (Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
             {
                 continue;
             }
@@ -857,7 +857,7 @@
                                         foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                                         {
                                             var columnName = (string)drcc["name"];
-                                            if (Security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone)
+                                            if (Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
                                             {
                                                 continue;
                                             }

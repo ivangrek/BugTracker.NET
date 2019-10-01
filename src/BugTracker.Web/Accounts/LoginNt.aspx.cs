@@ -15,6 +15,7 @@ namespace BugTracker.Web.Accounts
     public partial class LoginNt : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -62,7 +63,7 @@ namespace BugTracker.Web.Accounts
                         Request,
                         Response,
                         userid,
-                        (string) dr["us_username"],
+                        (string)dr["us_username"],
                         "1");
 
                     Util.UpdateMostRecentLoginDateTime(userid);

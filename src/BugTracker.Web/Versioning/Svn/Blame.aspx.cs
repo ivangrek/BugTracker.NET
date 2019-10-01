@@ -17,6 +17,7 @@ namespace BugTracker.Web.Versioning.Svn
     public partial class Blame : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string BlameText;
         public string Path;
@@ -28,9 +29,7 @@ namespace BugTracker.Web.Versioning.Svn
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = "svn blame " + HttpUtility.HtmlEncode(this.Path) + "@" + Convert.ToString(this.Revision);
 
@@ -51,8 +50,8 @@ order by svnrev_revision desc, svnap_path";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["svnrev_bug"], security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["svnrev_bug"], Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

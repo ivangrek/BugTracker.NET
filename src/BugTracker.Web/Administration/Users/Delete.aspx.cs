@@ -9,11 +9,13 @@ namespace BugTracker.Web.Administration.Users
 {
     using System;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -26,22 +28,19 @@ namespace BugTracker.Web.Administration.Users
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdminOrProjectAdmin);
 
-            security.CheckSecurity(Security.MustBeAdminOrProjectAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             var id = Util.SanitizeInteger(Request["id"]);
 
-            if (!security.User.IsAdmin)
+            if (!Security.User.IsAdmin)
             {
                 this.Sql = @"select us_created_user, us_admin from users where us_id = $us";
                 this.Sql = this.Sql.Replace("$us", id);
                 var dr = DbUtil.GetDataRow(this.Sql);
 
-                if (security.User.Usid != (int) dr["us_created_user"])
+                if (Security.User.Usid != (int) dr["us_created_user"])
                 {
                     Response.Write("You not allowed to delete this user, because you didn't create it.");
                     Response.End();

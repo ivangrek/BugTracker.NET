@@ -21,11 +21,11 @@ namespace BugTracker.Web
     {
 #pragma warning disable 618
 
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Query query = null;
 
@@ -147,7 +147,7 @@ drop table #$GUID
 ");
 
             var sql = sb.ToString().Replace("$GUID", guid);
-            sql = Util.AlterSqlPerProjectPermissions(sql, security);
+            sql = Util.AlterSqlPerProjectPermissions(sql, Security);
 
             var ds = DbUtil.GetDataSet(sql);
             Session["bugs_unfiltered"] = ds.Tables[0];

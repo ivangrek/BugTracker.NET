@@ -33,7 +33,7 @@ namespace BugTracker.Web.Core
             | RegexOptions.IgnorePatternWhitespace
             | RegexOptions.Compiled);
 
-        public static void print_bug(HttpResponse response, DataRow dr, Security security,
+        public static void print_bug(HttpResponse response, DataRow dr, ISecurity security,
             bool includeStyle,
             bool imagesInline,
             bool historyInline,
@@ -174,7 +174,7 @@ namespace BugTracker.Web.Core
             {
                 var columnName = (string)drcc["name"];
 
-                if (security.User.DictCustomFieldPermissionLevel[columnName] == Security.PermissionNone) continue;
+                if (security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone) continue;
 
                 response.Write("\n<tr><td>");
                 response.Write(columnName);
@@ -339,7 +339,7 @@ namespace BugTracker.Web.Core
             DataSet dsPosts,
             HttpResponse response,
             int bugid,
-            int permissionLevel,
+            SecurityPermissionLevel permissionLevel,
             bool writeLinks,
             bool imagesInline,
             bool historyInline,
@@ -370,35 +370,35 @@ namespace BugTracker.Web.Core
                 {
                     var comment = (string)dr["bp_comment"];
 
-                    if (user.TagsFieldPermissionLevel == Security.PermissionNone
+                    if (user.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed tags from"))
                         continue;
 
-                    if (user.ProjectFieldPermissionLevel == Security.PermissionNone
+                    if (user.ProjectFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed project from"))
                         continue;
 
-                    if (user.OrgFieldPermissionLevel == Security.PermissionNone
+                    if (user.OrgFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed organization from"))
                         continue;
 
-                    if (user.CategoryFieldPermissionLevel == Security.PermissionNone
+                    if (user.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed category from"))
                         continue;
 
-                    if (user.PriorityFieldPermissionLevel == Security.PermissionNone
+                    if (user.PriorityFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed priority from"))
                         continue;
 
-                    if (user.AssignedToFieldPermissionLevel == Security.PermissionNone
+                    if (user.AssignedToFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed assigned_to from"))
                         continue;
 
-                    if (user.StatusFieldPermissionLevel == Security.PermissionNone
+                    if (user.StatusFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed status from"))
                         continue;
 
-                    if (user.UdfFieldPermissionLevel == Security.PermissionNone
+                    if (user.UdfFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
                         && comment.StartsWith("changed " +
                                               applicationSettings.UserDefinedBugAttributeName +
                                               " from"))
@@ -408,7 +408,7 @@ namespace BugTracker.Web.Core
                     foreach (var key in user.DictCustomFieldPermissionLevel.Keys)
                     {
                         var fieldPermissionLevel = user.DictCustomFieldPermissionLevel[key];
-                        if (fieldPermissionLevel == Security.PermissionNone)
+                        if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
                             if (comment.StartsWith("changed " + key + " from"))
                                 bSkip = true;
                     }
@@ -447,7 +447,7 @@ namespace BugTracker.Web.Core
         private static void WritePost(
             HttpResponse response,
             int bugid,
-            int permissionLevel,
+            SecurityPermissionLevel permissionLevel,
             DataRow dr,
             int postId,
             bool writeLinks,
@@ -592,7 +592,7 @@ namespace BugTracker.Web.Core
             {
                 response.Write("<td align=right>&nbsp;");
 
-                if (permissionLevel != Security.PermissionReadonly)
+                if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     if (type == "comment" || type == "sent" || type == "received")
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
@@ -605,7 +605,7 @@ namespace BugTracker.Web.Core
                 {
                     if (thisIsAdmin
                         || thisCanEditAndDeletePosts
-                        && permissionLevel == Security.PermissionAll)
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
                         // This doesn't just work.  Need to make changes in edit/delete pages.
                         //	Response.Write ("&nbsp;&nbsp;&nbsp;<a style='font-size: 8pt;'");
@@ -620,7 +620,7 @@ namespace BugTracker.Web.Core
                         response.Write(">delete</a>");
                     }
 
-                    if (permissionLevel != Security.PermissionReadonly)
+                    if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
                         response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId);
@@ -635,7 +635,7 @@ namespace BugTracker.Web.Core
                 {
                     if (thisIsAdmin
                         || thisCanEditAndDeletePosts
-                        && permissionLevel == Security.PermissionAll)
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
                         response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/Edit.aspx") + @"?id="
@@ -652,7 +652,7 @@ namespace BugTracker.Web.Core
                 {
                     if (thisIsAdmin
                         || thisCanEditAndDeletePosts
-                        && permissionLevel == Security.PermissionAll)
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
                         response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Edit.aspx") + @"?id="
@@ -830,14 +830,14 @@ namespace BugTracker.Web.Core
         public static string FormatEmailUserName(
             bool writeLinks,
             int bugid,
-            int permissionLevel,
+            SecurityPermissionLevel permissionLevel,
             string email,
             string username,
             string fullname)
         {
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
-            if (email != null && email != "" && writeLinks && permissionLevel != Security.PermissionReadonly)
+            if (email != null && email != "" && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 return "<a href="
                        + applicationSettings.AbsoluteUrlPrefix
                        + "SendEmail.aspx?bg_id="

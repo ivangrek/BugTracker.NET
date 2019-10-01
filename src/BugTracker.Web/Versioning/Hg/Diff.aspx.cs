@@ -15,6 +15,8 @@ namespace BugTracker.Web.Versioning.Hg
 
     public partial class Diff : Page
     {
+        public ISecurity Security { get; set; }
+
         public string LeftOut = "";
         public string LeftTitle = "";
         public string Path = "";
@@ -26,9 +28,7 @@ namespace BugTracker.Web.Versioning.Hg
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = "hg diff " + HttpUtility.HtmlEncode(this.Path);
 
@@ -46,8 +46,8 @@ where hgap_id = $id";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["hgrev_bug"], security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["hgrev_bug"], Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

@@ -183,7 +183,7 @@ delete from bugs where bg_id = $bg";
         }
 
         public static int InsertPostAttachmentCopy(
-            Security security,
+            ISecurity security,
             int bugid,
             int copyBpid,
             string comment,
@@ -206,7 +206,7 @@ delete from bugs where bg_id = $bg";
         }
 
         public static int InsertPostAttachment(
-            Security security,
+            ISecurity security,
             int bugid,
             Stream content,
             int contentLength,
@@ -232,7 +232,7 @@ delete from bugs where bg_id = $bg";
         }
 
         private static int InsertPostAttachmentImpl(
-            Security security,
+            ISecurity security,
             int bugid,
             Stream content,
             int contentLength,
@@ -473,7 +473,7 @@ insert into bug_posts
 
         public static DataRow GetBugDataRow(
             int bugid,
-            Security security)
+            ISecurity security)
         {
             var dsCustomCols = Util.GetCustomColumns();
             return GetBugDataRow(bugid, security, dsCustomCols);
@@ -481,7 +481,7 @@ insert into bug_posts
 
         public static DataRow GetBugDataRow(
             int bugid,
-            Security security,
+            ISecurity security,
             DataSet dsCustomCols)
         {
             var sql = @" /* get_bug_datarow */";
@@ -679,7 +679,7 @@ select @pj pj, @ct ct, @pr pr, @st st, @udf udf";
             return DbUtil.GetDataRow(sql);
         }
 
-        public static int GetBugPermissionLevel(int bugid, Security security)
+        public static SecurityPermissionLevel GetBugPermissionLevel(int bugid, ISecurity security)
         {
             /*
                     public const int PERMISSION_NONE = 0;
@@ -707,24 +707,24 @@ where bg_id = $bg";
 
             var dr = DbUtil.GetDataRow(sql);
 
-            if (dr == null) return Security.PermissionNone;
+            if (dr == null) return SecurityPermissionLevel.PermissionNone;
 
-            var pl = (int)dr[0];
+            var pl = (SecurityPermissionLevel)(int)dr[0];
             var bgOrg = (int)dr[1];
 
             // maybe reduce permissions
             if (bgOrg != security.User.Org)
-                if (security.User.OtherOrgsPermissionLevel == Security.PermissionNone
-                    || security.User.OtherOrgsPermissionLevel == Security.PermissionReadonly)
+                if (security.User.OtherOrgsPermissionLevel == SecurityPermissionLevel.PermissionNone
+                    || security.User.OtherOrgsPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
                     if (security.User.OtherOrgsPermissionLevel < pl)
                         pl = security.User.OtherOrgsPermissionLevel;
 
-            return pl;
+            return (SecurityPermissionLevel)pl;
         }
 
         public static NewIds InsertBug(
             string shortDesc,
-            Security security,
+            ISecurity security,
             string tags,
             int projectid,
             int orgid,
@@ -804,7 +804,7 @@ where bg_id = $bg";
 
                     // skip if no permission to update
                     if (security.User.DictCustomFieldPermissionLevel[columnName] !=
-                        Security.PermissionAll) continue;
+                        SecurityPermissionLevel.PermissionAll) continue;
 
                     customColsSql1 += ",[" + columnName + "]";
 
@@ -908,7 +908,7 @@ select scope_identity();";
             return 0;
         }
 
-        public static void SendNotifications(int insertOrUpdate, int bugid, Security security,
+        public static void SendNotifications(int insertOrUpdate, int bugid, ISecurity security,
             int justToThisUserId)
         {
             SendNotifications(insertOrUpdate,
@@ -920,7 +920,7 @@ select scope_identity();";
                 0); // prev assigned to
         }
 
-        public static void SendNotifications(int insertOrUpdate, int bugid, Security security)
+        public static void SendNotifications(int insertOrUpdate, int bugid, ISecurity security)
         {
             SendNotifications(insertOrUpdate,
                 bugid,
@@ -935,7 +935,7 @@ select scope_identity();";
         // the emails to be sent, then spawns a thread to send them.
         public static void SendNotifications(int insertOrUpdate, // The implementation
             int bugid,
-            Security security,
+            ISecurity security,
             int justToThisUserid,
             bool statusChanged,
             bool assignedToChanged,
@@ -1092,14 +1092,14 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                     // fill in what we know is needed downstream
                     sec2.User.IsAdmin = Convert.ToBoolean(dr["us_admin"]);
                     sec2.User.ExternalUser = Convert.ToBoolean(dr["og_external_user"]);
-                    sec2.User.TagsFieldPermissionLevel = (int)dr["og_tags_field_permission_level"];
-                    sec2.User.CategoryFieldPermissionLevel = (int)dr["og_category_field_permission_level"];
-                    sec2.User.PriorityFieldPermissionLevel = (int)dr["og_priority_field_permission_level"];
-                    sec2.User.AssignedToFieldPermissionLevel = (int)dr["og_assigned_to_field_permission_level"];
-                    sec2.User.StatusFieldPermissionLevel = (int)dr["og_status_field_permission_level"];
-                    sec2.User.ProjectFieldPermissionLevel = (int)dr["og_project_field_permission_level"];
-                    sec2.User.OrgFieldPermissionLevel = (int)dr["og_org_field_permission_level"];
-                    sec2.User.UdfFieldPermissionLevel = (int)dr["og_udf_field_permission_level"];
+                    sec2.User.TagsFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_tags_field_permission_level"];
+                    sec2.User.CategoryFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_category_field_permission_level"];
+                    sec2.User.PriorityFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_priority_field_permission_level"];
+                    sec2.User.AssignedToFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_assigned_to_field_permission_level"];
+                    sec2.User.StatusFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_status_field_permission_level"];
+                    sec2.User.ProjectFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_project_field_permission_level"];
+                    sec2.User.OrgFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_org_field_permission_level"];
+                    sec2.User.UdfFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_udf_field_permission_level"];
 
                     var dsCustom = Util.GetCustomColumns();
                     foreach (DataRow drCustom in dsCustom.Tables[0].Rows)
@@ -1111,9 +1111,9 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
 
                         var obj = dr[ogName];
                         if (Convert.IsDBNull(obj))
-                            sec2.User.DictCustomFieldPermissionLevel[bgName] = Security.PermissionAll;
+                            sec2.User.DictCustomFieldPermissionLevel[bgName] = SecurityPermissionLevel.PermissionAll;
                         else
-                            sec2.User.DictCustomFieldPermissionLevel[bgName] = (int)dr[ogName];
+                            sec2.User.DictCustomFieldPermissionLevel[bgName] = (SecurityPermissionLevel)(int)dr[ogName];
                     }
 
                     PrintBug.print_bug(

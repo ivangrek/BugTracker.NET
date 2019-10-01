@@ -12,11 +12,13 @@ namespace BugTracker.Web.Bugs
     using System.IO;
     using System.Text;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Merge : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataRow Dr;
         public string Sql;
@@ -25,14 +27,11 @@ namespace BugTracker.Web.Bugs
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
-
-            if (security.User.IsAdmin || security.User.CanMergeBugs)
+            if (Security.User.IsAdmin || Security.User.CanMergeBugs)
             {
                 //
             }
@@ -55,7 +54,7 @@ namespace BugTracker.Web.Bugs
             {
                 this.from_err.InnerText = "";
                 this.into_err.InnerText = "";
-                on_update(security);
+                on_update(Security);
             }
         }
 
@@ -138,7 +137,7 @@ namespace BugTracker.Web.Bugs
             return true;
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             // does it say "Merge" or "Confirm Merge"?
 
@@ -229,7 +228,7 @@ update git_commits   set gitcom_bug = $into where gitcom_bug = $from
 
                 this.Sql = this.Sql.Replace("$from", this.prev_from_bug.Value);
                 this.Sql = this.Sql.Replace("$into", this.prev_into_bug.Value);
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
 
                 var commentId = Convert.ToInt32(DbUtil.ExecuteScalar(this.Sql));
 

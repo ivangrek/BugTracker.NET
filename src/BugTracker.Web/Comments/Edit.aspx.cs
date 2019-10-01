@@ -15,14 +15,13 @@ namespace BugTracker.Web.Comments
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
         public int Id;
 
         public string Sql;
         public bool UseFckeditor;
-
-        public Security Security { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -33,16 +32,11 @@ namespace BugTracker.Web.Comments
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            Security = security;
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
+            if (Security.User.IsAdmin || Security.User.CanEditAndDeletePosts)
             {
                 //
             }
@@ -75,9 +69,9 @@ namespace BugTracker.Web.Comments
 
             this.Bugid = (int) dr["bp_bug"];
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
-            if (permissionLevel == Security.PermissionNone
-                || permissionLevel == Security.PermissionReadonly
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone
+                || permissionLevel == SecurityPermissionLevel.PermissionReadonly
                 || (string) dr["bp_type"] != "comment")
             {
                 Response.Write("You are not allowed to edit this item");
@@ -86,13 +80,13 @@ namespace BugTracker.Web.Comments
 
             var contentType = (string) dr["bp_content_type"];
 
-            if (security.User.UseFckeditor && contentType == "text/html" &&
+            if (Security.User.UseFckeditor && contentType == "text/html" &&
                 !ApplicationSettings.DisableFCKEditor)
                 this.UseFckeditor = true;
             else
                 this.UseFckeditor = false;
 
-            if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
+            if (Security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
@@ -109,7 +103,7 @@ namespace BugTracker.Web.Comments
             }
             else
             {
-                on_update(security);
+                on_update(Security);
             }
         }
 
@@ -126,7 +120,7 @@ namespace BugTracker.Web.Comments
             return good;
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             var good = validate();
 

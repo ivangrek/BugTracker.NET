@@ -55,7 +55,7 @@
                     <td>
 
                         <%
-                            if (this.PermissionLevel != Security.PermissionReadonly)
+                            if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                             {
                         %>
                         <p>

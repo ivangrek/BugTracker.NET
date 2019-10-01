@@ -15,10 +15,11 @@ namespace BugTracker.Web
     public partial class Relationships : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
         public DataSet Ds;
-        public int PermissionLevel;
+        public SecurityPermissionLevel PermissionLevel;
         public int Previd;
         public string Ses;
 
@@ -31,9 +32,7 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = $"{ApplicationSettings.AppTitle} - relationships";
 
@@ -49,8 +48,8 @@ namespace BugTracker.Web
 
             var bugid2 = 0;
 
-            this.PermissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
-            if (this.PermissionLevel == Security.PermissionNone)
+            this.PermissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
+            if (this.PermissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();
@@ -67,7 +66,7 @@ namespace BugTracker.Web
                     Response.End();
                 }
 
-                if (this.PermissionLevel == Security.PermissionReadonly)
+                if (this.PermissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {
                     Response.Write("You are not allowed to edit this item");
                     Response.End();
@@ -75,7 +74,7 @@ namespace BugTracker.Web
 
                 if (action == "remove") // remove
                 {
-                    if (security.User.IsGuest)
+                    if (Security.User.IsGuest)
                     {
                         Response.Write("You are not allowed to delete a relationship");
                         Response.End();
@@ -91,7 +90,7 @@ namespace BugTracker.Web
                         values($bg, $us, getdate(), N'deleted relationship to $bg2', 'update')";
                     sql = sql.Replace("$bg2", Convert.ToString(bugid2));
                     sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
-                    sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
+                    sql = sql.Replace("$us", Convert.ToString(Security.User.Usid));
                     DbUtil.ExecuteNonQuery(sql);
                 }
                 else
@@ -141,8 +140,8 @@ namespace BugTracker.Web
                                     else
                                     {
                                         // check permission of related bug
-                                        var permissionLevel2 = Bug.GetBugPermissionLevel(bugid2, security);
-                                        if (permissionLevel2 == Security.PermissionNone)
+                                        var permissionLevel2 = Bug.GetBugPermissionLevel(bugid2, Security);
+                                        if (permissionLevel2 == SecurityPermissionLevel.PermissionNone)
                                         {
                                             this.add_err.InnerText = "You are not allowed to view the related item.";
                                         }
@@ -158,7 +157,7 @@ insert into bug_posts
 
                                             sql = sql.Replace("$bg2", Convert.ToString(bugid2));
                                             sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
-                                            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
+                                            sql = sql.Replace("$us", Convert.ToString(Security.User.Usid));
                                             sql = sql.Replace("$ty", Request["type"].Replace("'", "''"));
 
                                             if (this.siblings.Checked)
@@ -200,7 +199,7 @@ select bg_id [id],
     end as [parent or child],
     '<a target=_blank href=" + ResolveUrl("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [view]";
 
-            if (!security.User.IsGuest && this.PermissionLevel == Security.PermissionAll)
+            if (!Security.User.IsGuest && this.PermissionLevel == SecurityPermissionLevel.PermissionAll)
                 sql += @"
 ,'<a href=''javascript:remove(' + convert(varchar,re_bug2) + ')''>detach</a>' [detach]";
 
@@ -212,7 +211,7 @@ where re_bug1 = $bg
 order by bg_id desc";
 
             sql = sql.Replace("$bg", Convert.ToString(this.Bugid));
-            sql = Util.AlterSqlPerProjectPermissions(sql, security);
+            sql = Util.AlterSqlPerProjectPermissions(sql, Security);
 
             this.Ds = DbUtil.GetDataSet(sql);
 

@@ -9,13 +9,14 @@ namespace BugTracker.Web.Reports
 {
     using System;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
-
-        public string Sql;
+        public ISecurity Security { get; set; }
+        public IReportService ReportService { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -26,49 +27,41 @@ namespace BugTracker.Web.Reports
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "reports";
-
-            if (security.User.IsAdmin || security.User.CanEditReports)
-            {
-                //
-            }
-            else
+            if (!IsAuthorized)
             {
                 Response.Write("You are not allowed to use this page.");
                 Response.End();
             }
 
+            MainMenu.SelectedItem = MainMenuSections.Reports;
+
             if (IsPostBack)
             {
                 // do delete here
-                this.Sql = @"
-delete reports where rp_id = $1;
-delete dashboard_items where ds_report = $1";
-                this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
-                DbUtil.ExecuteNonQuery(this.Sql);
+                var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
+
+                ReportService.Delete(id);
+
                 Response.Redirect("~/Reports/List.aspx");
             }
             else
             {
                 Page.Title = $"{ApplicationSettings.AppTitle} - delete report";
 
-                var id = Util.SanitizeInteger(Request["id"]);
+                var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
+                var (valid, name) = ReportService.CheckDeleting(id);
 
-                this.Sql = @"select rp_desc from reports where rp_id = $1";
-                this.Sql = this.Sql.Replace("$1", id);
-
-                var dr = DbUtil.GetDataRow(this.Sql);
-
-                this.confirm_href.InnerText = "confirm delete of report: "
-                                              + Convert.ToString(dr["rp_desc"]);
-
-                this.row_id.Value = id;
+                if (valid)
+                {
+                    this.confirmHref.InnerText = $"confirm delete of report: \"{name}\"";
+                    this.rowId.Value = Convert.ToString(id);
+                }
             }
         }
+
+        private bool IsAuthorized => Security.User.IsAdmin
+            || Security.User.CanEditReports;
     }
 }

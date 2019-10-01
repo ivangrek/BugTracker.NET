@@ -14,6 +14,8 @@ namespace BugTracker.Web.Bugs
 
     public partial class Print : Page
     {
+        public ISecurity Security { get; set; }
+
         public DataSet Ds;
         public DataView Dv;
         public string Sql;
@@ -22,9 +24,7 @@ namespace BugTracker.Web.Bugs
         {
             if (Request["format"] != "excel") Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // fetch the sql
             var quIdString = Util.SanitizeInteger(Request["qu_id"]);
@@ -41,9 +41,9 @@ namespace BugTracker.Web.Bugs
                 var bugSql = (string) DbUtil.ExecuteScalar(this.Sql);
 
                 // replace magic variables
-                bugSql = bugSql.Replace("$ME", Convert.ToString(security.User.Usid));
+                bugSql = bugSql.Replace("$ME", Convert.ToString(Security.User.Usid));
 
-                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
+                bugSql = Util.AlterSqlPerProjectPermissions(bugSql, Security);
 
                 this.Ds = DbUtil.GetDataSet(bugSql);
                 this.Dv = new DataView(this.Ds.Tables[0]);

@@ -140,7 +140,7 @@
                                         <td nowrap>
                                             <span runat="server" id="reported_by"></span>
 
-                                            <% if (this.Id == 0 || this.PermissionLevel == Security.PermissionAll)
+                                            <% if (this.Id == 0 || this.PermissionLevel == SecurityPermissionLevel.PermissionAll)
                                                 { %>
                                         <td nowrap align="right" id="presets">Presets:
     <a title="Use previously saved settings for project, category, priority, etc..."
@@ -234,7 +234,7 @@
 
                                             <span class="smallnote" style="margin-left: 170px">
                                                 <%
-                                                    if (this.PermissionLevel != Security.PermissionReadonly)
+                                                    if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                                                     {
                                                         Response.Write("Entering \""
                                                                        + ApplicationSettings.BugLinkMarker

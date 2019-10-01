@@ -219,8 +219,8 @@
                 var selectedVal = this.DictCustomFieldPermissionLevel[bgName];
                 radio = radio.Replace("$name$", bgName);
                 radio = radio.Replace("$checked0$", selectedVal == 0 ? "checked=true" : "");
-                radio = radio.Replace("$checked1$", selectedVal == 1 ? "checked=true" : "");
-                radio = radio.Replace("$checked2$", selectedVal == 2 ? "checked=true" : "");
+                radio = radio.Replace("$checked1$", selectedVal == BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly ? "checked=true" : "");
+                radio = radio.Replace("$checked2$", selectedVal == BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll ? "checked=true" : "");
                 Response.Write(radio);
             }
         %>

@@ -13,26 +13,26 @@ namespace BugTracker.Web
 
     public partial class WritePosts : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var bugid = Convert.ToInt32(Request["id"]);
             var imagesInline = Request["images_inline"] == "1";
             var historyInline = Request["history_inline"] == "1";
 
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();
             }
 
-            var dsPosts = PrintBug.GetBugPosts(bugid, security.User.ExternalUser, historyInline);
+            var dsPosts = PrintBug.GetBugPosts(bugid, Security.User.ExternalUser, historyInline);
 
             PrintBug.WritePosts(
                 dsPosts,
@@ -43,7 +43,7 @@ namespace BugTracker.Web
                 imagesInline,
                 historyInline,
                 true, // internal_posts
-                security.User);
+                Security.User);
         }
     }
 }

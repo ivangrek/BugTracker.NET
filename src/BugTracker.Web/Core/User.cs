@@ -18,7 +18,7 @@ namespace BugTracker.Web.Core
 
         public bool AddsNotAllowed;
 
-        public int AssignedToFieldPermissionLevel = Security.PermissionAll;
+        public SecurityPermissionLevel AssignedToFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
         public int BugsPerPage = 10;
         public bool CanAssignToInternalUsers;
         public bool CanBeAssignedTo = true;
@@ -36,9 +36,9 @@ namespace BugTracker.Web.Core
         public bool CanUseReports;
 
         public bool CanViewTasks = true;
-        public int CategoryFieldPermissionLevel = Security.PermissionAll;
+        public SecurityPermissionLevel CategoryFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
 
-        public Dictionary<string, int> DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+        public Dictionary<string, SecurityPermissionLevel> DictCustomFieldPermissionLevel = new Dictionary<string, SecurityPermissionLevel>();
         public string Email = "";
         public bool EnablePopups = true;
 
@@ -49,15 +49,15 @@ namespace BugTracker.Web.Core
         public bool IsGuest;
         public bool IsProjectAdmin;
         public int Org;
-        public int OrgFieldPermissionLevel = Security.PermissionAll;
+        public SecurityPermissionLevel OrgFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
         public string OrgName = "";
 
-        public int OtherOrgsPermissionLevel = Security.PermissionAll;
-        public int PriorityFieldPermissionLevel = Security.PermissionAll;
-        public int ProjectFieldPermissionLevel = Security.PermissionAll;
-        public int StatusFieldPermissionLevel = Security.PermissionAll;
-        public int TagsFieldPermissionLevel = Security.PermissionAll;
-        public int UdfFieldPermissionLevel = Security.PermissionAll;
+        public SecurityPermissionLevel OtherOrgsPermissionLevel = SecurityPermissionLevel.PermissionAll;
+        public SecurityPermissionLevel PriorityFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
+        public SecurityPermissionLevel ProjectFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
+        public SecurityPermissionLevel StatusFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
+        public SecurityPermissionLevel TagsFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
+        public SecurityPermissionLevel UdfFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
         public bool UseFckeditor;
         public string Username = "";
         public int Usid;
@@ -89,23 +89,23 @@ namespace BugTracker.Web.Core
             this.CanEditTasks = Convert.ToBoolean(dr["og_can_edit_tasks"]);
             this.CanSearch = Convert.ToBoolean(dr["og_can_search"]);
             this.CanAssignToInternalUsers = Convert.ToBoolean(dr["og_can_assign_to_internal_users"]);
-            this.OtherOrgsPermissionLevel = (int) dr["og_other_orgs_permission_level"];
+            this.OtherOrgsPermissionLevel = (SecurityPermissionLevel)(int) dr["og_other_orgs_permission_level"];
             this.Org = (int) dr["og_id"];
             this.OrgName = (string) dr["og_name"];
             this.ForcedProject = (int) dr["us_forced_project"];
 
-            this.CategoryFieldPermissionLevel = (int) dr["og_category_field_permission_level"];
+            this.CategoryFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_category_field_permission_level"];
 
             if (ApplicationSettings.EnableTags)
-                this.TagsFieldPermissionLevel = (int) dr["og_tags_field_permission_level"];
+                this.TagsFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_tags_field_permission_level"];
             else
-                this.TagsFieldPermissionLevel = Security.PermissionNone;
-            this.PriorityFieldPermissionLevel = (int) dr["og_priority_field_permission_level"];
-            this.AssignedToFieldPermissionLevel = (int) dr["og_assigned_to_field_permission_level"];
-            this.StatusFieldPermissionLevel = (int) dr["og_status_field_permission_level"];
-            this.ProjectFieldPermissionLevel = (int) dr["og_project_field_permission_level"];
-            this.OrgFieldPermissionLevel = (int) dr["og_org_field_permission_level"];
-            this.UdfFieldPermissionLevel = (int) dr["og_udf_field_permission_level"];
+                this.TagsFieldPermissionLevel = SecurityPermissionLevel.PermissionNone;
+            this.PriorityFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_priority_field_permission_level"];
+            this.AssignedToFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_assigned_to_field_permission_level"];
+            this.StatusFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_status_field_permission_level"];
+            this.ProjectFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_project_field_permission_level"];
+            this.OrgFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_org_field_permission_level"];
+            this.UdfFieldPermissionLevel = (SecurityPermissionLevel)(int) dr["og_udf_field_permission_level"];
 
             // field permission for custom fields
             var dsCustom = Util.GetCustomColumns();
@@ -120,9 +120,9 @@ namespace BugTracker.Web.Core
                 {
                     var obj = dr[ogName];
                     if (Convert.IsDBNull(obj))
-                        this.DictCustomFieldPermissionLevel[bgName] = Security.PermissionAll;
+                        this.DictCustomFieldPermissionLevel[bgName] = SecurityPermissionLevel.PermissionAll;
                     else
-                        this.DictCustomFieldPermissionLevel[bgName] = (int) dr[ogName];
+                        this.DictCustomFieldPermissionLevel[bgName] = (SecurityPermissionLevel)(int) dr[ogName];
                 }
 
                 catch (Exception ex)
@@ -133,7 +133,7 @@ namespace BugTracker.Web.Core
                     DbUtil.ExecuteNonQuery("alter table orgs add ["
                                             + ogName
                                             + "] int null");
-                    this.DictCustomFieldPermissionLevel[bgName] = Security.PermissionAll;
+                    this.DictCustomFieldPermissionLevel[bgName] = SecurityPermissionLevel.PermissionAll;
                 }
             }
 
@@ -162,8 +162,8 @@ namespace BugTracker.Web.Core
             // at least reporter permission on that project, than user
             // can't add bugs
             if ((int) dr["us_forced_project"] != 0)
-                if ((int) dr["pu_permission_level"] == Security.PermissionReadonly
-                    || (int) dr["pu_permission_level"] == Security.PermissionNone)
+                if ((SecurityPermissionLevel)(int) dr["pu_permission_level"] == SecurityPermissionLevel.PermissionReadonly
+                    || (SecurityPermissionLevel)(int) dr["pu_permission_level"] == SecurityPermissionLevel.PermissionNone)
                     this.AddsNotAllowed = true;
         }
 

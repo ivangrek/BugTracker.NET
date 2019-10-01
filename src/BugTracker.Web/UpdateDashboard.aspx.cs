@@ -13,15 +13,15 @@ namespace BugTracker.Web
 
     public partial class UpdateDashboard : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            if (security.User.IsAdmin || security.User.CanUseReports)
+            if (Security.User.IsAdmin || Security.User.CanUseReports)
             {
                 //
             }
@@ -63,7 +63,7 @@ insert into dashboard_items
 (ds_user, ds_report, ds_chart_type, ds_col, ds_row)
 values ($user, $report, '$chart_type', $col, @last_row)";
 
-                sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
+                sql = sql.Replace("$user", Convert.ToString(Security.User.Usid));
                 sql = sql.Replace("$report", Convert.ToString(rpId));
                 sql = sql.Replace("$chart_type", Request["rp_chart_type"].Replace("'", "''"));
                 sql = sql.Replace("$col", Convert.ToString(rpCol));
@@ -73,7 +73,7 @@ values ($user, $report, '$chart_type', $col, @last_row)";
                 var dsId = Convert.ToInt32(Util.SanitizeInteger(Request["ds_id"]));
                 sql = "delete from dashboard_items where ds_id = $ds_id and ds_user = $user";
                 sql = sql.Replace("$ds_id", Convert.ToString(dsId));
-                sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
+                sql = sql.Replace("$user", Convert.ToString(Security.User.Usid));
             }
             else if (action == "moveup" || action == "movedown")
             {
@@ -108,7 +108,7 @@ and ds_id = $ds_id
                 else
                     sql = sql.Replace("$delta", "1");
                 sql = sql.Replace("$ds_id", Convert.ToString(dsId));
-                sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
+                sql = sql.Replace("$user", Convert.ToString(Security.User.Usid));
             }
 
             if (action != "")

@@ -15,6 +15,7 @@ namespace BugTracker.Web.Versioning.Git
     public partial class ViewRevisions : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
         public DataSet Ds;
@@ -23,14 +24,12 @@ namespace BugTracker.Web.Versioning.Git
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

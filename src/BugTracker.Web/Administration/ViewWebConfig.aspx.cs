@@ -13,13 +13,13 @@ namespace BugTracker.Web.Administration
 
     public partial class ViewWebConfig : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.MustBeAdmin);
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // create path
             var path = Request.MapPath(Request.Path);

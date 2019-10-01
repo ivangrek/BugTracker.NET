@@ -11,11 +11,13 @@ namespace BugTracker.Web.Queries
     using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Id;
         public string Sql;
@@ -29,12 +31,9 @@ namespace BugTracker.Web.Queries
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "queries";
+            MainMenu.SelectedItem = MainMenuSections.Queries;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - edit query";
 
@@ -48,7 +47,7 @@ namespace BugTracker.Web.Queries
 
             if (!IsPostBack)
             {
-                if (security.User.IsAdmin || security.User.CanEditSql)
+                if (Security.User.IsAdmin || Security.User.CanEditSql)
                 {
                     // these guys can do everything
                     this.vis_everybody.Checked = true;
@@ -112,9 +111,9 @@ select us_id, us_username from users order by us_username";
                     this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
                     var dr = DbUtil.GetDataRow(this.Sql);
 
-                    if ((int) dr["qu_user"] != security.User.Usid)
+                    if ((int) dr["qu_user"] != Security.User.Usid)
                     {
-                        if (security.User.IsAdmin || security.User.CanEditSql)
+                        if (Security.User.IsAdmin || Security.User.CanEditSql)
                         {
                             // these guys can do everything
                         }
@@ -165,11 +164,11 @@ select us_id, us_username from users order by us_username";
             }
             else
             {
-                on_update(security);
+                on_update(Security);
             }
         }
 
-        public bool validate(Security security)
+        public bool validate(ISecurity security)
         {
             var good = true;
 
@@ -183,7 +182,7 @@ select us_id, us_username from users order by us_username";
                 this.desc_err.InnerText = "";
             }
 
-            if (security.User.IsAdmin || security.User.CanEditSql)
+            if (Security.User.IsAdmin || Security.User.CanEditSql)
             {
                 if (this.vis_org.Checked)
                 {
@@ -248,7 +247,7 @@ select us_id, us_username from users order by us_username";
             return good;
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             var good = validate(security);
 
@@ -282,7 +281,7 @@ select us_id, us_username from users order by us_username";
                 this.Sql = this.Sql.Replace("$sq", this.sql_text.Value.Replace("'", "''"));
                 //		}
 
-                if (security.User.IsAdmin || security.User.CanEditSql)
+                if (Security.User.IsAdmin || Security.User.CanEditSql)
                 {
                     if (this.vis_everybody.Checked)
                     {
@@ -302,7 +301,7 @@ select us_id, us_username from users order by us_username";
                 }
                 else
                 {
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
                     this.Sql = this.Sql.Replace("$rl", "0");
                 }
 

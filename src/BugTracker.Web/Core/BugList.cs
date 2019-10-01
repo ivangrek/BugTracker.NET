@@ -52,7 +52,7 @@ namespace BugTracker.Web.Core
                    + " returned by query<br>";
         }
 
-        private static string GetBugListPagingString(DataView dv, Security security, bool isPostBack,
+        private static string GetBugListPagingString(DataView dv, ISecurity security, bool isPostBack,
             string newPage, ref int thisPage)
         {
             // format the text "page N of N:  1 2..."
@@ -346,9 +346,9 @@ namespace BugTracker.Web.Core
             response.Write("</select>");
         }
 
-        public static void DisplayBugListTagsLine(HttpResponse response, Security security)
+        public static void DisplayBugListTagsLine(HttpResponse response, ISecurity security)
         {
-            if (security.User.TagsFieldPermissionLevel == Security.PermissionNone) return;
+            if (security.User.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone) return;
 
             response.Write("\n<p>Show only rows with the following tags:&nbsp;");
             response.Write(
@@ -399,7 +399,7 @@ namespace BugTracker.Web.Core
             bool showCheckbox,
             DataView dv,
             HttpResponse response,
-            Security security,
+            ISecurity security,
             string newPageVal,
             bool isPostBack,
             DataSet dsCustomCols,

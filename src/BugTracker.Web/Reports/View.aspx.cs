@@ -17,52 +17,45 @@ namespace BugTracker.Web.Reports
 
     public partial class View : Page
     {
-        public int Scale = 1;
-        public string Sql;
+        public ISecurity Security { get; set; }
+        public IReportService ReportService { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            if (security.User.IsAdmin || security.User.CanUseReports)
-            {
-                //
-            }
-            else
+            if (!IsAuthorized)
             {
                 Response.Write("You are not allowed to use this page.");
                 Response.End();
             }
 
-            var stringId = Util.SanitizeInteger(Request["id"]);
+            var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
             var view = Request["view"];
             // parent_iframe = Request["parent_iframe"];  // this didn't work
 
             var scaleString = Request["scale"];
+            int scale;
 
             if (string.IsNullOrEmpty(scaleString))
-                this.Scale = 1;
+            {
+                scale = 1;
+            }
             else
-                this.Scale = Convert.ToInt32(scaleString);
+            {
+                scale = Convert.ToInt32(scaleString);
+            }
 
-            this.Sql = @"select rp_desc, rp_sql, rp_chart_type
-		from reports
-		where rp_id = $id";
+            var dataRow = ReportService.LoadOne(id);
 
-            this.Sql = this.Sql.Replace("$id", stringId);
-
-            var dr = DbUtil.GetDataRow(this.Sql);
-
-            var rpSql = (string) dr["rp_sql"];
-            var chartType = (string) dr["rp_chart_type"];
-            var desc = (string) dr["rp_desc"];
+            var rpSql = dataRow.Sql;
+            var chartType = dataRow.ChartType;
+            var desc = dataRow.Name;
 
             // replace the magic pseudo variable
-            rpSql = rpSql.Replace("$ME", Convert.ToString(security.User.Usid));
+            rpSql = rpSql.Replace("$ME", Convert.ToString(Security.User.Usid));
 
             var ds = DbUtil.GetDataSet(rpSql);
 
@@ -70,29 +63,33 @@ namespace BugTracker.Web.Reports
             {
                 if (view == "data")
                 {
-                    create_table(desc, ds);
+                    CreateTable(desc, ds);
                 }
                 else
                 {
                     if (chartType == "pie")
                     {
-                        create_pie_chart(desc, ds);
+                        CreatePieChart(desc, ds);
                     }
                     else if (chartType == "bar")
                     {
-                        create_bar_chart(desc, ds);
+                        CreateBarChart(desc, ds, scale);
                     }
                     else if (chartType == "line")
                     {
                         // we need at least two values to draw a line
                         if (ds.Tables[0].Rows.Count > 1)
-                            create_line_chart(desc, ds);
+                        {
+                            CreateLineChart(desc, ds, scale);
+                        }
                         else
-                            write_no_data_message(desc, ds);
+                        {
+                            WriteNoDataMessage(desc, ds, scale);
+                        }
                     }
                     else
                     {
-                        create_table(desc, ds);
+                        CreateTable(desc, ds);
                     }
                 }
             }
@@ -100,30 +97,37 @@ namespace BugTracker.Web.Reports
             {
                 if (view == "data")
                 {
-                    create_table(desc, ds);
+                    CreateTable(desc, ds);
                 }
                 else
                 {
                     if (chartType == "pie"
                         || chartType == "bar"
                         || chartType == "line")
-                        write_no_data_message(desc, ds);
+                    {
+                        WriteNoDataMessage(desc, ds, scale);
+                    }
                     else
-                        create_table(desc, ds);
+                    {
+                        CreateTable(desc, ds);
+                    }
                 }
             }
         }
 
-        public void create_line_chart(string title, DataSet ds)
+        private bool IsAuthorized => Security.User.IsAdmin
+            || Security.User.CanUseReports;
+
+        private void CreateLineChart(string title, DataSet ds, int scale)
         {
-            var chartWidth = 640 / this.Scale;
-            var chartHeight = 300 / this.Scale;
-            var chartTopMargin = 10 / this.Scale; // gap between highest bar and border of chart
+            var chartWidth = 640 / scale;
+            var chartHeight = 300 / scale;
+            var chartTopMargin = 10 / scale; // gap between highest bar and border of chart
 
-            var xAxisTextOffset = 8 / this.Scale; // gap between edge and start of x axis text
-            var pageTopMargin = 40 / this.Scale; // gape between chart and top of page
+            var xAxisTextOffset = 8 / scale; // gap between edge and start of x axis text
+            var pageTopMargin = 40 / scale; // gape between chart and top of page
 
-            var maxGridLines = 20 / this.Scale;
+            var maxGridLines = 20 / scale;
 
             var fontTitle = new Font("Verdana", 12, FontStyle.Bold);
 
@@ -149,7 +153,7 @@ namespace BugTracker.Web.Reports
             var gridLineInterval = 1;
             if (max > 1)
                 while (max / gridLineInterval > maxGridLines)
-                    gridLineInterval *= 10 / this.Scale;
+                    gridLineInterval *= 10 / scale;
 
             // Create a Bitmap instance
             var objBitmap = new Bitmap(
@@ -189,7 +193,7 @@ namespace BugTracker.Web.Reports
 
             for (i = 0; i < max; i += gridLineInterval)
             {
-                y = (int) (i * verticalScaleFactor);
+                y = (int)(i * verticalScaleFactor);
 
                 // y axis label
                 objGraphics.DrawString(
@@ -219,11 +223,11 @@ namespace BugTracker.Web.Reports
 
             for (i = 1; i < ds.Tables[0].Rows.Count; i++)
             {
-                var data1 = Convert.ToSingle((int) ds.Tables[0].Rows[i - 1][1]);
-                var data2 = Convert.ToSingle((int) ds.Tables[0].Rows[i][1]);
+                var data1 = Convert.ToSingle((int)ds.Tables[0].Rows[i - 1][1]);
+                var data2 = Convert.ToSingle((int)ds.Tables[0].Rows[i][1]);
 
-                var valueY1 = (int) (data1 * verticalScaleFactor);
-                var valueY2 = (int) (data2 * verticalScaleFactor);
+                var valueY1 = (int)(data1 * verticalScaleFactor);
+                var valueY2 = (int)(data2 * verticalScaleFactor);
 
                 objGraphics.DrawLine(
                     bluePen,
@@ -241,7 +245,7 @@ namespace BugTracker.Web.Reports
 
                 try
                 {
-                    xVal = Convert.ToString((int) ds.Tables[0].Rows[i][0]);
+                    xVal = Convert.ToString((int)ds.Tables[0].Rows[i][0]);
                 }
                 catch (Exception)
                 {
@@ -279,16 +283,16 @@ namespace BugTracker.Web.Reports
             objBitmap.Dispose();
         }
 
-        public void create_bar_chart(string title, DataSet ds)
+        private void CreateBarChart(string title, DataSet ds, int scale)
         {
-            var chartWidth = 640 / this.Scale;
-            var chartHeight = 300 / this.Scale;
-            var chartTopMargin = 10 / this.Scale; // gap between highest bar and border of chart
+            var chartWidth = 640 / scale;
+            var chartHeight = 300 / scale;
+            var chartTopMargin = 10 / scale; // gap between highest bar and border of chart
 
-            var xAxisTextOffset = 8 / this.Scale; // gap between edge and start of x axis text
-            var pageTopMargin = 40 / this.Scale; // gape between chart and top of page
+            var xAxisTextOffset = 8 / scale; // gap between edge and start of x axis text
+            var pageTopMargin = 40 / scale; // gape between chart and top of page
 
-            var maxGridLines = 20 / this.Scale;
+            var maxGridLines = 20 / scale;
 
             var fontTitle = new Font("Verdana", 12, FontStyle.Bold);
 
@@ -314,7 +318,7 @@ namespace BugTracker.Web.Reports
             var gridLineInterval = 1;
             if (max > 1)
                 while (max / gridLineInterval > maxGridLines)
-                    gridLineInterval *= 10 / this.Scale;
+                    gridLineInterval *= 10 / scale;
 
             // Create a Bitmap instance
             var objBitmap = new Bitmap(
@@ -354,7 +358,7 @@ namespace BugTracker.Web.Reports
 
             for (i = 0; i < max; i += gridLineInterval)
             {
-                y = (int) (i * verticalScaleFactor);
+                y = (int)(i * verticalScaleFactor);
 
                 // y axis label
                 objGraphics.DrawString(
@@ -393,8 +397,8 @@ namespace BugTracker.Web.Reports
 
             // draw bars
             var barSpace = chartWidth / ds.Tables[0].Rows.Count;
-            var barWidth = (int) (.70F * barSpace);
-            var x = (int) (.30F * barSpace);
+            var barWidth = (int)(.70F * barSpace);
+            var x = (int)(.30F * barSpace);
             x += pageLeftMargin;
 
             var xAxisTextY = chartBottom + pageBottomMargin / 2 - fontLegend.Height / 2;
@@ -402,9 +406,9 @@ namespace BugTracker.Web.Reports
 
             for (i = 0; i < ds.Tables[0].Rows.Count; i++)
             {
-                var data = Convert.ToSingle((int) ds.Tables[0].Rows[i][1]);
+                var data = Convert.ToSingle((int)ds.Tables[0].Rows[i][1]);
 
-                var barHeight = (int) (data * verticalScaleFactor);
+                var barHeight = (int)(data * verticalScaleFactor);
 
                 objGraphics.FillRectangle(
                     blueBrush,
@@ -419,7 +423,7 @@ namespace BugTracker.Web.Reports
                     x, xAxisTextY);
 
                 x += barWidth;
-                x += (int) (.30F * barSpace);
+                x += (int)(.30F * barSpace);
             }
 
             // Since we are outputting a Gif, set the ContentType appropriately
@@ -433,7 +437,7 @@ namespace BugTracker.Web.Reports
             objBitmap.Dispose();
         }
 
-        public void create_pie_chart(string title, DataSet ds)
+        private void CreatePieChart(string title, DataSet ds)
         {
             var width = 240;
             var pageTopMargin = 15;
@@ -507,7 +511,7 @@ namespace BugTracker.Web.Reports
             for (i = 0; i < ds.Tables[0].Rows.Count; i++)
             {
                 objGraphics.FillPie(
-                    (SolidBrush) colors[i],
+                    (SolidBrush)colors[i],
                     pieRect,
                     currentDegree,
                     Convert.ToSingle(ds.Tables[0].Rows[i][1]) / total * 360);
@@ -537,7 +541,7 @@ namespace BugTracker.Web.Reports
             for (i = 0; i < ds.Tables[0].Rows.Count; i++)
             {
                 objGraphics.FillRectangle(
-                    (SolidBrush) colors[i],
+                    (SolidBrush)colors[i],
                     startOfRect, // x
                     y,
                     rectWidth,
@@ -574,7 +578,7 @@ namespace BugTracker.Web.Reports
             objBitmap.Dispose();
         }
 
-        public void create_table(string title, DataSet ds)
+        private void CreateTable(string title, DataSet ds)
         {
             Response.Write("<link rel=StyleSheet href=Content/btnet.css type=text/css>");
             Response.Write("<s" + "cript");
@@ -598,14 +602,14 @@ namespace BugTracker.Web.Reports
                 Response.Write("<font size=+1>The database query for this report returned zero rows.</font>");
         }
 
-        public void write_no_data_message(string title, DataSet ds)
+        private void WriteNoDataMessage(string title, DataSet ds, int scale)
         {
-            var chartWidth = 640 / this.Scale;
-            var chartHeight = 300 / this.Scale;
-            var chartTopMargin = 10 / this.Scale; // gap between highest bar and border of chart
+            var chartWidth = 640 / scale;
+            var chartHeight = 300 / scale;
+            var chartTopMargin = 10 / scale; // gap between highest bar and border of chart
 
-            var xAxisTextOffset = 8 / this.Scale; // gap between edge and start of x axis text
-            var pageTopMargin = 40 / this.Scale; // gape between chart and top of page
+            var xAxisTextOffset = 8 / scale; // gap between edge and start of x axis text
+            var pageTopMargin = 40 / scale; // gape between chart and top of page
 
             var fontTitle = new Font("Verdana", 12, FontStyle.Bold);
             var fontLegend = new Font("Verdana", 8);

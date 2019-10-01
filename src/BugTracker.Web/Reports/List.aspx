@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="BugTracker.Web.Reports.List" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
@@ -14,7 +15,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
+    <BugTracker:MainMenu runat="server" ID="MainMenu" />
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -24,15 +25,17 @@
         <a href="<%= ResolveUrl("~/Reports/Edit.aspx")%>">add new report</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <% } %>
 
-        <a href="<%= ResolveUrl("~/Dashboard.aspx")%>">dashboard</a>
+        <a href="<%= ResolveUrl("~/Reports/Dashboard.aspx")%>">dashboard</a>
 
         <%
-
             if (this.Ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, "", "", false);
+            {
+                SortableHtmlTable.CreateFromDataSet(Response, this.Ds, string.Empty, string.Empty, false);
+            }
             else
+            {
                 Response.Write("No reports in the database.");
+            }
         %>
     </div>
 </asp:Content>

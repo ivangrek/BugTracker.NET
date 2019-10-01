@@ -14,10 +14,13 @@ namespace BugTracker.Web.Administration
     using System.Text;
     using System.Web;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class EditStyles : Page
     {
+        public ISecurity Security { get; set; }
+
         public DataSet Ds;
 
         public void Page_Init(object sender, EventArgs e)
@@ -29,12 +32,9 @@ namespace BugTracker.Web.Administration
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             this.Ds = DbUtil.GetDataSet(
                 @"select

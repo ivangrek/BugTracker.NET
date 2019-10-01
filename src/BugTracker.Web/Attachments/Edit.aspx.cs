@@ -14,6 +14,7 @@ namespace BugTracker.Web.Attachments
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Bugid;
         public int Id;
@@ -28,14 +29,11 @@ namespace BugTracker.Web.Attachments
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
+            if (Security.User.IsAdmin || Security.User.CanEditAndDeletePosts)
             {
                 //
             }
@@ -55,14 +53,14 @@ namespace BugTracker.Web.Attachments
             var = Request.QueryString["bug_id"];
             this.Bugid = Convert.ToInt32(var);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, security);
-            if (permissionLevel != Security.PermissionAll)
+            var permissionLevel = Bug.GetBugPermissionLevel(this.Bugid, Security);
+            if (permissionLevel != SecurityPermissionLevel.PermissionAll)
             {
                 Response.Write("You are not allowed to edit this item");
                 Response.End();
             }
 
-            if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
+            if (Security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
             {
                 this.internal_only.Visible = false;
                 this.internal_only_label.Visible = false;
@@ -83,7 +81,7 @@ namespace BugTracker.Web.Attachments
             }
             else
             {
-                on_update(security);
+                on_update(Security);
             }
         }
 
@@ -94,7 +92,7 @@ namespace BugTracker.Web.Attachments
             return good;
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             var good = validate();
 

@@ -14,6 +14,7 @@ namespace BugTracker.Web.Versioning.Svn
     public partial class View : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Repo;
 
@@ -22,8 +23,7 @@ namespace BugTracker.Web.Versioning.Svn
             Util.DoNotCache(Response);
             Response.ContentType = "text/plain";
 
-            var security = new Security();
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // get info about revision
 
@@ -42,8 +42,8 @@ order by svnrev_revision desc, svnap_path";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["svnrev_bug"], security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["svnrev_bug"], Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

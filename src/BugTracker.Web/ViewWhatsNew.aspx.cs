@@ -9,11 +9,13 @@ namespace BugTracker.Web
 {
     using System;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class ViewWhatsNew : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -24,12 +26,9 @@ namespace BugTracker.Web
 
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "news";
+            MainMenu.SelectedItem = MainMenuSections.News;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - news?";
         }

@@ -60,11 +60,11 @@ function send_email(id) {
     if (dirty) {
         var result = my_confirm();
         if (result) {
-            window.document.location = "SendEmail.aspx?bg_id=" + id;
+            window.document.location = "/SendEmail.aspx?bg_id=" + id;
         }
     }
     else {
-        window.document.location = "SendEmail.aspx?bg_id=" + id;
+        window.document.location = "/SendEmail.aspx?bg_id=" + id;
     }
 }
 
@@ -95,7 +95,7 @@ function toggle_notifications(bugid) {
     var el = get_el("get_stop_notifications");
     var text = get_text(el);
 
-    var url = "Subscribe.aspx?ses="
+    var url = "/Subscribe.aspx?ses="
         + get_cookie("se_id")
         + "&id="
         + bugid

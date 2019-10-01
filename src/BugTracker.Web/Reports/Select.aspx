@@ -5,7 +5,8 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SelectReport.aspx.cs" Inherits="BugTracker.Web.SelectReport" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Select.aspx.cs" Inherits="BugTracker.Web.Reports.Select" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -24,14 +25,15 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
-        <p />
-
         <%
             if (this.Ds.Tables[0].Rows.Count > 0)
-                SortableHtmlTable.CreateFromDataSet(
-                    Response, this.Ds, "", "", false);
+            {
+                SortableHtmlTable.CreateFromDataSet(Response, this.Ds, string.Empty, string.Empty, false);
+            }
             else
+            {
                 Response.Write("No reports in the database.");
+            }
         %>
     </div>
 </asp:Content>

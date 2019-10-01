@@ -14,13 +14,13 @@ namespace BugTracker.Web
 
     public partial class Ajax2 : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // will this be too slow?
 
@@ -33,7 +33,7 @@ namespace BugTracker.Web
             order by 1";
 
                 // if you don't use permissions, comment out this line for speed?
-                sql = Util.AlterSqlPerProjectPermissions(sql, security);
+                sql = Util.AlterSqlPerProjectPermissions(sql, Security);
 
                 var text = Request["q"];
                 sql = sql.Replace("$str", text.Replace("'", "''"));

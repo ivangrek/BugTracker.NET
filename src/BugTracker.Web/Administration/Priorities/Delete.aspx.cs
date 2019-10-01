@@ -9,12 +9,14 @@ namespace BugTracker.Web.Administration.Priorities
 {
     using System;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
     using Core.Administration;
 
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
         public IPriorityService PriorityService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
@@ -26,12 +28,9 @@ namespace BugTracker.Web.Administration.Priorities
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             if (IsPostBack)
             {
@@ -51,13 +50,13 @@ namespace BugTracker.Web.Administration.Priorities
 
                 if (valid)
                 {
-                    Response.Write($"You can't delete priority \"{name}\" because some bugs still reference it.");
-                    Response.End();
+                    this.confirmHref.InnerText = $"confirm delete of \"{name}\"";
+                    this.rowId.Value = Convert.ToString(id);
                 }
                 else
                 {
-                    this.confirmHref.InnerText = $"confirm delete of \"{name}\"";
-                    this.rowId.Value = Convert.ToString(id);
+                    Response.Write($"You can't delete priority \"{name}\" because some bugs still reference it.");
+                    Response.End();
                 }
             }
         }

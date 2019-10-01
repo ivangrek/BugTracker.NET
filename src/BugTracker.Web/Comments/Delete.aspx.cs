@@ -14,6 +14,7 @@ namespace BugTracker.Web.Comments
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -26,14 +27,11 @@ namespace BugTracker.Web.Comments
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
-            if (security.User.IsAdmin || security.User.CanEditAndDeletePosts)
+            if (Security.User.IsAdmin || Security.User.CanEditAndDeletePosts)
             {
                 //
             }
@@ -57,8 +55,8 @@ namespace BugTracker.Web.Comments
                 var bugId = Util.SanitizeInteger(Request["bug_id"]);
                 this.redirect_bugid.Value = bugId;
 
-                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugId), security);
-                if (permissionLevel != Security.PermissionAll)
+                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugId), Security);
+                if (permissionLevel != SecurityPermissionLevel.PermissionAll)
                 {
                     Response.Write("You are not allowed to edit this item");
                     Response.End();

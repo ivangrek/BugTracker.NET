@@ -10,11 +10,13 @@ namespace BugTracker.Web.Administration.Users
     using System;
     using System.Data;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class List : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
 
@@ -22,18 +24,15 @@ namespace BugTracker.Web.Administration.Users
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdminOrProjectAdmin);
 
-            security.CheckSecurity(Security.MustBeAdminOrProjectAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - users";
 
             string sql;
 
-            if (security.User.IsAdmin)
+            if (Security.User.IsAdmin)
                 sql = @"
             select distinct pu_user
             into #t
@@ -133,7 +132,7 @@ namespace BugTracker.Web.Administration.Users
             else
                 sql = sql.Replace("$filter_users", "");
 
-            sql = sql.Replace("$us", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$us", Convert.ToString(Security.User.Usid));
             this.Ds = DbUtil.GetDataSet(sql);
 
             // cookies

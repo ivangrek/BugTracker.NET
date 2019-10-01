@@ -396,7 +396,7 @@ where us_username = N'$us'";
             security.User.Usid = (int)dr["us_id"];
             security.User.IsAdmin = Convert.ToBoolean(dr["us_admin"]);
             security.User.Org = (int)dr["us_org"];
-            security.User.OtherOrgsPermissionLevel = (int)dr["og_other_orgs_permission_level"];
+            security.User.OtherOrgsPermissionLevel = (SecurityPermissionLevel)(int)dr["og_other_orgs_permission_level"];
             security.User.ForcedProject = (int)dr["us_forced_project"];
 
             return security;

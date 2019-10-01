@@ -14,6 +14,7 @@ namespace BugTracker.Web
     public partial class DeleteTask : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -26,9 +27,7 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.MustBeAdmin);
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (Request.QueryString["ses"] != (string) Session["session_cookie"])
             {
@@ -39,9 +38,9 @@ namespace BugTracker.Web
             var stringBugid = Util.SanitizeInteger(Request["bugid"]);
             var bugid = Convert.ToInt32(stringBugid);
 
-            var permissionLevel = Bug.GetBugPermissionLevel(bugid, security);
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, Security);
 
-            if (permissionLevel != Security.PermissionAll)
+            if (permissionLevel != SecurityPermissionLevel.PermissionAll)
             {
                 Response.Write("You are not allowed to edit this item");
                 Response.End();

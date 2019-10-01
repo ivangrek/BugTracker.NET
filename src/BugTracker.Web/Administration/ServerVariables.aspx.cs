@@ -14,13 +14,13 @@ namespace BugTracker.Web.Administration
 
     public partial class ServerVariables : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.MustBeAdmin);
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             int loop1, loop2;
             NameValueCollection coll;

@@ -10,12 +10,14 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
     using System;
     using System.Collections.Generic;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
     using Core.Administration;
 
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
         public IUserDefinedAttributeService UserDefinedAttributeService { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
@@ -27,12 +29,9 @@ namespace BugTracker.Web.Administration.UserDefinedAttributes
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             int.TryParse(Request.QueryString["id"], out var id);
 

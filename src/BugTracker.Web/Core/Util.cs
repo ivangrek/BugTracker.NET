@@ -357,7 +357,7 @@ namespace BugTracker.Web.Core
             return x.ToString(CultureInfo.InvariantCulture);
         }
 
-        public static string AlterSqlPerProjectPermissions(string sql, Security security)
+        public static string AlterSqlPerProjectPermissions(string sql, ISecurity security)
         {
             string projectPermissionsSql;
 
@@ -630,7 +630,7 @@ namespace BugTracker.Web.Core
             return ts.Seconds + " seconds ago";
         }
 
-        public static DataTable GetRelatedUsers(Security security, bool forceFullNames)
+        public static DataTable GetRelatedUsers(ISecurity security, bool forceFullNames)
         {
             string sql;
 
@@ -758,7 +758,7 @@ drop table #temp2";
             sql = sql.Replace("$user.org", Convert.ToString(security.User.Org));
             sql = sql.Replace("$og_external_user", Convert.ToString(security.User.ExternalUser ? 1 : 0));
             sql = sql.Replace("$og_other_orgs_permission_level",
-                Convert.ToString(security.User.OtherOrgsPermissionLevel));
+                Convert.ToString((int)security.User.OtherOrgsPermissionLevel));
 
             return DbUtil.GetDataSet(sql).Tables[0];
         }
@@ -1096,7 +1096,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             response.End();
         }
 
-        public static DataSet GetAllTasks(Security security, int bugid)
+        public static DataSet GetAllTasks(ISecurity security, int bugid)
         {
             var sql = "select ";
 

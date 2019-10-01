@@ -12,11 +12,13 @@ namespace BugTracker.Web
     using System.IO;
     using System.Text;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class MassEdit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -29,14 +31,11 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
-
-            if (security.User.IsAdmin || security.User.CanMassEditBugs)
+            if (Security.User.IsAdmin || Security.User.CanMassEditBugs)
             {
                 //
             }

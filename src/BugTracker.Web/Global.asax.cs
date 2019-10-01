@@ -38,6 +38,10 @@ namespace BugTracker.Web
             builder.RegisterType<ApplicationSettings>()
                 .As<IApplicationSettings>();
 
+            builder.RegisterType<Security>()
+                .As<ISecurity>()
+                .InstancePerRequest();
+
             builder.RegisterType<Authenticate>()
                 .As<IAuthenticate>()
                 .InstancePerRequest();
@@ -59,6 +63,10 @@ namespace BugTracker.Web
 
             builder.RegisterType<UserDefinedAttributeService>()
                 .As<IUserDefinedAttributeService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<ReportService>()
+                .As<IReportService>()
                 .InstancePerRequest();
 
             _containerProvider = new ContainerProvider(builder.Build());

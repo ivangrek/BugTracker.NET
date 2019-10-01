@@ -13,19 +13,19 @@ namespace BugTracker.Web
 
     public partial class Ajax : Page
     {
+        public ISecurity Security { get; set; }
+
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var bugid = Util.SanitizeInteger(Request["bugid"]);
 
             // check permission
-            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugid), security);
-            if (permissionLevel != Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(bugid), Security);
+            if (permissionLevel != SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write(@"
 
@@ -42,7 +42,7 @@ font-size: 7pt;
 </style>");
 
                 var intBugid = Convert.ToInt32(bugid);
-                var dsPosts = PrintBug.GetBugPosts(intBugid, security.User.ExternalUser, false);
+                var dsPosts = PrintBug.GetBugPosts(intBugid, Security.User.ExternalUser, false);
                 var postCnt = PrintBug.WritePosts(
                     dsPosts,
                     Response,
@@ -52,7 +52,7 @@ font-size: 7pt;
                     false, // images inline
                     false, // history inline
                     true, // internal posts
-                    security.User);
+                    Security.User);
 
                 // We can't unwrite what we wrote, but let's tell javascript to ignore it.
                 if (postCnt == 0) Response.Write("<!--zeroposts-->");

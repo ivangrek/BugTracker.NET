@@ -22,24 +22,18 @@ namespace BugTracker.Web
     {
 
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public bool EnableInternalPosts;
         public int Project = -1;
         public string Sql;
 
-        public Security Security { get; set; }
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            Security = security;
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - send email";
@@ -96,7 +90,7 @@ namespace BugTracker.Web
                 or (bp_parent = $id and bp_type='file')";
 
                     this.Sql = this.Sql.Replace("$id", stringBpId);
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
 
                     var dv = DbUtil.GetDataView(this.Sql);
                     dr = null;
@@ -107,15 +101,15 @@ namespace BugTracker.Web
                     }
 
                     var intBgId = (int) dr["bg_id"];
-                    var permissionLevel = Bug.GetBugPermissionLevel(intBgId, security);
-                    if (permissionLevel == Security.PermissionNone)
+                    var permissionLevel = Bug.GetBugPermissionLevel(intBgId, Security);
+                    if (permissionLevel == SecurityPermissionLevel.PermissionNone)
                     {
                         Response.Write("You are not allowed to view this item");
                         Response.End();
                     }
 
                     if ((int) dr["bp_hidden_from_external_users"] == 1)
-                        if (security.User.ExternalUser)
+                        if (Security.User.ExternalUser)
                         {
                             Response.Write("You are not allowed to view this post");
                             Response.End();
@@ -166,7 +160,7 @@ namespace BugTracker.Web
 
                     if (dr["us_signature"].ToString() != "")
                     {
-                        if (security.User.UseFckeditor)
+                        if (Security.User.UseFckeditor)
                         {
                             this.body.Value += "<br><br><br>";
                             this.body.Value += dr["us_signature"].ToString().Replace("\r\n", "<br>");
@@ -187,7 +181,7 @@ namespace BugTracker.Web
 
                         if (dr["bp_type"].ToString() == "received")
                         {
-                            if (security.User.UseFckeditor)
+                            if (Security.User.UseFckeditor)
                             {
                                 this.body.Value += "<br><br><br>";
                                 this.body.Value += "&#62;From: " +
@@ -206,7 +200,7 @@ namespace BugTracker.Web
                             if (i < 4 && (lines[i].IndexOf("To:") == 0 || lines[i].IndexOf("Cc:") == 0))
                             {
                                 nextLineIsDate = true;
-                                if (security.User.UseFckeditor)
+                                if (Security.User.UseFckeditor)
                                     this.body.Value +=
                                         "&#62;" + lines[i].Replace("<", "&#60;").Replace(">", "&#62;") + "<br>";
                                 else
@@ -215,7 +209,7 @@ namespace BugTracker.Web
                             else if (nextLineIsDate)
                             {
                                 nextLineIsDate = false;
-                                if (security.User.UseFckeditor)
+                                if (Security.User.UseFckeditor)
                                     this.body.Value +=
                                         "&#62;Date: " + Convert.ToString(dr["bp_date"]) + "<br>&#62;<br>";
                                 else
@@ -223,7 +217,7 @@ namespace BugTracker.Web
                             }
                             else
                             {
-                                if (security.User.UseFckeditor)
+                                if (Security.User.UseFckeditor)
                                 {
                                     if (Convert.ToString(dr["bp_content_type"]) != "text/html")
                                     {
@@ -263,9 +257,9 @@ namespace BugTracker.Web
                 {
                     stringBgId = Util.SanitizeInteger(stringBgId);
 
-                    var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), security);
-                    if (permissionLevel == Security.PermissionNone
-                        || permissionLevel == Security.PermissionReadonly)
+                    var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), Security);
+                    if (permissionLevel == SecurityPermissionLevel.PermissionNone
+                        || permissionLevel == SecurityPermissionLevel.PermissionReadonly)
                     {
                         Response.Write("You are not allowed to edit this item");
                         Response.End();
@@ -284,7 +278,7 @@ namespace BugTracker.Web
                 left outer join projects on bg_project = pj_id
                 where bg_id = $bg";
 
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
                     this.Sql = this.Sql.Replace("$bg", stringBgId);
 
                     dr = DbUtil.GetDataRow(this.Sql);
@@ -303,7 +297,7 @@ namespace BugTracker.Web
 
                     if (dr["us_signature"].ToString() != "")
                     {
-                        if (security.User.UseFckeditor)
+                        if (Security.User.UseFckeditor)
                         {
                             this.body.Value += "<br><br><br>";
                             this.body.Value += dr["us_signature"].ToString().Replace("\r\n", "<br>");
@@ -331,7 +325,7 @@ namespace BugTracker.Web
             }
             else
             {
-                on_update(security);
+                on_update(Security);
             }
         }
 
@@ -445,7 +439,7 @@ namespace BugTracker.Web
             return good;
         }
 
-        public string get_bug_text(int bugid, Security security)
+        public string get_bug_text(int bugid, ISecurity security)
         {
             // Get bug html
 
@@ -465,7 +459,7 @@ namespace BugTracker.Web
             return writer.ToString();
         }
 
-        public void on_update(Security security)
+        public void on_update(ISecurity security)
         {
             if (!validate()) return;
 
@@ -480,8 +474,8 @@ update bugs set
     where bg_id = $id";
 
             this.Sql = this.Sql.Replace("$id", this.bg_id.Value);
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
-            if (security.User.UseFckeditor)
+            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+            if (Security.User.UseFckeditor)
             {
                 var adjustedBody = "Subject: " + this.subject.Value + "<br><br>";
                 adjustedBody += Util.StripDangerousTags(this.body.Value);
@@ -529,7 +523,7 @@ update bugs set
             if (this.include_bug.Checked)
             {
                 // white space isn't handled well, I guess.
-                if (security.User.UseFckeditor)
+                if (Security.User.UseFckeditor)
                 {
                     bodyText = this.body.Value;
                     bodyText += "<br><br>";
@@ -547,7 +541,7 @@ update bugs set
             }
             else
             {
-                if (security.User.UseFckeditor)
+                if (Security.User.UseFckeditor)
                 {
                     bodyText = this.body.Value;
                     format = BtnetMailFormat.Html;
@@ -576,7 +570,7 @@ update bugs set
                 this.msg.InnerText = result;
         }
 
-        public int[] handle_attachments(int commentId, Security security)
+        public int[] handle_attachments(int commentId, ISecurity security)
         {
             var attachments = new ArrayList();
 

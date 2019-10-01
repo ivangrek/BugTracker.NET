@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web {
-    
-    
-    public partial class Dashboard {
-        
+namespace BugTracker.Web.Reports
+{
+
+
+    public partial class Dashboard
+    {
+
         /// <summary>
         /// MainMenu control.
         /// </summary>

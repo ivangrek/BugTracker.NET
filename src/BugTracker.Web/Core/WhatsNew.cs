@@ -18,7 +18,7 @@ namespace BugTracker.Web.Core
         private static readonly object Mylock = new object();
         private static long _prevSeconds;
 
-        public static void AddNews(int bugid, string desc, string action, Security security)
+        public static void AddNews(int bugid, string desc, string action, ISecurity security)
         {
             IApplicationSettings applicationSettings = new ApplicationSettings();
 

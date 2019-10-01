@@ -14,6 +14,7 @@ namespace BugTracker.Web.Administration.CustomFields
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public int Id;
         public string Sql;
@@ -27,11 +28,8 @@ namespace BugTracker.Web.Administration.CustomFields
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            security.CheckSecurity(Security.MustBeAdmin);
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - edit custom column metadata";

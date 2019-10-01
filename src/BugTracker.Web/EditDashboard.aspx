@@ -28,7 +28,7 @@
         function show_select_report_page(whichCol) {
 
             col = whichCol;
-            popup_window = window.open('SelectReport.aspx');
+            popup_window = window.open('<%= ResolveUrl("~/Reports/Select.aspx") %>');
         }
 
         function add_selected_report(chartType, id) {
@@ -46,7 +46,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <a href="Dashboard.aspx">back to dashboard</a>
+    <a href="<%= ResolveUrl("~/Reports/Dashboard.aspx") %>">back to dashboard</a>
     <table border="0" cellspacing="0" cellpadding="10">
         <tr>
             <td valign="top">&nbsp;<br>
@@ -65,7 +65,7 @@
                         <a href="javascript:show_select_report_page(2)">[add report to dashboard column 2]</a>
                     </div>
     </table>
-    <form id="addform" method="get" action="UpdateDashboard.aspx">
+    <form id="addform" method="get" action="<%= ResolveUrl("~/UpdateDashboard.aspx") %>">
         <input type="hidden" name="rp_id">
         <input type="hidden" name="rp_chart_type">
         <input type="hidden" name="rp_col">

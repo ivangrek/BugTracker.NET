@@ -14,6 +14,8 @@ namespace BugTracker.Web.Versioning.Hg
 
     public partial class Blame : Page
     {
+        public ISecurity Security { get; set; }
+
         public string BlameText;
         public string Path;
         public string Revision;
@@ -22,9 +24,7 @@ namespace BugTracker.Web.Versioning.Hg
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
-
-            security.CheckSecurity(Security.AnyUserOk);
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             Page.Title = "hg blame " + HttpUtility.HtmlEncode(this.Revision) + " -- " + HttpUtility.HtmlEncode(this.Path);
 
@@ -40,8 +40,8 @@ where hgap_id = $id";
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["hgrev_bug"], security);
-            if (permissionLevel == Security.PermissionNone)
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["hgrev_bug"], Security);
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();

@@ -17,6 +17,7 @@ namespace BugTracker.Web.Bugs
     public partial class List : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet DsCustomCols = null;
         public DataView Dv;
@@ -25,30 +26,23 @@ namespace BugTracker.Web.Bugs
         public string Sql;
         public string SqlError = string.Empty;
 
-        public Security Security { get; set; }
-
         public void Page_Load(object sender, EventArgs e)
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            Security = security;
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - {ApplicationSettings.PluralBugLabel}";
 
             if (!IsPostBack)
             {
-                load_query_dropdown(security);
+                load_query_dropdown(Security);
 
                 if (Session["just_did_text_search"] == null)
                 {
-                    do_query(security);
+                    do_query(Security);
                 }
                 else
                 {
@@ -66,7 +60,7 @@ namespace BugTracker.Web.Bugs
                 {
                     this.QuIdString = Convert.ToString(this.query.SelectedItem.Value);
                     reset_query_state();
-                    do_query(security);
+                    do_query(Security);
                 }
                 else
                 {
@@ -75,7 +69,7 @@ namespace BugTracker.Web.Bugs
                     this.Dv = (DataView) Session["bugs"];
                     if (this.Dv == null)
                     {
-                        do_query(security);
+                        do_query(Security);
                     }
                     else
                     {
@@ -112,7 +106,7 @@ namespace BugTracker.Web.Bugs
             this.prev_dir.Value = "ASC";
         }
 
-        public void do_query(Security security)
+        public void do_query(ISecurity security)
         {
             // figure out what SQL to run and run it.
 
@@ -144,7 +138,7 @@ namespace BugTracker.Web.Bugs
                 // Use sql associated with user
                 this.Sql = @"select qu_id, qu_sql from queries where qu_id in
             (select us_default_query from users where us_id = $us)";
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
                 var dr = DbUtil.GetDataRow(this.Sql);
                 if (dr != null)
                 {
@@ -187,7 +181,7 @@ namespace BugTracker.Web.Bugs
             }
 
             // replace magic variables
-            bugSql = bugSql.Replace("$ME", Convert.ToString(security.User.Usid));
+            bugSql = bugSql.Replace("$ME", Convert.ToString(Security.User.Usid));
 
             bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
 
@@ -223,7 +217,7 @@ namespace BugTracker.Web.Bugs
                 Session["bugs_unfiltered"] = null;
         }
 
-        public void load_query_dropdown(Security security)
+        public void load_query_dropdown(ISecurity security)
         {
             // populate query drop down
             this.Sql = @"/* query dropdown */
@@ -234,8 +228,8 @@ or isnull(qu_user,0) = $us
 or isnull(qu_org,0) = $org
 order by qu_desc";
 
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
-            this.Sql = this.Sql.Replace("$org", Convert.ToString(security.User.Org));
+            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+            this.Sql = this.Sql.Replace("$org", Convert.ToString(Security.User.Org));
 
             this.query.DataSource = DbUtil.GetDataView(this.Sql);
 
@@ -244,7 +238,7 @@ order by qu_desc";
             this.query.DataBind();
         }
 
-        public void display_bugs(bool showCheckboxes, Security security)
+        public void display_bugs(bool showCheckboxes, ISecurity security)
         {
             BugList.DisplayBugs(
                 showCheckboxes, this.Dv,

@@ -25,7 +25,7 @@
             <table border="0">
                 <tr>
                     <td>
-                        <form class="frm" runat="server" action="ViewSubscribers.aspx">
+                        <form class="frm" runat="server" action="~/ViewSubscribers.aspx">
                             <table>
                                 <tr>
                                     <td><span class="lbl">add subscriber:</span>

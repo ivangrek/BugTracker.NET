@@ -13,13 +13,13 @@ namespace BugTracker.Web.Bugs
     using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.UI;
-    using System.Web.UI.HtmlControls;
     using System.Web.UI.WebControls;
     using Core;
 
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public bool AssignedToChanged;
 
@@ -38,11 +38,9 @@ namespace BugTracker.Web.Bugs
         public int Id;
 
         public bool ImagesInline = true;
-        public int PermissionLevel;
+        public SecurityPermissionLevel PermissionLevel;
         public string Sql;
         public bool StatusChanged;
-
-        public Security Security { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -53,13 +51,8 @@ namespace BugTracker.Web.Bugs
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            Security = security;
-
-            MainMenu.Security = security;
             MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             set_msg("");
@@ -102,19 +95,19 @@ namespace BugTracker.Web.Bugs
 
                 if (this.Id == 0)
                 {
-                    prepare_for_insert(security);
+                    prepare_for_insert(Security);
                 }
                 else
                 {
                     get_cookie_values_for_show_hide_toggles();
 
                     // Get this entry's data from the db and fill in the form
-                    this.DrBug = Bug.GetBugDataRow(this.Id, security, this.DsCustomCols);
+                    this.DrBug = Bug.GetBugDataRow(this.Id, Security, this.DsCustomCols);
 
-                    prepare_for_update(security);
+                    prepare_for_update(Security);
                 }
 
-                if (security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
+                if (Security.User.ExternalUser || !ApplicationSettings.EnableInternalOnlyPosts)
                 {
                     this.internal_only.Visible = false;
                     this.internal_only_label.Visible = false;
@@ -124,21 +117,21 @@ namespace BugTracker.Web.Bugs
             {
                 get_cookie_values_for_show_hide_toggles();
 
-                this.DrBug = Bug.GetBugDataRow(this.Id, security, this.DsCustomCols);
+                this.DrBug = Bug.GetBugDataRow(this.Id, Security, this.DsCustomCols);
 
-                load_incoming_custom_col_vals_into_hash(security);
+                load_incoming_custom_col_vals_into_hash(Security);
 
                 if (did_user_hit_submit_button()) // or is this a project dropdown autopostback?
                 {
-                    this.Good = validate(security);
+                    this.Good = validate(Security);
 
                     if (this.Good)
                     {
                         // Actually do the update
                         if (this.Id == 0)
-                            do_insert(security);
+                            do_insert(Security);
                         else
-                            do_update(security);
+                            do_update(Security);
                     }
                     else // bad, invalid
                     {
@@ -147,13 +140,13 @@ namespace BugTracker.Web.Bugs
                             set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not created.");
                         else
                             set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not updated.");
-                        load_user_dropdown(security);
+                        load_user_dropdown(Security);
                     }
                 }
                 else
                 {
                     // This is the project dropdown autopost back.
-                    load_user_dropdown(security);
+                    load_user_dropdown(Security);
                 }
             }
         }
@@ -179,9 +172,9 @@ namespace BugTracker.Web.Bugs
                 this.HistoryInline = true;
         }
 
-        public void prepare_for_insert(Security security)
+        public void prepare_for_insert(ISecurity security)
         {
-            if (security.User.AddsNotAllowed)
+            if (Security.User.AddsNotAllowed)
             {
                 // TODO wrong message
                 this.mainBlock.Visible = false;
@@ -206,7 +199,7 @@ namespace BugTracker.Web.Bugs
             foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
             {
                 var columnName = (string) drcc["name"];
-                if (security.User.DictCustomFieldPermissionLevel[columnName] != Security.PermissionNone)
+                if (Security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
                 {
                     var defaultval = get_custom_col_default_value(drcc["default value"]);
                     this.HashCustomCols.Add(columnName, defaultval);
@@ -214,13 +207,13 @@ namespace BugTracker.Web.Bugs
             }
 
             // We don't know the project yet, so all permissions
-            set_controls_field_permission(Security.PermissionAll, security);
+            set_controls_field_permission(SecurityPermissionLevel.PermissionAll, security);
 
             // Execute code not written by me
             Workflow.CustomAdjustControls(null, security.User, this);
         }
 
-        public void load_dropdowns_for_insert(Security security)
+        public void load_dropdowns_for_insert(ISecurity security)
         {
             load_dropdowns(security.User, security);
 
@@ -239,7 +232,7 @@ namespace BugTracker.Web.Bugs
             load_other_dropdowns_and_select_defaults(dsDefaults, security);
         }
 
-        public void prepare_for_update(Security security)
+        public void prepare_for_update(ISecurity security)
         {
             if (this.DrBug == null)
             {
@@ -252,9 +245,9 @@ namespace BugTracker.Web.Bugs
             }
 
             // look at permission level and react accordingly
-            this.PermissionLevel = (int) this.DrBug["pu_permission_level"];
+            this.PermissionLevel = (SecurityPermissionLevel)(int) this.DrBug["pu_permission_level"];
 
-            if (this.PermissionLevel == Security.PermissionNone)
+            if (this.PermissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.mainBlock.Visible = false;
                 this.errorBlock.Visible = false;
@@ -267,7 +260,7 @@ namespace BugTracker.Web.Bugs
             foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
             {
                 var columnName = (string) drcc["name"];
-                if (security.User.DictCustomFieldPermissionLevel[columnName] != Security.PermissionNone)
+                if (Security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
                 {
                     var val = Util.FormatDbValue(this.DrBug[columnName]);
                     this.HashCustomCols.Add(columnName, val);
@@ -337,7 +330,7 @@ namespace BugTracker.Web.Bugs
             Workflow.CustomAdjustControls(this.DrBug, security.User, this);
         }
 
-        public void prepare_a_bunch_of_links_for_update(Security security)
+        public void prepare_a_bunch_of_links_for_update(ISecurity security)
         {
             var toggleImagesLink = "<a href='javascript:toggle_images2("
                                      + Convert.ToString(this.Id) + ")'><span id=hideshow_images>"
@@ -353,14 +346,14 @@ namespace BugTracker.Web.Bugs
                                       + "</span></a>";
             this.toggle_history.InnerHtml = toggleHistoryLink;
 
-            if (this.PermissionLevel == Security.PermissionAll)
+            if (this.PermissionLevel == SecurityPermissionLevel.PermissionAll)
             {
                 var cloneLink = "<a class=warn href=\"javascript:clone()\" "
                                  + " title='Create a copy of this item'><img src=" + ResolveUrl("~/Content/images/paste_plain.png") + " border=0 align=top>&nbsp;create copy</a>";
                 this.clone.InnerHtml = cloneLink;
             }
 
-            if (this.PermissionLevel != Security.PermissionReadonly)
+            if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
             {
                 var attachmentLink =
                     "<img src=" + ResolveUrl("~/Content/images/attach.gif") + " align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachments/Add.aspx") +@"','add attachment ',"
@@ -373,9 +366,9 @@ namespace BugTracker.Web.Bugs
                 this.attachment.Visible = false;
             }
 
-            if (!security.User.IsGuest)
+            if (!Security.User.IsGuest)
             {
-                if (this.PermissionLevel != Security.PermissionReadonly)
+                if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 {
                     var sendEmailLink = "<a href='javascript:send_email("
                                           + Convert.ToString(this.Id)
@@ -392,11 +385,10 @@ namespace BugTracker.Web.Bugs
                 this.send_email.Visible = false;
             }
 
-            if (this.PermissionLevel != Security.PermissionReadonly)
+            if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
             {
-                var subscribersLink = "<a target=_blank href=ViewSubscribers.aspx?id="
-                                       + Convert.ToString(this.Id)
-                                       + " title='View users who have subscribed to email notifications for this item'><img src=" + ResolveUrl("~/Content/images/telephone_edit.png") + " border=0 align=top>&nbsp;subscribers</a>";
+                var subscribersLink = "<a target=_blank href='" + ResolveUrl($"~/ViewSubscribers.aspx?id={this.Id}")
+                                       + "' title='View users who have subscribed to email notifications for this item'><img src=" + ResolveUrl("~/Content/images/telephone_edit.png") + " border=0 align=top>&nbsp;subscribers</a>";
                 this.subscribers.InnerHtml = subscribersLink;
             }
             else
@@ -464,7 +456,7 @@ namespace BugTracker.Web.Bugs
                 this.hg_revisions.Visible = false;
             }
 
-            if (security.User.IsAdmin || security.User.CanViewTasks)
+            if (Security.User.IsAdmin || Security.User.CanViewTasks)
             {
                 if (ApplicationSettings.EnableTasks)
                 {
@@ -493,10 +485,10 @@ namespace BugTracker.Web.Bugs
                                    + " title='Display this item in a printer-friendly format'><img src=" + ResolveUrl("~/Content/images/printer.png") + " border=0 align=top>&nbsp;print</a>";
 
             // merge
-            if (!security.User.IsGuest)
+            if (!Security.User.IsGuest)
             {
-                if (security.User.IsAdmin
-                    || security.User.CanMergeBugs)
+                if (Security.User.IsAdmin
+                    || Security.User.CanMergeBugs)
                 {
                     var mergeBugLink = "<a href=" + ResolveUrl("~/Bugs/Merge.aspx?id=")
                                          + Convert.ToString(this.Id)
@@ -515,10 +507,10 @@ namespace BugTracker.Web.Bugs
             }
 
             // delete 
-            if (!security.User.IsGuest)
+            if (!Security.User.IsGuest)
             {
-                if (security.User.IsAdmin
-                    || security.User.CanDeleteBug)
+                if (Security.User.IsAdmin
+                    || Security.User.CanDeleteBug)
                 {
                     var deleteBugLink = "<a href=" + ResolveUrl("~/Bugs/Delete.aspx") + "?id="
                                           + Convert.ToString(this.Id)
@@ -555,7 +547,7 @@ namespace BugTracker.Web.Bugs
             }
         }
 
-        public void load_dropdowns_for_update(Security security)
+        public void load_dropdowns_for_update(ISecurity security)
         {
             load_dropdowns(security.User, security);
 
@@ -613,9 +605,9 @@ namespace BugTracker.Web.Bugs
             }
         }
 
-        public void get_comment_text_from_control(Security security)
+        public void get_comment_text_from_control(ISecurity security)
         {
-            if (security.User.UseFckeditor)
+            if (Security.User.UseFckeditor)
             {
                 this.CommentFormated = Util.StripDangerousTags(this.comment.Value);
                 this.CommentSearch = Util.StripHtml(this.comment.Value);
@@ -629,7 +621,7 @@ namespace BugTracker.Web.Bugs
             }
         }
 
-        public void load_incoming_custom_col_vals_into_hash(Security security)
+        public void load_incoming_custom_col_vals_into_hash(ISecurity security)
         {
             // Fetch the values of the custom columns from the Request and stash them in a hash table.
 
@@ -637,12 +629,12 @@ namespace BugTracker.Web.Bugs
             {
                 var columnName = (string) drcc["name"];
 
-                if (security.User.DictCustomFieldPermissionLevel[columnName] != Security.PermissionNone)
+                if (Security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
                     this.HashCustomCols.Add(columnName, Request[columnName]);
             }
         }
 
-        public void do_insert(Security security)
+        public void do_insert(ISecurity security)
         {
             get_comment_text_from_control(security);
 
@@ -693,7 +685,7 @@ namespace BugTracker.Web.Bugs
             Response.Redirect($"~/Bugs/Edit.aspx?id={this.Id}");
         }
 
-        public void do_update(Security security)
+        public void do_update(ISecurity security)
         {
             this.PermissionLevel = fetch_permission_level(this.project.SelectedItem.Value, security);
 
@@ -712,8 +704,8 @@ namespace BugTracker.Web.Bugs
             {
                 newProject = this.project.SelectedItem.Value;
                 var permissionLevelOnNewProject = fetch_permission_level(newProject, security);
-                if (Security.PermissionNone == permissionLevelOnNewProject
-                    || Security.PermissionReadonly == permissionLevelOnNewProject)
+                if (SecurityPermissionLevel.PermissionNone == permissionLevelOnNewProject
+                    || SecurityPermissionLevel.PermissionReadonly == permissionLevelOnNewProject)
                 {
                     set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
                             + " was not updated. You do not have the necessary permissions to change this "
@@ -761,7 +753,7 @@ namespace BugTracker.Web.Bugs
 
             this.Sql = this.Sql.Replace("$sd", this.short_desc.Value.Replace("'", "''"));
             this.Sql = this.Sql.Replace("$tags", this.tags.Value.Replace("'", "''"));
-            this.Sql = this.Sql.Replace("$lu", Convert.ToString(security.User.Usid));
+            this.Sql = this.Sql.Replace("$lu", Convert.ToString(Security.User.Usid));
             this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
             this.Sql = this.Sql.Replace("$pj", newProject);
             this.Sql = this.Sql.Replace("$og", this.org.SelectedItem.Value);
@@ -772,8 +764,8 @@ namespace BugTracker.Web.Bugs
             this.Sql = this.Sql.Replace("$udf", this.udf.SelectedItem.Value);
             this.Sql = this.Sql.Replace("$snapshot_datetime", this.snapshot_timestamp.Value);
 
-            if (this.PermissionLevel == Security.PermissionReadonly
-                || this.PermissionLevel == Security.PermissionReporter)
+            if (this.PermissionLevel == SecurityPermissionLevel.PermissionReadonly
+                || this.PermissionLevel == SecurityPermissionLevel.PermissionReporter)
             {
                 this.Sql = this.Sql.Replace("$pcd_placeholder", "");
             }
@@ -798,7 +790,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                 this.Sql = this.Sql.Replace("$pcd3", pcd3.Replace("'", "''"));
             }
 
-            if (this.DsCustomCols.Tables[0].Rows.Count == 0 || this.PermissionLevel != Security.PermissionAll)
+            if (this.DsCustomCols.Tables[0].Rows.Count == 0 || this.PermissionLevel != SecurityPermissionLevel.PermissionAll)
             {
                 this.Sql = this.Sql.Replace("$custom_cols_placeholder", "");
             }
@@ -816,8 +808,8 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                     if (o == null) continue;
 
                     // skip if no permission to update
-                    if (security.User.DictCustomFieldPermissionLevel[columnName] !=
-                        Security.PermissionAll) continue;
+                    if (Security.User.DictCustomFieldPermissionLevel[columnName] !=
+                        SecurityPermissionLevel.PermissionAll) continue;
 
                     customColsSql += ",[" + columnName + "]";
                     customColsSql += " = ";
@@ -859,7 +851,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                 return;
             }
 
-            bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, security.User.Usid, this.CommentFormated,
+            bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, Security.User.Usid, this.CommentFormated,
                                               this.CommentSearch,
                                               null, // from
                                               null, // cc
@@ -888,12 +880,12 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
             load_user_dropdown(security);
         }
 
-        public void load_other_dropdowns_and_select_defaults(DataSet dsDefaults, Security security)
+        public void load_other_dropdowns_and_select_defaults(DataSet dsDefaults, ISecurity security)
         {
             // org
             string defaultValue;
 
-            defaultValue = Convert.ToString(security.User.Org);
+            defaultValue = Convert.ToString(Security.User.Org);
             foreach (ListItem li in this.org.Items)
                 if (li.Value == defaultValue)
                     li.Selected = true;
@@ -946,14 +938,14 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                     li.Selected = false;
         }
 
-        public void load_project_and_user_dropdown_for_insert(DataTable projectDefault, Security security)
+        public void load_project_and_user_dropdown_for_insert(DataTable projectDefault, ISecurity security)
         {
             // get default values
             var initialProject = (string) Session["project"];
 
             // project
-            if (security.User.ForcedProject != 0)
-                initialProject = Convert.ToString(security.User.ForcedProject);
+            if (Security.User.ForcedProject != 0)
+                initialProject = Convert.ToString(Security.User.ForcedProject);
 
             if (initialProject != null && initialProject != "0")
             {
@@ -981,7 +973,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
             load_user_dropdown(security);
         }
 
-        public void load_project_and_user_dropdown_for_update(Security security)
+        public void load_project_and_user_dropdown_for_update(ISecurity security)
         {
             // Project
             if (this.prev_project.Value != "0")
@@ -1010,7 +1002,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
             load_user_dropdown(security);
         }
 
-        public void load_user_dropdown(Security security)
+        public void load_user_dropdown(ISecurity security)
         {
             // What's selected now?   Save it before we refresh the dropdown.
             var currentValue = "";
@@ -1059,11 +1051,11 @@ order by us_username; ";
             else
                 this.Sql = this.Sql.Replace("$pj", "0");
 
-            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(security.User.Org));
+            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(Security.User.Org));
             this.Sql = this.Sql.Replace("$og_other_orgs_permission_level",
-                Convert.ToString(security.User.OtherOrgsPermissionLevel));
+                Convert.ToString((int)Security.User.OtherOrgsPermissionLevel));
 
-            if (security.User.CanAssignToInternalUsers)
+            if (Security.User.CanAssignToInternalUsers)
                 this.Sql = this.Sql.Replace("$og_can_assign_to_internal_users", "1 = 1");
             else
                 this.Sql = this.Sql.Replace("$og_can_assign_to_internal_users", "0 = 1");
@@ -1144,7 +1136,7 @@ order by us_username; ";
             return defaultval;
         }
 
-        public void format_subcribe_cancel_link(Security security)
+        public void format_subcribe_cancel_link(ISecurity security)
         {
             var notificationEmailEnabled = ApplicationSettings.NotificationEmailEnabled;
             if (notificationEmailEnabled)
@@ -1160,11 +1152,11 @@ order by us_username; ";
                     // so be prepared to format the link even if this isn't the first time in.
                     this.Sql = "select count(1) from bug_subscriptions where bs_bug = $bg and bs_user = $us";
                     this.Sql = this.Sql.Replace("$bg", Convert.ToString(this.Id));
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
                     subscribed = (int) DbUtil.ExecuteScalar(this.Sql);
                 }
 
-                if (security.User.IsGuest) // wouldn't make sense to share an email address
+                if (Security.User.IsGuest) // wouldn't make sense to share an email address
                 {
                     this.subscriptions.InnerHtml = "";
                 }
@@ -1186,20 +1178,20 @@ order by us_username; ";
             }
         }
 
-        public void set_org_field_permission(int bugPermissionLevel, Security security)
+        public void set_org_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             // pick the most restrictive permission
-            var permLevel = bugPermissionLevel < security.User.OrgFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.OrgFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.OrgFieldPermissionLevel;
+                : Security.User.OrgFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.org_label.Visible = false;
                 this.org.Visible = false;
                 this.prev_org.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.org.Visible = false;
                 this.static_org.InnerText = this.org.SelectedItem.Text;
@@ -1222,15 +1214,15 @@ order by us_username; ";
             this.static_short_desc.InnerText = this.short_desc.Value;
         }
 
-        public void set_tags_field_permission(int bugPermissionLevel, Security security)
+        public void set_tags_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             /// JUNK testing using cat permission
             // pick the most restrictive permission
-            var permLevel = bugPermissionLevel < security.User.TagsFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.TagsFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.TagsFieldPermissionLevel;
+                : Security.User.TagsFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.static_tags.Visible = false;
                 this.tags_label.Visible = false;
@@ -1239,7 +1231,7 @@ order by us_username; ";
                 this.prev_tags.Visible = false;
                 //tags_row.Style.display = "none";
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 if (this.Id != 0)
                 {
@@ -1261,20 +1253,20 @@ order by us_username; ";
             }
         }
 
-        public void set_category_field_permission(int bugPermissionLevel, Security security)
+        public void set_category_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             // pick the most restrictive permission
-            var permLevel = bugPermissionLevel < security.User.CategoryFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.CategoryFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.CategoryFieldPermissionLevel;
+                : Security.User.CategoryFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.category_label.Visible = false;
                 this.category.Visible = false;
                 this.prev_category.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.category.Visible = false;
                 this.static_category.InnerText = this.category.SelectedItem.Text;
@@ -1285,20 +1277,20 @@ order by us_username; ";
             }
         }
 
-        public void set_priority_field_permission(int bugPermissionLevel, Security security)
+        public void set_priority_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             // pick the most restrictive permission
-            var permLevel = bugPermissionLevel < security.User.PriorityFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.PriorityFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.PriorityFieldPermissionLevel;
+                : Security.User.PriorityFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.priority_label.Visible = false;
                 this.priority.Visible = false;
                 this.prev_priority.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.priority.Visible = false;
                 this.static_priority.InnerText = this.priority.SelectedItem.Text;
@@ -1309,20 +1301,20 @@ order by us_username; ";
             }
         }
 
-        public void set_status_field_permission(int bugPermissionLevel, Security security)
+        public void set_status_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             // pick the most restrictive permission
-            var permLevel = bugPermissionLevel < security.User.StatusFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.StatusFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.StatusFieldPermissionLevel;
+                : Security.User.StatusFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.status_label.Visible = false;
                 this.status.Visible = false;
                 this.prev_status.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.status.Visible = false;
                 this.static_status.InnerText = this.status.SelectedItem.Text;
@@ -1333,19 +1325,19 @@ order by us_username; ";
             }
         }
 
-        public void set_project_field_permission(int bugPermissionLevel, Security security)
+        public void set_project_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
-            var permLevel = bugPermissionLevel < security.User.ProjectFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.ProjectFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.ProjectFieldPermissionLevel;
+                : Security.User.ProjectFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.project_label.Visible = false;
                 this.project.Visible = false;
                 this.prev_project.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.project.Visible = false;
                 this.static_project.InnerText = this.project.SelectedItem.Text;
@@ -1356,39 +1348,39 @@ order by us_username; ";
             }
         }
 
-        public void set_assigned_field_permission(int bugPermissionLevel, Security security)
+        public void set_assigned_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
-            var permLevel = bugPermissionLevel < security.User.AssignedToFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.AssignedToFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.AssignedToFieldPermissionLevel;
+                : Security.User.AssignedToFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.assigned_to_label.Visible = false;
                 this.assigned_to.Visible = false;
                 this.prev_assigned_to.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.assigned_to.Visible = false;
                 this.static_assigned_to.InnerText = this.assigned_to.SelectedItem.Text;
             }
         }
 
-        public void set_udf_field_permission(int bugPermissionLevel, Security security)
+        public void set_udf_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             // pick the most restrictive permission
-            var permLevel = bugPermissionLevel < security.User.UdfFieldPermissionLevel
+            var permLevel = bugPermissionLevel < Security.User.UdfFieldPermissionLevel
                 ? bugPermissionLevel
-                : security.User.UdfFieldPermissionLevel;
+                : Security.User.UdfFieldPermissionLevel;
 
-            if (permLevel == Security.PermissionNone)
+            if (permLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.udf_label.Visible = false;
                 this.udf.Visible = false;
                 this.prev_udf.Visible = false;
             }
-            else if (permLevel == Security.PermissionReadonly)
+            else if (permLevel == SecurityPermissionLevel.PermissionReadonly)
             {
                 this.udf.Visible = false;
                 this.static_udf.InnerText = this.udf.SelectedItem.Text;
@@ -1399,13 +1391,13 @@ order by us_username; ";
             }
         }
 
-        public void set_controls_field_permission(int bugPermissionLevel, Security security)
+        public void set_controls_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
-            if (bugPermissionLevel == Security.PermissionReadonly
-                || bugPermissionLevel == Security.PermissionReporter)
+            if (bugPermissionLevel == SecurityPermissionLevel.PermissionReadonly
+                || bugPermissionLevel == SecurityPermissionLevel.PermissionReporter)
             {
                 // even turn off commenting updating for read only
-                if (this.PermissionLevel == Security.PermissionReadonly)
+                if (this.PermissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {
                     this.submit_button.Disabled = true;
                     this.submit_button.Visible = false;
@@ -1419,14 +1411,14 @@ order by us_username; ";
                     this.comment.Visible = false;
                 }
 
-                set_project_field_permission(Security.PermissionReadonly, security);
-                set_org_field_permission(Security.PermissionReadonly, security);
-                set_category_field_permission(Security.PermissionReadonly, security);
-                set_tags_field_permission(Security.PermissionReadonly, security);
-                set_priority_field_permission(Security.PermissionReadonly, security);
-                set_status_field_permission(Security.PermissionReadonly, security);
-                set_assigned_field_permission(Security.PermissionReadonly, security);
-                set_udf_field_permission(Security.PermissionReadonly, security);
+                set_project_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_org_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_category_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_tags_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_priority_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_status_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_assigned_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
+                set_udf_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
                 set_shortdesc_field_permission();
 
                 this.internal_only_label.Visible = false;
@@ -1435,21 +1427,21 @@ order by us_username; ";
             else
             {
                 // Call these functions so that the field level permissions can kick in
-                if (security.User.ForcedProject != 0)
-                    set_project_field_permission(Security.PermissionReadonly, security);
+                if (Security.User.ForcedProject != 0)
+                    set_project_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
                 else
-                    set_project_field_permission(Security.PermissionAll, security);
+                    set_project_field_permission(SecurityPermissionLevel.PermissionAll, security);
 
-                if (security.User.OtherOrgsPermissionLevel == 0)
-                    set_org_field_permission(Security.PermissionReadonly, security);
+                if (Security.User.OtherOrgsPermissionLevel == 0)
+                    set_org_field_permission(SecurityPermissionLevel.PermissionReadonly, security);
                 else
-                    set_org_field_permission(Security.PermissionAll, security);
-                set_category_field_permission(Security.PermissionAll, security);
-                set_tags_field_permission(Security.PermissionAll, security);
-                set_priority_field_permission(Security.PermissionAll, security);
-                set_status_field_permission(Security.PermissionAll, security);
-                set_assigned_field_permission(Security.PermissionAll, security);
-                set_udf_field_permission(Security.PermissionAll, security);
+                    set_org_field_permission(SecurityPermissionLevel.PermissionAll, security);
+                set_category_field_permission(SecurityPermissionLevel.PermissionAll, security);
+                set_tags_field_permission(SecurityPermissionLevel.PermissionAll, security);
+                set_priority_field_permission(SecurityPermissionLevel.PermissionAll, security);
+                set_status_field_permission(SecurityPermissionLevel.PermissionAll, security);
+                set_assigned_field_permission(SecurityPermissionLevel.PermissionAll, security);
+                set_udf_field_permission(SecurityPermissionLevel.PermissionAll, security);
             }
         }
 
@@ -1521,7 +1513,7 @@ order by us_username; ";
             }
         }
 
-        public void load_dropdowns(User user, Security security)
+        public void load_dropdowns(User user, ISecurity security)
         {
             // only show projects where user has permissions
             // 0
@@ -1533,7 +1525,7 @@ order by us_username; ";
         and isnull(pu_permission_level,$dpl) not in (0, 1)
         order by pj_name;";
 
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
             this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
             // 1
@@ -1649,7 +1641,7 @@ order by us_username; ";
         }
 
         // returns true if there was a change
-        public bool record_changes(Security security)
+        public bool record_changes(ISecurity security)
         {
             var baseSql = @"
         insert into bug_posts
@@ -1657,7 +1649,7 @@ order by us_username; ";
         values($id, $us, getdate(), N'$update_msg', 'update')";
 
             baseSql = baseSql.Replace("$id", Convert.ToString(this.Id));
-            baseSql = baseSql.Replace("$us", Convert.ToString(security.User.Usid));
+            baseSql = baseSql.Replace("$us", Convert.ToString(Security.User.Usid));
 
             string from;
             this.Sql = "";
@@ -1807,8 +1799,8 @@ order by us_username; ";
             {
                 var columnName = (string) drcc["name"];
 
-                if (security.User.DictCustomFieldPermissionLevel[columnName] !=
-                    Security.PermissionAll) continue;
+                if (Security.User.DictCustomFieldPermissionLevel[columnName] !=
+                    SecurityPermissionLevel.PermissionAll) continue;
 
                 var before = Util.FormatDbValue(this.DrBug[columnName]);
                 var after = this.HashCustomCols[columnName];
@@ -1903,7 +1895,7 @@ order by us_username; ";
             return doUpdate;
         }
 
-        public int fetch_permission_level(string projectToCheck, Security security)
+        public SecurityPermissionLevel fetch_permission_level(string projectToCheck, ISecurity security)
         {
             // fetch the revised permission level
             this.Sql = @"declare @permission_level int
@@ -1917,19 +1909,19 @@ order by us_username; ";
 
             this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             this.Sql = this.Sql.Replace("$pj", projectToCheck);
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(security.User.Usid));
+            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
             var pl = (int) DbUtil.ExecuteScalar(this.Sql);
 
             // reduce permissions for guest
-            //if (security.user.is_guest && permission_level == Security.PERMISSION_ALL)
+            //if (Security.User.is_guest && permission_level == Security.PERMISSION_ALL)
             //{
             //	pl = Security.PERMISSION_REPORTER;
             //}
 
-            return pl;
+            return (SecurityPermissionLevel)pl;
         }
 
-        public bool validate(Security security)
+        public bool validate(ISecurity security)
         {
             var good = true;
             this.custom_validation_err_msg.InnerText = "";
@@ -1951,7 +1943,7 @@ order by us_username; ";
             {
                 var name = (string) drcc["name"];
 
-                if (security.User.DictCustomFieldPermissionLevel[name] != Security.PermissionAll) continue;
+                if (Security.User.DictCustomFieldPermissionLevel[name] != SecurityPermissionLevel.PermissionAll) continue;
 
                 var val = Request[name];
 
@@ -2080,7 +2072,7 @@ where us_id = @us_id";
             }
         }
 
-        public void display_custom_fields(Security security)
+        public void display_custom_fields(ISecurity security)
         {
             var minTextAreaSize = ApplicationSettings.TextAreaThreshold;
             var maxTextAreaRows = ApplicationSettings.MaxTextAreaRows;
@@ -2090,8 +2082,8 @@ where us_id = @us_id";
             {
                 var columnName = (string) drcc["name"];
 
-                var fieldPermissionLevel = security.User.DictCustomFieldPermissionLevel[columnName];
-                if (fieldPermissionLevel == Security.PermissionNone) continue;
+                var fieldPermissionLevel = Security.User.DictCustomFieldPermissionLevel[columnName];
+                if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone) continue;
 
                 var fieldId = columnName.Replace(" ", "");
 
@@ -2106,8 +2098,8 @@ where us_id = @us_id";
                         this.project.SelectedItem.Value != this.prev_project.Value))
                     permissionOnOriginal = fetch_permission_level(this.prev_project.Value, security);
 
-                if (permissionOnOriginal == Security.PermissionReadonly
-                    || permissionOnOriginal == Security.PermissionReporter)
+                if (permissionOnOriginal == SecurityPermissionLevel.PermissionReadonly
+                    || permissionOnOriginal == SecurityPermissionLevel.PermissionReporter)
                     Response.Write(":</span><td align=left width=600px>");
                 else
                     Response.Write(":</span><td align=left>");
@@ -2118,8 +2110,8 @@ where us_id = @us_id";
 
                 var dropdownType = Convert.ToString(drcc["dropdown type"]);
 
-                if (permissionOnOriginal == Security.PermissionReadonly
-                    || fieldPermissionLevel == Security.PermissionReadonly)
+                if (permissionOnOriginal == SecurityPermissionLevel.PermissionReadonly
+                    || fieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {
                     string text;
 
@@ -2268,7 +2260,7 @@ where us_id = @us_id";
             } // end loop through custom fields
         }
 
-        public void display_project_specific_custom_fields(Security security)
+        public void display_project_specific_custom_fields(ISecurity security)
         {
             // create project custom dropdowns
             if (this.project.SelectedItem != null
@@ -2309,8 +2301,8 @@ where us_id = @us_id";
                                 this.project.SelectedItem.Value != this.prev_project.Value)
                                 permissionOnOriginal = fetch_permission_level(this.prev_project.Value, security);
 
-                            if (permissionOnOriginal == Security.PermissionReadonly
-                                || permissionOnOriginal == Security.PermissionReporter)
+                            if (permissionOnOriginal == SecurityPermissionLevel.PermissionReadonly
+                                || permissionOnOriginal == SecurityPermissionLevel.PermissionReporter)
                             {
                                 // GC: 20-Feb-08: Modified to add an ID to the SPAN as well for easier CSS customisation
                                 //Response.Write ("<span class="stat">");
@@ -2401,9 +2393,9 @@ where us_id = @us_id";
             }
         }
 
-        public void display_bug_relationships(Security security)
+        public void display_bug_relationships(ISecurity security)
         {
-            this.DsPosts = PrintBug.GetBugPosts(this.Id, security.User.ExternalUser, this.HistoryInline);
+            this.DsPosts = PrintBug.GetBugPosts(this.Id, Security.User.ExternalUser, this.HistoryInline);
             var linkMarker = ApplicationSettings.BugLinkMarker;
             var reLinkMarker = new Regex(linkMarker + "([0-9]+)");
             var dictLinkedBugs = new SortedDictionary<int, int>();

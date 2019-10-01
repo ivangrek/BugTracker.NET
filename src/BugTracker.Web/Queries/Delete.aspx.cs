@@ -9,11 +9,13 @@ namespace BugTracker.Web.Queries
 {
     using System;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class Delete : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 
@@ -26,12 +28,9 @@ namespace BugTracker.Web.Queries
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "queries";
+            MainMenu.SelectedItem = MainMenuSections.Queries;
 
             if (IsPostBack)
             {
@@ -52,9 +51,9 @@ namespace BugTracker.Web.Queries
 
                 var dr = DbUtil.GetDataRow(this.Sql);
 
-                if ((int) dr["qu_user"] != security.User.Usid)
+                if ((int) dr["qu_user"] != Security.User.Usid)
                 {
-                    if (security.User.IsAdmin || security.User.CanEditSql)
+                    if (Security.User.IsAdmin || Security.User.CanEditSql)
                     {
                         // can do anything
                     }

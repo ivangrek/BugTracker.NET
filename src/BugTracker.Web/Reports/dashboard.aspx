@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BugTracker.Web.Dashboard" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="BugTracker.Web.Reports.Dashboard" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -40,7 +40,7 @@
     <% }
         else
         { %>
-    <a href="EditDashboard.aspx">edit dashboard</a>
+    <a href="<%= ResolveUrl("~/EditDashboard.aspx") %>">edit dashboard</a>
     <% } %>
 
 
@@ -48,11 +48,11 @@
         <tr>
             <td valign="top">&nbsp;<br>
 
-                <% write_column(1); %>
+                <% WriteColumn(1); %>
 
             <td valign="top">&nbsp;<br>
 
-                <% write_column(2); %>
+                <% WriteColumn(2); %>
     </table>
 </asp:Content>
 

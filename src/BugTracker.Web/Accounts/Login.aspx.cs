@@ -17,6 +17,7 @@ namespace BugTracker.Web.Accounts
     {
         public IApplicationSettings ApplicationSettings { get; set; }
         public IAuthenticate Authenticate { get; set; }
+        public ISecurity Security { get; set; }
 
         public string Sql;
 

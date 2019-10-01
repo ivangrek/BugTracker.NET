@@ -10,11 +10,13 @@ namespace BugTracker.Web
     using System;
     using System.Data;
     using System.Web.UI;
+    using BugTracker.Web.Core.Controls;
     using Core;
 
     public partial class EditDashboard : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
+        public ISecurity Security { get; set; }
 
         public DataSet Ds;
         public string Ses = "";
@@ -23,16 +25,13 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            security.CheckSecurity(Security.AnyUserOkExceptGuest);
-
-            MainMenu.Security = security;
-            MainMenu.SelectedItem = "admin";
+            MainMenu.SelectedItem = MainMenuSections.Administration;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - edit dashboard";
 
-            if (security.User.IsAdmin || security.User.CanUseReports)
+            if (Security.User.IsAdmin || Security.User.CanUseReports)
             {
                 //
             }
@@ -51,7 +50,7 @@ inner join reports on rp_id = ds_report
 where ds_user = $user
 order by ds_col, ds_row";
 
-            sql = sql.Replace("$user", Convert.ToString(security.User.Usid));
+            sql = sql.Replace("$user", Convert.ToString(Security.User.Usid));
 
             this.Ds = DbUtil.GetDataSet(sql);
         }

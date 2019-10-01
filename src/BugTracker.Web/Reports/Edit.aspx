@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Reports.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -13,7 +14,7 @@
 
     <script>
         editAreaLoader.init({
-            id: "sql_text" // id of the textarea to transform
+            id: "sqlText" // id of the textarea to transform
             ,
             start_highlight: true // if start with highlight
             ,
@@ -29,15 +30,15 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
+    <BugTracker:MainMenu runat="server" ID="MainMenu" />
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="align">
         <a href="<%= ResolveUrl("~/Reports/List.aspx")%>">back to reports</a>
-        <br>
-        <br>
-        <table border="0">
+        <div>&nbsp;</div>
+
+        <table style="border-collapse: collapse; border: 0;">
             <tr>
                 <td>
                     <form class="frm" runat="server">
@@ -45,23 +46,23 @@
                             <tr>
                                 <td class="lbl">Description:</td>
                                 <td>
-                                    <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80"/>
+                                    <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80" />
                                 </td>
                                 <td runat="server" class="err" id="desc_err">&nbsp;</td>
                             </tr>
                             <tr>
                                 <td class="lbl">Chart Type:</td>
                                 <td>
-                                    <asp:RadioButton Text="Table" runat="server" GroupName="chart_type" ID="table" />
+                                    <asp:RadioButton Text="Table" runat="server" GroupName="chartType" ID="table" />
                                     &nbsp;&nbsp;&nbsp;
-                            <asp:RadioButton Text="Pie" runat="server" GroupName="chart_type" ID="pie" />
+                            <asp:RadioButton Text="Pie" runat="server" GroupName="chartType" ID="pie" />
                                     &nbsp;&nbsp;&nbsp;
-                            <asp:RadioButton Text="Bar" runat="server" GroupName="chart_type" ID="bar" />
+                            <asp:RadioButton Text="Bar" runat="server" GroupName="chartType" ID="bar" />
                                     &nbsp;&nbsp;&nbsp;
-                            <asp:RadioButton Text="Line" runat="server" GroupName="chart_type" ID="line" />
+                            <asp:RadioButton Text="Line" runat="server" GroupName="chartType" ID="line" />
                                     &nbsp;&nbsp;&nbsp;
                                 </td>
-                                <td runat="server" class="err" id="chart_type_err">&nbsp;</td>
+                                <td runat="server" class="err" id="chartTypeErr">&nbsp;</td>
                             </tr>
 
                             <tr>
@@ -72,7 +73,7 @@
                             <tr>
                                 <td class="lbl">SQL:</td>
                                 <td colspan="2">
-                                    <textarea rows="10" cols="70" runat="server" class="txt" name="sql_text" id="sql_text"></textarea>
+                                    <textarea rows="10" cols="70" runat="server" class="txt" name="sqlText" id="sqlText"></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -82,7 +83,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit"/>
+                                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit" />
                                 </td>
                                 <td>&nbsp</td>
                             </tr>
@@ -107,6 +108,7 @@
                 </td>
             </tr>
         </table>
+    </div>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">

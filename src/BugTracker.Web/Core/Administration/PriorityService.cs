@@ -121,7 +121,7 @@ namespace BugTracker.Web.Core.Administration
 
             var dataRow = DbUtil.GetDataRow(sql);
 
-            return (Convert.ToInt32(dataRow["cnt"]) > 0, Convert.ToString(dataRow["pr_name"]));
+            return (Convert.ToInt32(dataRow["cnt"]) == 0, Convert.ToString(dataRow["pr_name"]));
         }
 
         public void Delete(int id)

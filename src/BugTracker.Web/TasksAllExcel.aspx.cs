@@ -14,6 +14,8 @@ namespace BugTracker.Web
 
     public partial class TasksAllExcel : Page
     {
+        public ISecurity Security { get; set; }
+
         public DataSet DsTasks;
 
         public void Page_Init(object sender, EventArgs e)
@@ -25,11 +27,9 @@ namespace BugTracker.Web
         {
             Util.DoNotCache(Response);
 
-            var security = new Security();
+            Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            security.CheckSecurity(Security.AnyUserOk);
-
-            if (security.User.IsAdmin || security.User.CanViewTasks)
+            if (Security.User.IsAdmin || Security.User.CanViewTasks)
             {
                 // allowed
             }
@@ -39,7 +39,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            this.DsTasks = Util.GetAllTasks(security, 0);
+            this.DsTasks = Util.GetAllTasks(Security, 0);
             var dv = new DataView(this.DsTasks.Tables[0]);
 
             Util.PrintAsExcel(Response, dv);
