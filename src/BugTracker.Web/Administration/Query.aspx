@@ -15,7 +15,7 @@
         var shown = true;
 
         function showhide_form() {
-            var frm = document.getElementById("<% Response.Write(Util.GetFormName()); %>");
+            var frm = document.getElementById("<% Response.Write(ApplicationSettings.AspNetFormId); %>");
             if (shown) {
                 frm.style.display = "none";
                 shown = false;

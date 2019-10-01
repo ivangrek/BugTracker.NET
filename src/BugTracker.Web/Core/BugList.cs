@@ -12,9 +12,9 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.Web;
 
-    public class BugList
+    public static class BugList
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         private static string GetDistinctValsFromDataset(DataTable dt, int col)
         {
@@ -129,7 +129,7 @@ namespace BugTracker.Web.Core
             return pagingString;
         }
 
-        protected static string adjust_filter_val(string filterVal)
+        private static string adjust_filter_val(string filterVal)
         {
             var s = filterVal.Replace("[$FLAG] =$$$red$$$", "[$FLAG] =1");
             s = s.Replace("[$FLAG] =$$$green$$$", "[$FLAG] =2");

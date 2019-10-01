@@ -35,9 +35,9 @@ namespace BugTracker.Web.Core
         High
     }
 
-    public class Email
+    public static class Email
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public enum AddrType
         {
@@ -257,13 +257,13 @@ namespace BugTracker.Web.Core
             }
         }
 
-        protected static void DeleteStuff(StuffToDelete stuffToDelete)
+        private static void DeleteStuff(StuffToDelete stuffToDelete)
         {
             var thread = new Thread(ThreadProcDeleteStuff);
             thread.Start(stuffToDelete);
         }
 
-        protected static void ActuallyDeleteStuff(StuffToDelete stuffToDelete)
+        private static void ActuallyDeleteStuff(StuffToDelete stuffToDelete)
         {
             if (stuffToDelete == null) // not sure how this could happen, but it fixed a bug for one guy
                 return;

@@ -20,7 +20,7 @@ namespace BugTracker.Web.Administration.Projects
         public ISecurity Security { get; set; }
 
         public int Id;
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

@@ -23,7 +23,7 @@ namespace BugTracker.Web
 
         public DataSet DsCustomCols;
 
-        public DataTable DtUsers;
+        protected DataTable DtUsers { get; set; }
         public DataView Dv;
 
         public Dictionary<int, BtnetProject> MapProjects = new Dictionary<int, BtnetProject>();
@@ -31,7 +31,7 @@ namespace BugTracker.Web
         public string ProjectDropdownSelectCols = "";
         public bool ShowUdf;
 
-        public string Sql;
+        protected string Sql {get; set; }
         public bool UseFullNames;
 
         public void Page_Load(object sender, EventArgs e)
@@ -1006,9 +1006,9 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
         public class ProjectDropdown
         {
-            public bool Enabled;
-            public string Label = "";
-            public string Values = "";
+            public bool Enabled { get; set; }
+            public string Label { get; set; } = "";
+            public string Values { get; set; } = "";
         }
 
         public class BtnetProject

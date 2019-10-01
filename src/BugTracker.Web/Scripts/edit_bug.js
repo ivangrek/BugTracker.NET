@@ -71,7 +71,7 @@ function send_email(id) {
 function handle_rewrite_posts(data, status) {
     $("#posts").html(data);
     $(".warn").click(warn_if_dirty);
-    $.get("GetDbDatetime.aspx", "", handle_get_bug_date);
+    $.get("/Administration/GetDbDateTime.aspx", "", handle_get_bug_date);
     start_animation();
 }
 
@@ -84,7 +84,7 @@ function rewrite_posts(bugid) {
     var images_inline = get_cookie("images_inline");
     var history_inline = get_cookie("history_inline");
 
-    var url = "WritePosts.aspx?images_inline=" + images_inline
+    var url = "/WritePosts.aspx?images_inline=" + images_inline
         + "&history_inline=" + history_inline
         + "&id=" + bugid;
 
@@ -96,7 +96,7 @@ function toggle_notifications(bugid) {
     var text = get_text(el);
 
     var url = "/Subscribe.aspx?ses="
-        + get_cookie("se_id")
+        + get_cookie("se_id2")
         + "&id="
         + bugid
         + "&actn=";

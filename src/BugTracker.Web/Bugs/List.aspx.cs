@@ -23,7 +23,7 @@ namespace BugTracker.Web.Bugs
         public DataView Dv;
         public string QuIdString;
 
-        public string Sql;
+        protected string Sql {get; set; }
         public string SqlError = string.Empty;
 
         public void Page_Load(object sender, EventArgs e)

@@ -14,7 +14,7 @@
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/sortable.js") %>"></script>
 
     <script>
-        var asp_form_id = '<% Response.Write(Util.GetFormName()); %>';
+        var asp_form_id = '<% Response.Write(ApplicationSettings.AspNetFormId); %>';
 
         function remove(bugid2Arg) {
             var frm = document.getElementById(asp_form_id);

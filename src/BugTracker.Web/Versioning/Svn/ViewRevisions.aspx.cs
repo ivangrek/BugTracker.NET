@@ -17,8 +17,8 @@ namespace BugTracker.Web.Versioning.Svn
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public int Bugid;
-        public DataSet Ds;
+        protected int Bugid { get; set; }
+        protected DataSet Ds { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

@@ -20,12 +20,12 @@ namespace BugTracker.Web.Bugs
         public ISecurity Security { get; set; }
 
         public bool AssignedToChanged;
-        public DataSet DsPosts;
+        protected DataSet DsPosts { get; set; }
         public string ErrText;
         public int Id;
 
         public int PermissionLevel;
-        public string Sql;
+        protected string Sql {get; set; }
         public bool StatusChanged;
 
         //SortedDictionary<string, string> hash_custom_cols = new SortedDictionary<string, string>();

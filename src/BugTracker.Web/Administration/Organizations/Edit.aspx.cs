@@ -43,7 +43,7 @@ namespace BugTracker.Web.Administration.Organizations
         </table>
 <tr>";
 
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

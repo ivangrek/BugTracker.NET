@@ -21,7 +21,7 @@ namespace BugTracker.Web.Bugs
         public ISecurity Security { get; set; }
 
         public DataRow Dr;
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

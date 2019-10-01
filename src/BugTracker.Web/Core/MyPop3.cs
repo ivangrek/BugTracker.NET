@@ -13,9 +13,9 @@ namespace BugTracker.Web.Core
     using System.Threading;
     using System.Web;
 
-    public class MyPop3
+    public static class MyPop3
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public static int ErrorCount = 0;
         public static string Pop3Server = ApplicationSettings.Pop3Server;

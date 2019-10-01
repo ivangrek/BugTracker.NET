@@ -1250,8 +1250,8 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
 
         public class NewIds
         {
-            public int Bugid;
-            public int Postid;
+            public int Bugid { get; set; }
+            public int Postid { get; set; }
 
             public NewIds(int b, int p)
             {

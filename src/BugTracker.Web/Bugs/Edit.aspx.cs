@@ -29,8 +29,8 @@ namespace BugTracker.Web.Bugs
         public DataRow DrBug;
 
         public DataSet DsCustomCols;
-        public DataSet DsPosts;
-        public DataTable DtUsers;
+        protected DataSet DsPosts { get; set; }
+        protected DataTable DtUsers { get; set; }
 
         public bool Good = true;
         public SortedDictionary<string, string> HashCustomCols = new SortedDictionary<string, string>();
@@ -38,8 +38,8 @@ namespace BugTracker.Web.Bugs
         public int Id;
 
         public bool ImagesInline = true;
-        public SecurityPermissionLevel PermissionLevel;
-        public string Sql;
+        protected SecurityPermissionLevel PermissionLevel { get; set; }
+        protected string Sql {get; set; }
         public bool StatusChanged;
 
         public void Page_Init(object sender, EventArgs e)

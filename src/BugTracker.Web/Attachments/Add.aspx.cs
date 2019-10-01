@@ -17,7 +17,7 @@ namespace BugTracker.Web.Attachments
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public int Bugid;
+        protected int Bugid;
 
         public void Page_Init(object sender, EventArgs e)
         {

@@ -18,7 +18,7 @@ namespace BugTracker.Web.Accounts
         public IAuthenticate Authenticate { get; set; }
         public ISecurity Security { get; set; }
 
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

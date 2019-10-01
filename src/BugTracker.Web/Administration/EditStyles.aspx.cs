@@ -21,7 +21,7 @@ namespace BugTracker.Web.Administration
     {
         public ISecurity Security { get; set; }
 
-        public DataSet Ds;
+        protected DataSet Ds { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

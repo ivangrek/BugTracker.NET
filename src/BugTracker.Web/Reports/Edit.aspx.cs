@@ -20,7 +20,7 @@ namespace BugTracker.Web.Reports
         public IReportService ReportService { get; set; }
 
         public int Id;
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

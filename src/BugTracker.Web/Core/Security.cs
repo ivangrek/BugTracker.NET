@@ -228,7 +228,7 @@ and us_active = 1";
             Util.WriteToLog("AppPath:" + sAppPath);
 
             response.Cookies.Set(new HttpCookie("se_id2", guid));
-            //response.Cookies["se_id"].Path = sAppPath;
+            //response.Cookies["se_id2"].Path = sAppPath;
             response.Cookies["user"]["name"] = username;
             response.Cookies["user"]["NTLM"] = ntlm;
             //response.Cookies["user"].Path = sAppPath;

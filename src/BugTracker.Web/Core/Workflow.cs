@@ -20,7 +20,7 @@ namespace BugTracker.Web.Core
     using System.Web.UI.HtmlControls;
     using System.Web.UI.WebControls;
 
-    public class Workflow
+    public static class Workflow
     {
         public static void CustomAdjustControls(
             DataRow bug, // null if a new bug, otherwise the state of the bug now in the db

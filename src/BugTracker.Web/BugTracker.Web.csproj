@@ -519,7 +519,7 @@
     <Content Include="Content\images\email_edit.png" />
     <Content Include="Content\images\email_open.png" />
     <Content Include="Content\favicon.ico" />
-    <Content Include="Flag.aspx" />
+    <Content Include="Bugs\Flag.aspx" />
     <Content Include="Accounts\Forgot.aspx" />
     <Content Include="GenerateBtnetscReg.aspx" />
     <Content Include="Administration\GetDbDateTime.aspx" />
@@ -1032,11 +1032,11 @@
     <Compile Include="Administration\EditWebConfig.aspx.designer.cs">
       <DependentUpon>EditWebConfig.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Flag.aspx.cs">
+    <Compile Include="Bugs\Flag.aspx.cs">
       <DependentUpon>Flag.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Flag.aspx.designer.cs">
+    <Compile Include="Bugs\Flag.aspx.designer.cs">
       <DependentUpon>Flag.aspx</DependentUpon>
     </Compile>
     <Compile Include="Accounts\Forgot.aspx.cs">

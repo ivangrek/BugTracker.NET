@@ -16,9 +16,9 @@ namespace BugTracker.Web.Attachments
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public int Bugid;
-        public int Id;
-        public string Sql;
+        protected int Bugid { get; set; }
+        protected int Id { get; set; }
+        protected string Sql { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

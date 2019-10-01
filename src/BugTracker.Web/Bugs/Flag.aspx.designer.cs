@@ -7,10 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
-    public partial class Flag {
+
+
+    public partial class Flag
+    {
     }
 }

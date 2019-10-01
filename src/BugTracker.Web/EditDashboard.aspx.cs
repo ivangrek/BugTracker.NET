@@ -18,7 +18,7 @@ namespace BugTracker.Web
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public DataSet Ds;
+        protected DataSet Ds { get; set; }
         public string Ses = "";
 
         public void Page_Load(object sender, EventArgs e)

@@ -8,9 +8,6 @@
 namespace BugTracker.Web.Core
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Configuration;
     using System.Data;
     using System.Globalization;
     using System.IO;
@@ -20,9 +17,9 @@ namespace BugTracker.Web.Core
     using System.Threading;
     using System.Web;
 
-    public class Util
+    public static class Util
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public static HttpContext Context;
 
@@ -521,7 +518,7 @@ namespace BugTracker.Web.Core
             return false;
         }
 
-        protected static string GetAbsoluteOrRelativeFolder(string folder)
+        private static string GetAbsoluteOrRelativeFolder(string folder)
         {
             if (folder.IndexOf(":") == 1
                 || folder.StartsWith("\\\\"))

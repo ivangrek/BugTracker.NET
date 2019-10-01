@@ -26,7 +26,7 @@ namespace BugTracker.Web
 
         public bool EnableInternalPosts;
         public int Project = -1;
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

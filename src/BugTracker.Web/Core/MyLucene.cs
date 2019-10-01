@@ -21,7 +21,7 @@ namespace BugTracker.Web.Core
     using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
 
-    public class MyLucene
+    public static class MyLucene
     {
         public static string IndexPath = Util.GetLuceneIndexFolder();
 
@@ -33,7 +33,7 @@ namespace BugTracker.Web.Core
             "</span>");
 
         public static SimpleFragmenter Fragmenter = new SimpleFragmenter(400);
-        protected static Searcher Searcher;
+        private static Searcher Searcher;
 
         public static object MyLock = new object(); // for a lock
 

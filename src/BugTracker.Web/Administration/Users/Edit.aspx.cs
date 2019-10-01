@@ -22,7 +22,7 @@ namespace BugTracker.Web.Administration.Users
 
         public bool Copy;
         public int Id;
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

@@ -14,7 +14,7 @@ namespace BugTracker.Web.Core
     using System.Threading;
     using System.Web;
 
-    public class Tags
+    public static class Tags
     {
         public static string NormalizeTag(string s)
         {

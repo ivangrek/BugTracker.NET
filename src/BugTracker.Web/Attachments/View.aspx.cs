@@ -20,6 +20,11 @@ namespace BugTracker.Web.Attachments
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
+        public void Page_Init(object sender, EventArgs e)
+        {
+            ViewStateUserKey = Session.SessionID;
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(Request["bug_id"]))

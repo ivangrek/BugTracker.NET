@@ -11,7 +11,7 @@ namespace BugTracker.Web.Core
     using System.Collections.Generic;
     using System.Web;
 
-    public class WhatsNew
+    public static class WhatsNew
     {
         public const long TenMillion = 10000000;
 

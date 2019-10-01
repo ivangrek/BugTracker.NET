@@ -17,11 +17,11 @@ namespace BugTracker.Web
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public int Bugid;
-        public DataSet Ds;
-        public SecurityPermissionLevel PermissionLevel;
+        protected int Bugid { get; set; }
+        protected DataSet Ds { get; set; }
+        protected SecurityPermissionLevel PermissionLevel { get; set; }
         public int Previd;
-        public string Ses;
+        protected string Ses { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {

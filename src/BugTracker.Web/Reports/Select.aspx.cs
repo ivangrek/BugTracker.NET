@@ -18,7 +18,7 @@ namespace BugTracker.Web.Reports
         public ISecurity Security { get; set; }
         public IReportService ReportService { get; set; }
 
-        public DataSet Ds;
+        protected DataSet Ds { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

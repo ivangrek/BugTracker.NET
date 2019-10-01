@@ -13,9 +13,9 @@ namespace BugTracker.Web.Core
     using System.Diagnostics;
     using System.Text;
 
-    public class DbUtil
+    public static class DbUtil
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public static object ExecuteScalar(string sql)
         {

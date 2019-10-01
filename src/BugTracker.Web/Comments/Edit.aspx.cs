@@ -17,10 +17,10 @@ namespace BugTracker.Web.Comments
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public int Bugid;
+        protected int Bugid { get; set; }
         public int Id;
 
-        public string Sql;
+        protected string Sql {get; set; }
         public bool UseFckeditor;
 
         public void Page_Init(object sender, EventArgs e)

@@ -16,9 +16,9 @@ namespace BugTracker.Web.Bugs
     {
         public ISecurity Security { get; set; }
 
-        public DataSet Ds;
+        protected DataSet Ds { get; set; }
         public DataView Dv;
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

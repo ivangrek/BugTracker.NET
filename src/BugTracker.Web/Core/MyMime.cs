@@ -13,9 +13,9 @@ namespace BugTracker.Web.Core
     using System.Text;
     using anmar.SharpMimeTools;
 
-    public class MyMime
+    public static class MyMime
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public static SharpMimeMessage GetSharpMimeMessage(string messageRawString)
         {

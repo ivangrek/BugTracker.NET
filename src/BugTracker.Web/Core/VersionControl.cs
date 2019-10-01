@@ -14,9 +14,9 @@ namespace BugTracker.Web.Core
     using System.Text.RegularExpressions;
     using System.Web;
 
-    public class VersionControl
+    public static class VersionControl
     {
-        public static IApplicationSettings ApplicationSettings = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         private static void ConfigureStartInfo(ProcessStartInfo startInfo)
         {

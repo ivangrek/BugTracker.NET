@@ -14,7 +14,7 @@ namespace BugTracker.Web.Core
     using System.Text.RegularExpressions;
     using System.Web;
 
-    public class PrintBug
+    public static class PrintBug
     {
         private static readonly Regex ReEmail = new Regex(
             @"([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\."
@@ -223,13 +223,13 @@ namespace BugTracker.Web.Core
             if ((int)dr["project"] != 0)
             {
                 var sql = @"select
-					isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
-					isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
-					isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
-					isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
-					isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
-					isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3]
-					from projects where pj_id = $pj";
+                    isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+                    isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+                    isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+                    isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+                    isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+                    isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3]
+                    from projects where pj_id = $pj";
 
                 sql = sql.Replace("$pj", Convert.ToString((int)dr["project"]));
 
@@ -276,7 +276,7 @@ namespace BugTracker.Web.Core
             response.Write("</body>");
         }
 
-        protected static void WriteTasks(HttpResponse response, int bugid)
+        private static void WriteTasks(HttpResponse response, int bugid)
         {
             var dsTasks = Util.GetAllTasks(null, bugid);
 
@@ -289,19 +289,19 @@ namespace BugTracker.Web.Core
             }
         }
 
-        protected static void WriteRelationships(HttpResponse response, int bugid)
+        private static void WriteRelationships(HttpResponse response, int bugid)
         {
             var sql = @"select bg_id [id],
-				bg_short_desc [desc],
-				re_type [comment],
-				case
-					when re_direction = 0 then ''
-					when re_direction = 2 then 'child of $bg'
-					else 'parent of $bg' end [parent/child]
-				from bug_relationships
-				inner join bugs on re_bug2 = bg_id
-				where re_bug1 = $bg
-				order by 1";
+                bg_short_desc [desc],
+                re_type [comment],
+                case
+                    when re_direction = 0 then ''
+                    when re_direction = 2 then 'child of $bg'
+                    else 'parent of $bg' end [parent/child]
+                from bug_relationships
+                inner join bugs on re_bug2 = bg_id
+                where re_bug1 = $bg
+                order by 1";
 
             sql = sql.Replace("$bg", Convert.ToString(bugid));
             var dsRelationships = DbUtil.GetDataSet(sql);
@@ -468,15 +468,15 @@ namespace BugTracker.Web.Core
                 response.Write("\n\n<tr><td class=cmt>\n<table width=100%>\n<tr><td align=left>");
 
             /*
-				Format one of the following:
+                Format one of the following:
 
-				changed by
-				email sent to
-				email received from
-				file attached by
-				comment posted by
+                changed by
+                email sent to
+                email received from
+                file attached by
+                comment posted by
 
-			*/
+            */
 
             if (type == "update")
             {
@@ -596,7 +596,7 @@ namespace BugTracker.Web.Core
                     if (type == "comment" || type == "sent" || type == "received")
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId + "&reply=forward");
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
                         response.Write(">forward</a>");
                     }
 
@@ -623,11 +623,11 @@ namespace BugTracker.Web.Core
                     if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId);
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId);
                         response.Write(">reply</a>");
 
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=SendEmail.aspx?quote=1&bp_id=" + stringPostId + "&reply=all");
+                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
                         response.Write(">reply all</a>");
                     }
                 }
@@ -700,7 +700,7 @@ namespace BugTracker.Web.Core
                 }
 
                 response.Write("<span class=pst>");
-                if (writeLinks) response.Write("<img src=Content/images/attach.gif>");
+                if (writeLinks) response.Write("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
                 response.Write("attachment:&nbsp;</span><span class=cmt_text>");
                 response.Write(dr["bp_file"]);
                 response.Write("</span>");
@@ -749,7 +749,7 @@ namespace BugTracker.Web.Core
             var stringBugId = Convert.ToString(bugid);
 
             response.Write("\n<p><span class=pst>");
-            if (writeLinks) response.Write("<img src=Content/images/attach.gif>");
+            if (writeLinks) response.Write("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
             response.Write("attachment:&nbsp;</span>");
             response.Write(dr["ba_file"]); // intentially "ba"
             response.Write("&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -840,7 +840,7 @@ namespace BugTracker.Web.Core
             if (email != null && email != "" && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 return "<a href="
                        + applicationSettings.AbsoluteUrlPrefix
-                       + "SendEmail.aspx?bg_id="
+                       + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bg_id="
                        + Convert.ToString(bugid)
                        + "&to="
                        + email
@@ -856,7 +856,7 @@ namespace BugTracker.Web.Core
 
             return "<a href="
                    + applicationSettings.AbsoluteUrlPrefix
-                   + "SendEmail.aspx?bg_id=" + Convert.ToString(bugid)
+                   + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bg_id=" + Convert.ToString(bugid)
                    + "&to=" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(email)) + ">"
                    + email
                    + "</a>";
@@ -883,7 +883,7 @@ namespace BugTracker.Web.Core
             return displayPart
                    + " <a href="
                    + applicationSettings.AbsoluteUrlPrefix
-                   + "SendEmail.aspx?bp_id="
+                   + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bp_id="
                    + Convert.ToString(commentId)
                    + ">"
                    + emailPart
@@ -914,7 +914,7 @@ namespace BugTracker.Web.Core
                         delegate (Match m)
                         {
                             return
-                                "<a href=SendEmail.aspx?bp_id="
+                                "<a href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bp_id="
                                 + Convert.ToString(postId)
                                 + "&to="
                                 + m
@@ -989,10 +989,10 @@ a.bp_bug,
 a.bp_comment,
 isnull(us_username,'') [us_username],
 case rtrim(us_firstname)
-	when null then isnull(us_lastname, '')
-	when '' then isnull(us_lastname, '')
-	else isnull(us_lastname + ', ' + us_firstname,'')
-	end [us_fullname],
+    when null then isnull(us_lastname, '')
+    when '' then isnull(us_lastname, '')
+    else isnull(us_lastname + ', ' + us_firstname,'')
+    end [us_fullname],
 isnull(us_email,'') [us_email],
 a.bp_date,
 datediff(s,a.bp_date,getdate()) [seconds_ago],

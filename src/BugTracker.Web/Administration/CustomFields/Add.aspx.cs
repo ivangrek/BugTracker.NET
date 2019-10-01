@@ -18,7 +18,12 @@ namespace BugTracker.Web.Administration.CustomFields
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public string Sql;
+        protected string Sql;
+
+        public void Page_Init(object sender, EventArgs e)
+        {
+            ViewStateUserKey = Session.SessionID;
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {

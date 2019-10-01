@@ -18,8 +18,8 @@ namespace BugTracker.Web.Administration
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public DataSet Ds;
-        public string Ses;
+        protected DataSet Ds { get; set; }
+        protected string Ses { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

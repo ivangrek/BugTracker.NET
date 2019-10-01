@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web
+namespace BugTracker.Web.Bugs
 {
     using System;
     using System.Data;
@@ -16,7 +16,7 @@ namespace BugTracker.Web
     {
         public ISecurity Security { get; set; }
 
-        public string Sql;
+        protected string Sql {get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -47,7 +47,7 @@ namespace BugTracker.Web
 
                     this.Sql = @"
 if not exists (select bu_bug from bug_user where bu_bug = $bg and bu_user = $us)
-	insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($bg, $us, 1, 0, 0) 
+    insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($bg, $us, 1, 0, 0) 
 update bug_user set bu_flag = $fl, bu_flag_datetime = getdate() where bu_bug = $bg and bu_user = $us and bu_flag <> $fl";
 
                     this.Sql = this.Sql.Replace("$bg", Convert.ToString(bugid));
