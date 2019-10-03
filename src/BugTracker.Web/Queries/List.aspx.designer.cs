@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web.Queries {
-    
-    
-    public partial class List {
-        
+namespace BugTracker.Web.Queries
+{
+
+
+    public partial class List
+    {
+
         /// <summary>
         /// MainMenu control.
         /// </summary>
@@ -20,14 +22,14 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
-        
+
         /// <summary>
-        /// show_all control.
+        /// showAll control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox show_all;
+        protected global::System.Web.UI.WebControls.CheckBox showAll;
     }
 }

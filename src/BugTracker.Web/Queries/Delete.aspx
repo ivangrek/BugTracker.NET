@@ -6,39 +6,34 @@
 --%>
 
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Delete.aspx.cs" Inherits="BugTracker.Web.Queries.Delete" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
+    <script>
+        function submit_form() {
+            var frm = document.getElementById("frm");
+            frm.submit();
+            return true;
+        }
+    </script>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
+    <BugTracker:MainMenu runat="server" ID="MainMenu" />
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <p>
-        <div class="align">
-            <p>&nbsp</p>
-            <a href="<%= ResolveUrl("~/Queries/List.aspx")%>">back to queries</a>
+    <div class="align">
+        <a href="<%= ResolveUrl("~/Queries/List.aspx")%>">back to queries</a>
 
-            <p>
-                or
-        <p>
+        <p>or</p>
 
-            <script>
-                function submit_form() {
-                    var frm = document.getElementById("frm");
-                    frm.submit();
-                    return true;
-                }
-
-            </script>
-            <form runat="server" id="frm">
-                <a id="confirm_href" runat="server" href="javascript: submit_form()"></a>
-                <input type="hidden" id="row_id" runat="server"/>
-            </form>
-
-        </div>
+        <form runat="server" id="frm">
+            <a id="confirmHref" runat="server" href="javascript: submit_form()"></a>
+            <input type="hidden" id="rowId" runat="server" />
+        </form>
+    </div>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">

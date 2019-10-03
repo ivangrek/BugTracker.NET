@@ -13,7 +13,7 @@
 
     <script>
         editAreaLoader.init({
-            id: "sql_text" // id of the textarea to transform
+            id: "sqlText" // id of the textarea to transform
             ,
             start_highlight: true // if start with highlight
             ,
@@ -46,33 +46,33 @@
                                 <td>
                                     <input runat="server" type="text" class="txt" id="desc" maxlength="80" size="80">
                                 </td>
-                                <td runat="server" class="err" id="desc_err">&nbsp;</td>
+                                <td runat="server" class="err" id="descErr">&nbsp;</td>
                             </tr>
 
                             <tr>
-                                <td class="lbl" runat="server" id="visibility_label">Visibility:</td>
+                                <td class="lbl" runat="server" id="visibilityLabel">Visibility:</td>
                                 <td colspan="2">
-                                    <asp:RadioButton Text="Everybody" runat="server" GroupName="visibility" ID="vis_everybody" />
+                                    <asp:RadioButton Text="Everybody" runat="server" GroupName="visibility" ID="visEverybody" />
                                     &nbsp;&nbsp;&nbsp;
 
-                <asp:RadioButton Text="Just User" runat="server" GroupName="visibility" ID="vis_user" />
+                <asp:RadioButton Text="Just User" runat="server" GroupName="visibility" ID="visUser" />
                                     &nbsp;&nbsp;&nbsp;
                 <asp:DropDownList ID="user" runat="server">
                 </asp:DropDownList>
                                     &nbsp;&nbsp;
                 <span runat="server" class="err" id="user_err">&nbsp;</span>
 
-                                    <asp:RadioButton Text="Users with org" runat="server" GroupName="visibility" ID="vis_org" />
+                                    <asp:RadioButton Text="Users with org" runat="server" GroupName="visibility" ID="visOrg" />
                                     <asp:DropDownList ID="org" runat="server">
                                     </asp:DropDownList>
                                     &nbsp;&nbsp;
-                <span runat="server" class="err" id="org_err">&nbsp;</span>
+                <span runat="server" class="err" id="orgErr">&nbsp;</span>
                                 </td>
 
                                 <tr>
                                     <td colspan="3">
-                                        <span class="lbl" id="sql_text_label" runat="server">SQL:</span><br>
-                                        <textarea style="height: 300px; width: 800px;" runat="server" class="txt" name="sql_text" id="sql_text"></textarea>
+                                        <span class="lbl" id="sqlTextLabel" runat="server">SQL:</span><br>
+                                        <textarea style="height: 300px; width: 800px;" runat="server" class="txt" name="sqlText" id="sqlText"></textarea>
                                     </td>
 
 

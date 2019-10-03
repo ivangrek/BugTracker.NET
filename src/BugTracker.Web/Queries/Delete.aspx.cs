@@ -16,8 +16,9 @@ namespace BugTracker.Web.Queries
     {
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
+        public IQueryService QueryService { get; set; }
 
-        protected string Sql {get; set; }
+        protected string Sql { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -35,40 +36,33 @@ namespace BugTracker.Web.Queries
             if (IsPostBack)
             {
                 // do delete here
-                this.Sql = @"delete queries where qu_id = $1";
-                this.Sql = this.Sql.Replace("$1", Util.SanitizeInteger(this.row_id.Value));
-                DbUtil.ExecuteNonQuery(this.Sql);
+                var id = Convert.ToInt32(Util.SanitizeInteger(this.rowId.Value));
+
+                QueryService.Delete(id);
+
                 Response.Redirect("~/Queries/List.aspx");
             }
             else
             {
                 Page.Title = $"{ApplicationSettings.AppTitle} - delete query";
 
-                var id = Util.SanitizeInteger(Request["id"]);
+                var id = Convert.ToInt32(Util.SanitizeInteger(Request["id"]));
+                var (valid, name) = QueryService.CheckDeleting(id);
 
-                this.Sql = @"select qu_desc, isnull(qu_user,0) qu_user from queries where qu_id = $1";
-                this.Sql = this.Sql.Replace("$1", id);
-
-                var dr = DbUtil.GetDataRow(this.Sql);
-
-                if ((int) dr["qu_user"] != Security.User.Usid)
+                if (valid || IsAuthorized)
                 {
-                    if (Security.User.IsAdmin || Security.User.CanEditSql)
-                    {
-                        // can do anything
-                    }
-                    else
-                    {
-                        Response.Write("You are not allowed to delete this item");
-                        Response.End();
-                    }
+                    this.confirmHref.InnerText = $"confirm delete of query: \"{name}\"";
+                    this.rowId.Value = Convert.ToString(id);
                 }
-
-                this.confirm_href.InnerText = "confirm delete of query: "
-                                              + Convert.ToString(dr["qu_desc"]);
-
-                this.row_id.Value = id;
+                else
+                {
+                    Response.Write("You are not allowed to delete this item");
+                    Response.End();
+                }
             }
         }
+
+        private bool IsAuthorized => Security.User.IsAdmin
+            || Security.User.CanEditSql;
     }
 }

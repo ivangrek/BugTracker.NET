@@ -710,7 +710,14 @@
     <Compile Include="Core\Bug.cs" />
     <Compile Include="Core\BugList.cs" />
     <Compile Include="Core\Persistence\Configurations\DashboardItemConfiguration.cs" />
+    <Compile Include="Core\Persistence\Configurations\OrganisationConfiguration.cs" />
+    <Compile Include="Core\Persistence\Configurations\UserConfiguration.cs" />
+    <Compile Include="Core\Persistence\Configurations\QueryConfiguration.cs" />
     <Compile Include="Core\Persistence\Models\DashboardItem.cs" />
+    <Compile Include="Core\Persistence\Models\Organisation.cs" />
+    <Compile Include="Core\Persistence\Models\User.cs" />
+    <Compile Include="Core\Persistence\Models\Query.cs" />
+    <Compile Include="Core\QueryService.cs" />
     <Compile Include="Core\ReportService.cs" />
     <Compile Include="Core\Controls\MainMenu.ascx.cs">
       <DependentUpon>MainMenu.ascx</DependentUpon>

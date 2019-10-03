@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web.Queries {
-    
-    
-    public partial class Delete {
-        
+namespace BugTracker.Web.Queries
+{
+
+
+    public partial class Delete
+    {
+
         /// <summary>
         /// MainMenu control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
-        
+
         /// <summary>
         /// frm control.
         /// </summary>
@@ -29,23 +31,23 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm frm;
-        
+
         /// <summary>
-        /// confirm_href control.
+        /// confirmHref control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirm_href;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor confirmHref;
+
         /// <summary>
-        /// row_id control.
+        /// rowId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputHidden row_id;
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden rowId;
     }
 }

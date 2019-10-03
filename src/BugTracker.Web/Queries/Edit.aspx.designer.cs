@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BugTracker.Web.Queries {
-    
-    
-    public partial class Edit {
-        
+namespace BugTracker.Web.Queries
+{
+
+
+    public partial class Edit
+    {
+
         /// <summary>
         /// MainMenu control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::BugTracker.Web.Core.Controls.MainMenu MainMenu;
-        
+
         /// <summary>
         /// desc control.
         /// </summary>
@@ -29,43 +31,43 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputText desc;
-        
+
         /// <summary>
-        /// desc_err control.
+        /// descErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell desc_err;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell descErr;
+
         /// <summary>
-        /// visibility_label control.
+        /// visibilityLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell visibility_label;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell visibilityLabel;
+
         /// <summary>
-        /// vis_everybody control.
+        /// visEverybody control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton vis_everybody;
-        
+        protected global::System.Web.UI.WebControls.RadioButton visEverybody;
+
         /// <summary>
-        /// vis_user control.
+        /// visUser control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton vis_user;
-        
+        protected global::System.Web.UI.WebControls.RadioButton visUser;
+
         /// <summary>
         /// user control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList user;
-        
+
         /// <summary>
         /// user_err control.
         /// </summary>
@@ -83,16 +85,16 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl user_err;
-        
+
         /// <summary>
-        /// vis_org control.
+        /// visOrg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButton vis_org;
-        
+        protected global::System.Web.UI.WebControls.RadioButton visOrg;
+
         /// <summary>
         /// org control.
         /// </summary>
@@ -101,34 +103,34 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList org;
-        
+
         /// <summary>
-        /// org_err control.
+        /// orgErr control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl org_err;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl orgErr;
+
         /// <summary>
-        /// sql_text_label control.
+        /// sqlTextLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl sql_text_label;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl sqlTextLabel;
+
         /// <summary>
-        /// sql_text control.
+        /// sqlText control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea sql_text;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea sqlText;
+
         /// <summary>
         /// msg control.
         /// </summary>
@@ -137,7 +139,7 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl msg;
-        
+
         /// <summary>
         /// sub control.
         /// </summary>
@@ -146,7 +148,7 @@ namespace BugTracker.Web.Queries {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputSubmit sub;
-        
+
         /// <summary>
         /// explanation control.
         /// </summary>

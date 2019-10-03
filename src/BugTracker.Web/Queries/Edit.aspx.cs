@@ -8,19 +8,21 @@
 namespace BugTracker.Web.Queries
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using BugTracker.Web.Core.Controls;
+    using BugTracker.Web.Core.Persistence;
     using Core;
 
     public partial class Edit : Page
     {
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
-
-        public int Id;
-        protected string Sql {get; set; }
+        public IQueryService QueryService { get; set; }
+        public ApplicationContext ApplicationContext { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -35,89 +37,72 @@ namespace BugTracker.Web.Queries
 
             MainMenu.SelectedItem = MainMenuSections.Queries;
 
-            Page.Title = $"{ApplicationSettings.AppTitle} - edit query";
+            int.TryParse(Request.QueryString["id"], out var id);
 
-            this.msg.InnerText = "";
+            this.msg.InnerText = string.Empty;
 
-            var var = Request.QueryString["id"];
-            if (var == null)
-                this.Id = 0;
-            else
-                this.Id = Convert.ToInt32(var);
-
-            if (!IsPostBack)
+            if (IsPostBack)
             {
-                if (Security.User.IsAdmin || Security.User.CanEditSql)
+                OnUpdate(id);
+            }
+            else
+            {
+                Page.Title = $"{ApplicationSettings.AppTitle} - edit query";
+
+                if (IsAuthorized)
                 {
                     // these guys can do everything
-                    this.vis_everybody.Checked = true;
-
-                    this.Sql = @"/* populate org/user dropdowns */
-select og_id, og_name from orgs order by og_name;
-select us_id, us_username from users order by us_username";
-
-                    var dsOrgsAndUsers = DbUtil.GetDataSet(this.Sql);
+                    this.visEverybody.Checked = true;
 
                     // forced project dropdown
-                    this.org.DataSource = dsOrgsAndUsers.Tables[0].DefaultView;
-                    this.org.DataTextField = "og_name";
-                    this.org.DataValueField = "og_id";
+                    this.org.DataSource = ApplicationContext.Organisations.ToArray();
+                    this.org.DataTextField = "Name";
+                    this.org.DataValueField = "Id";
                     this.org.DataBind();
                     this.org.Items.Insert(0, new ListItem("[select org]", "0"));
 
-                    this.user.DataSource = dsOrgsAndUsers.Tables[1].DefaultView;
-                    this.user.DataTextField = "us_username";
-                    this.user.DataValueField = "us_id";
+                    this.user.DataSource = ApplicationContext.Users.ToArray();
+                    this.user.DataTextField = "Name";
+                    this.user.DataValueField = "Id";
                     this.user.DataBind();
                     this.user.Items.Insert(0, new ListItem("[select user]", "0"));
                 }
                 else
                 {
-                    this.sql_text.Visible = false;
-                    this.sql_text_label.Visible = false;
+                    this.sqlText.Visible = false;
+                    this.sqlTextLabel.Visible = false;
                     this.explanation.Visible = false;
 
-                    this.vis_everybody.Enabled = false;
-                    this.vis_org.Enabled = false;
-                    this.vis_user.Checked = true;
+                    this.visEverybody.Enabled = false;
+                    this.visOrg.Enabled = false;
+                    this.visUser.Checked = true;
                     this.org.Enabled = false;
                     this.user.Enabled = false;
 
                     this.org.Visible = false;
                     this.user.Visible = false;
-                    this.vis_everybody.Visible = false;
-                    this.vis_org.Visible = false;
-                    this.vis_user.Visible = false;
-                    this.visibility_label.Visible = false;
+                    this.visEverybody.Visible = false;
+                    this.visOrg.Visible = false;
+                    this.visUser.Visible = false;
+                    this.visibilityLabel.Visible = false;
                 }
 
                 // add or edit?
-                if (this.Id == 0)
+                if (id == 0)
                 {
                     this.sub.Value = "Create";
-                    this.sql_text.Value =
-                        HttpUtility.HtmlDecode(Request.Form["sql_text"]); // if coming from Search.aspx
+                    this.sqlText.Value = HttpUtility.HtmlDecode(Request.Form["sql_text"]); // if coming from Search.aspx
                 }
                 else
                 {
                     this.sub.Value = "Update";
 
                     // Get this entry's data from the db and fill in the form
+                    var dataRow = QueryService.LoadOne(id);
 
-                    this.Sql = @"select
-                qu_desc, qu_sql, isnull(qu_user,0) [qu_user], isnull(qu_org,0) [qu_org]
-                from queries where qu_id = $1";
-
-                    this.Sql = this.Sql.Replace("$1", Convert.ToString(this.Id));
-                    var dr = DbUtil.GetDataRow(this.Sql);
-
-                    if ((int) dr["qu_user"] != Security.User.Usid)
+                    if (dataRow.UserId != Security.User.Usid)
                     {
-                        if (Security.User.IsAdmin || Security.User.CanEditSql)
-                        {
-                            // these guys can do everything
-                        }
-                        else
+                        if (!IsAuthorized)
                         {
                             Response.Write("You are not allowed to edit this query");
                             Response.End();
@@ -125,78 +110,155 @@ select us_id, us_username from users order by us_username";
                     }
 
                     // Fill in this form
-                    this.desc.Value = (string) dr["qu_desc"];
+                    this.desc.Value = dataRow.Name;
 
-                    //			if (Util.GetSetting("HtmlEncodeSql","0") == "1")
-                    //			{
-                    //				sql_text.Value = Server.HtmlEncode((string) dr["qu_sql"]);
-                    //			}
-                    //			else
-                    //			{
-                    this.sql_text.Value = (string) dr["qu_sql"];
-                    //			}
+                    //if (Util.GetSetting("HtmlEncodeSql","0") == "1")
+                    //{
+                    //  this.sqlText.Value = Server.HtmlEncode(dataRow.Sql);
+                    //}
+                    //else
+                    //{
+                    this.sqlText.Value = dataRow.Sql;
+                    //}
 
-                    if ((int) dr["qu_user"] == 0 && (int) dr["qu_org"] == 0)
+                    if ((dataRow.UserId == null || dataRow.UserId.Value == 0) && (dataRow.OrganisationId == null || dataRow.OrganisationId.Value == 0))
                     {
-                        this.vis_everybody.Checked = true;
+                        this.visEverybody.Checked = true;
                     }
-                    else if ((int) dr["qu_user"] != 0)
+                    else if (dataRow.UserId > 0)
                     {
-                        this.vis_user.Checked = true;
+                        this.visUser.Checked = true;
+
                         foreach (ListItem li in this.user.Items)
-                            if (Convert.ToInt32(li.Value) == (int) dr["qu_user"])
+                        {
+                            if (Convert.ToInt32(li.Value) == dataRow.UserId)
                             {
                                 li.Selected = true;
                                 break;
                             }
+                        }
                     }
                     else
                     {
-                        this.vis_org.Checked = true;
+                        this.visOrg.Checked = true;
+
                         foreach (ListItem li in this.org.Items)
-                            if (Convert.ToInt32(li.Value) == (int) dr["qu_org"])
+                        {
+                            if (Convert.ToInt32(li.Value) == dataRow.OrganisationId)
                             {
                                 li.Selected = true;
                                 break;
                             }
+                        }
                     }
                 }
             }
+        }
+
+        private bool IsAuthorized => Security.User.IsAdmin
+            || Security.User.CanEditSql;
+
+        private void OnUpdate(int id)
+        {
+            var good = ValidateForm(id);
+
+            if (good)
+            {
+                var parameters = new Dictionary<string, string>
+                {
+                    { "$id", Convert.ToString(id)},
+                    { "$de", this.desc.Value.Replace("'", "''") },
+                    { "$sq", string.Empty },
+                    { "$us", string.Empty },
+                    { "$rl", string.Empty },
+                };
+
+                //if (Util.GetSetting("HtmlEncodeSql","0") == "1")
+                //{
+                //  sql = sql.Replace("$sq", Server.HtmlDecode(sql_text.Value.Replace("'","''")));
+                //}
+                //else
+                //{
+                parameters["$sq"] = this.sqlText.Value.Replace("'", "''");
+                //}
+
+                if (Security.User.IsAdmin || Security.User.CanEditSql)
+                {
+                    if (this.visEverybody.Checked)
+                    {
+                        parameters["$us"] = "0";
+                        parameters["$rl"] = "0";
+                    }
+                    else if (this.visUser.Checked)
+                    {
+                        parameters["$us"] = Convert.ToString(this.user.SelectedItem.Value);
+                        parameters["$rl"] = "0";
+                    }
+                    else
+                    {
+                        parameters["$us"] = "0";
+                        parameters["$rl"] = Convert.ToString(this.org.SelectedItem.Value);
+                    }
+                }
+                else
+                {
+                    parameters["$us"] = Convert.ToString(Security.User.Usid);
+                    parameters["$rl"] = "0";
+                }
+
+                if (id == 0) // insert new
+                {
+                    QueryService.Create(parameters);
+                }
+                else // edit existing
+                {
+                    QueryService.Update(parameters);
+                }
+
+                Response.Redirect("~/Queries/List.aspx");
+            }
             else
             {
-                on_update(Security);
+                if (id == 0) // insert new
+                {
+                    this.msg.InnerText = "Query was not created.";
+                }
+                else // edit existing
+                {
+                    this.msg.InnerText = "Query was not updated.";
+                }
             }
         }
 
-        public bool validate(ISecurity security)
+        private bool ValidateForm(int id)
         {
             var good = true;
 
-            if (this.desc.Value == "")
+            if (string.IsNullOrEmpty(this.desc.Value))
             {
                 good = false;
-                this.desc_err.InnerText = "Description is required.";
+                this.descErr.InnerText = "Description is required.";
             }
             else
             {
-                this.desc_err.InnerText = "";
+                this.descErr.InnerText = string.Empty;
             }
 
             if (Security.User.IsAdmin || Security.User.CanEditSql)
             {
-                if (this.vis_org.Checked)
+                if (this.visOrg.Checked)
                 {
                     if (this.org.SelectedIndex < 1)
                     {
                         good = false;
-                        this.org_err.InnerText = "You must select a org.";
+                        this.orgErr.InnerText = "You must select a org.";
                     }
                     else
                     {
-                        this.org_err.InnerText = "";
+                        this.orgErr.InnerText = "";
                     }
                 }
-                else if (this.vis_user.Checked)
+                else if (this.visUser.Checked)
                 {
                     if (this.user.SelectedIndex < 1)
                     {
@@ -210,20 +272,19 @@ select us_id, us_username from users order by us_username";
                 }
                 else
                 {
-                    this.org_err.InnerText = "";
+                    this.orgErr.InnerText = "";
                 }
             }
 
-            if (this.Id == 0)
+            if (id == 0)
             {
                 // See if name is already used?
-                this.Sql = "select count(1) from queries where qu_desc = N'$de'";
-                this.Sql = this.Sql.Replace("$de", this.desc.Value.Replace("'", "''"));
-                var queryCount = (int) DbUtil.ExecuteScalar(this.Sql);
+                var queryCount = ApplicationContext.Queries
+                    .Count(x => x.Name == this.desc.Value.Replace("'", "''"));
 
-                if (queryCount == 1)
+                if (queryCount > 0)
                 {
-                    this.desc_err.InnerText = "A query with this name already exists.   Choose another name.";
+                    this.descErr.InnerText = "A query with this name already exists. Choose another name.";
                     this.msg.InnerText = "Query was not created.";
                     good = false;
                 }
@@ -231,90 +292,19 @@ select us_id, us_username from users order by us_username";
             else
             {
                 // See if name is already used?
-                this.Sql = "select count(1) from queries where qu_desc = N'$de' and qu_id <> $id";
-                this.Sql = this.Sql.Replace("$de", this.desc.Value.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
-                var queryCount = (int) DbUtil.ExecuteScalar(this.Sql);
+                var queryCount = ApplicationContext.Queries
+                    .Where(x => x.Name == this.desc.Value.Replace("'", "''"))
+                    .Count(x => x.Id != id);
 
-                if (queryCount == 1)
+                if (queryCount > 0)
                 {
-                    this.desc_err.InnerText = "A query with this name already exists.   Choose another name.";
+                    this.descErr.InnerText = "A query with this name already exists. Choose another name.";
                     this.msg.InnerText = "Query was not created.";
                     good = false;
                 }
             }
 
             return good;
-        }
-
-        public void on_update(ISecurity security)
-        {
-            var good = validate(security);
-
-            if (good)
-            {
-                if (this.Id == 0) // insert new
-                {
-                    this.Sql = @"insert into queries
-                (qu_desc, qu_sql, qu_default, qu_user, qu_org)
-                values (N'$de', N'$sq', 0, $us, $rl)";
-                }
-                else // edit existing
-                {
-                    this.Sql = @"update queries set
-                qu_desc = N'$de',
-                qu_sql = N'$sq',
-                qu_user = $us,
-                qu_org = $rl
-                where qu_id = $id";
-
-                    this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
-                }
-
-                this.Sql = this.Sql.Replace("$de", this.desc.Value.Replace("'", "''"));
-                //		if (Util.GetSetting("HtmlEncodeSql","0") == "1")
-                //		{
-                //			sql = sql.Replace("$sq", Server.HtmlDecode(sql_text.Value.Replace("'","''")));
-                //		}
-                //		else
-                //		{
-                this.Sql = this.Sql.Replace("$sq", this.sql_text.Value.Replace("'", "''"));
-                //		}
-
-                if (Security.User.IsAdmin || Security.User.CanEditSql)
-                {
-                    if (this.vis_everybody.Checked)
-                    {
-                        this.Sql = this.Sql.Replace("$us", "0");
-                        this.Sql = this.Sql.Replace("$rl", "0");
-                    }
-                    else if (this.vis_user.Checked)
-                    {
-                        this.Sql = this.Sql.Replace("$us", Convert.ToString(this.user.SelectedItem.Value));
-                        this.Sql = this.Sql.Replace("$rl", "0");
-                    }
-                    else
-                    {
-                        this.Sql = this.Sql.Replace("$rl", Convert.ToString(this.org.SelectedItem.Value));
-                        this.Sql = this.Sql.Replace("$us", "0");
-                    }
-                }
-                else
-                {
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
-                    this.Sql = this.Sql.Replace("$rl", "0");
-                }
-
-                DbUtil.ExecuteNonQuery(this.Sql);
-                Response.Redirect("~/Queries/List.aspx");
-            }
-            else
-            {
-                if (this.Id == 0) // insert new
-                    this.msg.InnerText = "Query was not created.";
-                else // edit existing
-                    this.msg.InnerText = "Query was not updated.";
-            }
         }
     }
 }

@@ -10,10 +10,14 @@ namespace BugTracker.Web.Core.Persistence
     using Configurations;
     using Models;
 
-    internal sealed class ApplicationContext : DbContext
+    public sealed class ApplicationContext : DbContext
     {
         public ApplicationContext() : base("DefaultConnection")
         { }
+
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<Organisation> Organisations { get; set; }
 
         public DbSet<Category> Categories { get; set; }
 
@@ -23,17 +27,22 @@ namespace BugTracker.Web.Core.Persistence
 
         public DbSet<UserDefinedAttribute> UserDefinedAttributes { get; set; }
 
+        public DbSet<Query> Queries { get; set; }
+
         public DbSet<Report> Reports { get; set; }
 
         public DbSet<DashboardItem> DashboardItems { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Configurations.Add(new UserConfiguration());
+            modelBuilder.Configurations.Add(new OrganisationConfiguration());
             modelBuilder.Configurations.Add(new CategoryConfiguration());
             modelBuilder.Configurations.Add(new PriorityConfiguration());
             modelBuilder.Configurations.Add(new StatusConfiguration());
             modelBuilder.Configurations.Add(new UserDefinedAttributeConfiguration());
 
+            modelBuilder.Configurations.Add(new QueryConfiguration());
             modelBuilder.Configurations.Add(new ReportConfiguration());
             modelBuilder.Configurations.Add(new DashboardItemConfiguration());
         }

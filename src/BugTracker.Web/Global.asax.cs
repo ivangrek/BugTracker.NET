@@ -33,43 +33,7 @@ namespace BugTracker.Web
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            var builder = new ContainerBuilder();
-
-            builder.RegisterType<ApplicationSettings>()
-                .As<IApplicationSettings>();
-
-            builder.RegisterType<Security>()
-                .As<ISecurity>()
-                .InstancePerRequest();
-
-            builder.RegisterType<Authenticate>()
-                .As<IAuthenticate>()
-                .InstancePerRequest();
-
-            builder.RegisterType<ApplicationContext>()
-                .InstancePerRequest();
-
-            builder.RegisterType<CategoryService>()
-                .As<ICategoryService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<PriorityService>()
-                .As<IPriorityService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<StatusService>()
-                .As<IStatusService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<UserDefinedAttributeService>()
-                .As<IUserDefinedAttributeService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<ReportService>()
-                .As<IReportService>()
-                .InstancePerRequest();
-
-            _containerProvider = new ContainerProvider(builder.Build());
+            InitIoC();
 
             var path = HttpContext.Current.Server.MapPath("~/");
 
@@ -247,6 +211,51 @@ namespace BugTracker.Web
                     Email.SendEmail(to, from, "", subject, body.ToString()); // 5 args				
                 }
             }
+        }
+
+        private static void InitIoC()
+        {
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<ApplicationSettings>()
+                .As<IApplicationSettings>();
+
+            builder.RegisterType<Security>()
+                .As<ISecurity>()
+                .InstancePerRequest();
+
+            builder.RegisterType<Authenticate>()
+                .As<IAuthenticate>()
+                .InstancePerRequest();
+
+            builder.RegisterType<ApplicationContext>()
+                .InstancePerRequest();
+
+            builder.RegisterType<CategoryService>()
+                .As<ICategoryService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<PriorityService>()
+                .As<IPriorityService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<StatusService>()
+                .As<IStatusService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<UserDefinedAttributeService>()
+                .As<IUserDefinedAttributeService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<ReportService>()
+                .As<IReportService>()
+                .InstancePerRequest();
+
+            builder.RegisterType<QueryService>()
+                .As<IQueryService>()
+                .InstancePerRequest();
+
+            _containerProvider = new ContainerProvider(builder.Build());
         }
     }
 }

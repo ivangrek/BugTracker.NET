@@ -170,7 +170,7 @@ namespace BugTracker.Web.Core
             var report = this.context.Reports
                 .First(x => x.Id == id);
 
-            report.Name = parameters["$na"];
+            report.Name = parameters["$de"];
             report.Sql = parameters["$sq"];
             report.ChartType = parameters["$ct"];
 
