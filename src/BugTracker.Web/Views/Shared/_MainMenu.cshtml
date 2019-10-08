@@ -1,0 +1,156 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.PageViewModel
+
+@*// topmost visible HTML*@
+@Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_header"])
+
+<span id="debug" style="position: absolute; top: 0; left: 0;"></span>
+<script>
+    function dbg(s) {
+        document.getElementById('debug').innerHTML += (s + '<br>');
+    }
+
+    function on_submit_search() {
+        var el = document.getElementById('lucene_input');
+
+        if (el.value == '') {
+            alert('Enter the words you are search for.');
+            el.focus();
+
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+</script>
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" class="menubar">
+    <tr>
+        @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])
+
+        <td width="20">&nbsp;</td>
+
+        <td class="menu_td">
+            <a href="~/Bugs/List.aspx"><span class="@(Model.SelectedItem == Model.ApplicationSettings.PluralBugLabel ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">@Model.ApplicationSettings.PluralBugLabel</span></a>
+        </td>
+
+        @if (Model.Security.User.CanSearch)
+        {
+            <td class="menu_td">
+                <a href="~/Search.aspx"><span class="@(Model.SelectedItem == "search" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">search</span></a>
+            </td>
+        }
+
+        @if (Model.ApplicationSettings.EnableWhatsNewPage)
+        {
+            <td class="menu_td">
+                <a href="@Url.Action("Index", "News")"><span class="@(Model.SelectedItem == "news" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">news</span></a>
+            </td>
+        }
+
+        @if (!Model.Security.User.IsGuest)
+        {
+            <td class="menu_td">
+                <a href="~/Queries/List.aspx"><span class="@(Model.SelectedItem == "queries" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">queries</span></a>
+            </td>
+        }
+
+        @if (Model.Security.User.IsAdmin || Model.Security.User.CanUseReports || Model.Security.User.CanEditReports)
+        {
+            <td class="menu_td">
+                <a href="@Url.Action("Index", "Report")"><span class="@(Model.SelectedItem == "reports" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">reports</span></a>
+            </td>
+        }
+
+        @if (Model.ApplicationSettings.CustomMenuLinkLabel != string.Empty)
+        {
+            <td class="menu_td">
+                <a href="@Model.ApplicationSettings.CustomMenuLinkUrl"><span class="@(Model.SelectedItem == Model.ApplicationSettings.CustomMenuLinkLabel ? " selected_menu_item" : "menu_item") warn" style="margin-left:3px;">@Model.ApplicationSettings.CustomMenuLinkLabel</span></a>
+            </td>
+        }
+
+        @if (Model.Security.User.IsAdmin)
+        {
+            <td class="menu_td">
+                <a href="~/Administration/Home.aspx"><span class="@(Model.SelectedItem == "admin" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">admin</span></a>
+            </td>
+        }
+        else if (Model.Security.User.IsProjectAdmin)
+        {
+            <td class="menu_td">
+                <a href="~/Administration/Users/List.aspx"><span class="@(Model.SelectedItem == " users" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">users</span></a>
+            </td>
+        }
+
+        <td nowrap valign="middle">
+            <form style="margin: 0; padding: 0;" action="~/Bugs/Edit.aspx?id=" method="get">
+                <input class="menubtn" type="submit" value="go to ID">
+                <input class="menuinput txt" size="4" type="text" name="id" accesskey="g">
+            </form>
+        </td>
+
+        @if (Model.ApplicationSettings.EnableLucene && Model.Security.User.CanSearch)
+        {
+            var query = (string)HttpContext.Current.Session["query"] ?? string.Empty;
+
+            <td nowrap valign="middle">
+                <form style="margin: 0; padding: 0;" action="~/SearchText.aspx" method="get" onsubmit="return on_submit_search()">
+                    <input class="menubtn" type="submit" value="search text">
+                    <input class="menuinput txt" id="lucene_input" size="24" type="text" value='@query.Replace("' ", " ")' name="query" accesskey="s">
+                    <a href="~/Content/lucene_syntax.html" target="_blank" style="font-size: 7pt;">advanced</a>
+                </form>
+            </td>
+        }
+
+        <td nowrap valign="middle">
+            @if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
+            {
+                <span class="smallnote">using as<br>@Model.Security.User.Username</span>
+            }
+            else
+            {
+                <span class="smallnote">logged in as<br>@Model.Security.User.Username</span>
+            }
+        </td>
+
+        @if (Model.Security.AuthMethod == "plain")
+        {
+            if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
+            {
+                <td class="menu_td">
+                    <a href="~/Accounts/Login.aspx"><span class="@(Model.SelectedItem == " login" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">login</span></a>
+                </td>
+            }
+            else
+            {
+                <td class="menu_td">
+                    <a href="~/Accounts/Logoff.aspx"><span class="@(Model.SelectedItem == " logoff" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">logoff</span></a>
+                </td>
+            }
+        }
+
+        @*// for guest account, suppress display of "edit_self*@
+        @if (!Model.Security.User.IsGuest)
+        {
+            <td class="menu_td">
+                <a href="~/EditSelf.aspx"><span class="@(Model.SelectedItem == " settings" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">settings</span></a>
+            </td>
+        }
+
+        <td valign="middle" align="left">
+            <a target="_blank" href="~/Content/about.html"><span class="menu_item" style="margin-left: 3px;">about</span></a>
+        </td>
+
+        <td nowrap valign="middle">
+            <a target="_blank" href="http://ifdefined.com/README.html"><span class="menu_item" style="margin-left: 3px;">help</span></a>
+        </td>
+    </tr>
+</table>
+<br>

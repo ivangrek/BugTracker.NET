@@ -1,0 +1,26 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link rel="shortcut icon" type="image/png" href="~/Content/favicon.ico">
+
+    @Styles.Render("~/bundles/css/app")
+    @Scripts.Render("~/bundles/js/app")
+
+    @RenderSection("Head", false)
+</head>
+<body>
+    @RenderSection("BodyHeader", false)
+    @RenderBody()
+    @RenderSection("BodyFooter", false)
+</body>
+</html>

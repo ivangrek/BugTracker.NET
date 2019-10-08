@@ -8,32 +8,38 @@
 namespace BugTracker.Web
 {
     using System;
-    using System.Collections.Specialized;
     using System.IO;
     using System.Text;
     using System.Web;
     using System.Web.Caching;
+    using System.Web.Optimization;
+    using System.Web.Routing;
     using Autofac;
     using Autofac.Integration.Web;
     using Core;
-    using Core.Administration;
-    using Core.Persistence;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is an infrastructure")]
     public class Global : HttpApplication, IContainerProviderAccessor
     {
         // Provider that holds the application container.
-        static IContainerProvider _containerProvider;
+        private static IContainerProvider _containerProvider;
 
         // Instance property that will be used by Autofac HttpModules
         // to resolve and inject dependencies.
-        public IContainerProvider ContainerProvider
-        {
-            get { return _containerProvider; }
-        }
+        public IContainerProvider ContainerProvider => _containerProvider;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "This is an infrastructure")]
         protected void Application_Start(object sender, EventArgs e)
         {
-            InitIoC();
+            var container = IoCConfig.Configure();
+
+            //AreaRegistration.RegisterAllAreas();
+            //GlobalConfiguration.Configure(WebApiConfig.Register);
+            //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            _containerProvider = new ContainerProvider(container);
 
             var path = HttpContext.Current.Server.MapPath("~/");
 
@@ -88,7 +94,7 @@ namespace BugTracker.Web
             Application["custom_welcome"] = sr.ReadToEnd();
             sr.Close();
 
-            var applicationSettings = ContainerProvider.ApplicationContainer
+            var applicationSettings = container
                 .Resolve<IApplicationSettings>();
 
             if (applicationSettings.EnableVotes)
@@ -112,47 +118,38 @@ namespace BugTracker.Web
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "This is an infrastructure")]
         protected void Application_Error(object sender, EventArgs e)
         {
             // Put the server vars into a string
-
             var serverVarsString = new StringBuilder();
-            /*
-                    var varnames = Request.ServerVariables.AllKeys.Where(x => !x.StartsWith("AUTH_PASSWORD"));
-
-                    foreach (string varname in varnames)
-                    {
-                        string varval = Request.ServerVariables[varname];
-                        if (!string.IsNullOrEmpty(varval))
-                        {
-                            server_vars_string.Append("\n");
-                            server_vars_string.Append(varname);
-                            server_vars_string.Append("=");
-                            server_vars_string.Append(varval);
-                        }
-                    }
-            */
-
-            int loop1, loop2;
-            NameValueCollection coll;
 
             // Load ServerVariable collection into NameValueCollection object.
-            coll = Request.ServerVariables;
+            var coll = Request.ServerVariables;
+
             // Get names of all keys into a string array.
             var arr1 = coll.AllKeys;
-            for (loop1 = 0; loop1 < arr1.Length; loop1++)
+
+            for (var loop1 = 0; loop1 < arr1.Length; loop1++)
             {
                 var key = arr1[loop1];
-                if (key.StartsWith("AUTH_PASSWORD"))
+
+                if (key.StartsWith("AUTH_PASSWORD", StringComparison.InvariantCulture))
+                {
                     continue;
+                }
 
                 var arr2 = coll.GetValues(key);
 
-                for (loop2 = 0; loop2 < 1; loop2++)
+                for (var loop2 = 0; loop2 < 1; loop2++)
                 {
                     var val = arr2[loop2];
+
                     if (string.IsNullOrEmpty(val))
+                    {
                         break;
+                    }
+
                     serverVarsString.Append("\n");
                     serverVarsString.Append(key);
                     serverVarsString.Append("=");
@@ -160,12 +157,14 @@ namespace BugTracker.Web
                 }
             }
 
-            var exc = Server.GetLastError().GetBaseException();
+            var exc = Server.GetLastError()
+                .GetBaseException();
 
             var applicationSettings = ContainerProvider.ApplicationContainer
                 .Resolve<IApplicationSettings>();
 
             var logEnabled = applicationSettings.LogEnabled;
+
             if (logEnabled)
             {
                 var path = Util.GetLogFilePath();
@@ -173,18 +172,19 @@ namespace BugTracker.Web
                 // open file
                 var w = File.AppendText(path);
 
-                w.WriteLine("\nTIME: " + DateTime.Now.ToLongTimeString());
-                w.WriteLine("MSG: " + exc.Message);
-                w.WriteLine("URL: " + Request.Url);
-                w.WriteLine("EXCEPTION: " + exc);
+                w.WriteLine($"\nTIME: {DateTime.Now.ToLongTimeString()}");
+                w.WriteLine($"MSG: {exc.Message}");
+                w.WriteLine($"URL: {Request.Url}");
+                w.WriteLine($"EXCEPTION: {exc}");
                 w.WriteLine(serverVarsString.ToString());
                 w.Close();
             }
 
             var errorEmailEnabled = applicationSettings.ErrorEmailEnabled;
+
             if (errorEmailEnabled)
             {
-                if (exc.Message == "Expected integer.  Possible SQL injection attempt?")
+                if (exc.Message == "Expected integer. Possible SQL injection attempt?")
                 {
                     // don't bother sending email.  Too many automated attackers
                 }
@@ -196,8 +196,7 @@ namespace BugTracker.Web
                 {
                     var to = applicationSettings.ErrorEmailTo;
                     var from = applicationSettings.ErrorEmailFrom;
-                    var subject = "Error: " + exc.Message;
-
+                    var subject = $"Error: {exc.Message}";
                     var body = new StringBuilder();
 
                     body.Append("\nTIME: ");
@@ -208,54 +207,9 @@ namespace BugTracker.Web
                     body.Append(exc);
                     body.Append(serverVarsString);
 
-                    Email.SendEmail(to, from, "", subject, body.ToString()); // 5 args				
+                    Email.SendEmail(to, from, string.Empty, subject, body.ToString()); // 5 args
                 }
             }
-        }
-
-        private static void InitIoC()
-        {
-            var builder = new ContainerBuilder();
-
-            builder.RegisterType<ApplicationSettings>()
-                .As<IApplicationSettings>();
-
-            builder.RegisterType<Security>()
-                .As<ISecurity>()
-                .InstancePerRequest();
-
-            builder.RegisterType<Authenticate>()
-                .As<IAuthenticate>()
-                .InstancePerRequest();
-
-            builder.RegisterType<ApplicationContext>()
-                .InstancePerRequest();
-
-            builder.RegisterType<CategoryService>()
-                .As<ICategoryService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<PriorityService>()
-                .As<IPriorityService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<StatusService>()
-                .As<IStatusService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<UserDefinedAttributeService>()
-                .As<IUserDefinedAttributeService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<ReportService>()
-                .As<IReportService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<QueryService>()
-                .As<IQueryService>()
-                .InstancePerRequest();
-
-            _containerProvider = new ContainerProvider(builder.Build());
         }
     }
 }

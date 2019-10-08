@@ -46,7 +46,7 @@ namespace BugTracker.Web.Accounts
                     Util.WriteToLog(e1.Message);
                     Util.WriteToLog(ApplicationSettings.ConnectionString);
                     this.msg.InnerHtml = "Unable to find \"bugs\" table.<br>"
-                                         + "Click to <a href=Install.aspx>setup database tables</a>";
+                                         + "Click to <a href='/Asp/Install'>setup database tables</a>";
                 }
             }
             catch (SqlException e2)

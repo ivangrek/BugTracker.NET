@@ -1,0 +1,44 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.SortableTableViewModel
+
+@{
+    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="align">
+    @if (page.Security.User.IsAdmin || page.Security.User.CanEditReports)
+    {
+        <a href="@Url.Action("Create")">add new report</a>@:&nbsp;&nbsp;&nbsp;&nbsp;
+    }
+
+    <a href="@Url.Action("Dashboard")">dashboard</a>
+
+    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", Model);
+    }
+    else
+    {
+        <div>No reports in the database.</div>
+    }
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

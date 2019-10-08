@@ -71,19 +71,19 @@ namespace BugTracker.Web.Core
                     case "pie":
                     case "line":
                     case "bar":
-                        viewChartValue = $"<a target='_blank' href='{VirtualPathUtility.ToAbsolute($"~/Reports/View.aspx?view=chart&id={report.Id}")}'>{report.ChartType}</a>";
+                        viewChartValue = $"<a target='_blank' href='{VirtualPathUtility.ToAbsolute($"~/Report/Show?view=chart&id={report.Id}")}'>{report.ChartType}</a>";
                         break;
                     default:
                         viewChartValue = "&nbsp;";
                         break;
                 }
 
-                var viewDataValue = $"<a target='_blank' href='{VirtualPathUtility.ToAbsolute($"~/Reports/View.aspx?view=data&id={report.Id}")}'>data</a>";
+                var viewDataValue = $"<a target='_blank' href='{VirtualPathUtility.ToAbsolute($"~/Report/Show?view=data&id={report.Id}")}'>data</a>";
 
                 if (this.security.User.IsAdmin || this.security.User.CanEditReports)
                 {
-                    var editValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Reports/Edit.aspx?id={report.Id}")}'>edit</a>";
-                    var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Reports/Delete.aspx?id={report.Id}")}'>delete</a>";
+                    var editValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Report/Update/{report.Id}")}'>edit</a>";
+                    var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Report/Delete/{report.Id}")}'>delete</a>";
 
                     dataTable.Rows.Add(report.Name, viewChartValue, viewDataValue, editValue, deleteValue);
                 }

@@ -1,0 +1,43 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.SortableTableViewModel
+
+@{
+    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
+}
+
+@section BodyHeader {
+}
+
+<div class="align">
+    <table border=0>
+        <tr>
+            <td>
+                <h2>@page.Title</h2>
+
+                @if (Model.DataSet.Tables[0].Rows.Count > 0)
+                {
+                    @Html.Partial("_SortableTable", Model);
+                }
+                else
+                {
+                    <font size="+1">The database query for this report returned zero rows.</font>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+}

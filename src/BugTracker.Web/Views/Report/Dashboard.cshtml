@@ -1,0 +1,89 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.Report.DashboardViewModel
+
+@{
+    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <style>
+        body {
+            background: #ffffff;
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 3px solid #cccccc;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        iframe {
+            border: 1px solid white;
+            height: 300px;
+            width: 90%;
+        }
+    </style>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+@helper WriteColumn(int column)
+{
+    var iframeId = 0;
+
+    foreach (System.Data.DataRow dr in Model.DataSet.Tables[0].Rows)
+    {
+        if ((int)dr["ds_col"] == column)
+        {
+            if ((string)dr["ds_chart_type"] == "data")
+            {
+                <div class="panel">
+                    <iframe frameborder="0" src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = "data" })"></iframe>
+                </div>
+            }
+            else
+            {
+                <div class="panel">
+                    <img src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = dr["ds_chart_type"], scale = 2 })">
+                </div>
+            }
+        }
+    }
+}
+
+<div class="align">
+    @if (page.Security.User.IsGuest) /* no dashboard */
+    {
+        <span class="disabled_link">edit dashboard not available to "guest" user</span>
+    }
+    else
+    {
+        <a href="@Url.Action("EditDashboard", "Report")">edit dashboard</a>
+    }
+
+    <table border="0" cellspacing="0" cellpadding="10">
+        <tr>
+            <td valign="top">
+                @WriteColumn(1)
+            </td>
+
+            <td valign="top">
+                @WriteColumn(2)
+            </td>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

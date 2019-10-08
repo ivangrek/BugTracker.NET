@@ -1,0 +1,153 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.Report.EditDashboardViewModel
+
+@{
+    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <style>
+        body {
+            background: #ffffff;
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 3px solid #cccccc;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+    </style>
+
+    <script>
+        var column = 0;
+
+        function show_select_report_page(whichCol) {
+            column = whichCol;
+            popup_window = window.open('@Url.Action("Select", "Report")');
+        }
+
+        function add_selected_report(chartType, id) {
+            var frm = document.getElementById("addform");
+
+            frm.reportId.value = id;
+            frm.chartType.value = chartType;
+            frm.column.value = column;
+            frm.submit();
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+@helper WriteColumn(int column)
+{
+    var firstRow = true;
+    var lastRow = -1;
+
+    foreach (System.Data.DataRow dr in Model.DataSet.Tables[0].Rows)
+    {
+        if ((int)dr["ds_col"] == column)
+        {
+            lastRow = (int)dr["ds_row"];
+        }
+    }
+
+    foreach (System.Data.DataRow dr in Model.DataSet.Tables[0].Rows)
+    {
+        if ((int)dr["ds_col"] == column)
+        {
+            <div class="panel">
+                @WriteLink((int)dr["ds_id"], "delete", "delete")
+
+                @if (firstRow)
+                {
+                    firstRow = false;
+                }
+                else
+                {
+                    @WriteLink((int)dr["ds_id"], "moveup", "move up")
+                }
+
+                @if ((int)dr["ds_row"] == lastRow)
+                {
+                    // skip
+                }
+                else
+                {
+                    @WriteLink((int)dr["ds_id"], "movedown", "move down")
+                }
+
+                @*//WriteLink((int) dr["ds_id"], "switchcols", "switch columns");*@
+
+                <p></p>
+
+                <div style="text-align: center; font-weight: bold;">
+                    @dr["rp_desc"]&nbsp;-&nbsp;@dr["ds_chart_type"]
+                </div>
+            </div>
+        }
+    }
+}
+
+@helper WriteLink(int id, string action, string text)
+{
+    var formId = Guid.NewGuid().ToString();
+
+    using (Html.BeginForm("UpdateDashboard", "Report", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("dashboardId", id)
+        @Html.Hidden("action", action)
+        @Html.Hidden("sesion", (string)ViewBag.Sesion)
+
+        <a href="#" onclick="document.getElementById('@formId').submit();">[@text]</a>
+    }
+
+    <span>&nbsp;&nbsp;&nbsp;</span>
+}
+
+<a href="@Url.Action("Dashboard", "Report")">back to dashboard</a>
+
+<table border="0" cellspacing="0" cellpadding="10">
+    <tr>
+        <td valign="top">
+            @WriteColumn(1)
+
+            <div class="panel">
+                <a href="javascript:show_select_report_page(1)">[add report to dashboard column 1]</a>
+            </div>
+        </td>
+
+        <td valign="top">
+            @WriteColumn(2)
+
+            <div class="panel">
+                <a href="javascript:show_select_report_page(2)">[add report to dashboard column 2]</a>
+            </div>
+        </td>
+</table>
+
+@using (Html.BeginForm("UpdateDashboard", "Report", FormMethod.Post, new { id = "addform" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("reportId")
+    @Html.Hidden("chartType")
+    @Html.Hidden("column")
+    @Html.Hidden("action", "add")
+    @Html.Hidden("sesion", (string)ViewBag.Sesion)
+}
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

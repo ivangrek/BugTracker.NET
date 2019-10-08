@@ -1,0 +1,141 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.SortableTableViewModel
+
+@if (Model.WriteColumnHeadingsAsLinks)
+{
+    <div id="wait" class="please_wait">&nbsp;</div>
+    <div class="click_to_sort">click on column headings to sort</div>
+}
+
+<div id="myholder">
+    <table id="mytable" border="1" class="datat">
+        <tr>
+            @{
+                var dbColumnCount = 0;
+            }
+
+            @foreach (System.Data.DataColumn dc in Model.DataSet.Tables[0].Columns)
+            {
+                if ((Model.EditUrl != string.Empty || Model.DeleteUrl != string.Empty)
+                    && dbColumnCount == Model.DataSet.Tables[0].Columns.Count - 1)
+                {
+                    if (Model.EditUrl != string.Empty)
+                    {
+                        <td class="datah" valign="bottom">edit</td>
+                    }
+
+                    if (Model.DeleteUrl != string.Empty)
+                    {
+                        <td class="datah" valign="bottom">delete</td>
+                    }
+                }
+                else
+                {
+                    // determine data type
+                    var datatype = string.Empty;
+
+                    if (BugTracker.Web.Core.Util.IsNumericDataType(dc.DataType))
+                    {
+                        datatype = "num";
+                    }
+                    else if (dc.DataType == typeof(DateTime))
+                    {
+                        datatype = "date";
+                    }
+                    else
+                    {
+                        datatype = "str";
+                    }
+
+                    <td class="datah" valign="bottom">
+
+                        @if (dc.ColumnName.StartsWith("$no_sort_"))
+                        {
+                            @Html.Raw(dc.ColumnName.Replace("$no_sort_", string.Empty))
+                        }
+                        else
+                        {
+                            if (Model.WriteColumnHeadingsAsLinks)
+                            {
+                                <a href='javascript: sort_by_col(@dbColumnCount, "@datatype")'>@Html.Raw(dc.ColumnName)</a>
+                            }
+                            else
+                            {
+                                @Html.Raw(dc.ColumnName)
+                            }
+                        }
+                    </td>
+                }
+
+                dbColumnCount++;
+            }
+        </tr>
+
+        @foreach (System.Data.DataRow dr in Model.DataSet.Tables[0].Rows)
+        {
+            <tr>
+                @for (var i = 0; i < Model.DataSet.Tables[0].Columns.Count; i++)
+                {
+                    var datatype = Model.DataSet.Tables[0].Columns[i].DataType;
+
+                    if ((Model.EditUrl != string.Empty || Model.DeleteUrl != string.Empty)
+                        && i == Model.DataSet.Tables[0].Columns.Count - 1)
+                    {
+                        if (Model.EditUrl != string.Empty)
+                        {
+                            <td class="datad">
+                                <a href="@(Model.EditUrl + dr[Model.DataSet.Tables[0].Columns.Count - 1])">edit</a>
+                            </td>
+                        }
+
+                        if (Model.DeleteUrl != string.Empty)
+                        {
+                            <td class="datad">
+                                <a href="@(Model.DeleteUrl + dr[Model.DataSet.Tables[0].Columns.Count - 1])">delete</a>
+                            </td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="datad" @(BugTracker.Web.Core.Util.IsNumericDataType(datatype) ? "align=right" : string.Empty)>
+
+                            @if (dr[i].ToString() == string.Empty)
+                            {
+                                @:&nbsp;
+                            }
+                            else
+                            {
+                                if (datatype == typeof(DateTime))
+                                {
+                                    @Html.Raw(BugTracker.Web.Core.Util.FormatDbDateTime(dr[i]))
+                                }
+                                else if (datatype == typeof(decimal))
+                                {
+                                    @Html.Raw(BugTracker.Web.Core.Util.FormatDbValue(Convert.ToDecimal(dr[i])))
+                                }
+                                else
+                                {
+                                    if (Model.HtmlEncode)
+                                    {
+                                        @Html.Raw(HttpUtility.HtmlEncode(dr[i].ToString()))
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(dr[i])
+                                    }
+                                }
+                            }
+                        </td>
+                    }
+                }
+            </tr>
+        }
+    </table>
+</div>
+<div id="sortedby">&nbsp;</div>

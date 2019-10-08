@@ -9,6 +9,7 @@ namespace BugTracker.Web.Core
 {
     using System;
     using System.Data;
+    using System.Text;
     using System.Web;
 
     public class SortableHtmlTable

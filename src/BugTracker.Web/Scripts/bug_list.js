@@ -101,7 +101,7 @@ var current_element;
 var current_bug;
 
 function get_bug_comment(bugid) {
-    var url = "/Ajax.aspx?bugid=" + bugid;
+    var url = "/Asp/Ajax?bugid=" + bugid;
     $.get(url, "", handle_popup);
 }
 
@@ -149,8 +149,8 @@ function display_popup(s) {
                 popup.style.display = "none";
             }
         }
-        popup.style.left = $(current_element).offset().left + 40;
-        popup.style.top = mytop;
+        popup.style.left = $(current_element).offset().left + 40 + "px";
+        popup.style.top = mytop + "px";
     }
 }
 

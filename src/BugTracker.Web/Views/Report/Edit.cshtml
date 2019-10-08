@@ -1,0 +1,140 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.ViewModels.Report.EditViewModel
+
+@{
+    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/edit_area/edit_area_full.js"></script>
+
+    <script>
+        editAreaLoader.init({
+            id: "sqlText", // id of the textarea to transform
+            start_highlight: true, // if start with highlight
+            toolbar: "search, go_to_line, undo, redo, help",
+            browsers: "all",
+            language: "en",
+            syntax: "sql",
+            allow_toggle: false,
+            min_height: 300,
+            min_width: 400
+        });
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="align">
+    <div class="align">
+        <a href="@Url.Action("Index")">back to reports</a>
+        <div>&nbsp;</div>
+
+        <table style="border-collapse: collapse; border: 0;">
+            <tr>
+                <td>
+                    @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Report", FormMethod.Post, new { @class = "frm" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        if (Model.Id != 0)
+                        {
+                            @Html.HiddenFor(x => x.Id)
+                        }
+
+                        <table border="0">
+                            <tr>
+                                <td class="lbl">Description:</td>
+                                <td>
+                                    @Html.TextBoxFor(x => x.Name, new { @class = "txt", id = "desc", maxlength = "80", size = "80" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td class="err">
+                                    @Html.ValidationMessageFor(x => x.Name)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="lbl">Chart Type:</td>
+                                <td>
+                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Table")Table</label>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Pie")Pie</label>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Bar")Bar</label>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Line")Line</label>
+                                    &nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td class="err">
+                                    @Html.ValidationMessageFor(x => x.ChartType)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="lbl">SQL:</td>
+                                <td>
+                                    @Html.TextAreaFor(x => x.SqlText, new { @class = "txt", id = "sqlText", rows = "10", cols = "70" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td class="err">
+                                    @Html.ValidationMessageFor(x => x.SqlText)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td align="center">
+                                    <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>&nbsp</td>
+                                <td class="cmt">
+                                    To use "Pie", "Bar", or "Line", your SQL statement should have two columns
+                                    <br>
+                                    where the first column is the label and the second column contains the value.
+                                    <br>
+                                    <br>
+                                    You can use the pseudo-variable $ME in your report which will be replaced by your user ID.
+                                    <br>
+                                    For example:
+                                    <ul>
+                                        select .... from ....
+                                        <br>
+                                        where bg_assigned_to_user = $ME
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

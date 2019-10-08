@@ -48,8 +48,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=4.9.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.4.9.4\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.Mvc5.4.0.2\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Autofac.Integration.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Autofac.Web.4.0.0\lib\net45\Autofac.Integration.Web.dll</HintPath>
@@ -73,6 +79,12 @@
       <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SharpMimeTools">
       <HintPath>App_Code\SharpMimeTools.dll</HintPath>
     </Reference>
@@ -88,6 +100,27 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -95,6 +128,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Administration\Home.aspx" />
@@ -111,8 +147,6 @@
     <Content Include="Content\images\add.png" />
     <Content Include="Attachments\Add.aspx" />
     <Content Include="Administration\CustomFields\Add.aspx" />
-    <Content Include="Ajax.aspx" />
-    <Content Include="Ajax2.aspx" />
     <Content Include="App_Code\Highlighter.Net.dll" />
     <Content Include="App_Code\Lucene.Net.dll" />
     <Content Include="App_Code\SharpMimeTools.dll" />
@@ -405,7 +439,6 @@
     <Content Include="Content\images\comment.png" />
     <Content Include="Accounts\CompleteRegistration.aspx" />
     <Content Include="Administration\CustomFields\List.aspx" />
-    <Content Include="Reports\Dashboard.aspx" />
     <Content Include="Content\images\database.png" />
     <Content Include="Content\images\database_link.png" />
     <Content Include="Content\images\database_refresh.png" />
@@ -423,7 +456,6 @@
     <Content Include="Administration\Priorities\Delete.aspx" />
     <Content Include="Administration\Projects\Delete.aspx" />
     <Content Include="Queries\Delete.aspx" />
-    <Content Include="Reports\Delete.aspx" />
     <Content Include="Administration\Statuses\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
@@ -501,13 +533,11 @@
     <Content Include="Comments\Edit.aspx" />
     <Content Include="Administration\CustomFields\Edit.aspx" />
     <Content Include="Administration\EditCustomHtml.aspx" />
-    <Content Include="EditDashboard.aspx" />
     <Content Include="Administration\Organizations\Edit.aspx" />
     <Content Include="Administration\Priorities\Edit.aspx" />
     <Content Include="Administration\Projects\Edit.aspx" />
     <Content Include="Queries\Edit.aspx" />
     <Content Include="Administration\EditQueuedNotifications.aspx" />
-    <Content Include="Reports\Edit.aspx" />
     <Content Include="EditSelf.aspx" />
     <Content Include="Administration\Statuses\Edit.aspx" />
     <Content Include="Administration\EditStyles.aspx" />
@@ -531,7 +561,6 @@
     <Content Include="Versioning\Git\View.aspx" />
     <Content Include="Versioning\Git\ViewRevisions.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Hello.aspx" />
     <Content Include="Content\images\hg.png" />
     <Content Include="Versioning\Hg\Blame.aspx" />
     <Content Include="Versioning\Hg\Diff.aspx" />
@@ -540,7 +569,6 @@
     <Content Include="Versioning\Hg\View.aspx" />
     <Content Include="Versioning\Hg\ViewRevisions.aspx" />
     <Content Include="Bugs\Insert.aspx" />
-    <Content Include="Install.aspx" />
     <Content Include="Scripts\jquery\grippie.png" />
     <Content Include="Scripts\jquery\images\ajax-loader.gif" />
     <Content Include="Scripts\jquery\images\icons-18-black.png" />
@@ -593,11 +621,9 @@
     <Content Include="Administration\Query.aspx" />
     <Content Include="Accounts\Register.aspx" />
     <Content Include="Relationships.aspx" />
-    <Content Include="Reports\List.aspx" />
     <Content Include="Search.aspx" />
     <Content Include="SearchText.aspx" />
     <Content Include="Seen.aspx" />
-    <Content Include="Reports\Select.aspx" />
     <Content Include="SendEmail.aspx" />
     <Content Include="Administration\ServerVariables.aspx" />
     <Content Include="setup.sql" />
@@ -621,23 +647,21 @@
     <Content Include="Content\images\telephone_edit.png" />
     <Content Include="Translate.aspx" />
     <Content Include="Administration\UserDefinedAttributes\List.aspx" />
-    <Content Include="UpdateDashboard.aspx" />
-    <Content Include="Upgrade273To274.aspx" />
     <Content Include="Administration\Users\List.aspx" />
     <Content Include="Scripts\version_control_sel_rev.js" />
     <Content Include="Attachments\View.aspx" />
     <Content Include="ViewMemoryLog.aspx" />
-    <Content Include="Reports\View.aspx" />
     <Content Include="ViewSubscribers.aspx" />
     <Content Include="Administration\ViewWebConfig.aspx" />
-    <Content Include="ViewWhatsNew.aspx" />
     <Content Include="Vote.aspx" />
     <Content Include="Content\images\vote_up.png" />
     <Content Include="Web.config" />
-    <Content Include="WhatsNew.aspx" />
     <Content Include="WritePosts.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\IoCConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attachments\Add.aspx.cs">
       <DependentUpon>Add.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -658,20 +682,6 @@
     </Compile>
     <Compile Include="Administration\Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Ajax.aspx.cs">
-      <DependentUpon>Ajax.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Ajax.aspx.designer.cs">
-      <DependentUpon>Ajax.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Ajax2.aspx.cs">
-      <DependentUpon>Ajax2.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Ajax2.aspx.designer.cs">
-      <DependentUpon>Ajax2.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\BackupDb.aspx.cs">
       <DependentUpon>BackupDb.aspx</DependentUpon>
@@ -701,6 +711,9 @@
     <Compile Include="Accounts\ChangePassword.aspx.designer.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\NewsController.cs" />
+    <Compile Include="Controllers\AspController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Core\Administration\UserDefinedAttributeService.cs" />
     <Compile Include="Core\Administration\CategoryService.cs" />
     <Compile Include="Core\Administration\PriorityService.cs" />
@@ -765,13 +778,6 @@
     </Compile>
     <Compile Include="Administration\CustomFields\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Reports\Dashboard.aspx.cs">
-      <DependentUpon>Dashboard.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Reports\Dashboard.aspx.designer.cs">
-      <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Accounts\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
@@ -841,13 +847,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Queries\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Reports\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Reports\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Administration\Statuses\Delete.aspx.cs">
@@ -934,13 +933,6 @@
     <Compile Include="Administration\EditCustomHtml.aspx.designer.cs">
       <DependentUpon>EditCustomHtml.aspx</DependentUpon>
     </Compile>
-    <Compile Include="EditDashboard.aspx.cs">
-      <DependentUpon>EditDashboard.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditDashboard.aspx.designer.cs">
-      <DependentUpon>EditDashboard.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Administration\Organizations\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -975,13 +967,6 @@
     </Compile>
     <Compile Include="Administration\EditQueuedNotifications.aspx.designer.cs">
       <DependentUpon>EditQueuedNotifications.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Reports\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Reports\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="EditSelf.aspx.cs">
       <DependentUpon>EditSelf.aspx</DependentUpon>
@@ -1112,13 +1097,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Hello.aspx.cs">
-      <DependentUpon>Hello.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Hello.aspx.designer.cs">
-      <DependentUpon>Hello.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Versioning\Hg\Blame.aspx.cs">
       <DependentUpon>Blame.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1167,13 +1145,6 @@
     </Compile>
     <Compile Include="Bugs\Insert.aspx.designer.cs">
       <DependentUpon>Insert.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Install.aspx.cs">
-      <DependentUpon>Install.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Install.aspx.designer.cs">
-      <DependentUpon>Install.aspx</DependentUpon>
     </Compile>
     <Compile Include="Accounts\LoginNt.aspx.cs">
       <DependentUpon>LoginNt.aspx</DependentUpon>
@@ -1310,13 +1281,6 @@
     <Compile Include="Relationships.aspx.designer.cs">
       <DependentUpon>Relationships.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Reports\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Reports\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Search.aspx.cs">
       <DependentUpon>Search.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1337,13 +1301,6 @@
     </Compile>
     <Compile Include="Seen.aspx.designer.cs">
       <DependentUpon>Seen.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Reports\Select.aspx.cs">
-      <DependentUpon>Select.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Reports\Select.aspx.designer.cs">
-      <DependentUpon>Select.aspx</DependentUpon>
     </Compile>
     <Compile Include="SendEmail.aspx.cs">
       <DependentUpon>SendEmail.aspx</DependentUpon>
@@ -1471,20 +1428,6 @@
     <Compile Include="Administration\UserDefinedAttributes\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
     </Compile>
-    <Compile Include="UpdateDashboard.aspx.cs">
-      <DependentUpon>UpdateDashboard.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="UpdateDashboard.aspx.designer.cs">
-      <DependentUpon>UpdateDashboard.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Upgrade273To274.aspx.cs">
-      <DependentUpon>Upgrade273To274.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Upgrade273To274.aspx.designer.cs">
-      <DependentUpon>Upgrade273To274.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Administration\Users\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1506,13 +1449,13 @@
     <Compile Include="ViewMemoryLog.aspx.designer.cs">
       <DependentUpon>ViewMemoryLog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Reports\View.aspx.cs">
-      <DependentUpon>View.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Reports\View.aspx.designer.cs">
-      <DependentUpon>View.aspx</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModels\PageViewModel.cs" />
+    <Compile Include="ViewModels\News\ListViewModel.cs" />
+    <Compile Include="ViewModels\Report\EditDashboardViewModel.cs" />
+    <Compile Include="ViewModels\Report\EditViewModel.cs" />
+    <Compile Include="ViewModels\Report\DeleteViewModel.cs" />
+    <Compile Include="ViewModels\Report\DashboardViewModel.cs" />
+    <Compile Include="ViewModels\SortableTableViewModel.cs" />
     <Compile Include="ViewSubscribers.aspx.cs">
       <DependentUpon>ViewSubscribers.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1527,26 +1470,12 @@
     <Compile Include="Administration\ViewWebConfig.aspx.designer.cs">
       <DependentUpon>ViewWebConfig.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ViewWhatsNew.aspx.cs">
-      <DependentUpon>ViewWhatsNew.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ViewWhatsNew.aspx.designer.cs">
-      <DependentUpon>ViewWhatsNew.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Vote.aspx.cs">
       <DependentUpon>Vote.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Vote.aspx.designer.cs">
       <DependentUpon>Vote.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="WhatsNew.aspx.cs">
-      <DependentUpon>WhatsNew.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WhatsNew.aspx.designer.cs">
-      <DependentUpon>WhatsNew.aspx</DependentUpon>
     </Compile>
     <Compile Include="WritePosts.aspx.cs">
       <DependentUpon>WritePosts.aspx</DependentUpon>
@@ -1570,6 +1499,20 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Site.Master" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\Shared\_MainMenu.cshtml" />
+    <Content Include="Views\Report\Delete.cshtml" />
+    <Content Include="Views\Report\Edit.cshtml" />
+    <Content Include="Views\Report\Dashboard.cshtml" />
+    <Content Include="Views\Report\Select.cshtml" />
+    <Content Include="Views\Asp\Install.cshtml" />
+    <Content Include="Views\News\Index.cshtml" />
+    <Content Include="Views\Shared\_SortableTable.cshtml" />
+    <Content Include="Views\Report\Show.cshtml" />
+    <Content Include="Views\Report\EditDashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

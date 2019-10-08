@@ -8,8 +8,8 @@ function handle_suggestion(data, status) {
         // position and show the popup
         var mylike = document.getElementById("like");
         sel.style.width = mylike.offsetWidth;
-        mypopup.style.left = $(mylike).offset().left;
-        mypopup.style.top = $(mylike).offset().top + (mylike.offsetHeight - 3);
+        mypopup.style.left = $(mylike).offset().left + "px";
+        mypopup.style.top = $(mylike).offset().top + (mylike.offsetHeight - 3) + "px";
         mypopup.style.display = "block";
     }
     else {
@@ -26,7 +26,7 @@ function get_suggestion() {
     if (s.length >= search_suggest_min_chars) {
         if (s != prev_desc) {
             prev_desc = s;
-            var url = "Ajax2.aspx?q=" + s;
+            var url = "/Asp/Ajax2?q=" + s;
             $.get(url, "", handle_suggestion);
         }
     }

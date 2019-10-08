@@ -45,7 +45,7 @@
         <% if (ApplicationSettings.EnableWhatsNewPage)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/ViewWhatsNew.aspx") %>"><span class="<%= SelectedItem == "news" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">news</span></a>
+                <a href="<%= ResolveUrl("~/News") %>"><span class="<%= SelectedItem == "news" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">news</span></a>
             </td>
             
         <% } %>
@@ -61,7 +61,7 @@
         <% if (Security.User.IsAdmin || Security.User.CanUseReports || Security.User.CanEditReports)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/Reports/List.aspx") %>"><span class="<%= SelectedItem == "reports" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">reports</span></a>
+                <a href="<%= ResolveUrl("~/Report") %>"><span class="<%= SelectedItem == "reports" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">reports</span></a>
             </td>
             
         <% } %>
