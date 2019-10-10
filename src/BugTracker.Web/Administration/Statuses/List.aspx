@@ -19,7 +19,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <a href="<%= ResolveUrl("~/Administration/Statuses/Edit.aspx")%>">add new status</a>
 
         <%

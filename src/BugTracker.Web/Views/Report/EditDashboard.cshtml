@@ -5,10 +5,10 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.ViewModels.Report.EditDashboardViewModel
+@model BugTracker.Web.Models.Report.EditDashboardModel
 
 @{
-    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -117,36 +117,38 @@
     <span>&nbsp;&nbsp;&nbsp;</span>
 }
 
-<a href="@Url.Action("Dashboard", "Report")">back to dashboard</a>
+<div class="main">
+    <a href="@Url.Action("Dashboard", "Report")">back to dashboard</a>
 
-<table border="0" cellspacing="0" cellpadding="10">
-    <tr>
-        <td valign="top">
-            @WriteColumn(1)
+    <table border="0" cellspacing="0" cellpadding="10">
+        <tr>
+            <td valign="top">
+                @WriteColumn(1)
 
-            <div class="panel">
-                <a href="javascript:show_select_report_page(1)">[add report to dashboard column 1]</a>
-            </div>
-        </td>
+                <div class="panel">
+                    <a href="javascript:show_select_report_page(1)">[add report to dashboard column 1]</a>
+                </div>
+            </td>
 
-        <td valign="top">
-            @WriteColumn(2)
+            <td valign="top">
+                @WriteColumn(2)
 
-            <div class="panel">
-                <a href="javascript:show_select_report_page(2)">[add report to dashboard column 2]</a>
-            </div>
-        </td>
-</table>
+                <div class="panel">
+                    <a href="javascript:show_select_report_page(2)">[add report to dashboard column 2]</a>
+                </div>
+            </td>
+    </table>
 
-@using (Html.BeginForm("UpdateDashboard", "Report", FormMethod.Post, new { id = "addform" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.Hidden("reportId")
-    @Html.Hidden("chartType")
-    @Html.Hidden("column")
-    @Html.Hidden("action", "add")
-    @Html.Hidden("sesion", (string)ViewBag.Sesion)
-}
+    @using (Html.BeginForm("UpdateDashboard", "Report", FormMethod.Post, new { id = "addform" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("reportId")
+        @Html.Hidden("chartType")
+        @Html.Hidden("column")
+        @Html.Hidden("action", "add")
+        @Html.Hidden("sesion", (string)ViewBag.Sesion)
+    }
+</div>
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

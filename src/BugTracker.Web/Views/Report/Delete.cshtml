@@ -5,10 +5,10 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.ViewModels.Report.DeleteViewModel
+@model BugTracker.Web.Models.Report.DeleteModel
 
 @{
-    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -27,7 +27,7 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="align">
+<div class="main">
     <a href="@Url.Action("Index")">back to reports</a>
 
     <p>or</p>

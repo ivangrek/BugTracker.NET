@@ -18,7 +18,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <p>
-        <div class="align">
+        <div class="main">
             <p>&nbsp</p>
             <a id="back_href" runat="server" href="">back to <% Response.Write(ApplicationSettings.SingularBugLabel); %></a>
 

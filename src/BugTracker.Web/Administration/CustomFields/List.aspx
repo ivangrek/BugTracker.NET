@@ -18,7 +18,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <a href="<%= ResolveUrl("~/Administration/CustomFields/Add.aspx")%>">add new custom field</a>
         <p/>
         <%

@@ -23,7 +23,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <a href="<%= ResolveUrl("~/Administration/Categories/List.aspx")%>">back to categories</a>
 
         <p>or</p>

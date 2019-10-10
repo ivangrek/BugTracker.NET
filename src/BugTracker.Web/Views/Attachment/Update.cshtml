@@ -1,0 +1,75 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Attachment.UpdateModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <a href="~/Bugs/Edit.aspx?id=@Model.BugId">back to @page.ApplicationSettings.SingularBugLabel</a>
+    <div>&nbsp;</div>
+
+    <table style="border-collapse: collapse; border: 0;">
+        <tr>
+            <td>
+                @using (Html.BeginForm("Update", "Attachment", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.Id)
+                    @Html.HiddenFor(x => x.BugId)
+
+                    <table border="0">
+                        <tr>
+                            <td class="lbl">Description:</td>
+                            <td colspan="2">
+                                @Html.TextBoxFor(x => x.Description, new { @class = "txt", id = "desc", maxlength="80", size="80" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Filename:</td>
+                            <td colspan="2">
+                                <b>
+                                    @ViewBag.FileName
+                                </b>
+                            </td>
+                        </tr>
+
+                        @if (ViewBag.ShowInternalOnly)
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <label>@Html.CheckBoxFor(x => x.InternalOnly, new { @class = "cb", id = "internal_only" })Visible to internal users only</label>
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="3" align="center">
+                                <input class="btn" type="submit" id="sub" value="Update" />
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+}

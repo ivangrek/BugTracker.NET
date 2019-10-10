@@ -5,10 +5,10 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.ViewModels.Report.EditViewModel
+@model BugTracker.Web.Models.Report.EditModel
 
 @{
-    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -35,104 +35,102 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="align">
-    <div class="align">
-        <a href="@Url.Action("Index")">back to reports</a>
-        <div>&nbsp;</div>
+<div class="main">
+    <a href="@Url.Action("Index")">back to reports</a>
+    <div>&nbsp;</div>
 
-        <table style="border-collapse: collapse; border: 0;">
-            <tr>
-                <td>
-                    @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Report", FormMethod.Post, new { @class = "frm" }))
+    <table style="border-collapse: collapse; border: 0;">
+        <tr>
+            <td>
+                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Report", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    if (Model.Id != 0)
                     {
-                        @Html.AntiForgeryToken()
-
-                        if (Model.Id != 0)
-                        {
-                            @Html.HiddenFor(x => x.Id)
-                        }
-
-                        <table border="0">
-                            <tr>
-                                <td class="lbl">Description:</td>
-                                <td>
-                                    @Html.TextBoxFor(x => x.Name, new { @class = "txt", id = "desc", maxlength = "80", size = "80" })
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td class="err">
-                                    @Html.ValidationMessageFor(x => x.Name)
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="lbl">Chart Type:</td>
-                                <td>
-                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Table")Table</label>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Pie")Pie</label>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Bar")Bar</label>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <label>@Html.RadioButtonFor(x => x.ChartType, "Line")Line</label>
-                                    &nbsp;&nbsp;&nbsp;
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td class="err">
-                                    @Html.ValidationMessageFor(x => x.ChartType)
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="lbl">SQL:</td>
-                                <td>
-                                    @Html.TextAreaFor(x => x.SqlText, new { @class = "txt", id = "sqlText", rows = "10", cols = "70" })
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td class="err">
-                                    @Html.ValidationMessageFor(x => x.SqlText)
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td align="center">
-                                    <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>&nbsp</td>
-                                <td class="cmt">
-                                    To use "Pie", "Bar", or "Line", your SQL statement should have two columns
-                                    <br>
-                                    where the first column is the label and the second column contains the value.
-                                    <br>
-                                    <br>
-                                    You can use the pseudo-variable $ME in your report which will be replaced by your user ID.
-                                    <br>
-                                    For example:
-                                    <ul>
-                                        select .... from ....
-                                        <br>
-                                        where bg_assigned_to_user = $ME
-                                    </ul>
-                                </td>
-                            </tr>
-                        </table>
+                        @Html.HiddenFor(x => x.Id)
                     }
-                </td>
-            </tr>
-        </table>
-    </div>
+
+                    <table border="0">
+                        <tr>
+                            <td class="lbl">Description:</td>
+                            <td>
+                                @Html.TextBoxFor(x => x.Name, new { @class = "txt", id = "desc", maxlength = "80", size = "80" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Name)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Chart Type:</td>
+                            <td>
+                                <label>@Html.RadioButtonFor(x => x.ChartType, "Table")Table</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <label>@Html.RadioButtonFor(x => x.ChartType, "Pie")Pie</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <label>@Html.RadioButtonFor(x => x.ChartType, "Bar")Bar</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <label>@Html.RadioButtonFor(x => x.ChartType, "Line")Line</label>
+                                &nbsp;&nbsp;&nbsp;
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.ChartType)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">SQL:</td>
+                            <td>
+                                @Html.TextAreaFor(x => x.SqlText, new { @class = "txt", id = "sqlText", rows = "10", cols = "70" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.SqlText)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="center">
+                                <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp</td>
+                            <td class="cmt">
+                                To use "Pie", "Bar", or "Line", your SQL statement should have two columns
+                                <br>
+                                where the first column is the label and the second column contains the value.
+                                <br>
+                                <br>
+                                You can use the pseudo-variable $ME in your report which will be replaced by your user ID.
+                                <br>
+                                For example:
+                                <ul>
+                                    select .... from ....
+                                    <br>
+                                    where bg_assigned_to_user = $ME
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
 </div>
 
 @section BodyFooter {

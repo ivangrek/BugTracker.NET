@@ -33,7 +33,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <form method="POST" runat="server">
-        <div class="align">
+        <div class="main">
             <table border="0">
                 <tr>
                     <td nowrap>

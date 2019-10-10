@@ -12,6 +12,7 @@ namespace BugTracker.Web
     using System.Text;
     using System.Web;
     using System.Web.Caching;
+    using System.Web.Mvc;
     using System.Web.Optimization;
     using System.Web.Routing;
     using Autofac;
@@ -33,7 +34,7 @@ namespace BugTracker.Web
         {
             var container = IoCConfig.Configure();
 
-            //AreaRegistration.RegisterAllAreas();
+            AreaRegistration.RegisterAllAreas();
             //GlobalConfiguration.Configure(WebApiConfig.Register);
             //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -43,10 +44,8 @@ namespace BugTracker.Web
 
             var path = HttpContext.Current.Server.MapPath("~/");
 
-            HttpRuntime.Cache.Add("MapPath", path, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration,
-                CacheItemPriority.NotRemovable, null);
-            HttpRuntime.Cache.Add("Application", Application, null, Cache.NoAbsoluteExpiration,
-                Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
+            HttpRuntime.Cache.Add("MapPath", path, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
+            HttpRuntime.Cache.Add("Application", Application, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
 
             var dir = path + "\\App_Data";
 

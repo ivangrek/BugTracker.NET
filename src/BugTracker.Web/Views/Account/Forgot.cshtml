@@ -1,0 +1,67 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Account.ForgotModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    <table style="border-spacing: 0;">
+        <tr>
+            @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])
+        </tr>
+    </table>
+}
+
+<div style="width: 300px; margin: 0 auto;">
+    @using (Html.BeginForm("Forgot", "Account", FormMethod.Post, new { @class = "frm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div style="margin-bottom: 10px;">
+            <span class="smallnote">Enter Username or Email or both</span>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Username:</div>
+            <div>
+                @Html.TextBoxFor(x => x.Login, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Email:</div>
+            <div>
+                @Html.TextBoxFor(x => x.Email, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+        </div>
+
+        <div class="err">
+            @Html.ValidationMessage("Message")
+        </div>
+
+        <div style="text-align: right;">
+            <input class="btn" type="submit" value="Send password info to my email" />
+        </div>
+    }
+
+    <div>
+        <p>
+            <a href="~/Account/Login">Return to login page</a>
+        </p>
+    </div>
+</div>
+
+@section BodyFooter {
+}

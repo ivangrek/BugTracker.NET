@@ -356,9 +356,9 @@ namespace BugTracker.Web.Bugs
             if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
             {
                 var attachmentLink =
-                    "<img src=" + ResolveUrl("~/Content/images/attach.gif") + " align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachments/Add.aspx") +@"','add attachment ',"
+                    "<img src=" + ResolveUrl("~/Content/images/attach.gif") + " align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachment/Create") +@"','add attachment ',"
                     + Convert.ToString(this.Id)
-                    + ",600,300)\" title='Attach an image, document, or other file to this item'>add attachment</a>";
+                    + ",700,320)\" title='Attach an image, document, or other file to this item'>add attachment</a>";
                 this.attachment.InnerHtml = attachmentLink;
             }
             else

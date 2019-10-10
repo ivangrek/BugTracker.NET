@@ -30,7 +30,10 @@ namespace BugTracker.Web.Accounts
 
             // If manual authentication only, we shouldn't be here, so redirect to manual screen
 
-            if (authMode == 0) Util.Redirect("~/Accounts/Login.aspx", Request, Response);
+            if (authMode == 0)
+            {
+                Util.Redirect("~/Account/Login", Request, Response);
+            }
 
             // Get the logon user from IIS
             var domainWindowsUsername = Request.ServerVariables["LOGON_USER"];
@@ -193,7 +196,7 @@ namespace BugTracker.Web.Accounts
                 // If using mixed-mode authentication and we got this far,
                 // then we can't sign in using integrated security. Redirect
                 // to the manual screen.
-                if (authMode != 1) Util.Redirect("~/Accounts/Login.aspx?msg=user+not+valid", Request, Response);
+                if (authMode != 1) Util.Redirect("~/Account/Login?msg=user+not+valid", Request, Response);
 
                 // If we are still here, then toss a 401 error.
                 Response.StatusCode = 401;

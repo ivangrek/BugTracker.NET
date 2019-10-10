@@ -17,7 +17,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <table border="0">
             <tr>
                 <td>

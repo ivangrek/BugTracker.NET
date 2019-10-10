@@ -71,7 +71,7 @@ function send_email(id) {
 function handle_rewrite_posts(data, status) {
     $("#posts").html(data);
     $(".warn").click(warn_if_dirty);
-    $.get("/Administration/GetDbDateTime.aspx", "", handle_get_bug_date);
+    $.get("/Administration2/Home/GetDbDateTime", "", handle_get_bug_date);
     start_animation();
 }
 

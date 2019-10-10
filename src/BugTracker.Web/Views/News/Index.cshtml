@@ -5,10 +5,10 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.ViewModels.News.ListViewModel
-
 @{
-    ViewBag.Title = Model.Title;
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
 }
 
 @section Head {
@@ -129,7 +129,7 @@
                 success: function (data) {
                     //alert(data)
                     process_json(data);
-                    setTimeout(get_news, 1000 * @Model.ApplicationSettings.WhatsNewPageIntervalInSeconds);
+                    setTimeout(get_news, 1000 * @page.ApplicationSettings.WhatsNewPageIntervalInSeconds);
                 },
                 error: function () {
                     setTimeout(get_news, 60000);
@@ -144,17 +144,19 @@
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", Model)
+    @Html.Partial("_MainMenu", page)
 }
 
-<table border="0" cellspacing="0" cellpadding="10">
-    <tr>
-        <td valign="top">
+<div class="main">
+    <table border="0" cellspacing="0" cellpadding="10">
+        <tr>
+            <td valign="top">
 
-            <div id="news_table">&nbsp</div>
-        </td>
-    </tr>
-</table>
+                <div id="news_table">&nbsp</div>
+            </td>
+        </tr>
+    </table>
+</div>
 
 @section BodyFooter {
 }

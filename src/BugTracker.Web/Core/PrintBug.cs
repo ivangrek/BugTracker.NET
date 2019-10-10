@@ -615,9 +615,8 @@ namespace BugTracker.Web.Core
 
                         // This delete leaves debris around, but it's better than nothing
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Delete.aspx") + @"?id="
-                                       + stringPostId + "&bug_id=" + stringBugId);
-                        response.Write(">delete</a>");
+                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        response.Write("'>delete</a>");
                     }
 
                     if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
@@ -638,14 +637,12 @@ namespace BugTracker.Web.Core
                         && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/Edit.aspx") + @"?id="
-                                       + stringPostId + "&bug_id=" + stringBugId);
-                        response.Write(">edit</a>");
+                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Update?id={stringPostId}&bugId={stringBugId}"));
+                        response.Write("'>edit</a>");
 
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/Delete.aspx") + @"?id="
-                                       + stringPostId + "&bug_id=" + stringBugId);
-                        response.Write(">delete</a>");
+                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        response.Write("'>delete</a>");
                     }
                 }
                 else if (type == "comment")
@@ -655,14 +652,12 @@ namespace BugTracker.Web.Core
                         && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Edit.aspx") + @"?id="
-                                       + stringPostId + "&bug_id=" + stringBugId);
-                        response.Write(">edit</a>");
+                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Update?id={stringPostId}&bugId={stringBugId}"));
+                        response.Write("'>edit</a>");
 
                         response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Comments/Delete.aspx") + @"?id="
-                                       + stringPostId + "&bug_id=" + stringBugId);
-                        response.Write(">delete</a>");
+                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        response.Write("'>delete</a>");
                     }
                 }
 
@@ -711,14 +706,12 @@ namespace BugTracker.Web.Core
                         applicationSettings.ShowPotentiallyDangerousHtml)
                     {
                         response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
-                                       + stringPostId + "&bug_id=" + stringBugId);
-                        response.Write(">view</a>");
+                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=false&id={stringPostId}&bugId={stringBugId}"));
+                        response.Write("'>view</a>");
                     }
 
                     response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                    response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=1&id="
-                                   + stringPostId + "&bug_id=" + stringBugId);
+                    response.Write(" href=" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=true&id={stringPostId}&bugId={stringBugId}"));
                     response.Write(">save</a>");
                 }
 
@@ -761,18 +754,18 @@ namespace BugTracker.Web.Core
                 if ((string)dr["bp_content_type"] != "text/html" ||
                     applicationSettings.ShowPotentiallyDangerousHtml)
                 {
-                    response.Write("<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id=");
+                    response.Write("<a target=_blank href='" + VirtualPathUtility.ToAbsolute("~/Attachment/Show?download=false&id="));
                     response.Write(stringPostId);
-                    response.Write("&bug_id=");
+                    response.Write("&bugId=");
                     response.Write(stringBugId);
-                    response.Write(">view</a>");
+                    response.Write("'>view</a>");
                 }
 
-                response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=1&id=");
+                response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href='" + VirtualPathUtility.ToAbsolute("~/Attachment/Show?download=true&id="));
                 response.Write(stringPostId);
-                response.Write("&bug_id=");
+                response.Write("&bugId=");
                 response.Write(stringBugId);
-                response.Write(">save</a>");
+                response.Write("'>save</a>");
             }
 
             if (imagesInline)
@@ -809,9 +802,8 @@ namespace BugTracker.Web.Core
                                + "<a href=javascript:resize_image('im" + stringPostId + "',1.5)>" + "[+]</a>&nbsp;"
                                + "<a href=javascript:resize_image('im" + stringPostId + "',.6)>" + "[-]</a>"
                                + "<br><img id=im" + stringPostId
-                               + " src=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
-                               + stringPostId + "&bug_id=" + stringBugId
-                               + ">");
+                               + " src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=0&id={stringPostId}&bug_id={stringBugId}")
+                               + "'>");
             else if (contentType == "text/plain"
                      || contentType == "text/xml"
                      || contentType == "text/css"
@@ -822,9 +814,8 @@ namespace BugTracker.Web.Core
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',-200)>" + "[-]</a>"
                                + "<br><iframe id=if"
                                + stringPostId
-                               + " width=780 height=200 src=" + VirtualPathUtility.ToAbsolute("~/Attachments/View.aspx") + @"?download=0&id="
-                               + stringPostId + "&bug_id=" + stringBugId
-                               + "></iframe>");
+                               + " width=780 height=200 src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=0&id={stringPostId}&bugId={stringBugId}")
+                               + "'></iframe>");
         }
 
         public static string FormatEmailUserName(

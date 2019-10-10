@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="BugTracker.Web.Accounts.Home" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
@@ -34,73 +35,59 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div>
-        <table style="border-spacing: 0; margin: 0 auto;">
-            <tr>
-                <td>
-                    <form class="frm" runat="server">
-                        <table style="border-spacing: 0;">
-                            <% if (ApplicationSettings.WindowsAuthentication != 0)
-                                { %>
-                            <tr>
-                                <td colspan="2" class="smallnote">To login using your Windows ID, leave User blank</td>
-                            </tr>
-                            <% } %>
-                            <tr>
-                                <td class="lbl">User:</td>
-                                <td>
-                                    <input runat="server" type="text" class="txt" id="user"/>
-                                </td>
-                            </tr>
+    <div style="width: 300px; margin: 0 auto;">
+        <form class="frm" runat="server">
+            <% if (ApplicationSettings.WindowsAuthentication != 0)
+                { %>
+            <div style="margin-bottom: 10px;">
+                <span class="smallnote">To login using your Windows ID, leave User blank</span>
+            </div>
+            <% } %>
+            <div style="margin-bottom: 10px;">
+                <div class="lbl" style="margin-bottom: 5px;">User:</div>
+                <div>
+                    <input runat="server" type="text" class="txt" id="user" style="box-sizing: border-box; width: 100%;" />
+                </div>
+            </div>
 
-                            <tr>
-                                <td class="lbl">Password:</td>
-                                <td>
-                                    <input runat="server" type="password" class="txt" id="pw"/>
-                                </td>
-                            </tr>
+            <div style="margin-bottom: 10px;">
+                <div class="lbl" style="margin-bottom: 5px;">Password:</div>
+                <div>
+                    <input runat="server" type="password" class="txt" id="pw" style="box-sizing: border-box; width: 100%;" />
+                </div>
+            </div>
 
-                            <tr>
-                                <td colspan="2" style="text-align: left;">
-                                    <span runat="server" class="err" id="msg">&nbsp;</span>
-                                </td>
-                            </tr>
+            <div style="text-align: left;">
+                <span runat="server" class="err" id="msg">&nbsp;</span>
+            </div>
 
-                            <tr>
-                                <td colspan="2" style="text-align: center;">
-                                    <input class="btn" type="submit" value="Logon" runat="server"/>
-                                </td>
-                            </tr>
+            <div style="text-align: right;">
+                <input class="btn" type="submit" value="Logon" runat="server" />
+            </div>
+        </form>
 
-                        </table>
-                    </form>
+        <div>
+            <% if (ApplicationSettings.AllowGuestWithoutLogin)
+                { %>
+            <p>
+                <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Bugs/List.aspx") %>">Continue as "guest" without logging in</a>
+            </p>
+            <% } %>
 
-                    <span>
+            <% if (ApplicationSettings.AllowSelfRegistration)
+                { %>
+            <p>
+                <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Account/Registe") %>">Register</a>
+            </p>
+            <% } %>
 
-                        <% if (ApplicationSettings.AllowGuestWithoutLogin)
-                            { %>
-                        <p>
-                            <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Bugs/List.aspx") %>">Continue as "guest" without logging in</a>
-                        <p>
-                            <% } %>
-
-                            <% if (ApplicationSettings.AllowSelfRegistration)
-                                { %>
-                        <p>
-                            <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Accounts/Register.aspx") %>">Register</a>
-                        <p>
-                            <% } %>
-
-                            <% if (ApplicationSettings.ShowForgotPasswordLink)
-                                { %>
-                        <p>
-                            <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Accounts/Forgot.aspx") %>">Forgot your username or password?</a>
-                        <p>
-                            <% } %>
-                    </span>
-                </td>
-            </tr>
-        </table>
+            <% if (ApplicationSettings.ShowForgotPasswordLink)
+                { %>
+            <p>
+                <a style="font-size: 8pt;" href="<%= ResolveUrl("~/Account/Forgot") %>">Forgot your username or password?</a>
+            </p>
+            <% } %>
+        </div>
 
         <% Response.Write(Application["custom_welcome"]); %>
     </div>

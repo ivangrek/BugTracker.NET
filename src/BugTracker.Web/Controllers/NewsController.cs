@@ -9,7 +9,7 @@ namespace BugTracker.Web.Controllers
 {
     using BugTracker.Web.Core;
     using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.ViewModels.News;
+    using BugTracker.Web.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -41,7 +41,7 @@ namespace BugTracker.Web.Controllers
 
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            var viewModel = new ListViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -49,7 +49,7 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.News
             };
 
-            return View(viewModel);
+            return View();
         }
 
         [HttpGet]

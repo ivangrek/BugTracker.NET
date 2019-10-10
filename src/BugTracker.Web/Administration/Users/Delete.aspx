@@ -17,7 +17,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <p>
-        <div class="align">
+        <div class="main">
             <p>&nbsp</p>
             <a href="<%= ResolveUrl("~/Administration/Users/List.aspx")%>">back to users</a>
 

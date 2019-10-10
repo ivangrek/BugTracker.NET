@@ -26,7 +26,7 @@
         protocol.
     </p>
     <p>
-        <a href="<%= ResolveUrl("~/Accounts/Login.aspx?msg=configuration+problem") %>">Go to logon page.</a>
+        <a href="<%= ResolveUrl("~/Account/Login?msg=configuration+problem") %>">Go to logon page.</a>
     </p>
 </asp:Content>
 

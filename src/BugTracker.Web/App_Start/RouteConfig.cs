@@ -16,12 +16,16 @@ namespace BugTracker.Web
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.IgnoreRoute("{resource}.aspx/{*pathInfo}");
 
-            routes.MapRoute("Default", "{controller}/{action}/{id}", new
-            {
-                //controller = "Report",
-                action = "Index",
-                id = UrlParameter.Optional
-            }, new[] { "BugTracker.Web" });
+            routes.MapRoute(
+                "Default",
+                "{controller}/{action}/{id}",
+                new
+                {
+                    //controller = "Account",
+                    action = "Index",
+                    id = UrlParameter.Optional
+                }
+            );
         }
     }
 }

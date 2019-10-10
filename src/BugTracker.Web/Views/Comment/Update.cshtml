@@ -1,0 +1,94 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Comment.UpdateModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery/jquery.textarearesizer.compressed.js"></script>
+
+    @if (page.Security.User.UseFckeditor)
+    {
+        <script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+    }
+
+    <script>
+        $(document).ready(do_doc_ready);
+
+        function do_doc_ready() {
+            @if (ViewBag.UseFckeditor)
+            {
+                @:CKEDITOR.replace('comment');
+            }
+            else
+            {
+                @:$('textarea.resizable:not(.processed)').TextAreaResizer();
+            }
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <a href="~/Bugs/Edit.aspx?id=@Model.BugId">back to @page.ApplicationSettings.SingularBugLabel</a>
+    <div>&nbsp;</div>
+
+    <table style="border-collapse: collapse; border: 0;">
+        <tr>
+            <td>
+                @using (Html.BeginForm("Update", "Comment", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.Id)
+                    @Html.HiddenFor(x => x.BugId)
+
+                    <table border="0">
+                        <tr>
+                            <td colspan="3">
+                                @Html.TextAreaFor(x => x.Comment, new { @class = "txt resizable", id = "comment", rows = "16", cols = "80" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3" class="err">
+                                @Html.ValidationMessageFor(x => x.Comment)
+                            </td>
+                        </tr>
+
+                        @if (ViewBag.ShowInternalOnly)
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <label>@Html.CheckBoxFor(x => x.InternalOnly, new { @class = "cb", id = "internal_only" })Visible to internal users only</label>
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td colspan="2" align="center">
+                                <input class="btn" type="submit" id="sub" value="Update" />
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

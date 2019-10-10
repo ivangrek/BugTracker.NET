@@ -77,7 +77,7 @@
         <% if (Security.User.IsAdmin)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/Administration/Home.aspx") %>"><span class="<%= SelectedItem == "admin" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">admin</span></a>
+                <a href="<%= ResolveUrl("~/Administration2") %>"><span class="<%= SelectedItem == "admin" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">admin</span></a>
             </td>
             
         <% } else if(Security.User.IsProjectAdmin)
@@ -99,7 +99,7 @@
                 var query = (string)HttpContext.Current.Session["query"] ?? string.Empty;
         %>
             <td nowrap valign="middle">
-                <form style="margin: 0; padding: 0;" action="<%= ResolveUrl("~/SearchText.aspx") %>" method="get" onsubmit="return on_submit_search()">
+                <form style="margin: 0; padding: 0;" action="<%= ResolveUrl("~/Search/SearchText") %>" method="get" onsubmit="return on_submit_search()">
                     <input class="menubtn" type="submit" value="search text">
                     <input class="menuinput txt" id="lucene_input" size="24" type="text" value='<%= query.Replace("'", "")%>' name="query" accesskey="s">
                     <a href="<%= ResolveUrl("~/Content/lucene_syntax.html") %>" target="_blank" style="font-size: 7pt;">advanced</a>
@@ -124,13 +124,13 @@
                if (Security.User.IsGuest && ApplicationSettings.AllowGuestWithoutLogin)
                { %>
                     <td class="menu_td">
-                        <a href="<%= ResolveUrl("~/Accounts/Login.aspx") %>"><span class="<%= SelectedItem == "login" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">login</span></a>
+                        <a href="<%= ResolveUrl("~/Account/Login") %>"><span class="<%= SelectedItem == "login" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">login</span></a>
                     </td>
             <% }
                else
                { %>
                     <td class="menu_td">
-                        <a href="<%= ResolveUrl("~/Accounts/Logoff.aspx") %>"><span class="<%= SelectedItem == "logoff" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">logoff</span></a>
+                        <a href="<%= ResolveUrl("~/Account/Logoff") %>"><span class="<%= SelectedItem == "logoff" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">logoff</span></a>
                     </td>
             <% }
            } %>
@@ -153,4 +153,3 @@
         </td>
     </tr>
 </table>
-<br>

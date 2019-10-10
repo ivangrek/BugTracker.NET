@@ -18,7 +18,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <a href="<%= ResolveUrl("~/Administration/Projects/Edit.aspx")%>">add new project</a>
         <p />
         <%

@@ -1,0 +1,113 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Account.RegisterModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    <table style="border-spacing: 0;">
+        <tr>
+            @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])
+        </tr>
+    </table>
+}
+
+<div style="width: 300px; margin: 0 auto;">
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "frm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Username:</div>
+            <div>
+                @Html.TextBoxFor(x => x.Login, new { @class = "txt", maxlength = "20", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+
+            <div class="err">
+                @Html.ValidationMessageFor(x => x.Login)
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Email:</div>
+            <div>
+                @Html.TextBoxFor(x => x.Email, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+
+            <div class="err">
+                @Html.ValidationMessageFor(x => x.Email)
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Password:</div>
+            <div>
+                @Html.TextBoxFor(x => x.Password, new { @class = "txt", type="password", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+            <div class="err">
+                @Html.ValidationMessageFor(x => x.Password)
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Confirm Password:</div>
+            <div>
+                @Html.TextBoxFor(x => x.ConfirmedPassword, new { @class = "txt", type="password", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+            <div class="err">
+                @Html.ValidationMessageFor(x => x.ConfirmedPassword)
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">First Name:</div>
+            <div>
+                @Html.TextBoxFor(x => x.FirstName, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+            <div class="err">
+                @Html.ValidationMessageFor(x => x.FirstName)
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="lbl" style="margin-bottom: 5px;">Last Name:</div>
+            <div>
+                @Html.TextBoxFor(x => x.LastName, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
+            </div>
+            <div class="err">
+                @Html.ValidationMessageFor(x => x.LastName)
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <div class="err">
+                @Html.ValidationMessage("Message")
+            </div>
+        </div>
+
+        <div style="text-align: right;">
+            <input class="btn" type="submit" value="Submit Registration" />
+        </div>
+    }
+
+    <div>
+        <p>
+            <a href="~/Account/Login">Return to login page</a>
+        </p>
+    </div>
+</div>
+
+@section BodyFooter {
+}

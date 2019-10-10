@@ -167,7 +167,7 @@ namespace BugTracker.Web.Queries
                 var parameters = new Dictionary<string, string>
                 {
                     { "$id", Convert.ToString(id)},
-                    { "$de", this.desc.Value.Replace("'", "''") },
+                    { "$de", this.desc.Value/*.Replace("'", "''")*/ },
                     { "$sq", string.Empty },
                     { "$us", string.Empty },
                     { "$rl", string.Empty },
@@ -179,7 +179,7 @@ namespace BugTracker.Web.Queries
                 //}
                 //else
                 //{
-                parameters["$sq"] = this.sqlText.Value.Replace("'", "''");
+                parameters["$sq"] = this.sqlText.Value/*.Replace("'", "''")*/;
                 //}
 
                 if (Security.User.IsAdmin || Security.User.CanEditSql)

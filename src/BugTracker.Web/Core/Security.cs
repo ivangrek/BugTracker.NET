@@ -65,12 +65,12 @@ namespace BugTracker.Web.Core
 
             // This logic allows somebody to put a link in an email, like
             // Bugs/Edit.aspx?id=66
-            // The user would click on the link, go to the logon page (Accounts/Login.aspx),
+            // The user would click on the link, go to the logon page (Account/Login),
             // and then after logging in continue on to Bugs/Edit.aspx?id=66
             var originalUrl = request.ServerVariables["URL"].ToLower();
             var originalQuerystring = request.ServerVariables["QUERY_STRING"].ToLower();
 
-            var target = "~/Accounts/Login.aspx";
+            var target = "~/Account/Login";
 
             if (originalUrl.EndsWith("MobileEdit.aspx")) target = "~/Accounts/MobileLogin.aspx";
 
@@ -84,6 +84,7 @@ namespace BugTracker.Web.Core
                 {
                     Util.WriteToLog("se_id cookie is null, so redirecting");
                     response.Redirect(target);
+                    return;
                 }
             }
             else
@@ -164,10 +165,20 @@ and us_active = 1";
             {
                 Util.WriteToLog("no previous session, no guest login allowed");
                 response.Redirect(target);
+                return;
             }
             else
             {
                 this.User.SetFromDb(dr);
+            }
+
+            if (ApplicationSettings.WindowsAuthentication == 1)
+            {
+                AuthMethod = "windows";
+            }
+            else
+            {
+                AuthMethod = "plain";
             }
 
             if (cookie != null)
@@ -183,26 +194,17 @@ and us_active = 1";
             if (level == SecurityLevel.MustBeAdmin && !this.User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
-                response.Redirect("~/Accounts/Login.aspx");
+                response.Redirect("~/Account/Login");
             }
             else if (level == SecurityLevel.AnyUserOkExceptGuest && this.User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
-                response.Redirect("~/Accounts/Login.aspx");
+                response.Redirect("~/Account/Login");
             }
             else if (level == SecurityLevel.MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
-                response.Redirect("~/Accounts/Login.aspx");
-            }
-
-            if (ApplicationSettings.WindowsAuthentication == 1)
-            {
-                AuthMethod = "windows";
-            }
-            else
-            {
-                AuthMethod = "plain";
+                response.Redirect("~/Account/Login");
             }
         }
 

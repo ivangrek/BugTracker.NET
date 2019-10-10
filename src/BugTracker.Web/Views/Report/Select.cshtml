@@ -5,10 +5,10 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.ViewModels.SortableTableViewModel
+@model BugTracker.Web.Models.SortableTableModel
 
 @{
-    var page = (BugTracker.Web.ViewModels.PageViewModel)ViewBag.Page;
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -27,7 +27,7 @@
 @section BodyHeader {
 }
 
-<div class="align">
+<div class="main">
     @if (Model.DataSet.Tables[0].Rows.Count > 0)
     {
         @Html.Partial("_SortableTable", Model);

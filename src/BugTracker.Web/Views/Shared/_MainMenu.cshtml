@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.ViewModels.PageViewModel
+@model BugTracker.Web.Models.PageModel
 
 @*// topmost visible HTML*@
 @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_header"])
@@ -38,54 +38,54 @@
         <td width="20">&nbsp;</td>
 
         <td class="menu_td">
-            <a href="~/Bugs/List.aspx"><span class="@(Model.SelectedItem == Model.ApplicationSettings.PluralBugLabel ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">@Model.ApplicationSettings.PluralBugLabel</span></a>
+            <a href="~/Bugs/List.aspx"><span class="@(Model.SelectedItem == Model.ApplicationSettings.PluralBugLabel ? "selected_menu_item" : "menu_item") warn">@Model.ApplicationSettings.PluralBugLabel</span></a>
         </td>
 
         @if (Model.Security.User.CanSearch)
         {
             <td class="menu_td">
-                <a href="~/Search.aspx"><span class="@(Model.SelectedItem == "search" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">search</span></a>
+                <a href="~/Search.aspx"><span class="@(Model.SelectedItem == "search" ? "selected_menu_item" : "menu_item") warn">search</span></a>
             </td>
         }
 
         @if (Model.ApplicationSettings.EnableWhatsNewPage)
         {
             <td class="menu_td">
-                <a href="@Url.Action("Index", "News")"><span class="@(Model.SelectedItem == "news" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">news</span></a>
+                <a href="@Url.Action("Index", "News")"><span class="@(Model.SelectedItem == "news" ? "selected_menu_item" : "menu_item") warn">news</span></a>
             </td>
         }
 
         @if (!Model.Security.User.IsGuest)
         {
             <td class="menu_td">
-                <a href="~/Queries/List.aspx"><span class="@(Model.SelectedItem == "queries" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">queries</span></a>
+                <a href="~/Queries/List.aspx"><span class="@(Model.SelectedItem == "queries" ? "selected_menu_item" : "menu_item") warn">queries</span></a>
             </td>
         }
 
         @if (Model.Security.User.IsAdmin || Model.Security.User.CanUseReports || Model.Security.User.CanEditReports)
         {
             <td class="menu_td">
-                <a href="@Url.Action("Index", "Report")"><span class="@(Model.SelectedItem == "reports" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">reports</span></a>
+                <a href="@Url.Action("Index", "Report")"><span class="@(Model.SelectedItem == "reports" ? "selected_menu_item" : "menu_item") warn">reports</span></a>
             </td>
         }
 
         @if (Model.ApplicationSettings.CustomMenuLinkLabel != string.Empty)
         {
             <td class="menu_td">
-                <a href="@Model.ApplicationSettings.CustomMenuLinkUrl"><span class="@(Model.SelectedItem == Model.ApplicationSettings.CustomMenuLinkLabel ? " selected_menu_item" : "menu_item") warn" style="margin-left:3px;">@Model.ApplicationSettings.CustomMenuLinkLabel</span></a>
+                <a href="@Model.ApplicationSettings.CustomMenuLinkUrl"><span class="@(Model.SelectedItem == Model.ApplicationSettings.CustomMenuLinkLabel ? " selected_menu_item" : "menu_item") warn">@Model.ApplicationSettings.CustomMenuLinkLabel</span></a>
             </td>
         }
 
         @if (Model.Security.User.IsAdmin)
         {
             <td class="menu_td">
-                <a href="~/Administration/Home.aspx"><span class="@(Model.SelectedItem == "admin" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">admin</span></a>
+                <a href="~/Administration2"><span class="@(Model.SelectedItem == "admin" ? "selected_menu_item" : "menu_item") warn">admin</span></a>
             </td>
         }
         else if (Model.Security.User.IsProjectAdmin)
         {
             <td class="menu_td">
-                <a href="~/Administration/Users/List.aspx"><span class="@(Model.SelectedItem == " users" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">users</span></a>
+                <a href="~/Administration/Users/List.aspx"><span class="@(Model.SelectedItem == " users" ? "selected_menu_item" : "menu_item") warn">users</span></a>
             </td>
         }
 
@@ -101,7 +101,7 @@
             var query = (string)HttpContext.Current.Session["query"] ?? string.Empty;
 
             <td nowrap valign="middle">
-                <form style="margin: 0; padding: 0;" action="~/SearchText.aspx" method="get" onsubmit="return on_submit_search()">
+                <form style="margin: 0; padding: 0;" action="~/Search/SearchText" method="get" onsubmit="return on_submit_search()">
                     <input class="menubtn" type="submit" value="search text">
                     <input class="menuinput txt" id="lucene_input" size="24" type="text" value='@query.Replace("' ", " ")' name="query" accesskey="s">
                     <a href="~/Content/lucene_syntax.html" target="_blank" style="font-size: 7pt;">advanced</a>
@@ -125,13 +125,22 @@
             if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
             {
                 <td class="menu_td">
-                    <a href="~/Accounts/Login.aspx"><span class="@(Model.SelectedItem == " login" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">login</span></a>
+                    <a href="~/Account/Login"><span class="@(Model.SelectedItem == " login" ? "selected_menu_item" : "menu_item") warn">login</span></a>
                 </td>
             }
             else
             {
                 <td class="menu_td">
-                    <a href="~/Accounts/Logoff.aspx"><span class="@(Model.SelectedItem == " logoff" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">logoff</span></a>
+                    @{
+                        var formId = Guid.NewGuid().ToString();
+                    }
+
+                    @using (Html.BeginForm("Logoff", "Account", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <a href="#" onclick="document.getElementById('@formId').submit();"><span class="@(Model.SelectedItem == " logoff" ? "selected_menu_item" : "menu_item") warn">logoff</span></a>
+                    }
                 </td>
             }
         }
@@ -140,7 +149,7 @@
         @if (!Model.Security.User.IsGuest)
         {
             <td class="menu_td">
-                <a href="~/EditSelf.aspx"><span class="@(Model.SelectedItem == " settings" ? "selected_menu_item" : "menu_item") warn" style="margin-left:3px;">settings</span></a>
+                <a href="~/EditSelf.aspx"><span class="@(Model.SelectedItem == " settings" ? "selected_menu_item" : "menu_item") warn">settings</span></a>
             </td>
         }
 
@@ -153,4 +162,3 @@
         </td>
     </tr>
 </table>
-<br>

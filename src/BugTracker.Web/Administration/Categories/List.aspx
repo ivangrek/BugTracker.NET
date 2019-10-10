@@ -18,7 +18,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <a href="<%= ResolveUrl("~/Administration/Categories/Edit.aspx")%>">add new category</a>
 
         <%

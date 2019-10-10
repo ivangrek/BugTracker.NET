@@ -211,7 +211,7 @@ function flag(el, bugid) {
 
     el.setAttribute(cls, which);
 
-    var url = "/Bugs/Flag.aspx?ses=" + get_cookie("se_id2") + "&bugid=" + bugid + "&flag=" + which_int;
+    var url = "/Asp/Flag?ses=" + get_cookie("se_id2") + "&bugid=" + bugid + "&flag=" + which_int;
     $.get(url);
 }
 
@@ -230,7 +230,7 @@ function seen(el, bugid) {
 
     el.setAttribute(cls, which);
 
-    var url = "Seen.aspx?ses=" + get_cookie("se_id2") + "&bugid=" + bugid + "&seen=" + which_int;
+    var url = "/Asp/Seen?ses=" + get_cookie("se_id2") + "&bugid=" + bugid + "&seen=" + which_int;
     $.get(url);
 }
 
@@ -254,7 +254,7 @@ function vote(el, bugid) {
     $(el).text(vote_count);
 
     // update the server side cache and the db
-    var url = "Vote.aspx?ses=" + get_cookie("se_id2") + "&bugid=" + bugid + "&vote=" + yes_or_no;
+    var url = "/Asp/Vote?ses=" + get_cookie("se_id2") + "&bugid=" + bugid + "&vote=" + yes_or_no;
     $.get(url);
 }
 

@@ -55,7 +55,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" ID="BodyContent" runat="server">
-    <div runat="server" id="mainBlock" class="align">
+    <div runat="server" id="mainBlock" class="align main">
 
         <% if (!Security.User.AddsNotAllowed && this.Id > 0)
             { %>

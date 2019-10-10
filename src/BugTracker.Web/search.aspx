@@ -691,7 +691,7 @@
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div id="suggest_popup" style="display: none; position: absolute; z-index: 1000;"></div>
 
-    <div class="align">
+    <div class="main">
 
         <% if (!Security.User.AddsNotAllowed)
             { %>

@@ -9,8 +9,8 @@ namespace BugTracker.Web.Controllers
 {
     using BugTracker.Web.Core;
     using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.ViewModels;
-    using BugTracker.Web.ViewModels.Report;
+    using BugTracker.Web.Models;
+    using BugTracker.Web.Models.Report;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -52,7 +52,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -60,13 +60,13 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.Reports
             };
 
-            var viewModel = new SortableTableViewModel
+            var model = new SortableTableModel
             {
                 DataSet = this.reportService.LoadList(),
                 HtmlEncode = false
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
         [HttpGet]
@@ -96,7 +96,7 @@ namespace BugTracker.Web.Controllers
 
             if (view == "data" || !needDrawGraph)
             {
-                ViewBag.Page = new PageViewModel
+                ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
@@ -104,12 +104,12 @@ namespace BugTracker.Web.Controllers
                     SelectedItem = MainMenuSections.Reports
                 };
 
-                var viewModel = new SortableTableViewModel
+                var model = new SortableTableModel
                 {
                     DataSet = dataSet
                 };
 
-                return View(viewModel);
+                return View(model);
             }
 
             if (dataSet.Tables[0].Rows.Count > 0)
@@ -193,7 +193,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -201,13 +201,13 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.Reports
             };
 
-            var viewModel = new SortableTableViewModel
+            var model = new SortableTableModel
             {
                 DataSet = this.reportService.LoadSelectList(),
                 HtmlEncode = false
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
         [HttpGet]
@@ -225,7 +225,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -233,18 +233,18 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.Reports
             };
 
-            var viewModel = new EditViewModel
+            var model = new EditModel
             {
                 ChartType = "Table",
                 SqlText = Request.Form["sql_text"] // if coming from Search.aspx
             };
 
-            return View("Edit", viewModel);
+            return View("Edit", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(EditViewModel viewModel)
+        public ActionResult Create(EditModel model)
         {
             Util.DoNotCache(System.Web.HttpContext.Current.Response);
 
@@ -260,7 +260,7 @@ namespace BugTracker.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Page = new PageViewModel
+                ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
@@ -268,15 +268,15 @@ namespace BugTracker.Web.Controllers
                     SelectedItem = MainMenuSections.Reports
                 };
 
-                return View("Edit", viewModel);
+                return View("Edit", model);
             }
 
             var parameters = new Dictionary<string, string>
             {
-                { "$id", viewModel.Id.ToString() },
-                { "$de", viewModel.Name },
-                { "$sq", Server.HtmlDecode(viewModel.SqlText) },
-                { "$ct", viewModel.ChartType.ToLower() },
+                { "$id", model.Id.ToString() },
+                { "$de", model.Name },
+                { "$sq", Server.HtmlDecode(model.SqlText) },
+                { "$ct", model.ChartType.ToLower() },
             };
 
             this.reportService.Create(parameters);
@@ -299,7 +299,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -311,7 +311,7 @@ namespace BugTracker.Web.Controllers
             var dataRow = this.reportService
                 .LoadOne(id);
 
-            var viewModel = new EditViewModel
+            var model = new EditModel
             {
                 Id = dataRow.Id,
                 Name = dataRow.Name,
@@ -319,12 +319,12 @@ namespace BugTracker.Web.Controllers
                 SqlText = dataRow.Sql
             };
 
-            return View("Edit", viewModel);
+            return View("Edit", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Update(EditViewModel viewModel)
+        public ActionResult Update(EditModel model)
         {
             Util.DoNotCache(System.Web.HttpContext.Current.Response);
 
@@ -340,7 +340,7 @@ namespace BugTracker.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Page = new PageViewModel
+                ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
@@ -348,15 +348,15 @@ namespace BugTracker.Web.Controllers
                     SelectedItem = MainMenuSections.Reports
                 };
 
-                return View("Edit", viewModel);
+                return View("Edit", model);
             }
 
             var parameters = new Dictionary<string, string>
             {
-                { "$id", viewModel.Id.ToString() },
-                { "$de", viewModel.Name/*this.desc.Value.Replace("'", "''")*/ },
-                { "$sq", viewModel.SqlText/*Server.HtmlDecode(this.sqlText.Value.Replace("'", "''"))*/ },
-                { "$ct", viewModel.ChartType.ToLower() },
+                { "$id", model.Id.ToString() },
+                { "$de", model.Name/*this.desc.Value.Replace("'", "''")*/ },
+                { "$sq", model.SqlText/*Server.HtmlDecode(this.sqlText.Value.Replace("'", "''"))*/ },
+                { "$ct", model.ChartType.ToLower() },
             };
 
             this.reportService.Update(parameters);
@@ -386,7 +386,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -394,18 +394,18 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.Reports
             };
 
-            var viewModel = new DeleteViewModel
+            var model = new DeleteModel
             {
                 Id = id,
                 Name = name
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(DeleteViewModel viewModel)
+        public ActionResult Delete(DeleteModel model)
         {
             Util.DoNotCache(System.Web.HttpContext.Current.Response);
 
@@ -419,7 +419,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            var (valid, _) = this.reportService.CheckDeleting(viewModel.Id);
+            var (valid, _) = this.reportService.CheckDeleting(model.Id);
 
             if (!valid)
             {
@@ -427,7 +427,7 @@ namespace BugTracker.Web.Controllers
             }
 
             // do delete here
-            this.reportService.Delete(viewModel.Id);
+            this.reportService.Delete(model.Id);
 
             return RedirectToAction(nameof(Index));
         }
@@ -447,7 +447,7 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -465,12 +465,12 @@ order by ds_col, ds_row";
 
             sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
 
-            var viewModel = new DashboardViewModel
+            var model = new DashboardModel
             {
                 DataSet = DbUtil.GetDataSet(sql)
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
         [HttpGet]
@@ -490,7 +490,7 @@ order by ds_col, ds_row";
 
             ViewBag.Sesion = (string)Session["session_cookie"];
 
-            ViewBag.Page = new PageViewModel
+            ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
@@ -506,12 +506,12 @@ order by ds_col, ds_row";
                 order by ds_col, ds_row"
                 .Replace("$user", Convert.ToString(this.security.User.Usid));
 
-            var viewModel = new EditDashboardViewModel
+            var model = new EditDashboardModel
             {
                 DataSet = DbUtil.GetDataSet(sql)
             };
 
-            return View(viewModel);
+            return View(model);
         }
 
         [HttpPost]

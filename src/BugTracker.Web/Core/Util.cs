@@ -11,6 +11,7 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.Globalization;
     using System.IO;
+    using System.Net.Mime;
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -863,32 +864,66 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
         {
             var ext = Path.GetExtension(filename).ToLower();
 
-            if (ext == ".jpg"
-                || ext == ".jpeg")
-                return "image/jpeg";
+            if (ext == ".jpg" || ext == ".jpeg")
+            {
+                return MediaTypeNames.Image.Jpeg;
+            }
+
             if (ext == ".gif")
-                return "image/gif";
+            {
+                return MediaTypeNames.Image.Gif;
+            }
+
             if (ext == ".bmp")
+            {
                 return "image/bmp";
+            }
+
             if (ext == ".tiff")
-                return "image/tiff";
+            {
+                return MediaTypeNames.Image.Tiff;
+            }
+
             if (ext == ".txt" || ext == ".ini" || ext == ".bat" || ext == ".js")
-                return "text/plain";
+            {
+                return MediaTypeNames.Text.Plain;
+            }
+
             if (ext == ".doc" || ext == ".docx")
+            {
                 return "application/msword";
+            }
+
             if (ext == ".xls")
+            {
                 return "application/excel";
+            }
+
             if (ext == ".zip")
-                return "application/zip";
+            {
+                return MediaTypeNames.Application.Zip;
+            }
+
             if (ext == ".htm"
                 || ext == ".html"
                 || ext == ".asp"
                 || ext == ".aspx"
                 || ext == ".php")
+            {
                 return "text/html";
+            }
+
             if (ext == ".xml")
+            {
                 return "text/xml";
-            return "";
+            }
+
+            if (ext == ".pdf")
+            {
+                return MediaTypeNames.Application.Pdf;
+            }
+
+            return MediaTypeNames.Application.Octet;
         }
 
         public static string RequestToStringForSql(string val, string datatype)
@@ -938,6 +973,33 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             }
         }
 
+        public static string RedirectUrl(HttpRequest request)
+        {
+            // redirect to the page the user was going to or start off with Bugs/List.aspx
+            var url = request.QueryString["url"];
+            var qs = request.QueryString["qs"];
+
+            if (string.IsNullOrEmpty(url))
+            {
+                var mobile = request["mobile"];
+
+                if (string.IsNullOrEmpty(mobile))
+                {
+                    return "~/Bugs/List.aspx";
+                }
+                else
+                {
+                    return "~/Bugs/MobileList.aspx";
+                }
+            }
+            else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
+            {
+                return "~/Bugs/List.aspx";
+            }
+
+            return RemoveLineBreaks(url) + "?" + RemoveLineBreaks(HttpUtility.UrlDecode(qs));
+        }
+
         public static void Redirect(string url, HttpRequest request, HttpResponse response)
         {
             //redirect to the url supplied with the original querystring
@@ -951,6 +1013,17 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
                                       + RemoveLineBreaks(request.QueryString["url"])
                                       + "&qs="
                                       + RemoveLineBreaks(request.QueryString["qs"]));
+        }
+
+        public static string RedirectUrl(string url, HttpRequest request)
+        {
+            //redirect to the url supplied with the original querystring
+            if (url.IndexOf("?") > 0)
+            {
+                return $"{url}&url={RemoveLineBreaks(request.QueryString["url"])}&qs={RemoveLineBreaks(request.QueryString["qs"])}";
+            }
+
+            return $"{url}&url={RemoveLineBreaks(request.QueryString["url"])}&qs={RemoveLineBreaks(request.QueryString["qs"])}";
         }
 
         public static string RemoveLineBreaks(string s)

@@ -29,7 +29,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         <a href="<%= ResolveUrl("~/Administration/Priorities/List.aspx")%>">back to priorities</a>
         <div>&nbsp;</div>
 
