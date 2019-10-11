@@ -77,13 +77,13 @@
         <% if (Security.User.IsAdmin)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/Administration2") %>"><span class="<%= SelectedItem == "admin" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">admin</span></a>
+                <a href="<%= ResolveUrl("~/Administration") %>"><span class="<%= SelectedItem == "admin" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">admin</span></a>
             </td>
             
         <% } else if(Security.User.IsProjectAdmin)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/Administration/Users/List.aspx") %>"><span class="<%= SelectedItem == "users" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">users</span></a>
+                <a href="<%= ResolveUrl("~/Admin/Users/List.aspx") %>"><span class="<%= SelectedItem == "users" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">users</span></a>
             </td>
         <% } %>
         

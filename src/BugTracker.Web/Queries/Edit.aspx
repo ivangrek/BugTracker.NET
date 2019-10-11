@@ -103,7 +103,7 @@
     Otherwise, it will be interpreted as the name of a CSS style class in your CSS file.
     <br>
                             <br>
-                            View this <a target="_blank" href="<%= ResolveUrl("~/Administration/EditStyles.aspx")%>">example</a> of one way to change the color of your rows.
+                            View this <a target="_blank" href="<%= ResolveUrl("~/Admin/EditStyles.aspx")%>">example</a> of one way to change the color of your rows.
     The example uses a combination of priority and status to determine the CSS style, but feel free to come up with your own scheme.
     <br>
                             <br>

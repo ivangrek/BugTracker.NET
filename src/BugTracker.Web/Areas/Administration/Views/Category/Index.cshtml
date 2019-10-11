@@ -22,12 +22,7 @@
 }
 
 <div class="main">
-    @if (page.Security.User.IsAdmin || page.Security.User.CanEditReports)
-    {
-        <a href="@Url.Action("Create")"><img src="~/Content/images/add.png" align="top">&nbsp;add new report</a>@:&nbsp;&nbsp;&nbsp;&nbsp;
-    }
-
-    <a href="@Url.Action("Dashboard")">dashboard</a>
+    <a href="~/Admin/Categories/Edit.aspx"><img src="~/Content/images/add.png" align="top">&nbsp;add new category</a>
 
     @if (Model.DataSet.Tables[0].Rows.Count > 0)
     {
@@ -35,7 +30,7 @@
     }
     else
     {
-        <div>No reports in the database.</div>
+        <div>No categories in the database.</div>
     }
 </div>
 
