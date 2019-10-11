@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web", "src\BugTracker.Web\BugTracker.Web.csproj", "{99A57642-D574-4264-AF23-5D0D383597BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web.Tests", "src\BugTracker.Web.Tests\BugTracker.Web.Tests.csproj", "{14958366-8B67-4A0D-88E5-4A573721F88C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web.Tests", "test\BugTracker.Web.Tests\BugTracker.Web.Tests.csproj", "{14958366-8B67-4A0D-88E5-4A573721F88C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

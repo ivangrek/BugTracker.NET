@@ -56,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BugTracker.Web\BugTracker.Web.csproj">
+    <ProjectReference Include="..\..\src\BugTracker.Web\BugTracker.Web.csproj">
       <Project>{99A57642-D574-4264-AF23-5D0D383597BA}</Project>
       <Name>BugTracker.Web</Name>
     </ProjectReference>
