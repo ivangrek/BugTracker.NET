@@ -173,6 +173,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)bin\$(ConfigurationName)\btnet_screen_capture.exe $(ProjectDir)..\src\BugTracker.Web\Content\btnet_screen_capture.exe</PostBuildEvent>
+    <PostBuildEvent>copy $(ProjectDir)bin\$(ConfigurationName)\btnet_screen_capture.exe $(ProjectDir)..\..\src\BugTracker.Web\Content\btnet_screen_capture.exe</PostBuildEvent>
   </PropertyGroup>
 </Project>
