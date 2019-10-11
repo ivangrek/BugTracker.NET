@@ -152,7 +152,10 @@ a {
     background: #f0fff0;
     padding: 0px;
     border-bottom: 1px solid #00cc00;
-    height: 48px; /*new*/
+    /*new*/
+    height: 48px;
+    padding: 0 20px;
+    width: 100%;
 }
 
 .menu_td {

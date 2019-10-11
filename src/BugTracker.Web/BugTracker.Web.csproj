@@ -675,6 +675,7 @@
       <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BugController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
@@ -789,6 +790,7 @@
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Attachment\UpdateModel.cs" />
+    <Compile Include="Models\Bug\DeleteModel.cs" />
     <Compile Include="Queries\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1392,6 +1394,7 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Account\CompleteRegistration.cshtml" />
     <Content Include="Views\Attachment\Update.cshtml" />
+    <Content Include="Views\Bug\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
