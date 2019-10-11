@@ -38,10 +38,8 @@ namespace BugTracker.Web
             }
 
             var dsPosts = PrintBug.GetBugPosts(bugid, Security.User.ExternalUser, historyInline);
-
-            PrintBug.WritePosts(
+            var (_, html) = PrintBug.WritePosts(
                 dsPosts,
-                Response,
                 bugid,
                 permissionLevel,
                 true, // write links
@@ -49,6 +47,8 @@ namespace BugTracker.Web
                 historyInline,
                 true, // internal_posts
                 Security.User);
+
+            Response.Write(html);
         }
     }
 }

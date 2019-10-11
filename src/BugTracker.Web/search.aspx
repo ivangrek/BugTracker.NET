@@ -6,6 +6,7 @@
 --%>
 
 <%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Search.aspx.cs" Inherits="BugTracker.Web.Search" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 
 <%@ Import Namespace="System.Data" %>
@@ -685,7 +686,7 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyHeader" runat="server">
-    <BugTracker:MainMenu runat="server" ID="MainMenu"/>
+    <BugTracker:MainMenu runat="server" ID="MainMenu" />
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
@@ -778,7 +779,7 @@
                                     <tr>
                                         <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)); %> description contains:&nbsp;</span>
                                         <td colspan="2">
-                                        <input type="text" class="txt" id="like" runat="server" onkeydown="search_criteria_onkeydown(this,event)" onkeyup="search_criteria_onkeyup(this,event)" size="50" autocomplete="off"/>
+                                            <input type="text" class="txt" id="like" runat="server" onkeydown="search_criteria_onkeydown(this,event)" onkeyup="search_criteria_onkeyup(this,event)" size="50" autocomplete="off" />
 
 
                                             <% if (this.ShowUdf)
@@ -797,7 +798,7 @@
                                     <tr>
                                         <td><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)); %> comments contain:&nbsp;</span>
                                         <td colspan="2">
-                                            <input type="text" class="txt" id="like2" runat="server" onkeyup="on_change()" size="50" autocomplete="off"/>
+                                            <input type="text" class="txt" id="like2" runat="server" onkeyup="on_change()" size="50" autocomplete="off" />
                                         </td>
                                     </tr>
 
@@ -805,7 +806,7 @@
                                     <tr>
                                         <td nowrap><span class="lbl"><% Response.Write(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)); %> comments since:&nbsp;</span>
                                         <td colspan="2">
-                                            <input type="text" class="txt date" id="comments_since" runat="server" onkeyup="on_change()" size="10"/>
+                                            <input type="text" class="txt date" id="comments_since" runat="server" onkeyup="on_change()" size="10" />
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('comments_since')">[select]
                                             </a>
@@ -816,14 +817,14 @@
                                     <tr>
                                         <td nowrap><span class="lbl">"Reported on" from date:&nbsp;</span>
                                         <td colspan="2">
-                                            <input runat="server" type="text" class="txt date" id="from_date" maxlength="10" size="10" onchange="on_change()"/>
+                                            <input runat="server" type="text" class="txt date" id="from_date" maxlength="10" size="10" onchange="on_change()" />
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('from_date')">[select]
                                             </a>
 
                                             &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="lbl">to:&nbsp;</span>
-                                            <input runat="server" type="text" class="txt date" id="to_date" maxlength="10" size="10" onchange="on_change()"/>
+                                            <input runat="server" type="text" class="txt date" id="to_date" maxlength="10" size="10" onchange="on_change()" />
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('to_date')">[select]
                                             </a>
@@ -833,14 +834,14 @@
                                     <tr>
                                         <td nowrap><span class="lbl">"Last updated on" from date:&nbsp;</span>
                                         <td colspan="2">
-                                            <input runat="server" type="text" class="txt date" id="lu_from_date" maxlength="10" size="10" onchange="on_change()"/>
+                                            <input runat="server" type="text" class="txt date" id="lu_from_date" maxlength="10" size="10" onchange="on_change()" />
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('lu_from_date')">[select]
                                             </a>
 
                                             &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="lbl">to:&nbsp;</span>
-                                            <input runat="server" type="text" class="txt date" id="lu_to_date" maxlength="10" size="10" onchange="on_change()"/>
+                                            <input runat="server" type="text" class="txt date" id="lu_to_date" maxlength="10" size="10" onchange="on_change()" />
                                             <a style="font-size: 8pt;"
                                                 href="javascript:show_calendar('lu_to_date')">[select]
                                             </a>
@@ -1008,18 +1009,18 @@
                                     %>
 
                                     <tr>
-                                        <td colspan="10" nowrap>Use "and" logic:<input type="radio" runat="server" name="and_or" value="and" id="and" onchange="on_change()" checked/>
+                                        <td colspan="10" nowrap>Use "and" logic:<input type="radio" runat="server" name="and_or" value="and" id="and" onchange="on_change()" checked />
                                             &nbsp;&nbsp;
-                                            Use "or" logic:<input type="radio" runat="server" name="and_or" value="or" id="or" onchange="on_change()"/>
+                                            Use "or" logic:<input type="radio" runat="server" name="and_or" value="or" id="or" onchange="on_change()" />
                                         </td>
                                     </tr>
 
                                     <tr>
                                         <td colspan="10" align="center">
-                                            <input type="hidden" runat="server" id="project_changed" value="0"/>
-                                            <input type="hidden" runat="server" id="hit_submit_button" value="0"/>
-                                            <input type="hidden" runat="server" id="hit_save_query_button" value="0"/>
-                                            <input class="btn" type="submit" onclick="set_hit_submit_button()" value="&nbsp;&nbsp;&nbsp;Search&nbsp;&nbsp;&nbsp;" runat="server"/>
+                                            <input type="hidden" runat="server" id="project_changed" value="0" />
+                                            <input type="hidden" runat="server" id="hit_submit_button" value="0" />
+                                            <input type="hidden" runat="server" id="hit_save_query_button" value="0" />
+                                            <input class="btn" type="submit" onclick="set_hit_submit_button()" value="&nbsp;&nbsp;&nbsp;Search&nbsp;&nbsp;&nbsp;" runat="server" />
                                         </td>
                                     </tr>
 
@@ -1046,13 +1047,13 @@
 
                                 </table>
 
-                            <input type="hidden" name="new_page" id="new_page" runat="server" value="0"/>
-                            <input type="hidden" name="actn" id="actn" runat="server" value=""/>
-                            <input type="hidden" name="filter" id="filter" runat="server" value=""/>
-                            <input type="hidden" name="sort" id="sort" runat="server" value="-1"/>
-                            <input type="hidden" name="prev_sort" id="prev_sort" runat="server" value="-1"/>
-                            <input type="hidden" name="prev_dir" id="prev_dir" runat="server" value="ASC"/>
-                            <input type="hidden" name="tags" id="tags" value=""/>
+                                <input type="hidden" name="new_page" id="new_page" runat="server" value="0" />
+                                <input type="hidden" name="actn" id="actn" runat="server" value="" />
+                                <input type="hidden" name="filter" id="filter" runat="server" value="" />
+                                <input type="hidden" name="sort" id="sort" runat="server" value="-1" />
+                                <input type="hidden" name="prev_sort" id="prev_sort" runat="server" value="-1" />
+                                <input type="hidden" name="prev_dir" id="prev_dir" runat="server" value="ASC" />
+                                <input type="hidden" name="tags" id="tags" value="" />
 
                                 <script>
                                     var enable_popups = <% Response.Write(Security.User.EnablePopups ? "1" : "0"); %>;
@@ -1061,76 +1062,76 @@
 
                                 <div id="popup" class="buglist_popup"></div>
 
-                            <input type="hidden" id="query" runat="server" value=""/>
+                                <input type="hidden" id="query" runat="server" value="" />
                             </form>
                         </div>
 
                     </td>
                 </tr>
         </table>
-    </div>
 
-    <%
-        if (this.Dv == null)
-        {
-        }
-        else
-        {
-            if (this.Dv.Table.Rows.Count > 0)
+        <%
+            if (this.Dv == null)
             {
-                Response.Write("<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + ">print list</a>");
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + ResolveUrl("~/Bugs/Print2.aspx") + ">print detail</a>");
-                Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href=" + ResolveUrl("~/Bugs/Print.aspx") + "?format=excel>export to excel</a><br>");
-
-                if (ApplicationSettings.EnableTags)
-                {
-                    BugList.DisplayBugListTagsLine(Response, Security);
-                }
-
-                if (!Security.User.IsGuest && (Security.User.IsAdmin || Security.User.CanMassEditBugs))
-                {
-                    Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=MassEdit.aspx>");
-                    display_bugs(true, Security);
-                    Response.Write("<p><table class=frm><tr><td colspan=5 class=smallnote>Update or delete all checked items");
-                    Response.Write("<tr><td colspan=5>");
-                    Response.Write("<a href=javascript:select_all(true)>select all</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-                    Response.Write("<a href=javascript:select_all(false)>deselect all</a>");
-                    Response.Write("<tr>");
-                    Response.Write("<td><span class=lbl>project:</span><br><select name=mass_project id=mass_project></select>");
-                    Response.Write("<td><span class=lbl>organization:</span><br><select name=mass_org id=mass_org></select>");
-                    Response.Write("<td><span class=lbl>category:</span><br><select name=mass_category id=mass_category></select>");
-                    Response.Write("<td><span class=lbl>priority:</span><br><select name=mass_priority id=mass_priority></select>");
-                    Response.Write("<td><span class=lbl>assigned to:</span><br><select name=mass_assigned_to id=mass_assigned_to></select>");
-                    Response.Write("<td><span class=lbl>status:</span><br><select name=mass_status id=mass_status></select>");
-                    Response.Write("<td><span class=lbl>reported by:</span><br><select name=mass_reported_by id=mass_reported_by></select>");
-                    Response.Write("<tr><td colspan=5>OR DELETE:&nbsp;<input type=checkbox class=cb name=mass_delete>");
-                    Response.Write("<tr><td colspan=5 align=center><input type=submit value='Update/Delete All'>");
-                    Response.Write("</table></form><p><script>load_massedit_selects()</script>");
-                }
-                else
-                {
-                    // no checkboxes
-                    display_bugs(false, Security);
-                }
             }
             else
             {
-                Response.Write("<p>No ");
-                Response.Write(ApplicationSettings.PluralBugLabel);
-                Response.Write("<p>");
+                if (this.Dv.Table.Rows.Count > 0)
+                {
+                    Response.Write("<a target=_blank href='" + ResolveUrl("~/Bug/Print") + "'>print list</a>");
+                    Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href='" + ResolveUrl("~/Bug/PrintPrintDetail") + "'>print detail</a>");
+                    Response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href='" + ResolveUrl("~/Bug/Print?format=excel") + "'>export to excel</a><br>");
+
+                    if (ApplicationSettings.EnableTags)
+                    {
+                        BugList.DisplayBugListTagsLine(Response, Security);
+                    }
+
+                    if (!Security.User.IsGuest && (Security.User.IsAdmin || Security.User.CanMassEditBugs))
+                    {
+                        Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=MassEdit.aspx>");
+                        display_bugs(true, Security);
+                        Response.Write("<p><table class=frm><tr><td colspan=5 class=smallnote>Update or delete all checked items");
+                        Response.Write("<tr><td colspan=5>");
+                        Response.Write("<a href=javascript:select_all(true)>select all</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+                        Response.Write("<a href=javascript:select_all(false)>deselect all</a>");
+                        Response.Write("<tr>");
+                        Response.Write("<td><span class=lbl>project:</span><br><select name=mass_project id=mass_project></select>");
+                        Response.Write("<td><span class=lbl>organization:</span><br><select name=mass_org id=mass_org></select>");
+                        Response.Write("<td><span class=lbl>category:</span><br><select name=mass_category id=mass_category></select>");
+                        Response.Write("<td><span class=lbl>priority:</span><br><select name=mass_priority id=mass_priority></select>");
+                        Response.Write("<td><span class=lbl>assigned to:</span><br><select name=mass_assigned_to id=mass_assigned_to></select>");
+                        Response.Write("<td><span class=lbl>status:</span><br><select name=mass_status id=mass_status></select>");
+                        Response.Write("<td><span class=lbl>reported by:</span><br><select name=mass_reported_by id=mass_reported_by></select>");
+                        Response.Write("<tr><td colspan=5>OR DELETE:&nbsp;<input type=checkbox class=cb name=mass_delete>");
+                        Response.Write("<tr><td colspan=5 align=center><input type=submit value='Update/Delete All'>");
+                        Response.Write("</table></form><p><script>load_massedit_selects()</script>");
+                    }
+                    else
+                    {
+                        // no checkboxes
+                        display_bugs(false, Security);
+                    }
+                }
+                else
+                {
+                    Response.Write("<p>No ");
+                    Response.Write(ApplicationSettings.PluralBugLabel);
+                    Response.Write("<p>");
+                }
             }
-        }
-    %>
+        %>
 
-    <p>
-        <span id="visible_sql_label" runat="server">SQL:</span>
-    </p>
-    <pre style="font-family: courier new; font-size: 8pt" id="visible_sql_text" runat="server">&nbsp;</pre>
+        <p>
+            <span id="visible_sql_label" runat="server">SQL:</span>
+        </p>
+        <pre style="font-family: courier new; font-size: 8pt" id="visible_sql_text" runat="server">&nbsp;</pre>
 
-    <!-- form 3 -->
-    <form id="save_query_form" target="_blank" method="post" action="<%= ResolveUrl("~/Queries/Edit.aspx") %>">
-        <input type="hidden" name="sql_text" value="">
-    </form>
+        <!-- form 3 -->
+        <form id="save_query_form" target="_blank" method="post" action="<%= ResolveUrl("~/Queries/Edit.aspx") %>">
+            <input type="hidden" name="sql_text" value="">
+        </form>
+    </div>
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">

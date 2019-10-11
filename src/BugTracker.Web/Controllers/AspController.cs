@@ -51,9 +51,8 @@ namespace BugTracker.Web.Controllers
 
                 using (var dsPosts = PrintBug.GetBugPosts(bugid, this.security.User.ExternalUser, false))
                 {
-                    var postCnt = PrintBug.WritePosts(
+                    var (postCnt, html) = PrintBug.WritePosts(
                         dsPosts,
-                        System.Web.HttpContext.Current.Response,
                         bugid,
                         permissionLevel,
                         false, // write links
@@ -66,6 +65,10 @@ namespace BugTracker.Web.Controllers
                     if (postCnt == 0)
                     {
                         Response.Write("<!--zeroposts-->");
+                    }
+                    else
+                    {
+                        System.Web.HttpContext.Current.Response.Write(html);
                     }
                 }
             }

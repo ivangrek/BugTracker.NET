@@ -600,9 +600,6 @@
     <Content Include="Administration\Organizations\List.aspx" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
-    <Content Include="Bugs\Print1.aspx" />
-    <Content Include="Bugs\Print.aspx" />
-    <Content Include="Bugs\Print2.aspx" />
     <Content Include="Administration\Priorities\List.aspx" />
     <Content Include="Administration\Projects\List.aspx" />
     <Content Include="Queries\List.aspx" />
@@ -1116,27 +1113,6 @@
     <Compile Include="Administration\Organizations\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Bugs\Print1.aspx.cs">
-      <DependentUpon>Print1.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\Print1.aspx.designer.cs">
-      <DependentUpon>Print1.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Bugs\Print.aspx.cs">
-      <DependentUpon>Print.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\Print.aspx.designer.cs">
-      <DependentUpon>Print.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Bugs\Print2.aspx.cs">
-      <DependentUpon>Print2.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\Print2.aspx.designer.cs">
-      <DependentUpon>Print2.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Administration\Priorities\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1395,6 +1371,7 @@
     <Content Include="Views\Account\CompleteRegistration.cshtml" />
     <Content Include="Views\Attachment\Update.cshtml" />
     <Content Include="Views\Bug\Delete.cshtml" />
+    <Content Include="Views\Bug\PrintDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

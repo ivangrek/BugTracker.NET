@@ -480,7 +480,7 @@ namespace BugTracker.Web.Bugs
 
             format_subcribe_cancel_link(security);
 
-            this.print.InnerHtml = "<a target=_blank href=" + ResolveUrl("~/Bugs/Print1.aspx?id=")
+            this.print.InnerHtml = "<a target=_blank href=" + ResolveUrl("~/Bug/PrintDetail?id=")
                                    + Convert.ToString(this.Id)
                                    + " title='Display this item in a printer-friendly format'><img src=" + ResolveUrl("~/Content/images/printer.png") + " border=0 align=top>&nbsp;print</a>";
 

@@ -1116,8 +1116,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                             sec2.User.DictCustomFieldPermissionLevel[bgName] = (SecurityPermissionLevel)(int)dr[ogName];
                     }
 
-                    PrintBug.print_bug(
-                        myResponse,
+                    var html = PrintBug.PrintBugNew(
                         bugDr,
                         sec2,
                         true, // include style 
@@ -1125,6 +1124,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                         true, // history_inline
                         true); // internal_posts
 
+                    myResponse.Write(html);
                     // at this point "writer" has the bug html
 
                     sql = @"

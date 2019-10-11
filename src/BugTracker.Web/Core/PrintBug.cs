@@ -11,6 +11,7 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.Diagnostics;
     using System.IO;
+    using System.Text;
     using System.Text.RegularExpressions;
     using System.Web;
 
@@ -33,12 +34,13 @@ namespace BugTracker.Web.Core
             | RegexOptions.IgnorePatternWhitespace
             | RegexOptions.Compiled);
 
-        public static void print_bug(HttpResponse response, DataRow dr, ISecurity security,
+        public static string PrintBugNew(DataRow dr, ISecurity security,
             bool includeStyle,
             bool imagesInline,
             bool historyInline,
             bool internalPosts)
         {
+            var stringBuilder = new StringBuilder();
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
             var bugid = Convert.ToInt32(dr["id"]);
@@ -46,7 +48,7 @@ namespace BugTracker.Web.Core
 
             if (includeStyle) // when sending emails
             {
-                response.Write("\n<style>\n");
+                stringBuilder.Append("\n<style>\n");
 
                 // If this file exists, use it.
 
@@ -58,19 +60,20 @@ namespace BugTracker.Web.Core
                 {
                     if (File.Exists(cssForEmailFile))
                     {
-                        response.WriteFile(cssForEmailFile);
-                        response.Write("\n");
+                        stringBuilder.Append(cssForEmailFile);
+                        stringBuilder.Append("\n");
                     }
                     else
                     {
                         cssForEmailFile = mapPath + "Content\\btnet_base.css";
-                        response.WriteFile(cssForEmailFile);
-                        response.Write("\n");
+                        stringBuilder.Append(cssForEmailFile);
+                        stringBuilder.Append("\n");
                         cssForEmailFile = mapPath + "\\Content\\custom\\" + "btnet_custom.css";
+
                         if (File.Exists(cssForEmailFile))
                         {
-                            response.WriteFile(cssForEmailFile);
-                            response.Write("\n");
+                            stringBuilder.Append(cssForEmailFile);
+                            stringBuilder.Append("\n");
                         }
                     }
                 }
@@ -83,14 +86,14 @@ namespace BugTracker.Web.Core
                 }
 
                 // underline links in the emails to make them more obvious
-                response.Write("\na {text-decoration: underline; }");
-                response.Write("\na:visited {text-decoration: underline; }");
-                response.Write("\na:hover {text-decoration: underline; }");
-                response.Write("\n</style>\n");
+                stringBuilder.Append("\na {text-decoration: underline; }");
+                stringBuilder.Append("\na:visited {text-decoration: underline; }");
+                stringBuilder.Append("\na:hover {text-decoration: underline; }");
+                stringBuilder.Append("\n</style>\n");
             }
 
-            response.Write("<body style='background:white'>");
-            response.Write("<b>"
+            stringBuilder.Append("<body style='background:white'>");
+            stringBuilder.Append("<b>"
                            + Util.CapitalizeFirstLetter(applicationSettings.SingularBugLabel)
                            + " ID:&nbsp;<a href="
                            + applicationSettings.AbsoluteUrlPrefix
@@ -101,7 +104,7 @@ namespace BugTracker.Web.Core
                            + "</a>");
 
             if (applicationSettings.EnableMobile)
-                response.Write(
+                stringBuilder.Append(
                     "&nbsp;&nbsp;&nbsp;&nbsp;Mobile link:&nbsp;<a href="
                     + applicationSettings.AbsoluteUrlPrefix
                     + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
@@ -112,9 +115,9 @@ namespace BugTracker.Web.Core
                     + stringBugid
                     + "</a>");
 
-            response.Write("<br>");
+            stringBuilder.Append("<br>");
 
-            response.Write("Short desc:&nbsp;<a href="
+            stringBuilder.Append("Short desc:&nbsp;<a href="
                            + applicationSettings.AbsoluteUrlPrefix
                            + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
                            + stringBugid
@@ -123,42 +126,56 @@ namespace BugTracker.Web.Core
                            + "</a></b><p>");
 
             // start of the table with the bug fields
-            response.Write("\n<table border=1 cellpadding=3 cellspacing=0>");
-            response.Write("\n<tr><td>Last changed by<td>"
+            stringBuilder.Append("\n<table border=1 cellpadding=3 cellspacing=0>");
+            stringBuilder.Append("\n<tr><td>Last changed by<td>"
                            + FormatUserName((string)dr["last_updated_user"], (string)dr["last_updated_fullname"])
                            + "&nbsp;");
-            response.Write("\n<tr><td>Reported By<td>"
+            stringBuilder.Append("\n<tr><td>Reported By<td>"
                            + FormatUserName((string)dr["reporter"], (string)dr["reporter_fullname"])
                            + "&nbsp;");
-            response.Write("\n<tr><td>Reported On<td>" + Util.FormatDbDateTime(dr["reported_date"]) + "&nbsp;");
+            stringBuilder.Append("\n<tr><td>Reported On<td>" + Util.FormatDbDateTime(dr["reported_date"]) + "&nbsp;");
 
             if (security.User.TagsFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Tags<td>" + dr["bg_tags"] + "&nbsp;");
+            {
+                stringBuilder.Append("\n<tr><td>Tags<td>" + dr["bg_tags"] + "&nbsp;");
+            }
 
             if (security.User.ProjectFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Project<td>" + dr["current_project"] + "&nbsp;");
+            {
+                stringBuilder.Append("\n<tr><td>Project<td>" + dr["current_project"] + "&nbsp;");
+            }
 
             if (security.User.OrgFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Organization<td>" + dr["og_name"] + "&nbsp;");
+            {
+                stringBuilder.Append("\n<tr><td>Organization<td>" + dr["og_name"] + "&nbsp;");
+            }
 
             if (security.User.CategoryFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Category<td>" + dr["category_name"] + "&nbsp;");
+            {
+                stringBuilder.Append("\n<tr><td>Category<td>" + dr["category_name"] + "&nbsp;");
+            }
 
             if (security.User.PriorityFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Priority<td>" + dr["priority_name"] + "&nbsp;");
+            {
+                stringBuilder.Append("\n<tr><td>Priority<td>" + dr["priority_name"] + "&nbsp;");
+            }
 
             if (security.User.AssignedToFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Assigned<td>"
+            {
+                stringBuilder.Append("\n<tr><td>Assigned<td>"
                                + FormatUserName((string)dr["assigned_to_username"],
                                    (string)dr["assigned_to_fullname"])
                                + "&nbsp;");
+            }
 
             if (security.User.StatusFieldPermissionLevel > 0)
-                response.Write("\n<tr><td>Status<td>" + dr["status_name"] + "&nbsp;");
+            {
+                stringBuilder.Append("\n<tr><td>Status<td>" + dr["status_name"] + "&nbsp;");
+            }
 
             if (security.User.UdfFieldPermissionLevel > 0)
                 if (applicationSettings.ShowUserDefinedBugAttribute)
-                    response.Write("\n<tr><td>"
+                    stringBuilder.Append("\n<tr><td>"
                                    + applicationSettings.UserDefinedBugAttributeName
                                    + "<td>"
                                    + dr["udf_name"] + "&nbsp;");
@@ -176,19 +193,19 @@ namespace BugTracker.Web.Core
 
                 if (security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone) continue;
 
-                response.Write("\n<tr><td>");
-                response.Write(columnName);
-                response.Write("<td>");
+                stringBuilder.Append("\n<tr><td>");
+                stringBuilder.Append(columnName);
+                stringBuilder.Append("<td>");
 
                 if ((string)drcc["datatype"] == "datetime")
                 {
                     var dt = dr[(string)drcc["name"]];
 
-                    response.Write(Util.FormatDbDateTime(dt));
+                    stringBuilder.Append(Util.FormatDbDateTime(dt));
                 }
                 else
                 {
-                    var s = "";
+                    var s = string.Empty;
 
                     if ((string)drcc["dropdown type"] == "users")
                     {
@@ -213,10 +230,10 @@ namespace BugTracker.Web.Core
                     s = s.Replace("\n", "<br>");
                     s = s.Replace("  ", "&nbsp; ");
                     s = s.Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-                    response.Write(s);
+                    stringBuilder.Append(s);
                 }
 
-                response.Write("&nbsp;");
+                stringBuilder.Append("&nbsp;");
             }
 
             // create project custom dropdowns
@@ -239,32 +256,36 @@ namespace BugTracker.Web.Core
                     for (var i = 1; i < 4; i++)
                         if ((int)projectDr["pj_enable_custom_dropdown" + Convert.ToString(i)] == 1)
                         {
-                            response.Write("\n<tr><td>");
-                            response.Write(projectDr["pj_custom_dropdown_label" + Convert.ToString(i)]);
-                            response.Write("<td>");
-                            response.Write(dr["bg_project_custom_dropdown_value" + Convert.ToString(i)]);
-                            response.Write("&nbsp;");
+                            stringBuilder.Append("\n<tr><td>");
+                            stringBuilder.Append(projectDr["pj_custom_dropdown_label" + Convert.ToString(i)]);
+                            stringBuilder.Append("<td>");
+                            stringBuilder.Append(dr["bg_project_custom_dropdown_value" + Convert.ToString(i)]);
+                            stringBuilder.Append("&nbsp;");
                         }
             }
 
-            response.Write("\n</table><p>"); // end of the table with the bug fields
+            stringBuilder.Append("\n</table><p>"); // end of the table with the bug fields
 
             // Relationships
             if (applicationSettings.EnableRelationships)
             {
-                WriteRelationships(response, bugid);
+                var html2 = WriteRelationships(bugid);
+
+                stringBuilder.Append(html2);
             }
 
             // Tasks
             if (applicationSettings.EnableTasks)
             {
-                WriteTasks(response, bugid);
+                var html2 =  WriteTasks(bugid);
+
+                stringBuilder.Append(html2);
             }
 
             var dsPosts = GetBugPosts(bugid, security.User.ExternalUser, historyInline);
-            WritePosts(
+
+            var (_, html) = WritePosts(
                 dsPosts,
-                response,
                 bugid,
                 0,
                 false, /* don't write links */
@@ -273,71 +294,14 @@ namespace BugTracker.Web.Core
                 internalPosts,
                 security.User);
 
-            response.Write("</body>");
+            stringBuilder.Append(html);
+            stringBuilder.Append("</body>");
+
+            return stringBuilder.ToString();
         }
 
-        private static void WriteTasks(HttpResponse response, int bugid)
-        {
-            var dsTasks = Util.GetAllTasks(null, bugid);
-
-            if (dsTasks.Tables[0].Rows.Count > 0)
-            {
-                response.Write("<b>Tasks</b><p>");
-
-                SortableHtmlTable.CreateNonSortableFromDataSet(
-                    response, dsTasks);
-            }
-        }
-
-        private static void WriteRelationships(HttpResponse response, int bugid)
-        {
-            var sql = @"select bg_id [id],
-                bg_short_desc [desc],
-                re_type [comment],
-                case
-                    when re_direction = 0 then ''
-                    when re_direction = 2 then 'child of $bg'
-                    else 'parent of $bg' end [parent/child]
-                from bug_relationships
-                inner join bugs on re_bug2 = bg_id
-                where re_bug1 = $bg
-                order by 1";
-
-            sql = sql.Replace("$bg", Convert.ToString(bugid));
-            var dsRelationships = DbUtil.GetDataSet(sql);
-
-            if (dsRelationships.Tables[0].Rows.Count > 0)
-            {
-                response.Write("<b>Relationships</b><p><table border=1 class=datat><tr>");
-                response.Write("<td class=datah valign=bottom>id</td>");
-                response.Write("<td class=datah valign=bottom>desc</td>");
-                response.Write("<td class=datah valign=bottom>comment</td>");
-                response.Write("<td class=datah valign=bottom>parent/child</td>");
-
-                foreach (DataRow drRelationships in dsRelationships.Tables[0].Rows)
-                {
-                    response.Write("<tr>");
-
-                    response.Write("<td class=datad valign=top align=right>");
-                    response.Write(Convert.ToString((int)drRelationships["id"]));
-
-                    response.Write("<td class=datad valign=top>");
-                    response.Write(Convert.ToString(drRelationships["desc"]));
-
-                    response.Write("<td class=datad valign=top>");
-                    response.Write(Convert.ToString(drRelationships["comment"]));
-
-                    response.Write("<td class=datad valign=top>");
-                    response.Write(Convert.ToString(drRelationships["parent/child"]));
-                }
-
-                response.Write("</table><p>");
-            }
-        }
-
-        public static int WritePosts(
+        public static (int, string) WritePosts(
             DataSet dsPosts,
-            HttpResponse response,
             int bugid,
             SecurityPermissionLevel permissionLevel,
             bool writeLinks,
@@ -346,12 +310,17 @@ namespace BugTracker.Web.Core
             bool internalPosts,
             User user)
         {
+            var stringBuilder = new StringBuilder();
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
             if (applicationSettings.ForceBordersInEmails)
-                response.Write("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
+            {
+                stringBuilder.Append("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
+            }
             else
-                response.Write("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
+            {
+                stringBuilder.Append("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
+            }
 
             var postCnt = dsPosts.Tables[0].Rows.Count;
 
@@ -419,33 +388,108 @@ namespace BugTracker.Web.Core
                 if (bpId == prevBpId)
                 {
                     // show another attachment
-                    WriteEmailAttachment(response, bugid, dr, writeLinks, imagesInline);
+                    var html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
+
+                    stringBuilder.Append(html);
                 }
                 else
                 {
                     // show the comment and maybe an attachment
-                    if (prevBpId != -1) response.Write("\n</table>"); // end the previous table
+                    if (prevBpId != -1) stringBuilder.Append("\n</table>"); // end the previous table
 
-                    WritePost(response, bugid, permissionLevel, dr, bpId, writeLinks, imagesInline,
+                    var html = WritePost(bugid, permissionLevel, dr, bpId, writeLinks, imagesInline,
                         user.IsAdmin,
                         user.CanEditAndDeletePosts,
                         user.ExternalUser);
 
+                    stringBuilder.Append(html);
+
                     if (Convert.ToString(dr["ba_file"]) != "") // intentially "ba"
-                        WriteEmailAttachment(response, bugid, dr, writeLinks, imagesInline);
+                    {
+                        html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
+
+                        stringBuilder.Append(html);
+                    }
+
                     prevBpId = bpId;
                 }
             }
 
-            if (prevBpId != -1) response.Write("\n</table>"); // end the previous table
+            if (prevBpId != -1)
+            {
+                stringBuilder.Append("\n</table>"); // end the previous table
+            }
 
-            response.Write("\n</table>");
+            stringBuilder.Append("\n</table>");
 
-            return postCnt;
+            return (postCnt, stringBuilder.ToString());
         }
 
-        private static void WritePost(
-            HttpResponse response,
+        private static string WriteTasks(int bugid)
+        {
+            var stringBuilder = new StringBuilder();
+            var dsTasks = Util.GetAllTasks(null, bugid);
+
+            if (dsTasks.Tables[0].Rows.Count > 0)
+            {
+                stringBuilder.Append("<b>Tasks</b><p>");
+
+                // TODO SortableHtmlTable.CreateNonSortableFromDataSet(response, dsTasks);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private static string WriteRelationships(int bugid)
+        {
+            var stringBuilder = new StringBuilder();
+            var sql = @"select bg_id [id],
+                bg_short_desc [desc],
+                re_type [comment],
+                case
+                    when re_direction = 0 then ''
+                    when re_direction = 2 then 'child of $bg'
+                    else 'parent of $bg' end [parent/child]
+                from bug_relationships
+                inner join bugs on re_bug2 = bg_id
+                where re_bug1 = $bg
+                order by 1";
+
+            sql = sql.Replace("$bg", Convert.ToString(bugid));
+            var dsRelationships = DbUtil.GetDataSet(sql);
+
+            if (dsRelationships.Tables[0].Rows.Count > 0)
+            {
+                stringBuilder.Append("<b>Relationships</b><p><table border=1 class=datat><tr>");
+                stringBuilder.Append("<td class=datah valign=bottom>id</td>");
+                stringBuilder.Append("<td class=datah valign=bottom>desc</td>");
+                stringBuilder.Append("<td class=datah valign=bottom>comment</td>");
+                stringBuilder.Append("<td class=datah valign=bottom>parent/child</td>");
+
+                foreach (DataRow drRelationships in dsRelationships.Tables[0].Rows)
+                {
+                    stringBuilder.Append("<tr>");
+
+                    stringBuilder.Append("<td class=datad valign=top align=right>");
+                    stringBuilder.Append(Convert.ToString((int)drRelationships["id"]));
+
+                    stringBuilder.Append("<td class=datad valign=top>");
+                    stringBuilder.Append(Convert.ToString(drRelationships["desc"]));
+
+                    stringBuilder.Append("<td class=datad valign=top>");
+                    stringBuilder.Append(Convert.ToString(drRelationships["comment"]));
+
+                    stringBuilder.Append("<td class=datad valign=top>");
+                    stringBuilder.Append(Convert.ToString(drRelationships["parent/child"]));
+                }
+
+                stringBuilder.Append("</table><p>");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private static string WritePost(
             int bugid,
             SecurityPermissionLevel permissionLevel,
             DataRow dr,
@@ -456,6 +500,7 @@ namespace BugTracker.Web.Core
             bool thisCanEditAndDeletePosts,
             bool thisExternalUser)
         {
+            var stringBuilder = new StringBuilder();
             var type = (string)dr["bp_type"];
 
             var stringPostId = Convert.ToString(postId);
@@ -463,9 +508,9 @@ namespace BugTracker.Web.Core
 
             if ((int)dr["seconds_ago"] < 2 && writeLinks)
                 // for the animation effect
-                response.Write("\n\n<tr><td class=cmt name=new_post>\n<table width=100%>\n<tr><td align=left>");
+                stringBuilder.Append("\n\n<tr><td class=cmt name=new_post>\n<table width=100%>\n<tr><td align=left>");
             else
-                response.Write("\n\n<tr><td class=cmt>\n<table width=100%>\n<tr><td align=left>");
+                stringBuilder.Append("\n\n<tr><td class=cmt>\n<table width=100%>\n<tr><td align=left>");
 
             /*
                 Format one of the following:
@@ -480,11 +525,11 @@ namespace BugTracker.Web.Core
 
             if (type == "update")
             {
-                if (writeLinks) response.Write("<img src=Content/images/database.png align=top>&nbsp;");
+                if (writeLinks) stringBuilder.Append("<img src=Content/images/database.png align=top>&nbsp;");
 
                 // posted by
-                response.Write("<span class=pst>changed by ");
-                response.Write(FormatEmailUserName(
+                stringBuilder.Append("<span class=pst>changed by ");
+                stringBuilder.Append(FormatEmailUserName(
                     writeLinks,
                     bugid,
                     permissionLevel,
@@ -494,35 +539,35 @@ namespace BugTracker.Web.Core
             }
             else if (type == "sent")
             {
-                if (writeLinks) response.Write("<img src=Content/images/email_edit.png align=top>&nbsp;");
+                if (writeLinks) stringBuilder.Append("<img src=Content/images/email_edit.png align=top>&nbsp;");
 
-                response.Write("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
+                stringBuilder.Append("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " sent to ");
 
                 if (writeLinks)
-                    response.Write(FormatEmailTo(
+                    stringBuilder.Append(FormatEmailTo(
                         bugid,
                         HttpUtility.HtmlEncode((string)dr["bp_email_to"])));
                 else
-                    response.Write(HttpUtility.HtmlEncode((string)dr["bp_email_to"]));
+                    stringBuilder.Append(HttpUtility.HtmlEncode((string)dr["bp_email_to"]));
 
                 if ((string)dr["bp_email_cc"] != "")
                 {
-                    response.Write(", cc: ");
+                    stringBuilder.Append(", cc: ");
 
                     if (writeLinks)
-                        response.Write(FormatEmailTo(
+                        stringBuilder.Append(FormatEmailTo(
                             bugid,
                             HttpUtility.HtmlEncode((string)dr["bp_email_cc"])));
                     else
-                        response.Write(HttpUtility.HtmlEncode((string)dr["bp_email_cc"]));
+                        stringBuilder.Append(HttpUtility.HtmlEncode((string)dr["bp_email_cc"]));
 
-                    response.Write(", ");
+                    stringBuilder.Append(", ");
                 }
 
-                response.Write(" by ");
+                stringBuilder.Append(" by ");
 
-                response.Write(FormatEmailUserName(
+                stringBuilder.Append(FormatEmailUserName(
                     writeLinks,
                     bugid,
                     permissionLevel,
@@ -532,23 +577,23 @@ namespace BugTracker.Web.Core
             }
             else if (type == "received")
             {
-                if (writeLinks) response.Write("<img src=Content/images/email_open.png align=top>&nbsp;");
-                response.Write("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
+                if (writeLinks) stringBuilder.Append("<img src=Content/images/email_open.png align=top>&nbsp;");
+                stringBuilder.Append("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " received from ");
                 if (writeLinks)
-                    response.Write(FormatEmailFrom(
+                    stringBuilder.Append(FormatEmailFrom(
                         postId,
                         (string)dr["bp_email_from"]));
                 else
-                    response.Write((string)dr["bp_email_from"]);
+                    stringBuilder.Append((string)dr["bp_email_from"]);
             }
             else if (type == "file")
             {
                 if ((int)dr["bp_hidden_from_external_users"] == 1)
-                    response.Write("<div class=private>Internal Only!</div>");
-                response.Write("<span class=pst>file <a name=" + Convert.ToString(postId) + "></a>" +
+                    stringBuilder.Append("<div class=private>Internal Only!</div>");
+                stringBuilder.Append("<span class=pst>file <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " attached by ");
-                response.Write(FormatEmailUserName(
+                stringBuilder.Append(FormatEmailUserName(
                     writeLinks,
                     bugid,
                     permissionLevel,
@@ -559,13 +604,13 @@ namespace BugTracker.Web.Core
             else if (type == "comment")
             {
                 if ((int)dr["bp_hidden_from_external_users"] == 1)
-                    response.Write("<div class=private>Internal Only!</div>");
+                    stringBuilder.Append("<div class=private>Internal Only!</div>");
 
-                if (writeLinks) response.Write("<img src=" + VirtualPathUtility.ToAbsolute("~/Content/images/comment.png") + " align=top>&nbsp;");
+                if (writeLinks) stringBuilder.Append("<img src=" + VirtualPathUtility.ToAbsolute("~/Content/images/comment.png") + " align=top>&nbsp;");
 
-                response.Write("<span class=pst>comment <a name=" + Convert.ToString(postId) + "></a>" +
+                stringBuilder.Append("<span class=pst>comment <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " posted by ");
-                response.Write(FormatEmailUserName(
+                stringBuilder.Append(FormatEmailUserName(
                     writeLinks,
                     bugid,
                     permissionLevel,
@@ -579,25 +624,25 @@ namespace BugTracker.Web.Core
             }
 
             // Format the date
-            response.Write(" on ");
-            response.Write(Util.FormatDbDateTime(dr["bp_date"]));
-            response.Write(", ");
-            response.Write(Util.HowLongAgo((int)dr["seconds_ago"]));
-            response.Write("</span>");
+            stringBuilder.Append(" on ");
+            stringBuilder.Append(Util.FormatDbDateTime(dr["bp_date"]));
+            stringBuilder.Append(", ");
+            stringBuilder.Append(Util.HowLongAgo((int)dr["seconds_ago"]));
+            stringBuilder.Append("</span>");
 
             // Write the links
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
             if (writeLinks)
             {
-                response.Write("<td align=right>&nbsp;");
+                stringBuilder.Append("<td align=right>&nbsp;");
 
                 if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     if (type == "comment" || type == "sent" || type == "received")
                     {
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
-                        response.Write(">forward</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
+                        stringBuilder.Append(">forward</a>");
                     }
 
                 // format links for responding to email
@@ -614,20 +659,20 @@ namespace BugTracker.Web.Core
                         //	Response.Write (">edit</a>");
 
                         // This delete leaves debris around, but it's better than nothing
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
-                        response.Write("'>delete</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>delete</a>");
                     }
 
                     if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     {
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId);
-                        response.Write(">reply</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId);
+                        stringBuilder.Append(">reply</a>");
 
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
-                        response.Write(">reply all</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
+                        stringBuilder.Append(">reply all</a>");
                     }
                 }
                 else if (type == "file")
@@ -636,13 +681,13 @@ namespace BugTracker.Web.Core
                         || thisCanEditAndDeletePosts
                         && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Update?id={stringPostId}&bugId={stringBugId}"));
-                        response.Write("'>edit</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Update?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>edit</a>");
 
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Delete?id={stringPostId}&bugId={stringBugId}"));
-                        response.Write("'>delete</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>delete</a>");
                     }
                 }
                 else if (type == "comment")
@@ -651,13 +696,13 @@ namespace BugTracker.Web.Core
                         || thisCanEditAndDeletePosts
                         && permissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Update?id={stringPostId}&bugId={stringBugId}"));
-                        response.Write("'>edit</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Update?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>edit</a>");
 
-                        response.Write("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
-                        response.Write("'>delete</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>delete</a>");
                     }
                 }
 
@@ -672,11 +717,11 @@ namespace BugTracker.Web.Core
                                            + applicationSettings.CustomPostLinkLabel
                                            + "</a>";
 
-                    response.Write(customPostLink);
+                    stringBuilder.Append(customPostLink);
                 }
             }
 
-            response.Write("\n</table>\n<table border=0>\n<tr><td>");
+            stringBuilder.Append("\n</table>\n<table border=0>\n<tr><td>");
             // the text itself
             var comment = (string)dr["bp_comment"];
             var commentType = (string)dr["bp_content_type"];
@@ -690,40 +735,40 @@ namespace BugTracker.Web.Core
             {
                 if (comment.Length > 0)
                 {
-                    response.Write(comment);
-                    response.Write("<p>");
+                    stringBuilder.Append(comment);
+                    stringBuilder.Append("<p>");
                 }
 
-                response.Write("<span class=pst>");
-                if (writeLinks) response.Write("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
-                response.Write("attachment:&nbsp;</span><span class=cmt_text>");
-                response.Write(dr["bp_file"]);
-                response.Write("</span>");
+                stringBuilder.Append("<span class=pst>");
+                if (writeLinks) stringBuilder.Append("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
+                stringBuilder.Append("attachment:&nbsp;</span><span class=cmt_text>");
+                stringBuilder.Append(dr["bp_file"]);
+                stringBuilder.Append("</span>");
 
                 if (writeLinks)
                 {
                     if ((string)dr["bp_content_type"] != "text/html" ||
                         applicationSettings.ShowPotentiallyDangerousHtml)
                     {
-                        response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                        response.Write(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=false&id={stringPostId}&bugId={stringBugId}"));
-                        response.Write("'>view</a>");
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=false&id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>view</a>");
                     }
 
-                    response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
-                    response.Write(" href=" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=true&id={stringPostId}&bugId={stringBugId}"));
-                    response.Write(">save</a>");
+                    stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
+                    stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=true&id={stringPostId}&bugId={stringBugId}"));
+                    stringBuilder.Append(">save</a>");
                 }
 
-                response.Write("<p><span class=pst>size: ");
-                response.Write(dr["bp_size"]);
-                response.Write("&nbsp;&nbsp;&nbsp;content-type: ");
-                response.Write(dr["bp_content_type"]);
-                response.Write("</span>");
+                stringBuilder.Append("<p><span class=pst>size: ");
+                stringBuilder.Append(dr["bp_size"]);
+                stringBuilder.Append("&nbsp;&nbsp;&nbsp;content-type: ");
+                stringBuilder.Append(dr["bp_content_type"]);
+                stringBuilder.Append("</span>");
             }
             else
             {
-                response.Write(comment);
+                stringBuilder.Append(comment);
             }
 
             // maybe show inline images
@@ -731,21 +776,26 @@ namespace BugTracker.Web.Core
                 if (imagesInline)
                 {
                     var file = Convert.ToString(dr["bp_file"]);
-                    WriteFileInline(response, file, stringPostId, stringBugId, (string)dr["bp_content_type"]);
+                    var html = WriteFileInline(file, stringPostId, stringBugId, (string)dr["bp_content_type"]);
+
+                    stringBuilder.Append(html);
                 }
+
+            return stringBuilder.ToString();
         }
 
-        private static void WriteEmailAttachment(HttpResponse response, int bugid, DataRow dr, bool writeLinks,
+        private static string WriteEmailAttachment(int bugid, DataRow dr, bool writeLinks,
             bool imagesInline)
         {
+            var stringBuilder = new StringBuilder();
             var stringPostId = Convert.ToString(dr["ba_id"]); // intentially "ba"
             var stringBugId = Convert.ToString(bugid);
 
-            response.Write("\n<p><span class=pst>");
-            if (writeLinks) response.Write("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
-            response.Write("attachment:&nbsp;</span>");
-            response.Write(dr["ba_file"]); // intentially "ba"
-            response.Write("&nbsp;&nbsp;&nbsp;&nbsp;");
+            stringBuilder.Append("\n<p><span class=pst>");
+            if (writeLinks) stringBuilder.Append("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
+            stringBuilder.Append("attachment:&nbsp;</span>");
+            stringBuilder.Append(dr["ba_file"]); // intentially "ba"
+            stringBuilder.Append("&nbsp;&nbsp;&nbsp;&nbsp;");
 
             if (writeLinks)
             {
@@ -754,40 +804,44 @@ namespace BugTracker.Web.Core
                 if ((string)dr["bp_content_type"] != "text/html" ||
                     applicationSettings.ShowPotentiallyDangerousHtml)
                 {
-                    response.Write("<a target=_blank href='" + VirtualPathUtility.ToAbsolute("~/Attachment/Show?download=false&id="));
-                    response.Write(stringPostId);
-                    response.Write("&bugId=");
-                    response.Write(stringBugId);
-                    response.Write("'>view</a>");
+                    stringBuilder.Append("<a target=_blank href='" + VirtualPathUtility.ToAbsolute("~/Attachment/Show?download=false&id="));
+                    stringBuilder.Append(stringPostId);
+                    stringBuilder.Append("&bugId=");
+                    stringBuilder.Append(stringBugId);
+                    stringBuilder.Append("'>view</a>");
                 }
 
-                response.Write("&nbsp;&nbsp;&nbsp;<a target=_blank href='" + VirtualPathUtility.ToAbsolute("~/Attachment/Show?download=true&id="));
-                response.Write(stringPostId);
-                response.Write("&bugId=");
-                response.Write(stringBugId);
-                response.Write("'>save</a>");
+                stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a target=_blank href='" + VirtualPathUtility.ToAbsolute("~/Attachment/Show?download=true&id="));
+                stringBuilder.Append(stringPostId);
+                stringBuilder.Append("&bugId=");
+                stringBuilder.Append(stringBugId);
+                stringBuilder.Append("'>save</a>");
             }
 
             if (imagesInline)
             {
                 var file = Convert.ToString(dr["ba_file"]); // intentially "ba"
-                WriteFileInline(response, file, stringPostId, stringBugId, (string)dr["ba_content_type"]);
+                var html = WriteFileInline(file, stringPostId, stringBugId, (string)dr["ba_content_type"]);
+
+                stringBuilder.Append(html);
             }
 
-            response.Write("<p><span class=pst>size: ");
-            response.Write(dr["ba_size"]);
-            response.Write("&nbsp;&nbsp;&nbsp;content-type: ");
-            response.Write(dr["ba_content_type"]);
-            response.Write("</span>");
+            stringBuilder.Append("<p><span class=pst>size: ");
+            stringBuilder.Append(dr["ba_size"]);
+            stringBuilder.Append("&nbsp;&nbsp;&nbsp;content-type: ");
+            stringBuilder.Append(dr["ba_content_type"]);
+            stringBuilder.Append("</span>");
+
+            return stringBuilder.ToString();
         }
 
-        private static void WriteFileInline(
-            HttpResponse response,
+        private static string WriteFileInline(
             string filename,
             string stringPostId,
             string stringBugId,
             string contentType)
         {
+            var stringBuilder = new StringBuilder();
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
             if (contentType == "image/gif"
@@ -798,7 +852,7 @@ namespace BugTracker.Web.Core
                 || contentType == "image/x-png"
                 || contentType == "image/bmp"
                 || contentType == "image/tiff")
-                response.Write("<p>"
+                stringBuilder.Append("<p>"
                                + "<a href=javascript:resize_image('im" + stringPostId + "',1.5)>" + "[+]</a>&nbsp;"
                                + "<a href=javascript:resize_image('im" + stringPostId + "',.6)>" + "[-]</a>"
                                + "<br><img id=im" + stringPostId
@@ -809,13 +863,15 @@ namespace BugTracker.Web.Core
                      || contentType == "text/css"
                      || contentType == "text/js"
                      || contentType == "text/html" && applicationSettings.ShowPotentiallyDangerousHtml)
-                response.Write("<p>"
+                stringBuilder.Append("<p>"
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',200)>" + "[+]</a>&nbsp;"
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',-200)>" + "[-]</a>"
                                + "<br><iframe id=if"
                                + stringPostId
                                + " width=780 height=200 src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=0&id={stringPostId}&bugId={stringBugId}")
                                + "'></iframe>");
+
+            return stringBuilder.ToString();
         }
 
         public static string FormatEmailUserName(

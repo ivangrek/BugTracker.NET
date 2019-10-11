@@ -1,0 +1,128 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <style>
+        a {
+            text-decoration: underline;
+        }
+
+            a:visited {
+                text-decoration: underline;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+    </style>
+}
+
+@section BodyHeader {
+}
+
+<div class="main">
+    @{
+        var firstrow = true;
+
+        if (ViewBag.DataView != null)
+        {
+            foreach (System.Data.DataRowView drv in ViewBag.DataView)
+            {
+                if (!firstrow)
+                {
+                    <hr style='page-break-before: always'>
+                }
+                else
+                {
+                    firstrow = false;
+                }
+
+                var dr = BugTracker.Web.Core.Bug.GetBugDataRow((int)drv[1], page.Security);
+
+                var html = BugTracker.Web.Core.PrintBug.PrintBugNew(dr, page.Security,
+                    false /* include style */, ViewBag.ImagesInline, ViewBag.HistoryInline,
+                    true /*internal_posts */);
+
+                @Html.Raw(html)
+            }
+        }
+        else if (ViewBag.DataSet != null)
+        {
+            foreach (System.Data.DataRow dr2 in ViewBag.DataSet.Tables[0].Rows)
+            {
+                if (!firstrow)
+                {
+                    <hr style='page-break-before: always'>
+                }
+                else
+                {
+                    firstrow = false;
+                }
+
+                var dr = BugTracker.Web.Core.Bug.GetBugDataRow((int)dr2[1], page.Security);
+
+                var html = BugTracker.Web.Core.PrintBug.PrintBugNew(dr, page.Security,
+                    false, // include style
+                    ViewBag.ImagesInline, ViewBag.HistoryInline,
+                    true); // internal_posts
+
+                @Html.Raw(html)
+            }
+
+            @*if (ViewBag.DataSet != null)
+                {
+                    foreach (System.Data.DataRow dr2 in ViewBag.DataSet.Tables[0].Rows)
+                    {
+                        if (!firstrow)
+                        {
+                            <hr style='page-break-before: always'>
+                        }
+                        else
+                        {
+                            firstrow = false;
+                        }
+
+                        var dr = BugTracker.Web.Core.Bug.GetBugDataRow((int)dr2[1], page.Security);
+
+                        var html = BugTracker.Web.Core.PrintBug.PrintBugNew(dr, page.Security,
+                            false, // include style
+                            ViewBag.ImagesInline, ViewBag.HistoryInline,
+                            true); // internal_posts
+
+                        @Html.Raw(html)
+                    }
+                }
+                else
+                {
+                    <span>Please recreate the list before trying to print...</span>
+                }*@
+        }
+        else if (ViewBag.DataRow != null)
+        {
+            var html = BugTracker.Web.Core.PrintBug.PrintBugNew(ViewBag.DataRow, page.Security,
+                false, // include style
+                ViewBag.ImagesInline, ViewBag.HistoryInline,
+                true); // internal_posts
+
+            @Html.Raw(html)
+        }
+        else
+        {
+            <span>Please recreate the list before trying to print...</span>
+        }
+    }
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

@@ -48,9 +48,9 @@
                         <asp:DropDownList ID="query" runat="server" onchange="on_query_changed()">
                         </asp:DropDownList>
 
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bugs/Print.aspx") %>">print list</a>
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bugs/Print2.aspx") %>">print detail</a>
-                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bugs/Print.aspx?format=excel") %>">export to excel</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bug/Print") %>">print list</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bug/PrintDetail") %>">print detail</a>
+                    <td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="<%= ResolveUrl("~/Bug/Print?format=excel") %>">export to excel</a>
                     <td nowrap align="right" width="100%">
                         <a target="_blank" href="<%= ResolveUrl("~/Content/btnet_screen_capture.exe") %>">
                             <img src="<%= ResolveUrl("~/Content/images/camera.png") %>" border="0" align="top">&nbsp;download screen capture utility</a>

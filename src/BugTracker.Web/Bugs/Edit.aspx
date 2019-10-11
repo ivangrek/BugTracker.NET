@@ -308,9 +308,8 @@
                 // COMMENTS
                 if (this.Id != 0)
                 {
-                    PrintBug.WritePosts(
+                    var (_, html) = PrintBug.WritePosts(
                         this.DsPosts,
-                        Response,
                         this.Id,
                         this.PermissionLevel,
                         true, // write links
@@ -318,6 +317,8 @@
                         this.HistoryInline,
                         true, // internal_posts
                         Security.User);
+
+                    Response.Write(html);
                 }
             %>
         </div>

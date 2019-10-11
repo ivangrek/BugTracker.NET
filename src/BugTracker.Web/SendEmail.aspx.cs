@@ -449,12 +449,13 @@ namespace BugTracker.Web
             // write the html to that response
             var writer = new StringWriter();
             var myResponse = new HttpResponse(writer);
-            PrintBug.print_bug(myResponse,
-                bugDr, security,
+            var html = PrintBug.PrintBugNew(bugDr, security,
                 true, // include style
                 false, // images_inline
                 true, // history_inline
                 this.include_internal_posts.Checked); // internal_posts
+
+            myResponse.Write(html);
 
             return writer.ToString();
         }
