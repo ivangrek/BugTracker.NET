@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.Areas.Administration.Models.Category.DeleteModel
+@model BugTracker.Web.Areas.Administration.Models.Status.DeleteModel
 
 @{
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
@@ -28,16 +28,16 @@
 }
 
 <div class="main">
-    <a href="@Url.Action("Index")">back to categories</a>
+    <a href="@Url.Action("Index")">back to statuses</a>
 
     <p>or</p>
 
-    @using (Html.BeginForm("Delete", "Category", FormMethod.Post, new { id = "frm" }))
+    @using (Html.BeginForm("Delete", "Status", FormMethod.Post, new { id = "frm" }))
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(x => x.Id)
 
-        <a href="javascript: submit_form()">confirm delete of category: "@Model.Name"</a>
+        <a href="javascript: submit_form()">confirm delete of status: "@Model.Name"</a>
     }
 </div>
 

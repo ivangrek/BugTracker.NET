@@ -90,7 +90,7 @@ namespace BugTracker.Web.Administration.Statuses
                     StatusService.Update(parameters);
                 }
 
-                Response.Redirect("~/Admin/Statuses/List.aspx");
+                Response.Redirect("~/Administration/Status");
             }
             else
             {

@@ -17,7 +17,7 @@
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
     <div class="main">
-        <a href="<%= ResolveUrl("~/Admin/Statuses/List.aspx")%>">back to statuses</a>
+        <a href="<%= ResolveUrl("~/Administration/Status")%>">back to statuses</a>
         <div>&nbsp;</div>
 
         <table style="border-collapse: collapse; border: 0;">

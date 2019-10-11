@@ -449,7 +449,6 @@
     <Content Include="Admin\Priorities\Delete.aspx" />
     <Content Include="Admin\Projects\Delete.aspx" />
     <Content Include="Queries\Delete.aspx" />
-    <Content Include="Admin\Statuses\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
     <Content Include="Admin\UserDefinedAttributes\Delete.aspx" />
@@ -607,7 +606,6 @@
     <Content Include="SendEmail.aspx" />
     <Content Include="setup.sql" />
     <Content Include="Scripts\sortable.js" />
-    <Content Include="Admin\Statuses\List.aspx" />
     <Content Include="Subscribe.aspx" />
     <Content Include="Scripts\suggest.js" />
     <Content Include="Content\images\svn.png" />
@@ -654,9 +652,11 @@
       <DependentUpon>BackupDb.aspx</DependentUpon>
     </Compile>
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
+    <Compile Include="Areas\Administration\Controllers\StatusController.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Administration\Models\Category\DeleteModel.cs" />
+    <Compile Include="Areas\Administration\Models\Status\DeleteModel.cs" />
     <Compile Include="Bugs\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -779,13 +779,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Queries\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Statuses\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Statuses\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeleteSubscriber.aspx.cs">
@@ -1157,13 +1150,6 @@
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
     </Compile>
-    <Compile Include="Admin\Statuses\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Statuses\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Subscribe.aspx.cs">
       <DependentUpon>Subscribe.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1331,6 +1317,8 @@
     <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Administration\Views\Category\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Category\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\Status\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\Status\Index.cshtml" />
     <None Include="packages.config" />
     <Content Include="Site.Master" />
     <Content Include="Views\_ViewStart.cshtml" />
