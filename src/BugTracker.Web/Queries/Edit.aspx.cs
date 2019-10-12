@@ -215,7 +215,7 @@ namespace BugTracker.Web.Queries
                     QueryService.Update(parameters);
                 }
 
-                Response.Redirect("~/Queries/List.aspx");
+                Response.Redirect("~/Query");
             }
             else
             {

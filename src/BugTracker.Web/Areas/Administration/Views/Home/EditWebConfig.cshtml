@@ -1,0 +1,69 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Home.EditWebConfigModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src=" ~/Scripts/edit_area/edit_area_full.js"></script>
+
+    <script>
+        editAreaLoader.init({
+            id: "myedit", // id of the textarea to transform
+            start_highlight: true, // if start with highlight
+            toolbar: "search, go_to_line, undo, redo, help",
+            browsers: "all",
+            language: "en",
+            syntax: "sql",
+            allow_toggle: false,
+            min_width: 800,
+            min_height: 400
+        });
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <table border="0" style="margin-left: 20px; margin-top: 20px; width: 80%;">
+        <tr>
+            <td>
+                @using (Html.BeginForm("EditWebConfig", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.TextAreaFor(x => x.Text, new { id = "myedit", style = "width: 100%" })
+                    <p></p>
+
+                    <div class="err" id="msg">
+                        @Html.ValidationMessage("Message")
+                    </div>
+
+                    <div>
+                        <input type="submit" value="Save" class="btn">
+                        &nbsp;&nbsp;
+                        <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">
+                            Be careful! Web.config is easy to break!
+                        </span>
+                        <br>
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

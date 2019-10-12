@@ -56,13 +56,13 @@ namespace BugTracker.Web.Core
 
                 dataTable.Columns.Add("query");
                 dataTable.Columns.Add("visibility");
-                dataTable.Columns.Add("view list");
-                dataTable.Columns.Add("print list");
-                dataTable.Columns.Add("export as excel");
-                dataTable.Columns.Add("print list<br>with detail");
-                dataTable.Columns.Add("rename");
-                dataTable.Columns.Add("delete");
-                dataTable.Columns.Add("sql");
+                dataTable.Columns.Add("$no_sort_view list");
+                dataTable.Columns.Add("$no_sort_print list");
+                dataTable.Columns.Add("$no_sort_export as excel");
+                dataTable.Columns.Add("$no_sort_print list<br>with detail");
+                dataTable.Columns.Add("$no_sort_rename");
+                dataTable.Columns.Add("$no_sort_delete");
+                dataTable.Columns.Add("$no_sort_sql");
 
                 foreach (var query in queries)
                 {
@@ -92,7 +92,7 @@ namespace BugTracker.Web.Core
                     var exportValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?format=excel&queryId={query.Id}")}'>export as excel</a>";
                     var printListDetailValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/PrintDetail?queryId={query.Id}")}'>print detail</a>";
                     var renameValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Queries/Edit.aspx?id={query.Id}")}'>rename</a>";
-                    var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Queries/Delete.aspx?id={query.Id}")}'>delete</a>";
+                    var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Query/Delete/{query.Id}")}'>delete</a>";
                     var sqlValue = query.Sql.Replace("\n", "<br>");
 
                     dataTable.Rows.Add(query.Name, visibilityValue, viewListValue,
@@ -109,11 +109,11 @@ namespace BugTracker.Web.Core
 
                 dataTable.Columns.Add("query");
                 dataTable.Columns.Add("view list");
-                dataTable.Columns.Add("print list");
-                dataTable.Columns.Add("export as excel");
-                dataTable.Columns.Add("print list<br>with detail");
-                dataTable.Columns.Add("rename");
-                dataTable.Columns.Add("delete");
+                dataTable.Columns.Add("$no_sort_print list");
+                dataTable.Columns.Add("$no_sort_export as excel");
+                dataTable.Columns.Add("$no_sort_print list<br>with detail");
+                dataTable.Columns.Add("$no_sort_rename");
+                dataTable.Columns.Add("$no_sort_delete");
 
                 foreach (var query in queries)
                 {
@@ -122,7 +122,7 @@ namespace BugTracker.Web.Core
                     var exportValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?format=excel&queryId={query.Id}")}'>export as excel</a>";
                     var printListDetailValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/PrintPrintDetail?queryId={query.Id}")}'>print detail</a>";
                     var renameValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Queries/Edit.aspx?id={query.Id}")}'>rename</a>";
-                    var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Queries/Delete.aspx?id={query.Id}")}'>delete</a>";
+                    var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Query/Delete/{query.Id}")}'>delete</a>";
 
                     dataTable.Rows.Add(query.Name, viewListValue,
                         printListValue, exportValue, printListDetailValue,

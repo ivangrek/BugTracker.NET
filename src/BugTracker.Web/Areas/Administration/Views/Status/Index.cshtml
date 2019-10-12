@@ -22,7 +22,7 @@
 }
 
 <div class="main">
-    <a href="~/Admin/Statuses/Edit.aspx"><img src="~/Content/images/add.png" align="top">&nbsp;add new status</a>
+    <a href="@Url.Action("Create", "Status")"><img src="~/Content/images/add.png" align="top">&nbsp;add new status</a>
 
     @if (Model.DataSet.Tables[0].Rows.Count > 0)
     {

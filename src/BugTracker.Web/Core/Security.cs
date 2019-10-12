@@ -72,7 +72,7 @@ namespace BugTracker.Web.Core
 
             var target = "~/Account/Login";
 
-            if (originalUrl.EndsWith("MobileEdit.aspx")) target = "~/Accounts/MobileLogin.aspx";
+            if (originalUrl.EndsWith("MobileEdit.aspx")) target = "~/Account/MobileLogin";
 
             target += "?url=" + originalUrl + "&qs=" + HttpUtility.UrlEncode(originalQuerystring);
 

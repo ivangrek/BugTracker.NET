@@ -22,7 +22,7 @@
 }
 
 <div class="main">
-    <a href="@Url.Action("Create", "Category")"><img src="~/Content/images/add.png" align="top">&nbsp;add new category</a>
+    <a href="@Url.Action("Create", "Priority")"><img src="~/Content/images/add.png" align="top">&nbsp;add new priority</a>
 
     @if (Model.DataSet.Tables[0].Rows.Count > 0)
     {
@@ -30,7 +30,7 @@
     }
     else
     {
-        <div>No categories in the database.</div>
+        <div>No priorities in the database.</div>
     }
 </div>
 

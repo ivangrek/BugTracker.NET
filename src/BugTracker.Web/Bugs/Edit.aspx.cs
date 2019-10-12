@@ -512,7 +512,7 @@ namespace BugTracker.Web.Bugs
                 if (Security.User.IsAdmin
                     || Security.User.CanDeleteBug)
                 {
-                    var deleteBugLink = "<a href='" + ResolveUrl($"~/Bug/Delete?id={this.Id}")
+                    var deleteBugLink = "<a href='" + ResolveUrl($"~/Bug/Delete/{this.Id}")
                                           + "' title='Delete this item'><img src=" + ResolveUrl("~/Content/images/delete.png") + " border=0 align=top>&nbsp;delete</a>";
 
                     this.delete_bug.InnerHtml = deleteBugLink;

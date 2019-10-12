@@ -53,7 +53,7 @@
         <% if (!Security.User.IsGuest)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/Queries/List.aspx") %>"><span class="<%= SelectedItem == "queries" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">queries</span></a>
+                <a href="<%= ResolveUrl("~/Query") %>"><span class="<%= SelectedItem == "queries" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">queries</span></a>
             </td>
             
         <% } %>

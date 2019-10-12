@@ -1,0 +1,60 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.SortableTableModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src=" ~/Scripts/sortable.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+
+    <div class="lbl" style="width: 600px;">
+        The query "demo use of css classes" has as its first column a CSS class name that is
+        composed of the priority's CSS class name concatenated with the status's CSS
+        class name. The SQL looks like this:
+    </div>
+    <p></p>
+    <div style="font-family: courier; font-weight: bold;">
+        select <span style="color: red;">isnull(pr_style + st_style,'datad')</span>, bg_id [id], bg_short_desc [desc], .... etc
+    </div>
+    <p></p>
+    <div class="lbl" style="width: 600px;">
+        Note that in the sql, where there isn't both a priority CSS class and a status CSS class
+        available, the default CSS class name of "datad" is used. The following list lets you see
+        how all the different priority/status combinations will look. Click on a link to edit
+        a priority or a status.
+    </div>
+
+    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", Model);
+    }
+    else
+    {
+        <div>No priority/status combos in the database.</div>
+    }
+
+    <div cls="lbl">Relevant lines from btnet_custom.css:</div>
+    <div class="frm" style="width: 600px;" id="relevant_lines" runat="server">
+        @Html.Raw(ViewBag.RelevantLines)
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

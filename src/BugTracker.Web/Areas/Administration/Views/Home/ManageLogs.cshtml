@@ -1,0 +1,64 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Home.ManageLogsModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script>
+        function onDelete(fileName) {
+            var input = document.getElementById("fileName");
+
+            input.value = fileName;
+
+            var frm = document.getElementById("frm");
+
+            frm.submit();
+        }
+
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <table border="0">
+        <tr>
+            <td>
+                @using (Html.BeginForm("ManageLogs", "Home", FormMethod.Post, new { id = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.FileName, new { id = "fileName" })
+
+                    if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+                    {
+                        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+                    }
+                    else
+                    {
+                        <div>No files.</div>
+                    }
+
+                    <div class="err" id="msg" runat="server">
+                        @Html.ValidationMessage("Message")
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

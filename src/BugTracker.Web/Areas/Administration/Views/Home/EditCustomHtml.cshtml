@@ -1,0 +1,100 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Home.EditCustomHtmlModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/edit_area/edit_area_full.js"></script>
+
+    <script>
+        editAreaLoader.init({
+            id: "myedit", // id of the textarea to transform
+            start_highlight: true, // if start with highlight
+            toolbar: "search, go_to_line, undo, redo, help",
+            browsers: "all",
+            language: "en",
+            syntax: "sql",
+            allow_toggle: false,
+            min_width: 800,
+            min_height: 400
+        });
+
+        function load_custom_file() {
+            var sel = document.getElementById("which");
+            window.location =  "@Url.Action("EditCustomHtml", "Home")" + "?which=" + sel.options[sel.selectedIndex].value;
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <table border="0" style="margin-left: 20px; margin-top: 20px; width: 80%;">
+        <tr>
+            <td>
+                @using (Html.BeginForm("EditCustomHtml", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @:Select custom html file:
+                    @Html.DropDownListFor(x => x.Which, new List<SelectListItem>
+                    {
+                        new SelectListItem
+                        {
+                            Text = "btnet_custom.css",
+                            Value = "css"
+                        },
+                        new SelectListItem
+                        {
+                            Text = "customer_footer.html",
+                            Value = "footer"
+                        },
+                        new SelectListItem
+                        {
+                            Text = "customer_header.html",
+                            Value = "header"
+                        },
+                        new SelectListItem
+                        {
+                            Text = "customer_logo.html",
+                            Value = "logo"
+                        },
+                        new SelectListItem
+                        {
+                            Text = "customer_welcome.html",
+                            Value = "welcome"
+                        }
+                    }, new { id = "which", onchange = "load_custom_file()" })
+                    <p></p>
+
+                    @Html.TextAreaFor(x => x.Text, new { id = "myedit", style = "width: 100%" })
+                    <p></p>
+
+                    <div class="err" id="msg">
+                        @Html.ValidationMessage("Message")
+                    </div>
+
+                    <div>
+                        <input type="submit" value="Save" class="btn">
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

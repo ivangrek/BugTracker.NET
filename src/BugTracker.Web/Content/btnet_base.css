@@ -7,28 +7,28 @@ body {
 }
 
 td {
-    font-size: 8pt;
+    font-size: 12px;
 }
 
 p {
-    font-size: 10pt;
+    font-size: 12px;
 }
 
 a {
     color: #0000ff;
-    font-size: 10pt;
+    font-size: 12px;
     text-decoration: none;
 }
 
     a:visited {
         color: #0000ff;
-        font-size: 10pt;
+        font-size: 12px;
         text-decoration: none;
     }
 
     a:hover {
         color: #ff6633;
-        font-size: 10pt;
+        font-size: 12px;
         text-decoration: none;
     }
 
@@ -93,8 +93,8 @@ a {
     border-bottom: 1px solid #aaaaaa;
     border-left: 1px solid #aaaaaa;
     border-right: 1px solid #aaaaaa;
-    padding: 3px;
-    font-size: 10pt;
+    padding: 8px;
+    font-size: 12px;
 }
 
 
@@ -103,7 +103,7 @@ a {
     background: #ffffff;
     vertical-align: top;
     border: 1px solid #aaaaaa;
-    padding: 3px;
+    padding: 8px;
 }
 
 .err {
@@ -116,14 +116,15 @@ a {
     /*background: #ffeeaa;
     color: #0000ff;*/
     font-size: 12px;
-    padding: 6px 20px;
-    line-height: 20px;
+    padding: 8px 16px;
+    line-height: 16px;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    border-radius: 4px;
     box-shadow: 0 1px 2px #eee;
     cursor: pointer;
     background: #fea;
     color: #090;
+    outline: none;
 }
 
     .btn:hover {
@@ -151,10 +152,10 @@ a {
 .menubar {
     background: #f0fff0;
     padding: 0px;
-    border-bottom: 1px solid #00cc00;
+    border-bottom: 1px solid #090;
     /*new*/
     height: 48px;
-    padding: 0 20px;
+    padding: 0 16px;
     width: 100%;
 }
 
@@ -165,8 +166,9 @@ a {
 
 .cmt {
     background: white;
-    border: 1px #009900 solid;
-    padding: 3px;
+    border: solid 1px #090;
+    padding: 8px;
+    border-radius: 4px;
 }
 
 .cmt_text {
@@ -214,11 +216,10 @@ a {
     border-right: 2px solid black;
     border-bottom: 3px solid black;
     background: #f3f3f3;*/
-    border: solid 1px #ccc;
-    border-radius: 3px;
-    padding: 20px;
+    border: solid 1px #090;
+    border-radius: 4px;
+    padding: 16px;
     background: #f9fff9;
-    box-shadow: 0 1px 2px #eee;
 }
 
 .align {
@@ -238,8 +239,9 @@ a {
 }
 
 .click_to_sort {
-    font-size: 7pt;
+    font-size: 10px;
     color: green;
+    margin-bottom: 4px;
 }
 
 
@@ -396,11 +398,14 @@ input {
     /*font-size: 8pt;
     border: 1px solid #cccccc;*/
     font-size: 12px;
-    padding: 5px;
-    line-height: 20px;
+    padding: 8px;
+    line-height: 16px;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    border-radius: 4px;
     box-shadow: inset 0 1px 2px #eee;
+    box-sizing: border-box;
+    height: 32px;
+    outline: none;
 }
 
 
@@ -554,5 +559,5 @@ div.grippie {
 }
 
 .main {
-    padding: 20px;
+    padding: 16px;
 }

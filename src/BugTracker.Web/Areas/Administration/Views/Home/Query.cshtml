@@ -1,0 +1,101 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Home.QueryModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
+
+    <script>
+        var shown = true;
+
+        function showhide_form() {
+            var frm = document.getElementById("frm");
+            if (shown) {
+                frm.style.display = "none";
+                shown = false;
+                showhide.firstChild.nodeValue = "show form";
+            } else {
+                frm.style.display = "block";
+                shown = true;
+                showhide.firstChild.nodeValue = "hide form";
+            }
+        }
+
+        function on_dbtables_changed() {
+            var tablesSel = document.getElementById("dbtables_select");
+            selected_text = tablesSel.options[tablesSel.selectedIndex].text;
+            if (selected_text != "Select Table") {
+                document.getElementById("queryText").value = "select * from " + selected_text;
+            }
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <table border="0">
+        <tr>
+            <td style="background: yellow; border: red solid 2px; color: #ff0000; font-size: 8pt; font-weight: bold; padding: 4px;">
+                This page is not safe on a public web server.
+                After you install BugTracker.NET on a public web server, please delete it.
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @Html.DropDownList("DbTables", (List<SelectListItem>)ViewBag.DbTables, new { id = "dbtables_select", onchange = "on_dbtables_changed()" })
+                <div style="float: right;">
+                    <a href="javascript:showhide_form()" id="showhide">hide form</a>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @using (Html.BeginForm("Query", "Home", FormMethod.Post, new { id = "frm", @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @:Or enter SQL:
+                    <br>
+                    @Html.TextAreaFor(x => x.Text, new { id = "queryText", rows = "15", cols = "70" })
+                    <p>
+                        <input runat="server" type="submit" class="btn" value="Execute SQL" />
+                    </p>
+                }
+            </td>
+        </tr>
+    </table>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ExceptionMessage))
+    {
+        <span class=err>@ViewBag.ExceptionMessage</span>
+        <br>
+    }
+
+    @if (ViewBag.Table != null && ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+    }
+    else
+    {
+        <span>No Rows</span>
+    }
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

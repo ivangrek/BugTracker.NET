@@ -1,0 +1,38 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+
+}
+
+<h1>
+    Configuration Problem
+</h1>
+<p>
+    This page has not been properly configured for Windows Integrated Authentication.
+    Please contact your web administrator.
+</p>
+<p>
+    Windows Integrated Authentication requires that this page (Account/LoginNt) does not
+    permit anonymous access and Windows Integrated Security is selected as the authentication
+    protocol.
+</p>
+<p>
+    <a href="@Url.Action("Login", "Account", new { msg = "configuration+problem" })">Go to logon page.</a>
+</p>
+
+@section BodyFooter {
+}

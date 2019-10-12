@@ -7,7 +7,7 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.Category;
+    using BugTracker.Web.Areas.Administration.Models.Priority;
     using BugTracker.Web.Core;
     using BugTracker.Web.Core.Administration;
     using BugTracker.Web.Core.Controls;
@@ -16,20 +16,20 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web;
     using System.Web.Mvc;
 
-    public class CategoryController : Controller
+    public class PriorityController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
-        private readonly ICategoryService categoryService;
+        private readonly IPriorityService priorityService;
 
-        public CategoryController(
+        public PriorityController(
             IApplicationSettings applicationSettings,
             ISecurity security,
-            ICategoryService categoryService)
+            IPriorityService priorityService)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
-            this.categoryService = categoryService;
+            this.priorityService = priorityService;
         }
 
         [HttpGet]
@@ -43,15 +43,16 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - categories",
+                Title = $"{this.applicationSettings.AppTitle} - priorities",
                 SelectedItem = MainMenuSections.Administration
             };
 
             var model = new SortableTableModel
             {
-                DataSet = this.categoryService.LoadList(),
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Category/Update/"),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Category/Delete/")
+                DataSet = this.priorityService.LoadList(),
+                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/"),
+                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Delete/"),
+                HtmlEncode = false
             };
 
             return View(model);
@@ -68,11 +69,16 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create category",
+                Title = $"{this.applicationSettings.AppTitle} - create priority",
                 SelectedItem = MainMenuSections.Administration
             };
 
-            return View("Edit", new EditModel());
+            var model = new EditModel
+            {
+                BackgroundColor = "#ffffff"
+            };
+
+            return View("Edit", model);
         }
 
         [HttpPost]
@@ -89,7 +95,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create category",
+                    Title = $"{this.applicationSettings.AppTitle} - create priority",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -101,10 +107,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 { "$id", model.Id.ToString() },
                 { "$na", model.Name.Replace("'", "''")},
                 { "$ss", model.SortSequence.ToString() },
+                { "$co", model.BackgroundColor.Replace("'", "''")},
+                { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
                 { "$df", Util.BoolToString(model.Default)},
             };
 
-            this.categoryService.Create(parameters);
+            this.priorityService.Create(parameters);
 
             return RedirectToAction(nameof(Index));
         }
@@ -117,13 +125,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // Get this entry's data from the db and fill in the form
-            var dataRow = this.categoryService.LoadOne(id);
+            var dataRow = this.priorityService.LoadOne(id);
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update category",
+                Title = $"{this.applicationSettings.AppTitle} - update priority",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -132,6 +140,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 Id = id,
                 Name = dataRow.Name,
                 SortSequence = dataRow.SortSequence,
+                Style = dataRow.Style,
+                BackgroundColor = dataRow.BackgroundColor,
                 Default = dataRow.Default == 1
             };
 
@@ -152,7 +162,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update category",
+                    Title = $"{this.applicationSettings.AppTitle} - update priority",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -164,10 +174,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 { "$id", model.Id.ToString() },
                 { "$na", model.Name.Replace("'", "''")},
                 { "$ss", model.SortSequence.ToString() },
+                { "$co", model.BackgroundColor.Replace("'", "''")},
+                { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
                 { "$df", Util.BoolToString(model.Default)},
             };
 
-            this.categoryService.Update(parameters);
+            this.priorityService.Update(parameters);
 
             return RedirectToAction(nameof(Index));
         }
@@ -179,18 +191,18 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            var (valid, name) = this.categoryService.CheckDeleting(id);
+            var (valid, name) = this.priorityService.CheckDeleting(id);
 
             if (!valid)
             {
-                return Content($"You can't delete category \"{name}\" because some bugs still reference it.");
+                return Content($"You can't delete priority \"{name}\" because some bugs still reference it.");
             }
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - delete category",
+                Title = $"{this.applicationSettings.AppTitle} - delete status",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -211,14 +223,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            var (valid, name) = this.categoryService.CheckDeleting(model.Id);
+            var (valid, name) = this.priorityService.CheckDeleting(model.Id);
 
             if (!valid)
             {
-                return Content($"You can't delete category \"{name}\" because some bugs still reference it.");
+                return Content($"You can't delete priority \"{name}\" because some bugs still reference it.");
             }
 
-            this.categoryService.Delete(model.Id);
+            this.priorityService.Delete(model.Id);
 
             return RedirectToAction("Index");
         }

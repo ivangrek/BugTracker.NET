@@ -4,7 +4,7 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web.Models.Report
+namespace BugTracker.Web.Areas.Administration.Models.Category
 {
     using System.ComponentModel.DataAnnotations;
 
@@ -15,10 +15,10 @@ namespace BugTracker.Web.Models.Report
         [Required(ErrorMessage = "Description is required.")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Chart Type is required.")]
-        public string ChartType { get; set; }
+        [Required(ErrorMessage = "Sort Sequence is required.")]
+        [RegularExpression("([0-9]+)", ErrorMessage = "Sort Sequence must be an integer.")]
+        public int SortSequence { get; set; }
 
-        [Required(ErrorMessage = "The SQL statement is required.")]
-        public string SqlText { get; set; }
+        public bool Default { get; set; }
     }
 }

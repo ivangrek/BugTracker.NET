@@ -525,7 +525,7 @@ namespace BugTracker.Web.Core
 
             if (type == "update")
             {
-                if (writeLinks) stringBuilder.Append("<img src=Content/images/database.png align=top>&nbsp;");
+                if (writeLinks) stringBuilder.Append("<img src='/Content/images/database.png' align=top>&nbsp;");
 
                 // posted by
                 stringBuilder.Append("<span class=pst>changed by ");
@@ -539,7 +539,7 @@ namespace BugTracker.Web.Core
             }
             else if (type == "sent")
             {
-                if (writeLinks) stringBuilder.Append("<img src=Content/images/email_edit.png align=top>&nbsp;");
+                if (writeLinks) stringBuilder.Append("<img src='/Content/images/email_edit.png' align=top>&nbsp;");
 
                 stringBuilder.Append("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " sent to ");
@@ -577,7 +577,7 @@ namespace BugTracker.Web.Core
             }
             else if (type == "received")
             {
-                if (writeLinks) stringBuilder.Append("<img src=Content/images/email_open.png align=top>&nbsp;");
+                if (writeLinks) stringBuilder.Append("<img src='/Content/images/email_open.png' align=top>&nbsp;");
                 stringBuilder.Append("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
                                Convert.ToString(postId) + " received from ");
                 if (writeLinks)
@@ -856,7 +856,7 @@ namespace BugTracker.Web.Core
                                + "<a href=javascript:resize_image('im" + stringPostId + "',1.5)>" + "[+]</a>&nbsp;"
                                + "<a href=javascript:resize_image('im" + stringPostId + "',.6)>" + "[-]</a>"
                                + "<br><img id=im" + stringPostId
-                               + " src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=0&id={stringPostId}&bug_id={stringBugId}")
+                               + " src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=false&id={stringPostId}&bugId={stringBugId}")
                                + "'>");
             else if (contentType == "text/plain"
                      || contentType == "text/xml"
@@ -868,7 +868,7 @@ namespace BugTracker.Web.Core
                                + "<a href=javascript:resize_iframe('if" + stringPostId + "',-200)>" + "[-]</a>"
                                + "<br><iframe id=if"
                                + stringPostId
-                               + " width=780 height=200 src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=0&id={stringPostId}&bugId={stringBugId}")
+                               + " width=780 height=200 src='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=false&id={stringPostId}&bugId={stringBugId}")
                                + "'></iframe>");
 
             return stringBuilder.ToString();

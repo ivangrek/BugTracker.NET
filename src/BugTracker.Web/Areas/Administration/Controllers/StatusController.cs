@@ -12,6 +12,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using BugTracker.Web.Core.Administration;
     using BugTracker.Web.Core.Controls;
     using BugTracker.Web.Models;
+    using System.Collections.Generic;
     using System.Web;
     using System.Web.Mvc;
 
@@ -49,8 +50,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var model = new SortableTableModel
             {
                 DataSet = this.statusService.LoadList(),
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Admin/Statuses/Edit.aspx?id="),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Status/Delete?id=")
+                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Status/Update/"),
+                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Status/Delete/")
             };
 
             return View(model);
@@ -59,7 +60,119 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            return Content("Create");
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - create status",
+                SelectedItem = MainMenuSections.Administration
+            };
+
+            return View("Edit", new EditModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(EditModel model)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Page = new PageModel
+                {
+                    ApplicationSettings = this.applicationSettings,
+                    Security = this.security,
+                    Title = $"{this.applicationSettings.AppTitle} - create status",
+                    SelectedItem = MainMenuSections.Administration
+                };
+
+                return View("Edit", model);
+            }
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "$id", model.Id.ToString() },
+                { "$na", model.Name.Replace("'", "''")},
+                { "$ss", model.SortSequence.ToString() },
+                { "$st", model.Style.Replace("'", "''")},
+                { "$df", Util.BoolToString(model.Default)},
+            };
+
+            this.statusService.Create(parameters);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public ActionResult Update(int id)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
+
+            // Get this entry's data from the db and fill in the form
+            var dataRow = this.statusService.LoadOne(id);
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - update status",
+                SelectedItem = MainMenuSections.Administration
+            };
+
+            var model = new EditModel
+            {
+                Id = id,
+                Name = dataRow.Name,
+                SortSequence = dataRow.SortSequence,
+                Style = dataRow.Style,
+                Default = dataRow.Default == 1
+            };
+
+            return View("Edit", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Update(EditModel model)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Page = new PageModel
+                {
+                    ApplicationSettings = this.applicationSettings,
+                    Security = this.security,
+                    Title = $"{this.applicationSettings.AppTitle} - update status",
+                    SelectedItem = MainMenuSections.Administration
+                };
+
+                return View("Edit", model);
+            }
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "$id", model.Id.ToString() },
+                { "$na", model.Name.Replace("'", "''")},
+                { "$ss", model.SortSequence.ToString() },
+                { "$st", model.Style.Replace("'", "''")},
+                { "$df", Util.BoolToString(model.Default)},
+            };
+
+            this.statusService.Update(parameters);
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]

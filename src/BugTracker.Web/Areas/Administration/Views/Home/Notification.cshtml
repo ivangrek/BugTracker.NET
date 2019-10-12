@@ -1,0 +1,97 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.SortableTableModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <div style="width: 600px;" class="smallnote">
+        Email notifications are put into a table into the database and then the system attempts to send them.
+        If the system fails to send the notification, it records the reason for the failure with the row.
+        <br>
+        <br>
+        The system makes 3 attempts to send the notification. After the 3rd attempt,
+        you can either give up and delete the unsent notifications
+        or you can reset the retry count and let the system continue trying.
+    </div>
+
+    <p></p>
+
+    <div class="align">
+        @{
+            var formId = Guid.NewGuid().ToString();
+        }
+
+        @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("Action", "delete")
+            @Html.Hidden("Session", (string)ViewBag.Sesion)
+
+            <a href="#" onclick="document.getElementById('@formId').submit();">Delete unsent notifications</a>
+        }
+
+        <br>
+        <br>
+        @{
+            formId = Guid.NewGuid().ToString();
+        }
+
+        @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("Action", "reset")
+            @Html.Hidden("Session", (string)ViewBag.Sesion)
+
+            <a href="#" onclick="document.getElementById('@formId').submit();">Reset retry count to zero</a>
+        }
+
+        <br>
+        <br>
+
+        @{
+            formId = Guid.NewGuid().ToString();
+        }
+
+        @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("Action", "resend")
+            @Html.Hidden("Session", (string)ViewBag.Sesion)
+
+            <a href="#" onclick="document.getElementById('@formId').submit();">Try to resend</a>
+        }
+
+        <br>
+        <br>
+
+        @if (Model.DataSet.Tables[0].Rows.Count > 0)
+        {
+            @Html.Partial("_SortableTable", Model);
+        }
+        else
+        {
+            <div>No queued email notifications in the database.</div>
+        }
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

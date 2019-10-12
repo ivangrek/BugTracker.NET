@@ -12,6 +12,7 @@ namespace BugTracker.Web.Controllers
     using BugTracker.Web.Models.Account;
     using System;
     using System.Data.SqlClient;
+    using System.DirectoryServices;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Security;
@@ -243,7 +244,7 @@ namespace BugTracker.Web.Controllers
                 // If windows authentication only, then redirect
                 if (authMode == 1)
                 {
-                    return Redirect(Util.RedirectUrl("~/Accounts/LoginNt.aspx", System.Web.HttpContext.Current.Request));
+                    return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
                 }
 
                 // If previous login was with windows authentication, then try it again
@@ -252,7 +253,7 @@ namespace BugTracker.Web.Controllers
                     Response.Cookies["user"]["name"] = "";
                     Response.Cookies["user"]["NTLM"] = "0";
 
-                    return Redirect(Util.RedirectUrl("~/Accounts/LoginNt.aspx", System.Web.HttpContext.Current.Request));
+                    return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
                 }
             }
             else
@@ -351,7 +352,7 @@ namespace BugTracker.Web.Controllers
                 // If windows authentication only, then redirect
                 if (authMode == 1)
                 {
-                    return Redirect(Util.RedirectUrl("~/Accounts/LoginNt.aspx", System.Web.HttpContext.Current.Request));
+                    return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
                 }
 
                 // If previous login was with windows authentication, then try it again
@@ -360,7 +361,7 @@ namespace BugTracker.Web.Controllers
                     Response.Cookies["user"]["name"] = "";
                     Response.Cookies["user"]["NTLM"] = "0";
 
-                    return Redirect(Util.RedirectUrl("~/Accounts/LoginNt.aspx", System.Web.HttpContext.Current.Request));
+                    return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
                 }
             }
             else
@@ -371,7 +372,7 @@ namespace BugTracker.Web.Controllers
             // OnLogon
             if (authMode != 0 && string.IsNullOrEmpty(model.Login.Trim()))
             {
-                return Redirect(Util.RedirectUrl("~/Accounts/LoginNt.aspx", System.Web.HttpContext.Current.Request));
+                return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
             }
 
             var authenticated = this.authenticate.CheckPassword(model.Login, model.Password);
@@ -412,6 +413,268 @@ namespace BugTracker.Web.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult LoginNt()
+        {
+            using (DbUtil.GetSqlConnection())
+            { }
+
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            // Get authentication mode
+            var authMode = this.applicationSettings.WindowsAuthentication;
+
+            // If manual authentication only, we shouldn't be here, so redirect to manual screen
+
+            if (authMode == 0)
+            {
+                var url = Util.RedirectUrl("~/Account/Login", System.Web.HttpContext.Current.Request);
+
+                return Redirect(url);
+            }
+
+            // Get the logon user from IIS
+            var domainWindowsUsername = Request.ServerVariables["LOGON_USER"];
+
+            if (string.IsNullOrEmpty(domainWindowsUsername))
+            {
+                // If the logon user is blank, then the page is misconfigured
+                // in IIS. Do nothing and let the HTML display.
+            }
+            else
+            {
+                // Extract the user name from the logon ID
+                var pos = domainWindowsUsername.IndexOf("\\") + 1;
+                var windowsUsername =
+                    domainWindowsUsername.Substring(pos, domainWindowsUsername.Length - pos);
+
+                // Fetch the user's information from the users table
+                var sql = @"select us_id, us_username
+                    from users
+                    where us_username = N'$us'
+                    and us_active = 1"
+                    .Replace("$us", windowsUsername.Replace("'", "''"));
+
+                var dr = DbUtil.GetDataRow(sql);
+
+                if (dr != null)
+                {
+                    // The user was found, so bake a cookie and redirect
+                    var userid = (int)dr["us_id"];
+                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
+                        userid,
+                        (string)dr["us_username"],
+                        "1");
+
+                    Util.UpdateMostRecentLoginDateTime(userid);
+
+                    var url = Util.RedirectUrl(System.Web.HttpContext.Current.Request);
+
+                    return Redirect(url);
+                }
+
+                // Is self register enabled for users authenticated by windows?
+                // If yes, then automatically insert a row in the user table
+                var enableAutoRegistration = this.applicationSettings.EnableWindowsUserAutoRegistration;
+                if (enableAutoRegistration)
+                {
+                    var templateUser = this.applicationSettings.WindowsUserAutoRegistrationUserTemplate;
+
+                    var firstName = windowsUsername;
+                    var lastName = windowsUsername;
+                    var signature = windowsUsername;
+                    var email = string.Empty;
+
+                    // From the browser, we only know the Windows username.  Maybe we can get the other
+                    // info from LDAP?
+                    if (this.applicationSettings.EnableWindowsUserAutoRegistrationLdapSearch)
+                        using (var de = new DirectoryEntry())
+                        {
+                            de.Path = this.applicationSettings.LdapDirectoryEntryPath;
+
+                            de.AuthenticationType =
+                                (AuthenticationTypes)Enum.Parse(
+                                    typeof(AuthenticationTypes),
+                                    this.applicationSettings.LdapDirectoryEntryAuthenticationType);
+
+                            de.Username = this.applicationSettings.LdapDirectoryEntryUsername;
+                            de.Password = this.applicationSettings.LdapDirectoryEntryPassword;
+
+                            using (var search =
+                                new DirectorySearcher(de))
+                            {
+                                var searchFilter = this.applicationSettings.LdapDirectorySearcherFilter;
+                                search.Filter = searchFilter.Replace("$REPLACE_WITH_USERNAME$", windowsUsername);
+                                SearchResult result = null;
+
+                                try
+                                {
+                                    result = search.FindOne();
+                                    if (result != null)
+                                    {
+                                        firstName = GetLdapPropertyValue(result, this.applicationSettings.LdapFirstName, firstName);
+                                        lastName = GetLdapPropertyValue(result, this.applicationSettings.LdapLastName, lastName);
+                                        email = GetLdapPropertyValue(result, this.applicationSettings.LdapEmail, email);
+                                        signature = GetLdapPropertyValue(result, this.applicationSettings.LdapEmailSignature, signature);
+                                    }
+                                    else
+                                    {
+                                        Util.WriteToLog("LDAP search.FindOne() result = null");
+                                    }
+                                }
+                                catch (Exception e2)
+                                {
+                                    var s = e2.Message;
+
+                                    if (e2.InnerException != null)
+                                    {
+                                        s += "\n";
+                                        s += e2.InnerException.Message;
+                                    }
+
+                                    // write the message to the log
+                                    Util.WriteToLog("LDAP search failed: " + s);
+                                }
+                            }
+                        }
+
+                    var newUserId = Core.User.CopyUser(
+                        windowsUsername,
+                        email,
+                        firstName,
+                        lastName,
+                        signature,
+                        0, // salt
+                        Guid.NewGuid().ToString(), // random value for password
+                        templateUser,
+                        false);
+
+                    if (newUserId > 0) // automatically created the user
+                    {
+                        // The user was created, so bake a cookie and redirect
+                        this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
+                            newUserId,
+                            windowsUsername.Replace("'", "''"),
+                            "1");
+
+                        Util.UpdateMostRecentLoginDateTime(newUserId);
+
+                        var url = Util.RedirectUrl(System.Web.HttpContext.Current.Request);
+
+                        return Redirect(url);
+                    }
+                }
+
+                // Try fetching the guest user.
+                sql = @"select us_id, us_username
+                        from users
+                        where us_username = 'guest'
+                        and us_active = 1";
+
+                dr = DbUtil.GetDataRow(sql);
+
+                if (dr != null)
+                {
+                    // The Guest user was found, so bake a cookie and redirect
+                    var userid = (int)dr["us_id"];
+                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
+                        userid,
+                        (string)dr["us_username"],
+                        "1");
+
+                    Util.UpdateMostRecentLoginDateTime(userid);
+
+                    var url = Util.RedirectUrl(System.Web.HttpContext.Current.Request);
+
+                    return Redirect(url);
+                }
+
+                // If using mixed-mode authentication and we got this far,
+                // then we can't sign in using integrated security. Redirect
+                // to the manual screen.
+                if (authMode != 1)
+                {
+                    var url = Util.RedirectUrl("~/Account/Login?msg=user+not+valid", System.Web.HttpContext.Current.Request);
+
+                    return Redirect(url);
+                }
+
+                // If we are still here, then toss a 401 error.
+                return new HttpStatusCodeResult(401);
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult MobileLogin()
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+            Util.SetContext(System.Web.HttpContext.Current);
+
+            if (!this.applicationSettings.EnableMobile)
+            {
+                return Content("BugTracker.NET EnableMobile is not set to 1 in Web.config");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - logon"
+            };
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MobileLogin(LoginModel model)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+            Util.SetContext(System.Web.HttpContext.Current);
+
+            if (!this.applicationSettings.EnableMobile)
+            {
+                return Content("BugTracker.NET EnableMobile is not set to 1 in Web.config");
+            }
+
+            var authenticated = this.authenticate.CheckPassword(model.Login, model.Password);
+
+            if (authenticated)
+            {
+                var sql = "select us_id from users where us_username = N'$us'"
+                    .Replace("$us", model.Login.Replace("'", "''"));
+
+                var dr = DbUtil.GetDataRow(sql);
+
+                if (dr != null)
+                {
+                    var usId = (int)dr["us_id"];
+
+                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
+                        usId, model.Login, "0");
+
+                    var url = Util.RedirectUrl(System.Web.HttpContext.Current.Request);
+
+                    return Redirect(url);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("Message", "Invalid User or Password.");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - logon"
+            };
+
+            return View();
         }
 
         [HttpGet]
@@ -702,6 +965,18 @@ namespace BugTracker.Web.Controllers
             FormsAuthentication.SignOut();
 
             return Redirect("~/");
+        }
+
+        private string GetLdapPropertyValue(SearchResult result, string propertyName, string defaultValue)
+        {
+            var values = result.Properties[propertyName];
+
+            if (values != null && values.Count == 1 && values[0] is string)
+            {
+                return (string)values[0];
+            }
+
+            return defaultValue;
         }
     }
 }

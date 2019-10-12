@@ -1023,7 +1023,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
                 return $"{url}&url={RemoveLineBreaks(request.QueryString["url"])}&qs={RemoveLineBreaks(request.QueryString["qs"])}";
             }
 
-            return $"{url}&url={RemoveLineBreaks(request.QueryString["url"])}&qs={RemoveLineBreaks(request.QueryString["qs"])}";
+            return $"{url}?url={RemoveLineBreaks(request.QueryString["url"])}&qs={RemoveLineBreaks(request.QueryString["qs"])}";
         }
 
         public static string RemoveLineBreaks(string s)

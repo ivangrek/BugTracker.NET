@@ -82,65 +82,68 @@
         <tr>
             <td>
                 <ul>
-                    <p />
+                    <p></p>
                     <li class="listitem">
                         <a href="~/Admin/Users/List.aspx">Users</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
                         <a href="~/Admin/Organizations/List.aspx">Organizations</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
                         <a href="~/Admin/Projects/List.aspx">Projects</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a href="~/Administration/Category">Categories</a>
+                        <a href="@Url.Action("Index", "Category")">Categories</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/Priorities/List.aspx">Priorities</a>
+                        <a href="@Url.Action("Index", "Priority")">Priorities</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a href="~/Administration/Status">Statuses</a>
+                        <a href="@Url.Action("Index", "Status")">Statuses</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
                         <a href="~/Admin/UserDefinedAttributes/List.aspx">User Defined Attributes</a>
                         &nbsp;&nbsp;<span class="smallnote">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</span>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
                         <a href="~/Admin/CustomFields/List.aspx">Custom Fields</a>
                         &nbsp;&nbsp;<span class="smallnote">(add custom fields to the bug page)</span>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a target="_blank" href="~/Admin/Query.aspx">Run Ad-hoc Query</a>
+                        <a target="_blank" href="@Url.Action("Query", "Home")">Run Ad-hoc Query</a>
                         &nbsp;&nbsp;
-                        <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">This links to Query.aspx.&nbsp;&nbsp;Query.aspx is potentially unsafe.&nbsp;&nbsp;Delete it if you are deploying on a public web server.</span>
+                        <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">This links to Query.&nbsp;&nbsp;Query is potentially unsafe.&nbsp;&nbsp;Delete it if you are deploying on a public web server.</span>
                         <br>
-                        <p>
-                    <li class="listitem"><a href="~/Admin/Notifications.aspx">Queued Email Notifications</a></li>
-                    <p />
-                    <li class="listitem">
-                        <a href="~/Admin/EditCustomHtml.aspx">Edit Custom Html</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/EditWebConfig.aspx">Edit Web.Config</a>
+                        <a href="@Url.Action("Notification", "Home")">Queued Email Notifications</a>
+                    </li>
+                    <p></p>
+                    <li class="listitem">
+                        <a href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
+                    </li>
+                    <p></p>
+                    <li class="listitem">
+                        <a href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
                         &nbsp;&nbsp;
                         <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!</span>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/BackupDb.aspx">Backup Database</a>
+                        <a href="@Url.Action("BackupDb", "Home")">Backup Database</a>
                     </li>
-                    <p />
+                    <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/ManageLogs.aspx">Manage Logs</a>
+                        <a href="@Url.Action("ManageLogs", "Home")">Manage Logs</a>
                     </li>
                 </ul>
             </td>

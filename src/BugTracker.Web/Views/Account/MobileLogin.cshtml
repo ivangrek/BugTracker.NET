@@ -1,0 +1,51 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Account.LoginModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/Scripts/jquery/jquery.mobile-1.2.0.min.css" />
+    <link rel="stylesheet" href="~/Content/mbtnet_base.css" />
+    <script src="~/Scripts/jquery/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/jquery/jquery.mobile-1.2.0.min.js"></script>
+}
+
+@section BodyHeader {
+}
+
+<div data-role="page">
+    <div data-role="header">
+        <h1>@page.Title</h1>
+    </div>
+
+    <div data-role="content">
+        @using (Html.BeginForm("MobileLogin", "Account", FormMethod.Post, new { @class = "frm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="err" runat="server" id="msg">
+                @Html.ValidationMessage("Message")
+            </div>
+
+            <label>User:</label>
+            @Html.TextBoxFor(x => x.Login)
+            <label>Password:</label>
+            @Html.TextBoxFor(x => x.Password, new { type="password" })
+            <input data-role="button" type="submit" value="Logon" runat="server" />
+            <input type="hidden" id="mobile" name="mobile" value="1" />
+        }
+    </div>
+</div>
+
+@section BodyFooter {
+}

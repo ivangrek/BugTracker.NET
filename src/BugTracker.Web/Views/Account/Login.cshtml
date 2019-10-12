@@ -38,27 +38,27 @@
     </table>
 }
 
-<div style="width: 300px; margin: 0 auto;">
+<div style="width: 320px; margin: 0 auto;">
     @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "frm" }))
     {
         @Html.AntiForgeryToken()
 
         if (page.ApplicationSettings.WindowsAuthentication != 0)
         {
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 8px;">
                 <span class="smallnote">To login using your Windows ID, leave User blank</span>
             </div>
         }
 
-        <div style="margin-bottom: 10px;">
-            <div class="lbl" style="margin-bottom: 5px;">User:</div>
+        <div style="margin-bottom: 8px;">
+            <div class="lbl" style="margin-bottom: 4px;">User:</div>
             <div>
                 @Html.TextBoxFor(x => x.Login, new { @class = "txt", id = "user", style = "box-sizing: border-box; width: 100%;" })
             </div>
         </div>
 
-        <div style="margin-bottom: 10px;">
-            <div class="lbl" style="margin-bottom: 5px;">Password:</div>
+        <div style="margin-bottom: 8px;">
+            <div class="lbl" style="margin-bottom: 4px;">Password:</div>
             <div>
                 @Html.TextBoxFor(x => x.Password, new { @class = "txt", type = "password", id = "pw", style = "box-sizing: border-box; width: 100%;" })
             </div>
