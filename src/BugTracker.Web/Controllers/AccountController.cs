@@ -390,6 +390,8 @@ namespace BugTracker.Web.Controllers
 
                     this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response, usId, model.Login, "0");
 
+                    FormsAuthentication.SetAuthCookie(model.Login, false);
+
                     return Redirect(Util.RedirectUrl(System.Web.HttpContext.Current.Request));
                 }
                 else

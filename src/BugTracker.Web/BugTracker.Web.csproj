@@ -658,6 +658,7 @@
     <Compile Include="Core\Administration\CategoryService.cs" />
     <Compile Include="Core\Administration\PriorityService.cs" />
     <Compile Include="Core\Administration\StatusService.cs" />
+    <Compile Include="Core\ApplicationRoleProvider.cs" />
     <Compile Include="Core\ApplicationSettings.cs" />
     <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
