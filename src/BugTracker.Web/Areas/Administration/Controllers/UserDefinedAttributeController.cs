@@ -7,7 +7,7 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.Priority;
+    using BugTracker.Web.Areas.Administration.Models.UserDefinedAttribute;
     using BugTracker.Web.Core;
     using BugTracker.Web.Core.Administration;
     using BugTracker.Web.Core.Controls;
@@ -16,20 +16,20 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web;
     using System.Web.Mvc;
 
-    public class PriorityController : Controller
+    public class UserDefinedAttributeController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
-        private readonly IPriorityService priorityService;
+        private readonly IUserDefinedAttributeService userDefinedAttributeService;
 
-        public PriorityController(
+        public UserDefinedAttributeController(
             IApplicationSettings applicationSettings,
             ISecurity security,
-            IPriorityService priorityService)
+            IUserDefinedAttributeService userDefinedAttributeService)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
-            this.priorityService = priorityService;
+            this.userDefinedAttributeService = userDefinedAttributeService;
         }
 
         [HttpGet]
@@ -43,16 +43,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - priorities",
+                Title = $"{this.applicationSettings.AppTitle} - user defined attribute values",
                 SelectedItem = MainMenuSections.Administration
             };
 
             var model = new SortableTableModel
             {
-                DataSet = this.priorityService.LoadList(),
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/"),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Delete/"),
-                HtmlEncode = false
+                DataSet = this.userDefinedAttributeService.LoadList(),
+                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/UserDefinedAttribute/Update/"),
+                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/UserDefinedAttribute/Delete/")
             };
 
             return View(model);
@@ -69,13 +68,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create priority",
+                Title = $"{this.applicationSettings.AppTitle} - create user defined attribute value",
                 SelectedItem = MainMenuSections.Administration
             };
 
             var model = new EditModel
             {
-                BackgroundColor = "#ffffff"
             };
 
             return View("Edit", model);
@@ -91,11 +89,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError("Message", "User defined attribute value was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create priority",
+                    Title = $"{this.applicationSettings.AppTitle} - create user defined attribute value",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -105,14 +105,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var parameters = new Dictionary<string, string>
             {
                 { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
+                { "$na", model.Name},
                 { "$ss", model.SortSequence.ToString() },
-                { "$co", model.BackgroundColor.Replace("'", "''")},
-                { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
                 { "$df", Util.BoolToString(model.Default)},
             };
 
-            this.priorityService.Create(parameters);
+            this.userDefinedAttributeService.Create(parameters);
 
             return RedirectToAction(nameof(Index));
         }
@@ -125,13 +123,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // Get this entry's data from the db and fill in the form
-            var dataRow = this.priorityService.LoadOne(id);
+            var dataRow = this.userDefinedAttributeService.LoadOne(id);
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update priority",
+                Title = $"{this.applicationSettings.AppTitle} - update user defined attribute value",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -140,8 +138,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 Id = id,
                 Name = dataRow.Name,
                 SortSequence = dataRow.SortSequence,
-                Style = dataRow.Style,
-                BackgroundColor = dataRow.BackgroundColor,
                 Default = dataRow.Default == 1
             };
 
@@ -158,11 +154,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError("Message", "User defined attribute value was not updated.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update priority",
+                    Title = $"{this.applicationSettings.AppTitle} - update user defined attribute value",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -172,14 +170,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var parameters = new Dictionary<string, string>
             {
                 { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
+                { "$na", model.Name},
                 { "$ss", model.SortSequence.ToString() },
-                { "$co", model.BackgroundColor.Replace("'", "''")},
-                { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
                 { "$df", Util.BoolToString(model.Default)},
             };
 
-            this.priorityService.Update(parameters);
+            this.userDefinedAttributeService.Update(parameters);
 
             return RedirectToAction(nameof(Index));
         }
@@ -191,18 +187,18 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            var (valid, name) = this.priorityService.CheckDeleting(id);
+            var (valid, name) = this.userDefinedAttributeService.CheckDeleting(id);
 
             if (!valid)
             {
-                return Content($"You can't delete priority \"{name}\" because some bugs still reference it.");
+                return Content($"You can't delete value \"{name}\" because some bugs still reference it.");
             }
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - delete status",
+                Title = $"{this.applicationSettings.AppTitle} - delete user defined attribute value",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -223,14 +219,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            var (valid, name) = this.priorityService.CheckDeleting(model.Id);
-
-            if (!valid)
-            {
-                return Content($"You can't delete priority \"{name}\" because some bugs still reference it.");
-            }
-
-            this.priorityService.Delete(model.Id);
+            this.userDefinedAttributeService.Delete(model.Id);
 
             return RedirectToAction(nameof(Index));
         }

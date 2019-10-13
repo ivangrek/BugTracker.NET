@@ -84,15 +84,15 @@
                 <ul>
                     <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/Users/List.aspx">Users</a>
+                        <a href="@Url.Action("Index", "User")">Users</a>
                     </li>
                     <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/Organizations/List.aspx">Organizations</a>
+                        <a href="@Url.Action("Index", "Organization")">Organizations</a>
                     </li>
                     <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/Projects/List.aspx">Projects</a>
+                        <a href="@Url.Action("Index", "Project")">Projects</a>
                     </li>
                     <p></p>
                     <li class="listitem">
@@ -108,12 +108,12 @@
                     </li>
                     <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/UserDefinedAttributes/List.aspx">User Defined Attributes</a>
+                        <a href="@Url.Action("Index", "UserDefinedAttribute")">User Defined Attributes</a>
                         &nbsp;&nbsp;<span class="smallnote">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</span>
                     </li>
                     <p></p>
                     <li class="listitem">
-                        <a href="~/Admin/CustomFields/List.aspx">Custom Fields</a>
+                        <a href="@Url.Action("Index", "CustomField")">Custom Fields</a>
                         &nbsp;&nbsp;<span class="smallnote">(add custom fields to the bug page)</span>
                     </li>
                     <p></p>

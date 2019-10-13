@@ -12,6 +12,7 @@ namespace BugTracker.Web.Controllers
     using BugTracker.Web.Models.Bug;
     using System;
     using System.Data;
+    using System.Text;
     using System.Web.Mvc;
 
     public class BugController : Controller
@@ -227,6 +228,300 @@ namespace BugTracker.Web.Controllers
             }
 
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult Subscribe(int id, string ses, string actn)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
+
+            var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone) Response.End();
+
+            if (ses != (string)Session["session_cookie"])
+            {
+                return Content("session in URL doesn't match session cookie");
+            }
+
+            string sql;
+
+            if (actn == "1")
+            {
+                sql = @"insert into bug_subscriptions (bs_bug, bs_user) values($bg, $us)";
+            }
+            else
+            {
+                sql = @"delete from bug_subscriptions where bs_bug = $bg and bs_user = $us";
+            }
+
+            sql = sql.Replace("$bg", id.ToString());
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+
+            DbUtil.ExecuteNonQuery(sql);
+
+            return Content("Ok");
+        }
+
+        [HttpGet]
+        public ActionResult WritePosts(int id, bool imagesInline, bool historyInline)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            var dsPosts = PrintBug.GetBugPosts(id, this.security.User.ExternalUser, historyInline);
+            var (_, html) = PrintBug.WritePosts(
+                dsPosts,
+                id,
+                permissionLevel,
+                true, // write links
+                imagesInline,
+                historyInline,
+                true, // internal_posts
+                this.security.User);
+
+            return Content(html);
+        }
+
+        [HttpGet]
+        public ActionResult Merge(int id)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
+
+            var isAutorized = this.security.User.IsAdmin
+                || this.security.User.CanMergeBugs;
+
+            if (!isAutorized)
+            {
+                return Content("You are not allowed to use this page.");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - merge {this.applicationSettings.SingularBugLabel}",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            ViewBag.Confirm = false;
+
+            var model = new MergeModel
+            {
+                Id = id,
+                FromBugId = id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Merge(MergeModel model)
+        {
+            Util.DoNotCache(System.Web.HttpContext.Current.Response);
+
+            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
+
+            var isAutorized = this.security.User.IsAdmin
+                || this.security.User.CanMergeBugs;
+
+            if (!isAutorized)
+            {
+                return Content("You are not allowed to use this page.");
+            }
+
+            if (model.FromBugId == model.IntoBugId)
+            {
+                ModelState.AddModelError("IntoBugId", "\"Into\" bug cannot be the same as \"From\" bug.");
+            }
+
+            // Continue and see if from and to exist in db
+
+            var sql = @"
+                declare @from_desc nvarchar(200)
+                declare @into_desc nvarchar(200)
+                declare @from_id int
+                declare @into_id int
+                set @from_id = -1
+                set @into_id = -1
+                select @from_desc = bg_short_desc, @from_id = bg_id from bugs where bg_id = $from
+                select @into_desc = bg_short_desc, @into_id = bg_id from bugs where bg_id = $into
+                select @from_desc, @into_desc, @from_id, @into_id"
+                .Replace("$from", model.FromBugId.ToString())
+                .Replace("$into", model.IntoBugId.ToString());
+
+            var dataRow = DbUtil.GetDataRow(sql);
+
+            if ((int)dataRow[2] == -1)
+            {
+                ModelState.AddModelError("FromBugId", "\"From\" bug not found.");
+            }
+
+            if ((int)dataRow[3] == -1)
+            {
+                ModelState.AddModelError("IntoBugId", "\"Into\" bug not found.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Page = new PageModel
+                {
+                    ApplicationSettings = this.applicationSettings,
+                    Security = this.security,
+                    Title = $"{this.applicationSettings.AppTitle} - merge {this.applicationSettings.SingularBugLabel}",
+                    SelectedItem = ApplicationSettings.PluralBugLabelDefault
+                };
+
+                return View(model);
+            }
+
+            if (model.Confirm)
+            {
+                // rename the attachments
+                var uploadFolder = Util.GetUploadFolder();
+
+                if (uploadFolder != null)
+                {
+                    sql = @"select bp_id, bp_file from bug_posts
+                        where bp_type = 'file' and bp_bug = $from"
+                        .Replace("$from", model.FromBugId.ToString());
+
+                    var ds = DbUtil.GetDataSet(sql);
+
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        // create path
+                        var path = new StringBuilder(uploadFolder);
+
+                        path.Append("\\");
+                        path.Append(model.FromBugId);
+                        path.Append("_");
+                        path.Append(Convert.ToString(dr["bp_id"]));
+                        path.Append("_");
+                        path.Append(Convert.ToString(dr["bp_file"]));
+
+                        if (System.IO.File.Exists(path.ToString()))
+                        {
+                            var path2 = new StringBuilder(uploadFolder);
+
+                            path2.Append("\\");
+                            path2.Append(model.IntoBugId);
+                            path2.Append("_");
+                            path2.Append(Convert.ToString(dr["bp_id"]));
+                            path2.Append("_");
+                            path2.Append(Convert.ToString(dr["bp_file"]));
+
+                            System.IO.File.Move(path.ToString(), path2.ToString());
+                        }
+                    }
+                }
+
+                // copy the from db entries to the to
+                sql = @"
+                    insert into bug_subscriptions
+                    (bs_bug, bs_user)
+                    select $into, bs_user
+                    from bug_subscriptions
+                    where bs_bug = $from
+                    and bs_user not in (select bs_user from bug_subscriptions where bs_bug = $into)
+
+                    insert into bug_user
+                    (bu_bug, bu_user, bu_flag, bu_flag_datetime, bu_seen, bu_seen_datetime, bu_vote, bu_vote_datetime)
+                    select $into, bu_user, bu_flag, bu_flag_datetime, bu_seen, bu_seen_datetime, bu_vote, bu_vote_datetime
+                    from bug_user
+                    where bu_bug = $from
+                    and bu_user not in (select bu_user from bug_user where bu_bug = $into)
+
+                    update bug_posts     set bp_bug     = $into	where bp_bug = $from
+                    update bug_tasks     set tsk_bug    = $into where tsk_bug = $from
+                    update svn_revisions set svnrev_bug = $into where svnrev_bug = $from
+                    update hg_revisions  set hgrev_bug  = $into where hgrev_bug = $from
+                    update git_commits   set gitcom_bug = $into where gitcom_bug = $from"
+                    .Replace("$from", model.FromBugId.ToString())
+                    .Replace("$into", model.IntoBugId.ToString());
+
+                DbUtil.ExecuteNonQuery(sql);
+
+                // record the merge itself
+
+                sql = @"insert into bug_posts
+                    (bp_bug, bp_user, bp_date, bp_type, bp_comment, bp_comment_search)
+                    values($into,$us,getdate(), 'comment', 'merged bug $from into this bug:', 'merged bug $from into this bug:')
+                    select scope_identity()"
+                    .Replace("$from", model.FromBugId.ToString())
+                    .Replace("$into", model.IntoBugId.ToString())
+                    .Replace("$us", Convert.ToString(this.security.User.Usid));
+
+                var commentId = Convert.ToInt32(DbUtil.ExecuteScalar(sql));
+
+                // update bug comments with info from old bug
+                sql = @"update bug_posts
+                    set bp_comment = convert(nvarchar,bp_comment) + char(10) + bg_short_desc
+                    from bugs where bg_id = $from
+                    and bp_id = $bc"
+                    .Replace("$from", model.FromBugId.ToString())
+                    .Replace("$bc", Convert.ToString(commentId));
+
+                DbUtil.ExecuteNonQuery(sql);
+
+                // delete the from bug
+                Bug.DeleteBug(model.FromBugId);
+
+                // delete the from bug from the list, if there is a list
+                var dvBugs = (DataView)Session["bugs"];
+
+                if (dvBugs != null)
+                {
+                    // read through the list of bugs looking for the one that matches the from
+                    var index = 0;
+                    foreach (DataRowView drv in dvBugs)
+                    {
+                        if (model.FromBugId == (int)drv[1])
+                        {
+                            dvBugs.Delete(index);
+                            break;
+                        }
+
+                        index++;
+                    }
+                }
+
+                Bug.SendNotifications(Bug.Update, model.FromBugId, security);
+
+                return Redirect($"~/Bugs/Edit.aspx?id={model.IntoBugId}");
+            }
+
+            ModelState.Clear();
+
+            ModelState.AddModelError("StaticFromBug", model.FromBugId.ToString());
+            ModelState.AddModelError("StaticIntoBug", model.IntoBugId.ToString());
+            ModelState.AddModelError("StaticFromBugDescription", (string)dataRow[0]);
+            ModelState.AddModelError("StaticIntoBugDescription", (string)dataRow[1]);
+
+            model.Confirm = true;
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - merge {this.applicationSettings.SingularBugLabel}",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            return View(model);
         }
 
         private void PrintAsHtml(DataView dataView)

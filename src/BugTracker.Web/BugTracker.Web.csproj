@@ -433,7 +433,6 @@
     <Content Include="Scripts\ckeditor\themes\default\theme.js" />
     <Content Include="Content\images\clock.png" />
     <Content Include="Content\images\comment.png" />
-    <Content Include="Admin\CustomFields\List.aspx" />
     <Content Include="Content\images\database.png" />
     <Content Include="Content\images\database_link.png" />
     <Content Include="Content\images\database_refresh.png" />
@@ -442,13 +441,8 @@
     <Content Include="Scripts\datejs\date.js" />
     <Content Include="Login.aspx" />
     <Content Include="Content\images\delete.png" />
-    <Content Include="Admin\CustomFields\Delete.aspx" />
-    <Content Include="Admin\Organizations\Delete.aspx" />
-    <Content Include="Admin\Projects\Delete.aspx" />
     <Content Include="DeleteSubscriber.aspx" />
     <Content Include="DeleteTask.aspx" />
-    <Content Include="Admin\UserDefinedAttributes\Delete.aspx" />
-    <Content Include="Admin\Users\Delete.aspx" />
     <Content Include="Scripts\edit_area\autocompletion.js" />
     <Content Include="Scripts\edit_area\edit_area.css" />
     <Content Include="Scripts\edit_area\edit_area.js" />
@@ -517,24 +511,16 @@
     <Content Include="Scripts\edit_bug.js" />
     <Content Include="Admin\CustomFields\Edit.aspx" />
     <Content Include="Admin\Organizations\Edit.aspx" />
-    <Content Include="Admin\Projects\Edit.aspx" />
     <Content Include="Queries\Edit.aspx" />
     <Content Include="EditSelf.aspx" />
     <Content Include="EditTask.aspx" />
-    <Content Include="Admin\UserDefinedAttributes\Edit.aspx" />
     <Content Include="Admin\Users\Edit.aspx" />
-    <Content Include="Admin\Projects\EditUserPermissions2.aspx" />
     <Content Include="Content\images\email_edit.png" />
     <Content Include="Content\images\email_open.png" />
     <Content Include="Content\favicon.ico" />
     <Content Include="GenerateBtnetscReg.aspx" />
     <Content Include="Content\images\git.png" />
-    <Content Include="Versioning\Git\Blame.aspx" />
-    <Content Include="Versioning\Git\Diff.aspx" />
     <Content Include="Versioning\Git\Hook.aspx" />
-    <Content Include="Versioning\Git\Log.aspx" />
-    <Content Include="Versioning\Git\View.aspx" />
-    <Content Include="Versioning\Git\ViewRevisions.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Content\images\hg.png" />
     <Content Include="Versioning\Hg\Blame.aspx" />
@@ -542,7 +528,6 @@
     <Content Include="Versioning\Hg\Hook.aspx" />
     <Content Include="Versioning\Hg\Log.aspx" />
     <Content Include="Versioning\Hg\View.aspx" />
-    <Content Include="Versioning\Hg\ViewRevisions.aspx" />
     <Content Include="Bugs\Insert.aspx" />
     <Content Include="Scripts\jquery\grippie.png" />
     <Content Include="Scripts\jquery\images\ajax-loader.gif" />
@@ -578,17 +563,13 @@
     <Content Include="Content\mbtnet_base.css" />
     <Content Include="Bugs\MobileEdit.aspx" />
     <Content Include="Bugs\MobileList.aspx" />
-    <Content Include="Bugs\Merge.aspx" />
-    <Content Include="Admin\Organizations\List.aspx" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
-    <Content Include="Admin\Projects\List.aspx" />
     <Content Include="Relationships.aspx" />
     <Content Include="Search.aspx" />
     <Content Include="SendEmail.aspx" />
     <Content Include="setup.sql" />
     <Content Include="Scripts\sortable.js" />
-    <Content Include="Subscribe.aspx" />
     <Content Include="Scripts\suggest.js" />
     <Content Include="Content\images\svn.png" />
     <Content Include="Versioning\Svn\Blame.aspx" />
@@ -596,7 +577,6 @@
     <Content Include="Versioning\Svn\Hook.aspx" />
     <Content Include="Versioning\Svn\Log.aspx" />
     <Content Include="Versioning\Svn\View.aspx" />
-    <Content Include="Versioning\Svn\ViewRevisions.aspx" />
     <Content Include="Tags.aspx" />
     <Content Include="Tasks.aspx" />
     <Content Include="TasksAll.aspx" />
@@ -605,14 +585,12 @@
     <Content Include="Content\images\telephone.png" />
     <Content Include="Content\images\telephone_edit.png" />
     <Content Include="Translate.aspx" />
-    <Content Include="Admin\UserDefinedAttributes\List.aspx" />
     <Content Include="Admin\Users\List.aspx" />
     <Content Include="Scripts\version_control_sel_rev.js" />
     <Content Include="ViewMemoryLog.aspx" />
     <Content Include="ViewSubscribers.aspx" />
     <Content Include="Content\images\vote_up.png" />
     <Content Include="Web.config" />
-    <Content Include="WritePosts.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -626,22 +604,40 @@
       <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
+    <Compile Include="Areas\Administration\Controllers\UserDefinedAttributeController.cs" />
+    <Compile Include="Areas\Administration\Controllers\CustomFieldController.cs" />
+    <Compile Include="Areas\Administration\Controllers\ProjectController.cs" />
+    <Compile Include="Areas\Administration\Controllers\OrganizationController.cs" />
+    <Compile Include="Areas\Administration\Controllers\UserController.cs" />
     <Compile Include="Areas\Administration\Controllers\PriorityController.cs" />
     <Compile Include="Areas\Administration\Controllers\StatusController.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Administration\Models\Category\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\Category\EditModel.cs" />
+    <Compile Include="Areas\Administration\Models\CustomField\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\Home\NotificationModel.cs" />
     <Compile Include="Areas\Administration\Models\Home\ManageLogsModel.cs" />
     <Compile Include="Areas\Administration\Models\Home\BackupDbModel.cs" />
     <Compile Include="Areas\Administration\Models\Home\EditWebConfigModel.cs" />
     <Compile Include="Areas\Administration\Models\Home\QueryModel.cs" />
     <Compile Include="Areas\Administration\Models\Home\EditCustomHtmlModel.cs" />
+    <Compile Include="Areas\Administration\Models\Organization\DeleteModel.cs" />
+    <Compile Include="Areas\Administration\Models\Organization\EditModel.cs" />
     <Compile Include="Areas\Administration\Models\Priority\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\Priority\EditModel.cs" />
+    <Compile Include="Areas\Administration\Models\Project\UpdateUserPermissionModel.cs" />
+    <Compile Include="Areas\Administration\Models\Project\DeleteModel.cs" />
+    <Compile Include="Areas\Administration\Models\Project\EditModel.cs" />
     <Compile Include="Areas\Administration\Models\Status\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\Status\EditModel.cs" />
+    <Compile Include="Areas\Administration\Models\UserDefinedAttribute\DeleteModel.cs" />
+    <Compile Include="Areas\Administration\Models\UserDefinedAttribute\EditModel.cs" />
+    <Compile Include="Areas\Administration\Models\User\DeleteModel.cs" />
+    <Compile Include="Areas\Versioning\Controllers\SvnController.cs" />
+    <Compile Include="Areas\Versioning\Controllers\HgController.cs" />
+    <Compile Include="Areas\Versioning\Controllers\GitController.cs" />
+    <Compile Include="Areas\Versioning\VersioningAreaRegistration.cs" />
     <Compile Include="Bugs\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -709,13 +705,6 @@
     <Compile Include="Core\VersionControl.cs" />
     <Compile Include="Core\WhatsNew.cs" />
     <Compile Include="Core\Workflow.cs" />
-    <Compile Include="Admin\CustomFields\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\CustomFields\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -723,28 +712,8 @@
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\CustomFields\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\CustomFields\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Organizations\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Organizations\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Projects\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Projects\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Models\Attachment\UpdateModel.cs" />
+    <Compile Include="Models\Bug\MergeModel.cs" />
     <Compile Include="Models\Bug\DeleteModel.cs" />
     <Compile Include="Models\Query\DeleteModel.cs" />
     <Compile Include="DeleteSubscriber.aspx.cs">
@@ -760,20 +729,6 @@
     </Compile>
     <Compile Include="DeleteTask.aspx.designer.cs">
       <DependentUpon>DeleteTask.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\UserDefinedAttributes\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\UserDefinedAttributes\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Users\Delete.aspx.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Users\Delete.aspx.designer.cs">
-      <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Bugs\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
@@ -794,13 +749,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\Organizations\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Projects\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Projects\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Queries\Edit.aspx.cs">
@@ -824,26 +772,12 @@
     <Compile Include="EditTask.aspx.designer.cs">
       <DependentUpon>EditTask.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\UserDefinedAttributes\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\UserDefinedAttributes\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Admin\Users\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\Users\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Projects\EditUserPermissions2.aspx.cs">
-      <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Projects\EditUserPermissions2.aspx.designer.cs">
-      <DependentUpon>EditUserPermissions2.aspx</DependentUpon>
     </Compile>
     <Compile Include="GenerateBtnetscReg.aspx.cs">
       <DependentUpon>GenerateBtnetscReg.aspx</DependentUpon>
@@ -852,47 +786,12 @@
     <Compile Include="GenerateBtnetscReg.aspx.designer.cs">
       <DependentUpon>GenerateBtnetscReg.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Versioning\Git\Blame.aspx.cs">
-      <DependentUpon>Blame.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Git\Blame.aspx.designer.cs">
-      <DependentUpon>Blame.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Git\Diff.aspx.cs">
-      <DependentUpon>Diff.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Git\Diff.aspx.designer.cs">
-      <DependentUpon>Diff.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Versioning\Git\Hook.aspx.cs">
       <DependentUpon>Hook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Versioning\Git\Hook.aspx.designer.cs">
       <DependentUpon>Hook.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Git\Log.aspx.cs">
-      <DependentUpon>Log.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Git\Log.aspx.designer.cs">
-      <DependentUpon>Log.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Git\View.aspx.cs">
-      <DependentUpon>View.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Git\View.aspx.designer.cs">
-      <DependentUpon>View.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Git\ViewRevisions.aspx.cs">
-      <DependentUpon>ViewRevisions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Git\ViewRevisions.aspx.designer.cs">
-      <DependentUpon>ViewRevisions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -932,13 +831,6 @@
     <Compile Include="Versioning\Hg\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Versioning\Hg\ViewRevisions.aspx.cs">
-      <DependentUpon>ViewRevisions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Hg\ViewRevisions.aspx.designer.cs">
-      <DependentUpon>ViewRevisions.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Bugs\Insert.aspx.cs">
       <DependentUpon>Insert.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -966,27 +858,6 @@
     </Compile>
     <Compile Include="Bugs\MobileList.aspx.designer.cs">
       <DependentUpon>MobileList.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Bugs\Merge.aspx.cs">
-      <DependentUpon>Merge.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\Merge.aspx.designer.cs">
-      <DependentUpon>Merge.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Organizations\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Organizations\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Admin\Projects\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\Projects\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyInfoExt.cs" />
@@ -1017,13 +888,6 @@
     </Compile>
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
-    </Compile>
-    <Compile Include="Subscribe.aspx.cs">
-      <DependentUpon>Subscribe.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Subscribe.aspx.designer.cs">
-      <DependentUpon>Subscribe.aspx</DependentUpon>
     </Compile>
     <Compile Include="Versioning\Svn\Blame.aspx.cs">
       <DependentUpon>Blame.aspx</DependentUpon>
@@ -1059,13 +923,6 @@
     </Compile>
     <Compile Include="Versioning\Svn\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Svn\ViewRevisions.aspx.cs">
-      <DependentUpon>ViewRevisions.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Svn\ViewRevisions.aspx.designer.cs">
-      <DependentUpon>ViewRevisions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Tags.aspx.cs">
       <DependentUpon>Tags.aspx</DependentUpon>
@@ -1109,13 +966,6 @@
     <Compile Include="Translate.aspx.designer.cs">
       <DependentUpon>Translate.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\UserDefinedAttributes\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\UserDefinedAttributes\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Admin\Users\List.aspx.cs">
       <DependentUpon>List.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1151,13 +1001,6 @@
     <Compile Include="ViewSubscribers.aspx.designer.cs">
       <DependentUpon>ViewSubscribers.aspx</DependentUpon>
     </Compile>
-    <Compile Include="WritePosts.aspx.cs">
-      <DependentUpon>WritePosts.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WritePosts.aspx.designer.cs">
-      <DependentUpon>WritePosts.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\ckeditor\.htaccess" />
@@ -1170,6 +1013,9 @@
     <Folder Include="App_Data\lucene_index\" />
     <Folder Include="App_Data\uploads\" />
     <Folder Include="Areas\Administration\Views\Shared\" />
+    <Folder Include="Areas\Versioning\Models\" />
+    <Folder Include="Areas\Versioning\Svn\" />
+    <Folder Include="Areas\Versioning\Views\Shared\" />
     <Folder Include="Models\News\" />
   </ItemGroup>
   <ItemGroup>
@@ -1192,6 +1038,28 @@
     <Content Include="Areas\Administration\Views\Priority\Edit.cshtml" />
     <Content Include="Areas\Administration\Views\Priority\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Home\EditStyles.cshtml" />
+    <Content Include="Areas\Administration\Views\Organization\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\CustomField\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\User\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\UserDefinedAttribute\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Project\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\CustomField\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\Organization\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\Project\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\User\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\UserDefinedAttribute\Delete.cshtml" />
+    <Content Include="Areas\Administration\Views\Organization\Edit.cshtml" />
+    <Content Include="Areas\Administration\Views\Project\Edit.cshtml" />
+    <Content Include="Areas\Administration\Views\Project\UpdateUserPermission.cshtml" />
+    <Content Include="Areas\Administration\Views\UserDefinedAttribute\Edit.cshtml" />
+    <Content Include="Areas\Versioning\Views\Web.config" />
+    <Content Include="Areas\Versioning\Views\Git\Index.cshtml" />
+    <Content Include="Areas\Versioning\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Versioning\Views\Hg\Index.cshtml" />
+    <Content Include="Areas\Versioning\Views\Svn\Index.cshtml" />
+    <Content Include="Areas\Versioning\Views\Git\Blame.cshtml" />
+    <Content Include="Areas\Versioning\Views\Git\Log.cshtml" />
+    <Content Include="Areas\Versioning\Views\Git\Diff.cshtml" />
     <None Include="packages.config" />
     <Content Include="Site.Master" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -1224,6 +1092,7 @@
     <Content Include="Views\Query\Index.cshtml" />
     <Content Include="Views\Account\LoginNt.cshtml" />
     <Content Include="Views\Account\MobileLogin.cshtml" />
+    <Content Include="Views\Bug\Merge.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

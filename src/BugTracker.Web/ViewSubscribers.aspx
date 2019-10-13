@@ -18,14 +18,14 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyContent" runat="server">
-    <div class="align">
+    <div class="main">
         Subscribers for <% Response.Write(Convert.ToString(this.Bugid)); %>
         <p>
 
             <table border="0">
                 <tr>
                     <td>
-                        <form class="frm" runat="server" action="~/ViewSubscribers.aspx">
+                        <form class="frm" runat="server" action="/ViewSubscribers.aspx">
                             <table>
                                 <tr>
                                     <td><span class="lbl">add subscriber:</span>

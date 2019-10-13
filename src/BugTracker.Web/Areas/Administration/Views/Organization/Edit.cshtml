@@ -1,0 +1,133 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Organization.EditModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <a href="@Url.Action("Index")">back to organizations</a>
+    <div>&nbsp;</div>
+
+    <table style="border-collapse: collapse; border: 0;">
+        <tr>
+            <td>
+                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Organization", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    if (Model.Id != 0)
+                    {
+                        @Html.HiddenFor(x => x.Id)
+                    }
+
+                    <table border="0">
+                        <tr>
+                            <td class="lbl">Organization Name:</td>
+                            <td>
+                                @Html.TextBoxFor(x => x.Name, new { @class = "txt", maxlength = "30", size = "30" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Name)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Domain (like, "example.com"):</td>
+                            <td>
+                                @Html.TextBoxFor(x => x.Domain, new { @class = "txt", maxlength = "80", size = "30" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Domain)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Active:</td>
+                            <td>
+                                @Html.CheckBoxFor(x => Active, new { @class = "cb" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Active)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2">
+                                <span class="smallnote">Can members of this organization view/edit bugs associated with other organizations?</span>
+                            </td>
+                        </tr>
+                        @*Permission level*@
+
+                        @*<tr>
+                            <td class="lbl">CSS Class:</td>
+                            <td>
+                                @Html.TextBoxFor(x => x.Style, new { @class = "txt", id = "style", maxlength = "10", size = "10" })
+                                &nbsp;&nbsp;<a target="_blank" href="@Url.Action("EditStyles", "Home")">more CSS info...</a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Style)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Default Selection:</td>
+                            <td>
+                                @Html.CheckBoxFor(x => x.Default, new { @class = "cb", id = "defaultSelection" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Default)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="right">
+                                <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
+                            </td>
+                        </tr>*@
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

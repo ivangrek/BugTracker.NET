@@ -1,0 +1,96 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Project.UpdateUserPermissionModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    @if (Model.ToProjects)
+    {
+        <a href="@Url.Action("Index")">back to projects</a>
+    }
+    else
+    {
+
+        <a href="@Url.Action("Update", new { id = Model.Id })">back to project</a>
+    }
+    <div>&nbsp;</div>
+
+    <table style="border-collapse: collapse; border: 0;">
+        <tr>
+            <td>
+                @using (Html.BeginForm("UpdateUserPermission", "Project", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.Id)
+                    @Html.HiddenFor(x => x.ToProjects)
+
+                    <table border="0">
+                        <tr>
+                            <td colspan="2">
+                                <span class="smallnote">@ViewBag.Caption</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2">
+                                <table class="datat">
+                                    <tr>
+                                        <td class="datah">User</td>
+                                        <td class="datah">Permissions</td>
+                                    </tr>
+
+                                    @foreach (var row in ViewBag.DataSet.Tables[0].Rows)
+                                    {
+                                        <tr>
+                                            <td class="datad">@row["us_username"]</td>
+                                            <td class="datad">
+                                                <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "0", (int)row["pu_permission_level"] == 0)&nbsp;none</label>
+                                                <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "1", (int)row["pu_permission_level"] == 1)&nbsp;view only</label>
+                                                <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "3", (int)row["pu_permission_level"] == 3)&nbsp;report (add and comment only)</label>
+                                                <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "2", (int)row["pu_permission_level"] == 2)&nbsp;all (add and edit)</label>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="err">
+                                @Html.ValidationMessage("Message")
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="right">
+                                <input class="btn" type="submit" value="Update" />
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

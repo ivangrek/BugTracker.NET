@@ -1,0 +1,118 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Bug.MergeModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script>
+        function submit_form() {
+            var frm = document.getElementById("frm");
+            frm.submit();
+            return true;
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <a href="~/Bugs/Edit.aspx?id=@Model.Id">back to @page.ApplicationSettings.SingularBugLabel</a>
+    <!--<a id="confirm_href" runat="server" href="">confirm delete</a>-->
+    <div>&nbsp;</div>
+
+    <table border="0">
+        <tr>
+            <td>
+                <p>
+                    Merge all comments, attachments, and subscriptions
+                    from "FROM" @page.ApplicationSettings.SingularBugLabel
+                    into "INTO" @page.ApplicationSettings.SingularBugLabel.
+                    <br>
+                    <span class="err">
+                        Note:&nbsp;&nbsp;"FROM" @page.ApplicationSettings.SingularBugLabel
+                        will be deleted!
+                    </span>
+                </p>
+
+                @using (Html.BeginForm("Merge", "Bug", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken();
+
+                    <table border="0">
+                        <tr>
+                            <td class="lbl" align="right">
+                                FROM @page.ApplicationSettings.SingularBugLabel:
+                            </td>
+
+                            <td align="left" valign="bottom">
+                                @if (Model.Confirm)
+                                {
+                                    @Html.HiddenFor(x => x.FromBugId)
+                                    <span class="stat">@Html.ValidationMessage("StaticFromBug")</span>
+                                    <br>
+                                    <span class="stat">@Html.ValidationMessage("StaticFromBugDescription")</span>
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(x => x.FromBugId, new { @class = "txt", size = "8" })
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <span class="err">@Html.ValidationMessageFor(x => x.FromBugId)</span>
+                            </td>
+                        <tr>
+                            <td class="lbl" align="right">
+                                INTO  @page.ApplicationSettings.SingularBugLabel:
+                            </td>
+
+                            <td align="left" valign="bottom">
+                                @if (Model.Confirm)
+                                {
+                                    @Html.HiddenFor(x => x.IntoBugId)
+                                    <span class="stat">@Html.ValidationMessage("StaticIntoBug")</span>
+                                    <br>
+                                    <span class="stat">@Html.ValidationMessage("StaticIntoBugDescription")</span>
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(x => x.IntoBugId, new { @class = "txt", size = "8" })
+                                }
+                            </td>
+                        <tr>
+                            <td colspan="2">
+                                <span class="err">@Html.ValidationMessageFor(x => x.IntoBugId)</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2" align="right">
+                                <input class="btn" type="submit" value="@(Model.Confirm ? "Confirm Merge" : "Merge" )" />
+                            </td>
+                        </tr>
+                    </table>
+
+                    @Html.HiddenFor(x => x.Id)
+                    @Html.HiddenFor(x => x.Confirm)
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

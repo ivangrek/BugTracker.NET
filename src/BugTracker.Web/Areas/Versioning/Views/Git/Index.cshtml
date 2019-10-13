@@ -1,0 +1,40 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.SortableTableModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    @*TODO <body width="600">*@
+    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <span>Git File Commits for @page.ApplicationSettings.SingularBugLabel&nbsp;@ViewBag.Id</span>
+
+    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", Model);
+    }
+    else
+    {
+        <div>No revisions.</div>
+    }
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

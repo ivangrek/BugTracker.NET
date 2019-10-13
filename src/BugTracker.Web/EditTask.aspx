@@ -37,7 +37,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <a href="Tasks.aspx?bugid=" <% Response.Write(Convert.ToString(this.Bugid)); %>>back to tasks</a>
+                    <a href="Tasks.aspx?bugid=<%= this.Bugid %>">back to tasks</a>
                     <p>
                         <form class="frm" runat="server">
                             <table border="0">

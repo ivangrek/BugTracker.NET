@@ -220,7 +220,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             this.categoryService.Delete(model.Id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

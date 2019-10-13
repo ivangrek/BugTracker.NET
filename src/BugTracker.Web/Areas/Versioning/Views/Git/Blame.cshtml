@@ -1,0 +1,72 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.SortableTableModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <table border="0" class="datat" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="datah">commit</td>
+            <td class="datah">author</td>
+            <td class="datah">text</td>
+            <td class="datah">date</td>
+        </tr>
+        @{
+            //f36d6c45 (corey 2009-10-04 19:44:42 -0500  1) asdfasdf
+            //f36d6c45 (corey 2009-10-04 19:44:42 -0500  2) asdf
+            //9f3ac5e7 (corey 2009-10-04 19:46:05 -0500  3) asdfab
+
+            var regex = new System.Text.RegularExpressions.Regex("\n");
+            var lines = regex.Split(ViewBag.BlameText);
+        }
+
+        @for (var i = 0; i < lines.Length; i++)
+        {
+            if (lines[i].Length > 40)
+            {
+                string commit;
+                string author;
+                string text;
+                string date;
+
+                commit = lines[i].Substring(0, 8);
+                var pos = lines[i].IndexOf(" ", 11); // position of space after author
+                author = lines[i].Substring(10, pos - 10);
+                date = lines[i].Substring(pos + 1, 19);
+                pos = lines[i].IndexOf(")", 40);
+                text = lines[i].Substring(pos + 2);
+
+                <tr>
+                    <td>@commit</td>
+                    <td nowrap>@author</td>
+                    <td nowrap style='background: #ddffdd'>
+                        <pre style='display:inline;'>@HttpUtility.HtmlEncode(text)</pre>
+                    <td>
+                    <td nowrap>@date
+                    <td>
+                </tr>
+            }
+        }
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

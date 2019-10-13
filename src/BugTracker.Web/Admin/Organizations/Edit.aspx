@@ -36,11 +36,12 @@
                             <tr>
                                 <td class="lbl">
                                 Domain (like, "example.com"):
-            <td>
-                <input runat="server" type="text" class="txt" id="og_domain" maxlength="80" size="30">
-            </td>
+                                <td>
+                                    <input runat="server" type="text" class="txt" id="og_domain" maxlength="80" size="30">
+                                </td>
                                 <td runat="server" class="err" id="domain_err">&nbsp;</td>
                             </tr>
+
                     <td class="lbl">Active:</td>
                 <td>
                     <asp:CheckBox runat="server" class="cb" ID="og_active" />
@@ -71,6 +72,7 @@
                 </tr>
 
         </table>
+
         <table border="0">
 
 

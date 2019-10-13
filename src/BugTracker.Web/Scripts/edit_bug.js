@@ -84,8 +84,8 @@ function rewrite_posts(bugid) {
     var images_inline = get_cookie("images_inline");
     var history_inline = get_cookie("history_inline");
 
-    var url = "/WritePosts.aspx?images_inline=" + images_inline
-        + "&history_inline=" + history_inline
+    var url = "/Bug/WritePosts?imagesInline=" + (images_inline == "1" ? "true" : "false")
+        + "&historyInline=" + (history_inline == "1" ? "true" : "false")
         + "&id=" + bugid;
 
     $.get(url, "", handle_rewrite_posts);
@@ -95,7 +95,7 @@ function toggle_notifications(bugid) {
     var el = get_el("get_stop_notifications");
     var text = get_text(el);
 
-    var url = "/Subscribe.aspx?ses="
+    var url = "/Bug/Subscribe?ses="
         + get_cookie("se_id2")
         + "&id="
         + bugid
@@ -106,7 +106,7 @@ function toggle_notifications(bugid) {
     else
         url += "0";
 
-    $.get(url);
+    $.post(url);
 
     // modify text in web page	
     if (text == "get notifications") {

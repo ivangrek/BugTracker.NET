@@ -37,7 +37,7 @@
 
             <% if (this.PermissionLevel == SecurityPermissionLevel.PermissionAll && (Security.User.IsAdmin || Security.User.CanEditTasks))
                 { %>
-            <a href="EditTask?id=0&bugid=" <% Response.Write(Convert.ToString(this.Bugid)); %>>add new task</a>
+            <a href="EditTask.aspx?id=0&bugid=<%= this.Bugid %>">add new task</a>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <a target="_blank" href="TasksAll.aspx">view all tasks</a>
             &nbsp;&nbsp;&nbsp;&nbsp;

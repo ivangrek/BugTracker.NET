@@ -14,7 +14,7 @@ namespace BugTracker.Web
 
     public partial class Tags : Page
     {
-        public Security Security { get; set; }
+        public ISecurity Security { get; set; }
 
         public void Page_Load(object sender, EventArgs e)
         {

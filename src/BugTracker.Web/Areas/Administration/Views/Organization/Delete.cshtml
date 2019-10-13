@@ -1,0 +1,46 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.Organization.DeleteModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script>
+        function submit_form() {
+            var frm = document.getElementById("frm");
+            frm.submit();
+            return true;
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <a href="@Url.Action("Index")">back to organizations</a>
+
+    <p>or</p>
+
+    @using (Html.BeginForm("Delete", "Organization", FormMethod.Post, new { id = "frm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Id)
+
+        <a href="javascript: submit_form()">confirm delete of organization: "@Model.Name"</a>
+    }
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

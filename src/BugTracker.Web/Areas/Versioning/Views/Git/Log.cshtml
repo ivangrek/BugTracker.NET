@@ -1,0 +1,175 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.SortableTableModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+    <script type="text/javascript" src="~/Scripts/version_control_sel_rev.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <p></p>
+    @using (Html.BeginForm("Diff", "Git", FormMethod.Get))
+    {
+        @*<input type="hidden" name="rev_0" id="rev_0" value="0" />
+        <input type="hidden" name="rev_1" id="rev_1" value="0" />*@
+        <input type="hidden" name="revpathid" id="revpathid" value="@ViewBag.RevPathId" />
+    }
+
+    <p></p>
+
+    <table border="1" class="datat">
+        <tr>
+            <td class="datah">
+                commit
+            </td>
+            <td class="datah">
+                author
+            </td>
+            <td class="datah">
+                date
+            </td>
+            <td class="datah">
+                path
+            </td>
+            <td class="datah">action</td>
+            <td class="datah">
+                msg
+            </td>
+            <td class="datah">
+                view
+            </td>
+            <td class="datah">
+                view<br>
+                annotated<br>
+                (git blame)
+            </td>
+            <td class="datah">
+                <a style="background: yellow; border-bottom: 2px black solid; border-left: 1px silver solid; border-right: 2px black solid; border-top: 1px silver solid; display: none;"
+                   id="do_diff_enabled" href="javascript:on_do_diff()">
+                    click<br>
+                    to<br>
+                    diff
+                </a>
+                <a style="color: red;" id="do_diff_disabled" href="javascript:on_do_diff()">
+                    select<br>
+                    two<br>
+                    commits
+                </a>
+            </td>
+        </tr>
+
+        @{
+            var regex = new System.Text.RegularExpressions.Regex("\n");
+            var lines = regex.Split(ViewBag.LogResult);
+
+            var commit = string.Empty;
+            var author = string.Empty;
+            var date = string.Empty;
+            var path = string.Empty;
+            var action = string.Empty;
+            var msg = string.Empty;
+            var row = 0;
+
+        }
+
+        @for (var i = 0; i < lines.Length; i++)
+        {
+            if (lines[i].StartsWith("commit "))
+            {
+                if (commit != string.Empty)
+                {
+                    ++row;
+
+                    <tr>
+                        <td class=datad>@commit</td>
+                        <td class=datad>@author</td>
+                        <td class=datad>@date</td>
+                        <td class=datad>@path</td>
+                        <td class=datad>@action</td>
+                        <td class=datad>@msg.Replace(Environment.NewLine, "<br/>")</td>
+                        <td class=datad>
+                            <a target=_blank href="~/Versioning/Git/Show?revpathid=@ViewBag.RevPathId&commit=@ViewBag.Commit">view</a>
+                        </td>
+                        <td class=datad>
+                            <a target=_blank href="~/Versioning/Git/Blame?revpathid=@ViewBag.RevPathId&commit=@ViewBag.Commit">annotated</a>
+                        </td>
+                        <td class=datad>
+                            <a id="@ViewBag.Commit" href="javascript:sel_for_diff(@row, '@ViewBag.Commit')">select for diff</a>
+                        </td>
+                    </tr>
+
+                    commit = string.Empty;
+                    author = string.Empty;
+                    date = string.Empty;
+                    path = string.Empty;
+                    action = string.Empty;
+                    msg = string.Empty;
+                }
+
+                commit = lines[i].Substring(7);
+            }
+            else if (lines[i].StartsWith("Author: "))
+            {
+                author = Server.HtmlEncode(lines[i].Substring(8));
+            }
+            else if (lines[i].StartsWith("Date: "))
+            {
+                date = lines[i].Substring(8, 19);
+            }
+            else if (lines[i].StartsWith("    "))
+            {
+                if (msg != string.Empty)
+                {
+                    msg += Environment.NewLine;
+                }
+
+                msg += lines[i].Substring(4);
+            }
+            else if (lines[i].Length > 1 && lines[i][1] == '\t')
+            {
+                action = lines[i].Substring(0, 1);
+                path = lines[i].Substring(2);
+            }
+        }
+
+        @if (commit != string.Empty)
+        {
+            <tr>
+                <td class=datad>@commit</td>
+                <td class=datad>@author</td>
+                <td class=datad>@date</td>
+                <td class=datad>@path</td>
+                <td class=datad>@action</td>
+                <td class=datad>@msg.Replace(Environment.NewLine, "<br/>")</td>
+                <td class=datad>
+                    <a target=_blank href="~/Versioning/Git/Show?revpathid=@ViewBag.RevPathId&commit=@ViewBag.Commit">view</a>
+                </td>
+                <td class=datad>
+                    <a target=_blank href="~/Versioning/Git/Blame?revpathid=@ViewBag.RevPathId&commit=@ViewBag.Commit">annotated</a>
+                </td>
+                <td class=datad>
+                    <a id="@ViewBag.Commit" href="javascript:sel_for_diff(@row, '@ViewBag.Commit')">select for diff</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

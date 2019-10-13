@@ -1,0 +1,103 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Areas.Administration.Models.UserDefinedAttribute.EditModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Head {
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <a href="@Url.Action("Index")">back to user defined attribute values</a>
+    <div>&nbsp;</div>
+
+    <table style="border-collapse: collapse; border: 0;">
+        <tr>
+            <td>
+                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "UserDefinedAttribute", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    if (Model.Id != 0)
+                    {
+                        @Html.HiddenFor(x => x.Id)
+                    }
+
+                    <table border="0">
+                        <tr>
+                            <td class="lbl">Description:</td>
+                            <td>
+                                @Html.TextBoxFor(x => x.Name, new { @class = "txt", maxlength = "20", size = "20" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Name)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2">
+                                <span class="smallnote">Sort Sequence controls the sort order in the dropdowns.</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Sort Sequence:</td>
+                            <td>
+                                @Html.TextBoxFor(x => x.SortSequence, new { @class = "txt", maxlength = "2", size = "2" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.SortSequence)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="lbl">Default Selection:</td>
+                            <td>
+                                @Html.CheckBoxFor(x => x.Default, new { @class = "cb", id = "defaultSelection" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="err">
+                                @Html.ValidationMessageFor(x => x.Default)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="right">
+                                <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}
