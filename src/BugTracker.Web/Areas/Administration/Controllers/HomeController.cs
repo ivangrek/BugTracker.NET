@@ -21,8 +21,10 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Threading;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
     using System.Xml;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class HomeController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -42,8 +44,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (false) // change this to if(true) to make the donation nag message go away
@@ -116,8 +116,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult GetDbDateTime()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             var dt = (DateTime)DbUtil.ExecuteScalar("select getdate()");
 
             return Content(dt.ToString("yyyyMMdd HH\\:mm\\:ss\\:fff"));
@@ -126,8 +124,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult ServerVariables()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             int loop1, loop2;
@@ -157,8 +153,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditCustomHtml(string which)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // default to footer
@@ -197,8 +191,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditCustomHtml(EditCustomHtmlModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // default to footer
@@ -247,8 +239,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult ViewWebConfig()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // create path
@@ -260,8 +250,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Query()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             // If there is a users table, then authenticate this page
             try
             {
@@ -308,8 +296,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Query(QueryModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             // If there is a users table, then authenticate this page
             try
             {
@@ -371,8 +357,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditWebConfig()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
@@ -398,8 +382,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditWebConfig(EditWebConfigModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
@@ -439,8 +421,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult BackupDb()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             ViewBag.Page = new PageModel
@@ -464,8 +444,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult BackupDb(BackupDbModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (string.IsNullOrEmpty(model.FileName))
@@ -490,8 +468,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult ManageLogs()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             ViewBag.Page = new PageModel
@@ -515,8 +491,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ManageLogs(ManageLogsModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (!string.IsNullOrEmpty(model.FileName))
@@ -532,8 +506,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Notification()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var dataSet = DbUtil.GetDataSet(
@@ -570,8 +542,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Notification(NotificationModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (model.Session != (string)Session["session_cookie"])
@@ -605,8 +575,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditStyles()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var dataSet = DbUtil.GetDataSet(

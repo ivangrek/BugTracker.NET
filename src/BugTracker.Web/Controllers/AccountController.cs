@@ -16,7 +16,9 @@ namespace BugTracker.Web.Controllers
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Security;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class AccountController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -36,7 +38,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!this.applicationSettings.AllowSelfRegistration)
@@ -58,7 +59,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!this.applicationSettings.AllowSelfRegistration)
@@ -135,7 +135,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult CompleteRegistration(string id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             var sql = @"
@@ -197,7 +196,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             // see if the connection string works
@@ -305,7 +303,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             // see if the connection string works
@@ -422,8 +419,6 @@ namespace BugTracker.Web.Controllers
         {
             using (DbUtil.GetSqlConnection())
             { }
-
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
 
             // Get authentication mode
             var authMode = this.applicationSettings.WindowsAuthentication;
@@ -613,7 +608,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult MobileLogin()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!this.applicationSettings.EnableMobile)
@@ -635,7 +629,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult MobileLogin(LoginModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!this.applicationSettings.EnableMobile)
@@ -682,7 +675,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Forgot()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!this.applicationSettings.ShowForgotPasswordLink)
@@ -704,7 +696,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Forgot(ForgotModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!this.applicationSettings.ShowForgotPasswordLink)
@@ -836,7 +827,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult ChangePassword(string id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             ViewBag.Page = new PageModel
@@ -858,7 +848,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(ChangePasswordModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             if (!Util.CheckPasswordStrength(model.Password))
@@ -928,7 +917,6 @@ namespace BugTracker.Web.Controllers
         //[ValidateAntiForgeryToken]    // TODO uncomment after migration
         public ActionResult Logoff()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
             Util.SetContext(System.Web.HttpContext.Current);
 
             using (DbUtil.GetSqlConnection())

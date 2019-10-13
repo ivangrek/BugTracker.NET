@@ -19,7 +19,9 @@ namespace BugTracker.Web.Controllers
     using System.Drawing.Imaging;
     using System.IO;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class ReportController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -39,8 +41,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -72,8 +72,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Show(int id, string view, int scale = 1)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -181,8 +179,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Select()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -213,8 +209,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -246,8 +240,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -287,8 +279,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -326,8 +316,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -367,8 +355,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -407,8 +393,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -435,8 +419,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Dashboard()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -476,8 +458,6 @@ order by ds_col, ds_row";
         [HttpGet]
         public ActionResult EditDashboard()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -518,8 +498,6 @@ order by ds_col, ds_row";
         [ValidateAntiForgeryToken]
         public ActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType, string sesion)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin

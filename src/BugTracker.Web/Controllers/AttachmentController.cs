@@ -16,7 +16,9 @@ namespace BugTracker.Web.Controllers
     using System.IO;
     using System.Text;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class AttachmentController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -159,8 +161,6 @@ namespace BugTracker.Web.Controllers
         {
             var bugId = id;
 
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (bugId == 0)
@@ -208,8 +208,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(CreateModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (model.BugId == 0)
@@ -331,8 +329,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Update(int id, int bugId)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -392,8 +388,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(UpdateModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -441,8 +435,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Delete(int id, int bugId)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -487,8 +479,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin

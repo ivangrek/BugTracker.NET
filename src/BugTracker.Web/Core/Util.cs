@@ -23,10 +23,7 @@ namespace BugTracker.Web.Core
         private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public static HttpContext Context;
-
         private static HttpRequest _request;
-        //private static HttpResponse Response = null;
-        //private static HttpServerUtility Server = null;
 
         private static readonly object Dummy = new object();
 
@@ -54,11 +51,6 @@ namespace BugTracker.Web.Core
                 WriteToLog("caught exception in util.SetContext:" + e.Message);
             }
         }
-
-        //public static string GetFormName()
-        //{
-        //    return ApplicationSettings.AspNetFormId;
-        //}
 
         public static string GetLogFilePath()
         {
@@ -149,21 +141,13 @@ namespace BugTracker.Web.Core
         //    list.Add(line);
         //}
 
+        [Obsolete("Use [OutputCache(Location = OutputCacheLocation.None)]")]
         public static void DoNotCache(HttpResponse response)
         {
             response.CacheControl = "no-cache";
             response.AddHeader("Pragma", "no-cache");
             response.Expires = -1;
         }
-
-        //public static string GetSetting(string name, string defaultValue)
-        //{
-        //    var nameValues
-        //        = (NameValueCollection)ConfigurationManager.GetSection("appSettings");
-        //    if (string.IsNullOrEmpty(nameValues[name]))
-        //        return defaultValue;
-        //    return nameValues[name];
-        //}
 
         public static bool IsInt(string maybeInt)
         {

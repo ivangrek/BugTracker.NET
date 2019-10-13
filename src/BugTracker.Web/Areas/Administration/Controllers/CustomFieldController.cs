@@ -13,7 +13,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using BugTracker.Web.Models;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class CustomFieldController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -30,8 +32,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             ViewBag.Page = new PageModel
@@ -55,8 +55,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var sql = @"select sc.name
@@ -90,8 +88,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // do delete here

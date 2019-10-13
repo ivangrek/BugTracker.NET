@@ -14,7 +14,9 @@ namespace BugTracker.Web.Controllers
     using System.Data;
     using System.Text;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class BugController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -31,8 +33,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -76,8 +76,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -103,10 +101,11 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public void Print(string format, int? queryId)
         {
-            if (Request["format"] != "excel")
-            {
-                Util.DoNotCache(System.Web.HttpContext.Current.Response);
-            };
+            // TODO
+            //if (Request["format"] != "excel")
+            //{
+            //    Util.DoNotCache(System.Web.HttpContext.Current.Response);
+            //};
 
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
@@ -151,8 +150,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult PrintDetail(int? id, int? queryId)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (id.HasValue)
@@ -233,8 +230,6 @@ namespace BugTracker.Web.Controllers
         [HttpPost]
         public ActionResult Subscribe(int id, string ses, string actn)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
@@ -268,8 +263,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult WritePosts(int id, bool imagesInline, bool historyInline)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
@@ -296,8 +289,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Merge(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAutorized = this.security.User.IsAdmin
@@ -331,8 +322,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Merge(MergeModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var isAutorized = this.security.User.IsAdmin

@@ -12,7 +12,9 @@ namespace BugTracker.Web.Controllers
     using BugTracker.Web.Models;
     using BugTracker.Web.Models.Query;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class QueryController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -32,8 +34,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Index(bool? showAll)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -65,8 +65,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var isAuthorized = this.security.User.IsAdmin
@@ -105,8 +103,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var isAuthorized = this.security.User.IsAdmin

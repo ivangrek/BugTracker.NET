@@ -6,7 +6,9 @@
     using System;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class GitController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -23,8 +25,6 @@
         [HttpGet]
         public ActionResult Index(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
@@ -82,8 +82,6 @@
         [HttpGet]
         public ActionResult Show(int revpathid, string commit)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var sql = @"
@@ -114,8 +112,6 @@
         [HttpGet]
         public ActionResult Blame(int revpathid, string commit)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var sql = @"
@@ -151,8 +147,6 @@
         [HttpGet]
         public ActionResult Log(int revpathid)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // get info about commit
@@ -195,8 +189,6 @@
         [HttpGet]
         public ActionResult Diff(int revpathid)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // get info about revision

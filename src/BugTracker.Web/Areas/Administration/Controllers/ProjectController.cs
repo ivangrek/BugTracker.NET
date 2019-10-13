@@ -16,7 +16,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Data;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class ProjectController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -33,8 +35,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             ViewBag.Page = new PageModel
@@ -76,8 +76,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             ViewBag.Page = new PageModel
@@ -114,8 +112,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var valsErrorString = Util.ValidateDropdownValues(model.CustomDropdown1Values);
@@ -223,8 +219,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // Get this entry's data from the db and fill in the form
@@ -312,8 +306,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var valsErrorString = Util.ValidateDropdownValues(model.CustomDropdown1Values);
@@ -430,8 +422,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult UpdateUserPermission(int id, bool projects = false)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var sql = @"Select us_username, us_id, isnull(pu_permission_level,$dpl) [pu_permission_level]
@@ -468,8 +458,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateUserPermission(UpdateUserPermissionModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             // now update all the recs
@@ -548,8 +536,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var sql = @"declare @cnt int
@@ -585,8 +571,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             var sql = @"delete projects where pj_id = $1"

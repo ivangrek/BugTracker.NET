@@ -13,7 +13,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using BugTracker.Web.Models;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class UserController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -30,8 +32,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             string sql;
@@ -137,8 +137,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (!this.security.User.IsAdmin)
@@ -195,8 +193,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
             if (!this.security.User.IsAdmin)

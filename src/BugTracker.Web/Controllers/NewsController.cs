@@ -15,7 +15,9 @@ namespace BugTracker.Web.Controllers
     using System.Linq;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class NewsController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -37,8 +39,6 @@ namespace BugTracker.Web.Controllers
                 return Content(string.Empty);
             }
 
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             ViewBag.Page = new PageModel
@@ -55,8 +55,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult WhatsNew(long since)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             if (!this.applicationSettings.EnableWhatsNewPage)
             {
                 return Content("Sorry, Web.config EnableWhatsNewPage is set to 0");

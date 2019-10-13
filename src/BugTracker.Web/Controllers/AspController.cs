@@ -14,7 +14,9 @@ namespace BugTracker.Web.Controllers
     using System.Text;
     using System.Threading;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class AspController : Controller
     {
         private readonly ISecurity security;
@@ -28,8 +30,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public void Ajax(int bugid)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // check permission
@@ -81,8 +81,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public void Ajax2(string q)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             // will this be too slow?
@@ -145,8 +143,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Install(string dbname)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             if (!string.IsNullOrEmpty(dbname))
             {
                 dbname = dbname.Replace("'", "''");
@@ -192,8 +188,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Upgrade273To274()
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             var sql = "select us_username, us_id, us_password from users where len(us_password) < 32";
 
             var ds = DbUtil.GetDataSet(sql);
@@ -221,8 +215,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Vote(string ses, int bugid)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (!this.security.User.IsGuest)
@@ -294,8 +286,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Seen(string ses, int bugid, int seen)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (!this.security.User.IsGuest)
@@ -347,8 +337,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Flag(string ses, int bugid, int flag)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             if (!this.security.User.IsGuest)

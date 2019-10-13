@@ -6,7 +6,9 @@
     using System;
     using System.Web;
     using System.Web.Mvc;
+    using System.Web.UI;
 
+    [OutputCache(Location = OutputCacheLocation.None)]
     public class SvnController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
@@ -23,8 +25,6 @@
         [HttpGet]
         public ActionResult Index(int id)
         {
-            Util.DoNotCache(System.Web.HttpContext.Current.Response);
-
             this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
