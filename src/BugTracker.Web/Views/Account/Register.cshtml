@@ -28,6 +28,7 @@
     @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "frm" }))
     {
         @Html.AntiForgeryToken()
+        @Html.Partial("_ValidationSummary")
 
         <div style="margin-bottom: 10px;">
             <div class="lbl" style="margin-bottom: 5px;">Username:</div>
@@ -54,7 +55,7 @@
         <div style="margin-bottom: 10px;">
             <div class="lbl" style="margin-bottom: 5px;">Password:</div>
             <div>
-                @Html.TextBoxFor(x => x.Password, new { @class = "txt", type="password", style = "box-sizing: border-box; width: 100%;" })
+                @Html.TextBoxFor(x => x.Password, new { @class = "txt", type = "password", style = "box-sizing: border-box; width: 100%;" })
             </div>
             <div class="err">
                 @Html.ValidationMessageFor(x => x.Password)
@@ -64,7 +65,7 @@
         <div style="margin-bottom: 10px;">
             <div class="lbl" style="margin-bottom: 5px;">Confirm Password:</div>
             <div>
-                @Html.TextBoxFor(x => x.ConfirmedPassword, new { @class = "txt", type="password", style = "box-sizing: border-box; width: 100%;" })
+                @Html.TextBoxFor(x => x.ConfirmedPassword, new { @class = "txt", type = "password", style = "box-sizing: border-box; width: 100%;" })
             </div>
             <div class="err">
                 @Html.ValidationMessageFor(x => x.ConfirmedPassword)
@@ -88,12 +89,6 @@
             </div>
             <div class="err">
                 @Html.ValidationMessageFor(x => x.LastName)
-            </div>
-        </div>
-
-        <div style="margin-bottom: 10px;">
-            <div class="err">
-                @Html.ValidationMessage("Message")
             </div>
         </div>
 

@@ -32,44 +32,39 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <table border="0">
-        <tr>
-            <td>
-                @using (Html.BeginForm("BackupDb", "Home", FormMethod.Post, new { id = "frm" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.HiddenFor(x => x.FileName, new { id = "fileName" })
+@section BodySubHeader {
+}
 
-                    if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
-                    {
-                        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
-                    }
-                    else
-                    {
-                        <div>No files.</div>
-                    }
+@using (Html.BeginForm("BackupDb", "Home", FormMethod.Post, new { id = "frm", @class = "mb-3" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Partial("_ValidationSummary")
 
-                    <div class="err" id="msg" runat="server">
-                        @Html.ValidationMessage("Message")
-                    </div>
+    @Html.HiddenFor(x => x.FileName, new { id = "fileName" })
 
-                    <div>
-                        <input type="submit" value="Backup Database Now" class="btn" />
-                    </div>
-                }
+    if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+    }
+    else
+    {
+        <div>No files.</div>
+    }
 
-                <p>You can use SQL like this to restore your backup to your own server:</p>
-                <div>
-                    RESTORE DATABASE your_database<br>
-                    FROM DISK = 'C:\path\to\your\your_backup_file.bak'<br>
-                    WITH<br>
-                    MOVE 'btnet' TO 'C:\path\to\where\you\want\your_db_data.mdf',<br>
-                    MOVE 'btnet_log'  TO 'C:\path\to\where\you\want\your_db_log.ldf', REPLACE<br>
-                </div>
-            </td>
-        </tr>
-    </table>
+    <div>
+        <button type="submit" class="btn btn-primary">Backup Database Now</button>
+    </div>
+}
+
+<div class="alert alert-info" role="alert">
+    You can use SQL like this to restore your backup to your own server:
+    <div>
+        RESTORE DATABASE your_database<br>
+        FROM DISK = 'C:\path\to\your\your_backup_file.bak'<br>
+        WITH<br>
+        MOVE 'btnet' TO 'C:\path\to\where\you\want\your_db_data.mdf',<br>
+        MOVE 'btnet_log'  TO 'C:\path\to\where\you\want\your_db_log.ldf', REPLACE<br>
+    </div>
 </div>
 
 @section BodyFooter {

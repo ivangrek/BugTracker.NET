@@ -32,32 +32,25 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <table border="0">
-        <tr>
-            <td>
-                @using (Html.BeginForm("ManageLogs", "Home", FormMethod.Post, new { id = "frm" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.HiddenFor(x => x.FileName, new { id = "fileName" })
+@section BodySubHeader {
+}
 
-                    if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
-                    {
-                        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
-                    }
-                    else
-                    {
-                        <div>No files.</div>
-                    }
+@using (Html.BeginForm("ManageLogs", "Home", FormMethod.Post, new { id = "frm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Partial("_ValidationSummary")
 
-                    <div class="err" id="msg" runat="server">
-                        @Html.ValidationMessage("Message")
-                    </div>
-                }
-            </td>
-        </tr>
-    </table>
-</div>
+    @Html.HiddenFor(x => x.FileName, new { id = "fileName" })
+
+    if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+    }
+    else
+    {
+        <div>No files.</div>
+    }
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

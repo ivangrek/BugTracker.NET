@@ -20,21 +20,24 @@
         var shown = true;
 
         function showhide_form() {
-            var frm = document.getElementById("frm");
+            var frm = document.getElementById("card");
+
             if (shown) {
                 frm.style.display = "none";
                 shown = false;
-                showhide.firstChild.nodeValue = "show form";
+                showhide.firstChild.nodeValue = "Show form";
             } else {
                 frm.style.display = "block";
                 shown = true;
-                showhide.firstChild.nodeValue = "hide form";
+                showhide.firstChild.nodeValue = "Hide form";
             }
         }
 
         function on_dbtables_changed() {
             var tablesSel = document.getElementById("dbtables_select");
+
             selected_text = tablesSel.options[tablesSel.selectedIndex].text;
+
             if (selected_text != "Select Table") {
                 document.getElementById("queryText").value = "select * from " + selected_text;
             }
@@ -46,55 +49,56 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <table border="0">
-        <tr>
-            <td style="background: yellow; border: red solid 2px; color: #ff0000; font-size: 8pt; font-weight: bold; padding: 4px;">
-                This page is not safe on a public web server.
-                After you install BugTracker.NET on a public web server, please delete it.
-            </td>
-        </tr>
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="javascript:showhide_form()" id="showhide" class="nav-link">Hide form</a>
+        </nav>
+    </div>
+}
 
-        <tr>
-            <td>
-                @Html.DropDownList("DbTables", (List<SelectListItem>)ViewBag.DbTables, new { id = "dbtables_select", onchange = "on_dbtables_changed()" })
-                <div style="float: right;">
-                    <a href="javascript:showhide_form()" id="showhide">hide form</a>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="alert alert-danger" role="alert">
+            This page is not safe on a public web server. After you install BugTracker.NET on a public web server, please delete it.
+        </div>
+
+        <div class="form-group">
+            @Html.DropDownList("DbTables", (List<SelectListItem>)ViewBag.DbTables, new { id = "dbtables_select", onchange = "on_dbtables_changed()" })
+        </div>
+
+        <div class="card bg-light" id="card">
+            <div class="card-body">
                 @using (Html.BeginForm("Query", "Home", FormMethod.Post, new { id = "frm", @class = "frm" }))
                 {
                     @Html.AntiForgeryToken()
 
-                    @:Or enter SQL:
-                    <br>
-                    @Html.TextAreaFor(x => x.Text, new { id = "queryText", rows = "15", cols = "70" })
-                    <p>
-                        <input runat="server" type="submit" class="btn" value="Execute SQL" />
-                    </p>
+                    <div class="form-group">
+                        <label>Or enter SQL:</label>
+                        @Html.TextAreaFor(x => x.Text, new { id = "queryText", @class = "form-control", rows = "15", cols = "70" })
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Execute SQL</button>
                 }
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
 
-    @if (!string.IsNullOrEmpty(ViewBag.ExceptionMessage))
-    {
-        <span class=err>@ViewBag.ExceptionMessage</span>
-        <br>
-    }
-
-    @if (ViewBag.Table != null && ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
-    {
-        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
-    }
-    else
-    {
-        <span>No Rows</span>
-    }
+        @if (!string.IsNullOrEmpty(ViewBag.ExceptionMessage))
+        {
+            <span class=err>@ViewBag.ExceptionMessage</span>
+            <br>
+        }
+    </div>
 </div>
+
+@if (ViewBag.Table != null && ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+}
+else
+{
+    <span>No Rows</span>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

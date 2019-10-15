@@ -17,6 +17,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class PriorityController : Controller
     {
@@ -37,8 +38,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -61,13 +60,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create priority",
+                Title = $"{this.applicationSettings.AppTitle} - new priority",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -83,15 +80,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Priority was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create priority",
+                    Title = $"{this.applicationSettings.AppTitle} - new priority",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -116,8 +113,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // Get this entry's data from the db and fill in the form
             var dataRow = this.priorityService.LoadOne(id);
 
@@ -125,7 +120,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update priority",
+                Title = $"{this.applicationSettings.AppTitle} - edit priority",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -146,15 +141,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Priority was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update priority",
+                    Title = $"{this.applicationSettings.AppTitle} - edit priority",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -179,8 +174,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.priorityService.CheckDeleting(id);
 
             if (!valid)
@@ -192,7 +185,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - delete status",
+                Title = $"{this.applicationSettings.AppTitle} - delete priority",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -209,8 +202,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.priorityService.CheckDeleting(model.Id);
 
             if (!valid)

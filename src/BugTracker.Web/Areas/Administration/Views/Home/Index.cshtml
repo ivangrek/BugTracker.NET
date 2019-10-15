@@ -77,95 +77,94 @@
 
 }
 
-<div class="main">
-    <table border="0">
-        <tr>
-            <td>
-                <ul>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "User")">Users</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "Organization")">Organizations</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "Project")">Projects</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "Category")">Categories</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "Priority")">Priorities</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "Status")">Statuses</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "UserDefinedAttribute")">User Defined Attributes</a>
-                        &nbsp;&nbsp;<span class="smallnote">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</span>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Index", "CustomField")">Custom Fields</a>
-                        &nbsp;&nbsp;<span class="smallnote">(add custom fields to the bug page)</span>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a target="_blank" href="@Url.Action("Query", "Home")">Run Ad-hoc Query</a>
-                        &nbsp;&nbsp;
-                        <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">This links to Query.&nbsp;&nbsp;Query is potentially unsafe.&nbsp;&nbsp;Delete it if you are deploying on a public web server.</span>
-                        <br>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("Notification", "Home")">Queued Email Notifications</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
-                        &nbsp;&nbsp;
-                        <span style="border: solid red 1px; color: red; font-size: 9px; margin: 3px; padding: 2px;">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!</span>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("BackupDb", "Home")">Backup Database</a>
-                    </li>
-                    <p></p>
-                    <li class="listitem">
-                        <a href="@Url.Action("ManageLogs", "Home")">Manage Logs</a>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-    </table>
-    <p>
-        &nbsp;
-    <p>
-    <p>
-        Server Info:
-        <br>
-        @HttpContext.Current.Server.MapPath(null)
-        <br>
+<h6>Main:</h6>
+<ul class="pl-4">
+    <li class="listitem">
+        <a href="@Url.Action("Index", "User")">Users</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "Organization")">Organizations</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "Project")">Projects</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "Category")">Categories</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "Priority")">Priorities</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "Status")">Statuses</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "UserDefinedAttribute")">User Defined Attributes</a>
+        <small class="text-muted">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</small>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Index", "CustomField")">Custom Fields</a>
+        <small class="text-muted">(add custom fields to the bug page)</small>
+    </li>
+</ul>
+
+<h6>Special:</h6>
+<ul class="pl-4">
+    <li class="listitem">
+        <a target="_blank" href="@Url.Action("Query", "Home")">Run Ad-hoc Query</a>
+        <small class="text-danger border border-danger">This links to Query.&nbsp;Query is potentially unsafe.&nbsp;Delete it if you are deploying on a public web server.</small>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("Notification", "Home")">Queued Email Notifications</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
+        <small class="text-danger border border-danger">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!</small>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("BackupDb", "Home")">Backup Database</a>
+    </li>
+
+    <li class="listitem">
+        <a href="@Url.Action("ManageLogs", "Home")">Manage Logs</a>
+    </li>
+</ul>
+
+<h6>Server Info:</h6>
+<ul class="pl-4">
+    <li>
+        Path = @HttpContext.Current.Server.MapPath(null)
+    </li>
+
+    <li>
         MachineName = @HttpContext.Current.Server.MachineName
-        <br>
+    </li>
+
+    <li>
         ScriptTimeout = @HttpContext.Current.Server.ScriptTimeout
-        <br>
+    </li>
+
+    <li>
         .NET Version = @Environment.Version.ToString()
-        <br>
+    </li>
+
+    <li>
         CurrentCulture = @System.Threading.Thread.CurrentThread.CurrentCulture.Name
-    </p>
-</div>
+    </li>
+</ul>
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

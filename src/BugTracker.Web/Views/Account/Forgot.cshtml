@@ -28,6 +28,7 @@
     @using (Html.BeginForm("Forgot", "Account", FormMethod.Post, new { @class = "frm" }))
     {
         @Html.AntiForgeryToken()
+        @Html.Partial("_ValidationSummary")
 
         <div style="margin-bottom: 10px;">
             <span class="smallnote">Enter Username or Email or both</span>
@@ -45,10 +46,6 @@
             <div>
                 @Html.TextBoxFor(x => x.Email, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
             </div>
-        </div>
-
-        <div class="err">
-            @Html.ValidationMessage("Message")
         </div>
 
         <div style="text-align: right;">

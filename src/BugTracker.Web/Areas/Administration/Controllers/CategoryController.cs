@@ -17,6 +17,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class CategoryController : Controller
     {
@@ -37,8 +38,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -60,13 +59,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create category",
+                Title = $"{this.applicationSettings.AppTitle} - new category",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -77,15 +74,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Categoty was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create category",
+                    Title = $"{this.applicationSettings.AppTitle} - new category",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -108,8 +105,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // Get this entry's data from the db and fill in the form
             var dataRow = this.categoryService.LoadOne(id);
 
@@ -117,7 +112,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update category",
+                Title = $"{this.applicationSettings.AppTitle} - edit category",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -136,15 +131,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Categoty was not updated.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update category",
+                    Title = $"{this.applicationSettings.AppTitle} - edit category",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -167,8 +162,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.categoryService.CheckDeleting(id);
 
             if (!valid)
@@ -197,8 +190,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.categoryService.CheckDeleting(model.Id);
 
             if (!valid)

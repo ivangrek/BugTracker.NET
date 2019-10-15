@@ -8,9 +8,12 @@
 namespace BugTracker.Web.Controllers
 {
     using BugTracker.Web.Core;
+    using BugTracker.Web.Core.Controls;
     using BugTracker.Web.Models;
     using BugTracker.Web.Models.Account;
     using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Data.SqlClient;
     using System.DirectoryServices;
     using System.Web;
@@ -73,7 +76,7 @@ namespace BugTracker.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Message", "Registration was not submitted.");
+                ModelState.AddModelError(string.Empty, "Registration was not submitted.");
 
                 ViewBag.Page = new PageModel
                 {
@@ -120,7 +123,7 @@ namespace BugTracker.Web.Controllers
                 + "'>complete registration</a>.",
                 BtnetMailFormat.Html);
 
-            ModelState.AddModelError("Message", $"An email has been sent to {model.Email}<br>Please click on the link in the email message to complete registration.");
+            ModelState.AddModelError(string.Empty, $"An email has been sent to {model.Email}<br>Please click on the link in the email message to complete registration.");
 
             ViewBag.Page = new PageModel
             {
@@ -155,11 +158,11 @@ namespace BugTracker.Web.Controllers
 
             if (dr == null)
             {
-                ModelState.AddModelError("Message", "The link you clicked on is expired or invalid.<br>Please start over again.");
+                ModelState.AddModelError(string.Empty, "The link you clicked on is expired or invalid.<br>Please start over again.");
             }
             else if ((int)dr["expired"] == 1)
             {
-                ModelState.AddModelError("Message", "The link you clicked has expired.<br>Please start over again.");
+                ModelState.AddModelError(string.Empty, "The link you clicked has expired.<br>Please start over again.");
             }
             else
             {
@@ -180,7 +183,7 @@ namespace BugTracker.Web.Controllers
 
                 DbUtil.ExecuteNonQuery(sql);
 
-                ModelState.AddModelError("Message", "Your registration is complete.");
+                ModelState.AddModelError(string.Empty, "Your registration is complete.");
             }
 
             ViewBag.Page = new PageModel
@@ -214,12 +217,12 @@ namespace BugTracker.Web.Controllers
                     Util.WriteToLog(ex.Message);
                     Util.WriteToLog(this.applicationSettings.ConnectionString);
 
-                    ModelState.AddModelError("Message", "Unable to find \"bugs\" table.<br>Click to <a href='/Asp/Install'>setup database tables</a>");
+                    ModelState.AddModelError(string.Empty, "Unable to find \"bugs\" table.<br>Click to <a href='/Asp/Install'>setup database tables</a>");
                 }
             }
             catch (SqlException e2)
             {
-                ModelState.AddModelError("Message", "Unable to connect.<br>"
+                ModelState.AddModelError(string.Empty, "Unable to connect.<br>"
                                      + e2.Message + "<br>"
                                      + "Check Web.config file \"ConnectionString\" setting.<br>"
                                      + "Check also README.html<br>"
@@ -256,7 +259,7 @@ namespace BugTracker.Web.Controllers
             }
             else
             {
-                ModelState.AddModelError("Message", $"Error during windows authentication:<br>{HttpUtility.HtmlEncode(Request.QueryString["msg"])}");
+                ModelState.AddModelError(string.Empty, $"Error during windows authentication:<br>{HttpUtility.HtmlEncode(Request.QueryString["msg"])}");
             }
 
             // strange code
@@ -321,12 +324,12 @@ namespace BugTracker.Web.Controllers
                     Util.WriteToLog(ex.Message);
                     Util.WriteToLog(this.applicationSettings.ConnectionString);
 
-                    ModelState.AddModelError("Message", "Unable to find \"bugs\" table.<br>Click to <a href='/Asp/Install'>setup database tables</a>");
+                    ModelState.AddModelError(string.Empty, "Unable to find \"bugs\" table.<br>Click to <a href='/Asp/Install'>setup database tables</a>");
                 }
             }
             catch (SqlException e2)
             {
-                ModelState.AddModelError("Message", "Unable to connect.<br>"
+                ModelState.AddModelError(string.Empty, "Unable to connect.<br>"
                                      + e2.Message + "<br>"
                                      + "Check Web.config file \"ConnectionString\" setting.<br>"
                                      + "Check also README.html<br>"
@@ -363,7 +366,7 @@ namespace BugTracker.Web.Controllers
             }
             else
             {
-                ModelState.AddModelError("Message", $"Error during windows authentication:<br>{HttpUtility.HtmlEncode(Request.QueryString["msg"])}");
+                ModelState.AddModelError(string.Empty, $"Error during windows authentication:<br>{HttpUtility.HtmlEncode(Request.QueryString["msg"])}");
             }
 
             // OnLogon
@@ -396,12 +399,12 @@ namespace BugTracker.Web.Controllers
                     // How could this happen?  If someday the authentication
                     // method uses, say LDAP, then check_password could return
                     // true, even though there's no user in the database";
-                    ModelState.AddModelError("Message", "User not found in database");
+                    ModelState.AddModelError(string.Empty, "User not found in database");
                 }
             }
             else
             {
-                ModelState.AddModelError("Message", "Invalid User or Password.");
+                ModelState.AddModelError(string.Empty, "Invalid User or Password.");
             }
 
             ViewBag.Page = new PageModel
@@ -659,7 +662,7 @@ namespace BugTracker.Web.Controllers
             }
             else
             {
-                ModelState.AddModelError("Message", "Invalid User or Password.");
+                ModelState.AddModelError(string.Empty, "Invalid User or Password.");
             }
 
             ViewBag.Page = new PageModel
@@ -705,11 +708,11 @@ namespace BugTracker.Web.Controllers
 
             if (string.IsNullOrEmpty(model.Login) && string.IsNullOrEmpty(model.Email))
             {
-                ModelState.AddModelError("Message", "Enter either your Username or your Email address.");
+                ModelState.AddModelError(string.Empty, "Enter either your Username or your Email address.");
             }
             else if (!string.IsNullOrEmpty(model.Email) && !Util.ValidateEmail(model.Email))
             {
-                ModelState.AddModelError("Message", "Format of email address is invalid.");
+                ModelState.AddModelError(string.Empty, "Format of email address is invalid.");
             }
             else
             {
@@ -801,16 +804,16 @@ namespace BugTracker.Web.Controllers
 
                     if (string.IsNullOrEmpty(result))
                     {
-                        ModelState.AddModelError("Message", "An email with password info has been sent to you.");
+                        ModelState.AddModelError(string.Empty, "An email with password info has been sent to you.");
                     }
                     else
                     {
-                        ModelState.AddModelError("Message", "There was a problem sending the email." + "<br>" + result);
+                        ModelState.AddModelError(string.Empty, "There was a problem sending the email." + "<br>" + result);
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("Message", "Unknown username or email address.<br>Are you sure you spelled everything correctly?<br>Try just username, just email, or both.");
+                    ModelState.AddModelError(string.Empty, "Unknown username or email address.<br>Are you sure you spelled everything correctly?<br>Try just username, just email, or both.");
                 }
             }
 
@@ -852,7 +855,7 @@ namespace BugTracker.Web.Controllers
 
             if (!Util.CheckPasswordStrength(model.Password))
             {
-                ModelState.AddModelError("Message", "Password is not difficult enough to guess.<br>Avoid common words.<br>Try using a mixture of lowercase, uppercase, digits, and special characters.");
+                ModelState.AddModelError(string.Empty, "Password is not difficult enough to guess.<br>Avoid common words.<br>Try using a mixture of lowercase, uppercase, digits, and special characters.");
             }
 
             if (!ModelState.IsValid)
@@ -890,17 +893,17 @@ namespace BugTracker.Web.Controllers
 
             if (dr == null)
             {
-                ModelState.AddModelError("Message", "The link you clicked on is expired or invalid.<br>Please start over again.");
+                ModelState.AddModelError(string.Empty, "The link you clicked on is expired or invalid.<br>Please start over again.");
             }
             else if ((int)dr["expired"] == 1)
             {
-                ModelState.AddModelError("Message", "The link you clicked has expired.<br>Please start over again.");
+                ModelState.AddModelError(string.Empty, "The link you clicked has expired.<br>Please start over again.");
             }
             else
             {
                 Util.UpdateUserPassword((int)dr["el_user_id"], model.Password);
 
-                ModelState.AddModelError("Message", "Your password has been changed.");
+                ModelState.AddModelError(string.Empty, "Your password has been changed.");
             }
 
             ViewBag.Page = new PageModel
@@ -957,6 +960,260 @@ namespace BugTracker.Web.Controllers
             return Redirect("~/");
         }
 
+        [HttpGet]
+        public ActionResult Settings()
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - edit your settings",
+                SelectedItem = MainMenuSections.Settings
+            };
+
+            InitSettingsLists();
+
+            var sql = @"select pj_id, pj_name, isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
+                from projects
+                left outer join project_user_xref on pj_id = pu_project and $us = pu_user
+                where isnull(pu_permission_level,$dpl) <> 0
+                order by pj_name";
+
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql = sql.Replace("$dpl", this.applicationSettings.DefaultPermissionLevel.ToString());
+
+            var projectsDv = DbUtil.GetDataView(sql);
+            var projectsAutoSubscribe = new List<int>();
+
+            foreach (DataRowView row in projectsDv)
+            {
+                if ((int)row["pu_auto_subscribe"] == 1)
+                {
+                    projectsAutoSubscribe.Add((int)row["pj_id"]);
+                }
+            }
+
+            // Get this entry's data from the db and fill in the form
+            // MAW -- 2006/01/27 -- Converted to use new notification columns
+            sql = @"select
+                us_username [username],
+                isnull(us_firstname,'') [firstname],
+                isnull(us_lastname,'') [lastname],
+                isnull(us_bugs_per_page,10) [us_bugs_per_page],
+                us_use_fckeditor,
+                us_enable_bug_list_popups,
+                isnull(us_email,'') [email],
+                us_enable_notifications,
+                us_send_notifications_to_self,
+                us_reported_notifications,
+                us_assigned_notifications,
+                us_subscribed_notifications,
+                us_auto_subscribe,
+                us_auto_subscribe_own_bugs,
+                us_auto_subscribe_reported_bugs,
+                us_default_query,
+                isnull(us_signature,'') [signature]
+                from users
+                where us_id = $id";
+
+            sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+
+            var dr = DbUtil.GetDataRow(sql);
+
+            // Fill in this form
+            var model = new SettingsModel
+            {
+                FirstName = (string)dr["firstname"],
+                LastName = (string)dr["lastname"],
+                BugsPerPage = (int)dr["us_bugs_per_page"],
+                EditText = Convert.ToBoolean((int)dr["us_use_fckeditor"]),
+                EnableBugListPopups = Convert.ToBoolean((int)dr["us_enable_bug_list_popups"]),
+                Email = (string)dr["email"],
+                EnableNotifications = Convert.ToBoolean((int)dr["us_enable_notifications"]),
+                NotificationsForAllOtherSubscribedBugs = (int)dr["us_subscribed_notifications"],
+                NotificationsSubscribedBugsReportedByMe = (int)dr["us_reported_notifications"],
+                NotificationsSubscribedBugsAssignedToMe = (int)dr["us_assigned_notifications"],
+                SendNotificationsEvenForItemsAddOrChange = Convert.ToBoolean((int)dr["us_send_notifications_to_self"]),
+                AutoSubscribeToAllItems = Convert.ToBoolean((int)dr["us_auto_subscribe"]),
+                AutoSubscribeToAllItemsAssignedToYou = Convert.ToBoolean((int)dr["us_auto_subscribe_own_bugs"]),
+                AutoSubscribeToAllItemsReportedByYou = Convert.ToBoolean((int)dr["us_auto_subscribe_reported_bugs"]),
+                EmailSignature = (string)dr["signature"],
+                DefaultQueryId = (int)dr["us_default_query"],
+                AutoSubscribePerProjectIds = projectsAutoSubscribe
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Settings(SettingsModel model)
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - edit your settings",
+                SelectedItem = MainMenuSections.Settings
+            };
+
+            InitSettingsLists();
+
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                if (!Util.CheckPasswordStrength(model.Password))
+                {
+                    ModelState.AddModelError(nameof(SettingsModel.Password), "Password is not difficult enough to guess.<br>Avoid common words.<br>Try using a mixture of lowercase, uppercase, digits, and special characters.");
+                }
+
+                if (model.ConfirmedPassword != model.Password)
+                {
+                    ModelState.AddModelError(nameof(SettingsModel.ConfirmedPassword), "Confirm Password must match Password.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, "Your settings have not been updated.");
+
+                return View(model);
+            }
+
+            var sql = @"update users set
+                us_firstname = N'$fn',
+                us_lastname = N'$ln',
+                us_bugs_per_page = N'$bp',
+                us_use_fckeditor = $fk,
+                us_enable_bug_list_popups = $pp,
+                us_email = N'$em',
+                us_enable_notifications = $en,
+                us_send_notifications_to_self = $ss,
+                us_reported_notifications = $rn,
+                us_assigned_notifications = $an,
+                us_subscribed_notifications = $sn,
+                us_auto_subscribe = $as,
+                us_auto_subscribe_own_bugs = $ao,
+                us_auto_subscribe_reported_bugs = $ar,
+                us_default_query = $dq,
+                us_signature = N'$sg'
+                where us_id = $id";
+
+            sql = sql.Replace("$fn", model.FirstName);
+            sql = sql.Replace("$ln", model.LastName);
+            sql = sql.Replace("$bp", model.BugsPerPage.ToString());
+            sql = sql.Replace("$fk", Util.BoolToString(model.EditText));
+            sql = sql.Replace("$pp", Util.BoolToString(model.EnableBugListPopups));
+            sql = sql.Replace("$em", model.Email);
+            sql = sql.Replace("$en", Util.BoolToString(model.EnableNotifications));
+            sql = sql.Replace("$ss", Util.BoolToString(model.SendNotificationsEvenForItemsAddOrChange));
+            sql = sql.Replace("$rn", model.NotificationsSubscribedBugsReportedByMe.ToString());
+            sql = sql.Replace("$an", model.NotificationsSubscribedBugsAssignedToMe.ToString());
+            sql = sql.Replace("$sn", model.NotificationsForAllOtherSubscribedBugs.ToString());
+            sql = sql.Replace("$as", Util.BoolToString(model.AutoSubscribeToAllItems));
+            sql = sql.Replace("$ao", Util.BoolToString(model.AutoSubscribeToAllItemsAssignedToYou));
+            sql = sql.Replace("$ar", Util.BoolToString(model.AutoSubscribeToAllItemsReportedByYou));
+            sql = sql.Replace("$dq", model.DefaultQueryId.ToString());
+            sql = sql.Replace("$sg", model.EmailSignature);
+            sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+
+            // update user
+            DbUtil.ExecuteNonQuery(sql);
+
+            // update the password
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                Util.UpdateUserPassword(this.security.User.Usid, model.Password);
+            }
+
+            // Now update project_user_xref
+            // First turn everything off, then turn selected ones on.
+            sql = @"update project_user_xref
+                set pu_auto_subscribe = 0 where pu_user = $id";
+
+            sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+
+            DbUtil.ExecuteNonQuery(sql);
+
+            // Second see what to turn back on
+            var projects = string.Empty;
+
+            foreach (var id in model.AutoSubscribePerProjectIds)
+            {
+                if (!string.IsNullOrEmpty(projects))
+                {
+                    projects += ",";
+                }
+
+                projects += Convert.ToInt32(id);
+            }
+
+            // If we need to turn anything back on
+            if (!string.IsNullOrEmpty(projects))
+            {
+                sql = @"update project_user_xref
+                    set pu_auto_subscribe = 1 where pu_user = $id and pu_project in ($projects)
+
+                insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
+                    select pj_id, $id, 1
+                    from projects
+                    where pj_id in ($projects)
+                    and pj_id not in (select pu_project from project_user_xref where pu_user = $id)";
+
+                sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+                sql = sql.Replace("$projects", projects);
+
+                DbUtil.ExecuteNonQuery(sql);
+            }
+
+            // apply subscriptions retroactively
+            if (model.ApplySubscriptionChangesRetroactively)
+            {
+                sql = @"delete from bug_subscriptions where bs_user = $id;";
+
+                if (model.AutoSubscribeToAllItems)
+                {
+                    sql += @"insert into bug_subscriptions (bs_bug, bs_user)
+                    select bg_id, $id from bugs;";
+                }
+                else
+                {
+                    if (model.AutoSubscribeToAllItemsReportedByYou)
+                    {
+                        sql += @"insert into bug_subscriptions (bs_bug, bs_user)
+                        select bg_id, $id from bugs where bg_reported_user = $id
+                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                    }
+
+                    if (model.AutoSubscribeToAllItemsAssignedToYou)
+                    {
+                        sql += @"insert into bug_subscriptions (bs_bug, bs_user)
+                        select bg_id, $id from bugs where bg_assigned_to_user = $id
+                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                    }
+
+                    if (projects != "")
+                    {
+                        sql += @"insert into bug_subscriptions (bs_bug, bs_user)
+                        select bg_id, $id from bugs where bg_project in ($projects)
+                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                    }
+                }
+
+                sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+                sql = sql.Replace("$projects", projects);
+
+                DbUtil.ExecuteNonQuery(sql);
+            }
+
+            ModelState.AddModelError("Ok", "Your settings have been updated.");
+
+            return View(model);
+        }
+
         private string GetLdapPropertyValue(SearchResult result, string propertyName, string defaultValue)
         {
             var values = result.Properties[propertyName];
@@ -967,6 +1224,88 @@ namespace BugTracker.Web.Controllers
             }
 
             return defaultValue;
+        }
+
+        private void InitSettingsLists()
+        {
+            var sql = @"declare @org int
+                select @org = us_org from users where us_id = $us
+
+                select qu_id, qu_desc
+                from queries
+                where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
+                or isnull(qu_user,0) = $us
+                or isnull(qu_org,0) = @org
+                order by qu_desc";
+
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+
+            var queriesDv = DbUtil.GetDataView(sql);
+
+            ViewBag.Queries = new List<SelectListItem>();
+
+            foreach (DataRowView row in queriesDv/*ds.Tables[1].DefaultView*/)
+            {
+                ViewBag.Queries.Add(new SelectListItem
+                {
+                    Value = ((int)row["qu_id"]).ToString(),
+                    Text = (string)row["qu_desc"],
+                });
+            }
+
+            sql = @"select pj_id, pj_name, isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
+                from projects
+                left outer join project_user_xref on pj_id = pu_project and $us = pu_user
+                where isnull(pu_permission_level,$dpl) <> 0
+                order by pj_name";
+
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql = sql.Replace("$dpl", this.applicationSettings.DefaultPermissionLevel.ToString());
+
+            var projectsDv = DbUtil.GetDataView(sql);
+
+            ViewBag.Projects = new List<SelectListItem>();
+
+            foreach (DataRowView row in projectsDv)
+            {
+                ViewBag.Projects.Add(new SelectListItem
+                {
+                    Value = ((int)row["pj_id"]).ToString(),
+                    Text = (string)row["pj_name"],
+                });
+            }
+
+            ViewBag.Notifications = new List<SelectListItem>();
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "no notifications"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "1",
+                Text = "when created"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "2",
+                Text = "when status changes"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "3",
+                Text = "when status or assigned-to changes"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "4",
+                Text = "when anything changes"
+            });
         }
     }
 }

@@ -20,112 +20,500 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <a href="@Url.Action("Index")">back to organizations</a>
-    <div>&nbsp;</div>
+@section BodySubHeader {
+}
 
-    <table style="border-collapse: collapse; border: 0;">
-        <tr>
-            <td>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light">
+            <div class="card-body">
                 @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Organization", FormMethod.Post, new { @class = "frm" }))
                 {
                     @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
 
-                    if (Model.Id != 0)
+                    @Html.HiddenFor(x => x.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "30", size = "30" })
+                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Domain):
+                        @Html.TextBoxFor(x => x.Domain, new { @class = "form-control", maxlength = "80", size = "30" })
+                        @Html.ValidationMessageFor(x => x.Domain, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.Active, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.Active, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.Active, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.OtherOrgsPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    var id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.OtherOrgsPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.OtherOrgsPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.OtherOrgsPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.OtherOrgsPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.OtherOrgsPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.OtherOrgsPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.OtherOrgsPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanSearch, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanSearch, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanSearch, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.ExternalUser, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.ExternalUser, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.ExternalUser, null, new { @class = "text-danger" }, "small")
+                        <small class="form-text text-muted">External users cannot view posts marked "Visible for internal users only"</small>
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanOnlySeeOwnReported, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanOnlySeeOwnReported, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanOnlySeeOwnReported, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanAssignToInternalUsers, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanAssignToInternalUsers, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanAssignToInternalUsers, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.NonAdminsCanUse, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.NonAdminsCanUse, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.NonAdminsCanUse, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <h6 class="card-title">Field level permissions</h6>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.ProjectFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.ProjectFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.ProjectFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.ProjectFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.ProjectFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.ProjectFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.ProjectFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.ProjectFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.OrgFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.OrgFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.OrgFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.OrgFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.OrgFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.OrgFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.OrgFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.OrgFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CategoryFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.CategoryFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.CategoryFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.CategoryFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.CategoryFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.CategoryFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.CategoryFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.CategoryFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.PriorityFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.PriorityFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.PriorityFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.PriorityFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.PriorityFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.PriorityFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.PriorityFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.PriorityFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.StatusFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.StatusFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.StatusFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.StatusFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.StatusFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.StatusFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.StatusFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.StatusFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.AssignedToFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.AssignedToFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.AssignedToFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.AssignedToFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.AssignedToFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.AssignedToFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.AssignedToFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.AssignedToFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.UdfFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.UdfFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.UdfFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.UdfFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.UdfFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.UdfFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.UdfFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.UdfFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.TagsFieldPermissionLevel):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.TagsFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.TagsFieldPermissionLevel, "none", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.TagsFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.TagsFieldPermissionLevel, "view only", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.TagsFieldPermissionLevel, BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                @Html.LabelFor(x => x.TagsFieldPermissionLevel, "edit", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.TagsFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    foreach (System.Data.DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
                     {
-                        @Html.HiddenFor(x => x.Id)
+                        var bgName = (string)drCustom["name"];
+                        var selectedVal = ViewBag.DictCustomFieldPermissionLevel[bgName];
+
+                        <div class="form-group">
+                            @Html.Label(bgName, $"\"{bgName}\" field permission"):
+
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    @{
+                                        id = Guid.NewGuid();
+                                    }
+
+                                    @Html.RadioButton(bgName, (int)BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, (BugTracker.Web.Core.SecurityPermissionLevel)selectedVal == BugTracker.Web.Core.SecurityPermissionLevel.PermissionNone, new { id = id, @class = "form-check-input" })
+                                    @Html.Label(bgName, "none", new { @for = id, @class = "form-check-label" })
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    @{
+                                        id = Guid.NewGuid();
+                                    }
+
+                                    @Html.RadioButton(bgName, (int)BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, (BugTracker.Web.Core.SecurityPermissionLevel)selectedVal == BugTracker.Web.Core.SecurityPermissionLevel.PermissionReadonly, new { id = id, @class = "form-check-input" })
+                                    @Html.Label(bgName, "view only", new { @for = id, @class = "form-check-label" })
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    @{
+                                        id = Guid.NewGuid();
+                                    }
+
+                                    @Html.RadioButton(bgName, (int)BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, (BugTracker.Web.Core.SecurityPermissionLevel)selectedVal == BugTracker.Web.Core.SecurityPermissionLevel.PermissionAll, new { id = id, @class = "form-check-input" })
+                                    @Html.Label(bgName, "edit", new { @for = id, @class = "form-check-label" })
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(x => x.TagsFieldPermissionLevel, null, new { @class = "text-danger" }, "small")
+                        </div>
                     }
 
-                    <table border="0">
-                        <tr>
-                            <td class="lbl">Organization Name:</td>
-                            <td>
-                                @Html.TextBoxFor(x => x.Name, new { @class = "txt", maxlength = "30", size = "30" })
-                            </td>
-                        </tr>
+                    <h6 class="card-title">Non-admins permissions</h6>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Name)
-                            </td>
-                        </tr>
+                    <div class="alert alert-info" role="alert">
+                        Use the following settings to control permissions for non-admins.
+                        Admins have all permissions regardless of these settings.
+                    </div>
 
-                        <tr>
-                            <td class="lbl">Domain (like, "example.com"):</td>
-                            <td>
-                                @Html.TextBoxFor(x => x.Domain, new { @class = "txt", maxlength = "80", size = "30" })
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanEditSql, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanEditSql, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanEditSql, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Domain)
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanDeleteBug, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanDeleteBug, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanDeleteBug, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td class="lbl">Active:</td>
-                            <td>
-                                @Html.CheckBoxFor(x => Active, new { @class = "cb" })
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanEditAndDeletePosts, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanEditAndDeletePosts, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanEditAndDeletePosts, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Active)
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanMergeBugs, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanMergeBugs, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanMergeBugs, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td colspan="2">
-                                <span class="smallnote">Can members of this organization view/edit bugs associated with other organizations?</span>
-                            </td>
-                        </tr>
-                        @*Permission level*@
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanMassEditBugs, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanMassEditBugs, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanMassEditBugs, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        @*<tr>
-                            <td class="lbl">CSS Class:</td>
-                            <td>
-                                @Html.TextBoxFor(x => x.Style, new { @class = "txt", id = "style", maxlength = "10", size = "10" })
-                                &nbsp;&nbsp;<a target="_blank" href="@Url.Action("EditStyles", "Home")">more CSS info...</a>
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanUseReports, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanUseReports, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanUseReports, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Style)
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanEditReports, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanEditReports, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanEditReports, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td class="lbl">Default Selection:</td>
-                            <td>
-                                @Html.CheckBoxFor(x => x.Default, new { @class = "cb", id = "defaultSelection" })
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanViewTasks, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanViewTasks, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanViewTasks, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Default)
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanEditTasks, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanEditTasks, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanEditTasks, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td align="right">
-                                <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
-                            </td>
-                        </tr>*@
-                    </table>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.CanAssignToInternalUsers, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.CanAssignToInternalUsers, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.CanAssignToInternalUsers, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
                 }
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section BodyFooter {

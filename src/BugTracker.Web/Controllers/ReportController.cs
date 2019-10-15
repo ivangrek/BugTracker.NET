@@ -223,7 +223,7 @@ namespace BugTracker.Web.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create report",
+                Title = $"{this.applicationSettings.AppTitle} - new report",
                 SelectedItem = MainMenuSections.Reports
             };
 
@@ -256,7 +256,7 @@ namespace BugTracker.Web.Controllers
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create report",
+                    Title = $"{this.applicationSettings.AppTitle} - new report",
                     SelectedItem = MainMenuSections.Reports
                 };
 
@@ -293,7 +293,7 @@ namespace BugTracker.Web.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update report",
+                Title = $"{this.applicationSettings.AppTitle} - edit report",
                 SelectedItem = MainMenuSections.Reports
             };
 
@@ -332,7 +332,7 @@ namespace BugTracker.Web.Controllers
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update report",
+                    Title = $"{this.applicationSettings.AppTitle} - edit report",
                     SelectedItem = MainMenuSections.Reports
                 };
 
@@ -417,10 +417,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Administrator)]
         public ActionResult Dashboard()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanUseReports;
 

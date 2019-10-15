@@ -4,22 +4,27 @@
     using BugTracker.Web.Core.Controls;
     using BugTracker.Web.Models;
     using System;
+    using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using System.Xml;
 
     [OutputCache(Location = OutputCacheLocation.None)]
     public class HgController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
+        private readonly IAuthenticate authenticate;
 
         public HgController(
             IApplicationSettings applicationSettings,
-            ISecurity security)
+            ISecurity security,
+            IAuthenticate authenticate)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
+            this.authenticate = authenticate;
         }
 
         [HttpGet]
@@ -77,6 +82,200 @@
             };
 
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult Show(int revpathid, string revision)
+        {
+            Response.ContentType = "text/plain";
+
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var sql = @"
+                select hgrev_revision, hgrev_bug, hgrev_repository, hgap_path 
+                from hg_revisions
+                inner join hg_affected_paths on hgap_hgrev_id = hgrev_id
+                where hgap_id = $id";
+
+            sql = sql.Replace("$id", Convert.ToString(revpathid));
+
+            var dr = DbUtil.GetDataRow(sql);
+
+            // check if user has permission for this bug
+            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["hgrev_bug"], this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            var repo = (string)dr["hgrev_repository"];
+            var path = (string)dr["hgap_path"];
+
+            var text = VersionControl.HgGetFileContents(repo, revision, path);
+
+            return Content(text);
+        }
+
+        [HttpGet]
+        public ActionResult Hook()
+        {
+            var username = Request["username"];
+            var password = Request["password"];
+
+            var hgLog = Request["hg_log"];
+            var repo = Request["repo"];
+
+            if (string.IsNullOrEmpty(username))
+            {
+                Response.AddHeader("BTNET", "ERROR: username required");
+
+                return Content("ERROR: username required");
+            }
+
+            if (username != this.applicationSettings.MercurialHookUsername)
+            {
+                Response.AddHeader("BTNET", "ERROR: wrong username. See Web.config MercurialHookUsername");
+
+                return Content("ERROR: wrong username. See Web.config MercurialHookUsernam");
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                Response.AddHeader("BTNET", "ERROR: password required");
+
+                return Content("ERROR: password required");
+            }
+
+            // authenticate user
+
+            var authenticated = this.authenticate.CheckPassword(username, password);
+
+            if (!authenticated)
+            {
+                Response.AddHeader("BTNET", "ERROR: invalid username or password");
+
+                return Content("ERROR: invalid username or password");
+            }
+
+            Util.WriteToLog("hg_log follows");
+            Util.WriteToLog(hgLog);
+
+            Util.WriteToLog("repo follows");
+            Util.WriteToLog(repo);
+
+            var doc = new XmlDocument();
+
+            doc.LoadXml("<log>" + hgLog + "</log>");
+
+            var revisions = doc.GetElementsByTagName("changeset");
+
+            for (var i = 0; i < revisions.Count; i++)
+            {
+                var changeset = (XmlElement)revisions[i];
+
+                var desc = changeset.GetElementsByTagName("desc")[0].InnerText;
+                var bug = GetBugidFromDesc(desc);
+
+                if (bug == "") bug = "0";
+
+                var revision = changeset.GetAttribute("rev");
+                var author = changeset.GetElementsByTagName("auth")[0].InnerText;
+                var date = changeset.GetElementsByTagName("date")[0].InnerText;
+
+                var sql = @"
+                    declare @cnt int
+                    select @cnt = count(1) from hg_revisions 
+                    where hgrev_revision = '$hgrev_revision'
+                    and hgrev_repository = N'$hgrev_repository'
+
+                    if @cnt = 0 
+                    BEGIN
+                    insert into hg_revisions
+                    (
+                        hgrev_revision,
+                        hgrev_bug,
+                           hgrev_repository,
+                        hgrev_author,
+                        hgrev_hg_date,
+                        hgrev_btnet_date,
+                        hgrev_msg
+                    )
+                    values
+                    (
+                        $hgrev_revision,
+                        $hgrev_bug,
+                        N'$hgrev_repository',
+                        N'$hgrev_author',
+                        N'$hgrev_hg_date',
+                        getdate(),
+                        N'$hgrev_desc'
+                    )
+
+                    select scope_identity()
+                    END	
+                    ELSE
+                    select 0
+                    ";
+
+                sql = sql.Replace("$hgrev_revision", revision.Replace("'", "''"));
+                sql = sql.Replace("$hgrev_bug", Convert.ToString(bug));
+                sql = sql.Replace("$hgrev_repository", repo.Replace("'", "''"));
+                sql = sql.Replace("$hgrev_author", author.Replace("'", "''"));
+                sql = sql.Replace("$hgrev_hg_date", date.Replace("'", "''"));
+                sql = sql.Replace("$hgrev_desc", desc.Replace("'", "''"));
+
+                var hgrevId = Convert.ToInt32(DbUtil.ExecuteScalar(sql));
+
+                if (hgrevId > 0)
+                {
+                    var paths = changeset.GetElementsByTagName("file");
+
+                    for (var j = 0; j < paths.Count; j++)
+                    {
+                        var pathElement = (XmlElement)paths[j];
+
+                        var action = ""; // no action in hg?  path_element.GetAttribute("action");
+                        var filePath = pathElement.InnerText;
+
+                        sql = @"
+                            insert into hg_affected_paths
+                            (
+                            hgap_hgrev_id,
+                            hgap_action,
+                            hgap_path
+                            )
+                            values
+                            (
+                            $hgap_hgrev_id,
+                            N'$hgap_action',
+                            N'$hgap_path'
+                            )";
+
+                        sql = sql.Replace("$hgap_hgrev_id", Convert.ToString(hgrevId));
+                        sql = sql.Replace("$hgap_action", action.Replace("'", "''"));
+                        sql = sql.Replace("$hgap_path", filePath.Replace("'", "''"));
+
+                        DbUtil.ExecuteNonQuery(sql);
+                    } // end for each path
+                } // if we inserted a revision
+            } // end for each revision
+
+            return Content("OK:");
+        }
+
+        private string GetBugidFromDesc(string desc)
+        {
+            var regexPattern = this.applicationSettings.MercurialBugidRegexPattern;
+            var reInteger = new Regex(regexPattern);
+            var m = reInteger.Match(desc);
+
+            if (m.Success)
+            {
+                return m.Groups[1].ToString();
+            }
+
+            return string.Empty;
         }
     }
 }

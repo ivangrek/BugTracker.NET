@@ -21,18 +21,22 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <a href="@Url.Action("Create", "Category")"><img src="~/Content/images/add.png" align="top">&nbsp;add new category</a>
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="@Url.Action("Create", "Category")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+        </nav>
+    </div>
+}
 
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
-    {
-        @Html.Partial("_SortableTable", Model);
-    }
-    else
-    {
-        <div>No categories in the database.</div>
-    }
-</div>
+@if (Model.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", Model);
+}
+else
+{
+    <div>No categories in the database.</div>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

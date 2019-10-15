@@ -6,10 +6,13 @@
 
 namespace BugTracker.Web.Areas.Administration.Models.User
 {
+    using System.ComponentModel.DataAnnotations;
+
     public sealed class DeleteModel
     {
         public int Id { get; set; }
 
+        [Display(Name = "Name")]
         public string Name { get; set; }
     }
 }

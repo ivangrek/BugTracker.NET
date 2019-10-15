@@ -9,6 +9,7 @@ namespace BugTracker.Web.Controllers
 {
     using BugTracker.Web.Core;
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
     using System.Text;
@@ -19,11 +20,14 @@ namespace BugTracker.Web.Controllers
     [OutputCache(Location = OutputCacheLocation.None)]
     public class AspController : Controller
     {
+        private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
 
         public AspController(
+            IApplicationSettings applicationSettings,
             ISecurity security)
         {
+            this.applicationSettings = applicationSettings;
             this.security = security;
         }
 
@@ -381,6 +385,69 @@ namespace BugTracker.Web.Controllers
             }
 
             return Content("OK");
+        }
+
+        [HttpGet]
+        public ActionResult ViewMemoryLog()
+        {
+            if (!this.applicationSettings.MemoryLogEnabled)
+            {
+                return Content(string.Empty);
+            }
+
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            Response.ContentType = "text/plain";
+            Response.AddHeader("content-disposition", "inline; filename=\"memory_log.txt\"");
+
+            var list = (List<string>)System.Web.HttpContext.Current.Application["log"];
+
+            if (list == null)
+            {
+                return Content("list is null");
+            }
+
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append(DateTime.Now.ToString("yyy-MM-dd HH:mm:ss:fff"));
+            stringBuilder.Append("\n\n");
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                stringBuilder.Append(list[i]);
+                stringBuilder.Append("\n");
+            }
+
+            return Content(stringBuilder.ToString());
+        }
+
+        [HttpGet]
+        public ActionResult GenerateBtnetscReg()
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var stringBuilder = new StringBuilder();
+
+            Response.ContentType = "text/reg";
+            Response.AddHeader("content-disposition", "attachment; filename=\"btnetsc.reg\"");
+
+            stringBuilder.Append("Windows Registry Editor Version 5.00");
+            stringBuilder.Append("\n\n");
+            stringBuilder.Append("[HKEY_CURRENT_USER\\Software\\BugTracker.NET\\btnetsc\\SETTINGS]" + "\n");
+
+            var url = "http://" + Request.ServerVariables["SERVER_NAME"] + Request.ServerVariables["URL"];
+
+            url = url.Replace("generate_btnetsc_reg", "insert_bug");
+
+            stringBuilder.Append("\"" + "Url" + "\"=\"" + url + "\"\n");
+            stringBuilder.Append("\"" + "Project" + "\"=\"" + "0" + "\"\n");
+            stringBuilder.Append("\"" + "Email" + "\"=\"" + this.security.User.Username + "\"\n");
+            stringBuilder.Append("\"" + "Username" + "\"=\"" + this.security.User.Username + "\"\n");
+
+            var nvcSrvElements = Request.ServerVariables;
+            var array1 = nvcSrvElements.AllKeys;
+
+            return Content(stringBuilder.ToString());
         }
     }
 }

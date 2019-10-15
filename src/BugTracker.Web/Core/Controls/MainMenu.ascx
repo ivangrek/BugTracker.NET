@@ -139,7 +139,7 @@
         <% if (!Security.User.IsGuest)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/EditSelf.aspx") %>"><span class="<%= SelectedItem == "settings" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">settings</span></a>
+                <a href="<%= ResolveUrl("~/Account/Settings") %>"><span class="<%= SelectedItem == "settings" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">settings</span></a>
             </td>
             
         <% } %>

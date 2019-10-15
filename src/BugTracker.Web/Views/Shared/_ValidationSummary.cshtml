@@ -1,0 +1,27 @@
+﻿@if (ViewData.ModelState[string.Empty] != null && ViewData.ModelState[string.Empty].Errors.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        <h6 class="alert-heading">Oops!</h6>
+
+        <ul class="list-unstyled mb-0">
+            @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+@if (ViewData.ModelState["Ok"] != null && ViewData.ModelState["Ok"].Errors.Count > 0)
+{
+    <div class="alert alert-success" role="alert">
+        <h6 class="alert-heading">Wow!</h6>
+
+        <ul class="list-unstyled mb-0">
+            @foreach (var error in ViewData.ModelState["Ok"].Errors)
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}

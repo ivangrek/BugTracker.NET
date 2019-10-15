@@ -40,59 +40,59 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <table border="0" style="margin-left: 20px; margin-top: 20px; width: 80%;">
-        <tr>
-            <td>
-                @using (Html.BeginForm("EditCustomHtml", "Home", FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
+@section BodySubHeader {
+}
 
-                    @:Select custom html file:
-                    @Html.DropDownListFor(x => x.Which, new List<SelectListItem>
+<div class="row">
+    <div class="col-lg-6">
+        <table style="width: 100%;">
+            <tr>
+                <td>
+                    @using (Html.BeginForm("EditCustomHtml", "Home", FormMethod.Post))
                     {
-                        new SelectListItem
-                        {
-                            Text = "btnet_custom.css",
-                            Value = "css"
-                        },
-                        new SelectListItem
-                        {
-                            Text = "customer_footer.html",
-                            Value = "footer"
-                        },
-                        new SelectListItem
-                        {
-                            Text = "customer_header.html",
-                            Value = "header"
-                        },
-                        new SelectListItem
-                        {
-                            Text = "customer_logo.html",
-                            Value = "logo"
-                        },
-                        new SelectListItem
-                        {
-                            Text = "customer_welcome.html",
-                            Value = "welcome"
-                        }
-                    }, new { id = "which", onchange = "load_custom_file()" })
-                    <p></p>
+                        @Html.AntiForgeryToken()
+                        @Html.Partial("_ValidationSummary")
 
-                    @Html.TextAreaFor(x => x.Text, new { id = "myedit", style = "width: 100%" })
-                    <p></p>
+                        @:Select custom html file:
+                        @Html.DropDownListFor(x => x.Which, new List<SelectListItem>
+                        {
+                            new SelectListItem
+                            {
+                                Text = "btnet_custom.css",
+                                Value = "css"
+                            },
+                            new SelectListItem
+                            {
+                                Text = "customer_footer.html",
+                                Value = "footer"
+                            },
+                            new SelectListItem
+                            {
+                                Text = "customer_header.html",
+                                Value = "header"
+                            },
+                            new SelectListItem
+                            {
+                                Text = "customer_logo.html",
+                                Value = "logo"
+                            },
+                            new SelectListItem
+                            {
+                                Text = "customer_welcome.html",
+                                Value = "welcome"
+                            }
+                        }, new { id = "which", onchange = "load_custom_file()" })
+                        <p></p>
 
-                    <div class="err" id="msg">
-                        @Html.ValidationMessage("Message")
-                    </div>
+                        @Html.TextAreaFor(x => x.Text, new { id = "myedit", style = "width: 100%" })
+                        <p></p>
 
-                    <div>
-                        <input type="submit" value="Save" class="btn">
-                    </div>
-                }
-            </td>
-        </tr>
-    </table>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 
 @section BodyFooter {

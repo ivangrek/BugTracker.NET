@@ -17,6 +17,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class StatusController : Controller
     {
@@ -37,8 +38,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -60,13 +59,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create status",
+                Title = $"{this.applicationSettings.AppTitle} - new status",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -77,15 +74,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Status was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create status",
+                    Title = $"{this.applicationSettings.AppTitle} - new status",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -95,9 +92,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var parameters = new Dictionary<string, string>
             {
                 { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
+                { "$na", model.Name},
                 { "$ss", model.SortSequence.ToString() },
-                { "$st", model.Style.Replace("'", "''")},
+                { "$st", model.Style},
                 { "$df", Util.BoolToString(model.Default)},
             };
 
@@ -109,8 +106,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // Get this entry's data from the db and fill in the form
             var dataRow = this.statusService.LoadOne(id);
 
@@ -118,7 +113,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update status",
+                Title = $"{this.applicationSettings.AppTitle} - edit status",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -138,15 +133,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Status was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update status",
+                    Title = $"{this.applicationSettings.AppTitle} - edit status",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -156,9 +151,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var parameters = new Dictionary<string, string>
             {
                 { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
+                { "$na", model.Name},
                 { "$ss", model.SortSequence.ToString() },
-                { "$st", model.Style.Replace("'", "''")},
+                { "$st", model.Style},
                 { "$df", Util.BoolToString(model.Default)},
             };
 
@@ -170,8 +165,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.statusService.CheckDeleting(id);
 
             if (!valid)
@@ -200,8 +193,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.statusService.CheckDeleting(model.Id);
 
             if (!valid)

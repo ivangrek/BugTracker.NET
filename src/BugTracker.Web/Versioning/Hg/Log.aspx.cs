@@ -97,15 +97,15 @@ order by hgrev_revision desc, hgap_path";
                 Response.Write("<td class=datad>" + desc.Replace(Environment.NewLine, "<br/>"));
 
                 Response.Write(
-                    "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Hg/View.aspx") + @"?revpathid=" + this.StringAffectedPathId
-                                                                                    + "&rev=" + revision
+                    "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Hg/Show") + @"?revpathid=" + this.StringAffectedPathId
+                                                                                    + "&revision=" + revision
                                                                                     + ">");
 
                 Response.Write("view</a>");
 
                 Response.Write(
                     "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Hg/Blame.aspx") + @"?revpathid=" + this.StringAffectedPathId
-                                                                                     + "&rev=" + revision
+                                                                                     + "&revision=" + revision
                                                                                      + ">");
 
                 Response.Write("annotated</a>");

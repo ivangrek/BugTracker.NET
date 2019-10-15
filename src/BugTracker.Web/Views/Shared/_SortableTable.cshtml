@@ -9,12 +9,11 @@
 
 @if (Model.WriteColumnHeadingsAsLinks)
 {
-    <div id="wait" class="please_wait">&nbsp;</div>
-    <div class="click_to_sort">click on column headings to sort</div>
+    <div class="text-muted my-2">click on column headings to sort</div>
 }
 
 <div id="myholder">
-    <table id="mytable" border="1" class="datat">
+    <table id="mytable" class="datat table table-sm">
         <tr>
             @{
                 var dbColumnCount = 0;
@@ -27,12 +26,12 @@
                 {
                     if (Model.EditUrl != string.Empty)
                     {
-                        <td class="datah" valign="bottom">edit</td>
+                        <th class="datah" valign="bottom">edit</th>
                     }
 
                     if (Model.DeleteUrl != string.Empty)
                     {
-                        <td class="datah" valign="bottom">delete</td>
+                        <th class="datah" valign="bottom">delete</th>
                     }
                 }
                 else
@@ -53,7 +52,7 @@
                         datatype = "str";
                     }
 
-                    <td class="datah" valign="bottom">
+                    <th class="datah" valign="bottom">
 
                         @if (dc.ColumnName.StartsWith("$no_sort_"))
                         {
@@ -70,7 +69,7 @@
                                 @Html.Raw(dc.ColumnName)
                             }
                         }
-                    </td>
+                    </th>
                 }
 
                 dbColumnCount++;
@@ -138,4 +137,10 @@
         }
     </table>
 </div>
+
 <div id="sortedby">&nbsp;</div>
+
+@if (Model.WriteColumnHeadingsAsLinks)
+{
+    <div id="wait" class="please_wait">&nbsp;</div>
+}

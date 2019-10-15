@@ -18,6 +18,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class ProjectController : Controller
     {
@@ -35,8 +36,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -76,13 +75,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create project",
+                Title = $"{this.applicationSettings.AppTitle} - new project",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -112,8 +109,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var valsErrorString = Util.ValidateDropdownValues(model.CustomDropdown1Values);
 
             if (!string.IsNullOrEmpty(valsErrorString))
@@ -137,13 +132,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Message", "Custom fields have errors.");
+                ModelState.AddModelError(string.Empty, "Project was not created.");
 
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create project",
+                    Title = $"{this.applicationSettings.AppTitle} - new project",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -189,7 +184,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             sql = sql.Replace("$name", model.Name);
             sql = sql.Replace("$active", Util.BoolToString(model.Active));
-            sql = sql.Replace("$defaultuser", model.DefaultUser.ToString());
+            sql = sql.Replace("$defaultuser", model.DefaultUserId.ToString());
             sql = sql.Replace("$autoasg", Util.BoolToString(model.AutoAssign));
             sql = sql.Replace("$autosub", Util.BoolToString(model.AutoSubscribe));
             sql = sql.Replace("$defaultsel", Util.BoolToString(model.Default));
@@ -219,8 +214,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // Get this entry's data from the db and fill in the form
             var sql = @"select
                 pj_name,
@@ -252,7 +245,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update project",
+                Title = $"{this.applicationSettings.AppTitle} - edit project",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -275,7 +268,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 Name = (string)dr["pj_name"],
                 Active = Convert.ToBoolean((int)dr["pj_active"]),
                 Default = Convert.ToBoolean((int)dr["pj_default"]),
-                DefaultUser = (int)dr["pj_default_user"],
+                DefaultUserId = (int)dr["pj_default_user"],
 
                 AutoAssign = Convert.ToBoolean((int)dr["pj_auto_assign_default_user"]),
                 AutoSubscribe = Convert.ToBoolean((int)dr["pj_auto_subscribe_default_user"]),
@@ -306,8 +299,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var valsErrorString = Util.ValidateDropdownValues(model.CustomDropdown1Values);
 
             if (!string.IsNullOrEmpty(valsErrorString))
@@ -331,13 +322,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Message", "Custom fields have errors.");
+                ModelState.AddModelError(string.Empty, "Project was not updated.");
 
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create project",
+                    Title = $"{this.applicationSettings.AppTitle} - new project",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -392,7 +383,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             sql = sql.Replace("$name", model.Name);
             sql = sql.Replace("$active", Util.BoolToString(model.Active));
-            sql = sql.Replace("$defaultuser", model.DefaultUser.ToString());
+            sql = sql.Replace("$defaultuser", model.DefaultUserId.ToString());
             sql = sql.Replace("$autoasg", Util.BoolToString(model.AutoAssign));
             sql = sql.Replace("$autosub", Util.BoolToString(model.AutoSubscribe));
             sql = sql.Replace("$defaultsel", Util.BoolToString(model.Default));
@@ -422,8 +413,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult UpdateUserPermission(int id, bool projects = false)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var sql = @"Select us_username, us_id, isnull(pu_permission_level,$dpl) [pu_permission_level]
                 from users
                 left outer join project_user_xref on pu_user = us_id
@@ -458,8 +447,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateUserPermission(UpdateUserPermissionModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // now update all the recs
             var sqlBatch = string.Empty;
             //RadioButton rb;
@@ -507,7 +494,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             DbUtil.ExecuteNonQuery(sqlBatch);
 
-            ModelState.AddModelError("Message", "Permissions have been updated.");
+            ModelState.AddModelError("Ok", "Permissions have been updated.");
 
             var sql = @"Select us_username, us_id, isnull(pu_permission_level,$dpl) [pu_permission_level]
                 from users
@@ -536,8 +523,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var sql = @"declare @cnt int
                 select @cnt = count(1) from bugs where bg_project = $1
                 select pj_name, @cnt [cnt] from projects where pj_id = $1"
@@ -571,8 +556,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var sql = @"delete projects where pj_id = $1"
                 .Replace("$1", model.Id.ToString());
 

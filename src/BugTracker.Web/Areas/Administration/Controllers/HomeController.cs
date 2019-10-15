@@ -24,6 +24,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using System.Xml;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class HomeController : Controller
     {
@@ -44,8 +45,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (false) // change this to if(true) to make the donation nag message go away
             {
             }
@@ -75,8 +74,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult DownloadFile(string which, string filename)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(which))
             {
                 return Content(string.Empty);
@@ -113,6 +110,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             }
         }
 
+        // TODO to bugs
         [HttpGet]
         public ActionResult GetDbDateTime()
         {
@@ -124,8 +122,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult ServerVariables()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             int loop1, loop2;
             NameValueCollection coll;
 
@@ -153,8 +149,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditCustomHtml(string which)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // default to footer
             if (string.IsNullOrEmpty(which))
             {
@@ -191,8 +185,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditCustomHtml(EditCustomHtmlModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // default to footer
             if (string.IsNullOrEmpty(model.Which))
             {
@@ -222,7 +214,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             // save in Application (memory)
             System.Web.HttpContext.Current.Application[Path.GetFileNameWithoutExtension(fileName)] = model.Text;
 
-            ModelState.AddModelError("Message", fileName + " was saved.");
+            ModelState.AddModelError(string.Empty, fileName + " was saved.");
 
             ViewBag.Page = new PageModel
             {
@@ -239,8 +231,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult ViewWebConfig()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // create path
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
 
@@ -254,8 +244,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             try
             {
                 DbUtil.ExecuteNonQuery("select count(1) from users");
-
-                this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
             }
             catch (Exception)
             {
@@ -300,8 +288,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             try
             {
                 DbUtil.ExecuteNonQuery("select count(1) from users");
-
-                this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
             }
             catch (Exception)
             {
@@ -357,8 +343,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditWebConfig()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
             var model = new EditWebConfigModel();
 
@@ -382,8 +366,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditWebConfig(EditWebConfigModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
 
             try
@@ -399,12 +381,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                         sw.Write(model.Text);
                     }
 
-                    ModelState.AddModelError("Message", "Web.config was saved.");
+                    ModelState.AddModelError(string.Empty, "Web.config was saved.");
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Message", $"ERROR:{ex.Message}");
+                ModelState.AddModelError(string.Empty, $"ERROR:{ex.Message}");
             }
 
             ViewBag.Page = new PageModel
@@ -421,8 +403,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult BackupDb()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -444,8 +424,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult BackupDb(BackupDbModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (string.IsNullOrEmpty(model.FileName))
             {
                 var date = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -468,8 +446,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult ManageLogs()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -491,8 +467,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ManageLogs(ManageLogsModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!string.IsNullOrEmpty(model.FileName))
             {
                 var logFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs", model.FileName);
@@ -506,8 +480,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Notification()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var dataSet = DbUtil.GetDataSet(
                 @"select
                 qn_id [id],
@@ -542,8 +514,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Notification(NotificationModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (model.Session != (string)Session["session_cookie"])
             {
                 return Content("session in URL doesn't match session cookie");
@@ -575,8 +545,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditStyles()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var dataSet = DbUtil.GetDataSet(
                 @"select
                 '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/") + @"' + convert(varchar,pr_id) + '>' + pr_name + '</a>' [priority],

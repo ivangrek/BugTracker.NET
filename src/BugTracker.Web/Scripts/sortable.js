@@ -103,9 +103,9 @@ function sort_by_col_impl() {
     }
 
 
-    document.getElementById("sortedby").firstChild.nodeValue = "Sorted by "
+    document.getElementById("sortedby").firstChild.nodeValue = "Sorted by ["
         + getInnerTextHelper(table.rows[0].cells[col])
-        + (asc ? " asc" : " desc");
+        + (asc ? "] asc" : "] desc");
 
     if (type == "num") {
         myarray.sort(function compare_number(a, b) {
@@ -145,8 +145,7 @@ function sort_by_col_impl() {
 
 
     string_array[k++] = "<table id=" + table.id
-        + " border=1"
-        + " class=datat"
+        + " class='datat table table-sm'"
         + ">"
         + (gecko ? GET_OUTER_HTML(table.rows[0]) : table.rows[0].outerHTML);
 

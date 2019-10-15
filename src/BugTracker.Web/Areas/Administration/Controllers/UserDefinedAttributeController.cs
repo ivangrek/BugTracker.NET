@@ -17,6 +17,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class UserDefinedAttributeController : Controller
     {
@@ -37,13 +38,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - user defined attribute values",
+                Title = $"{this.applicationSettings.AppTitle} - user defined attributes",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -60,13 +59,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create user defined attribute value",
+                Title = $"{this.applicationSettings.AppTitle} - new user defined attribute",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -81,17 +78,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Message", "User defined attribute value was not created.");
+                ModelState.AddModelError(string.Empty, "User defined attribute was not created.");
 
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create user defined attribute value",
+                    Title = $"{this.applicationSettings.AppTitle} - new user defined attribute",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -114,8 +109,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // Get this entry's data from the db and fill in the form
             var dataRow = this.userDefinedAttributeService.LoadOne(id);
 
@@ -123,7 +116,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update user defined attribute value",
+                Title = $"{this.applicationSettings.AppTitle} - edit user defined attribute",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -142,17 +135,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Message", "User defined attribute value was not updated.");
+                ModelState.AddModelError(string.Empty, "User defined attribute was not updated.");
 
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update user defined attribute value",
+                    Title = $"{this.applicationSettings.AppTitle} - edit user defined attribute",
                     SelectedItem = MainMenuSections.Administration
                 };
 
@@ -175,8 +166,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var (valid, name) = this.userDefinedAttributeService.CheckDeleting(id);
 
             if (!valid)
@@ -188,7 +177,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - delete user defined attribute value",
+                Title = $"{this.applicationSettings.AppTitle} - delete user defined attribute",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -205,8 +194,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             this.userDefinedAttributeService.Delete(model.Id);
 
             return RedirectToAction(nameof(Index));

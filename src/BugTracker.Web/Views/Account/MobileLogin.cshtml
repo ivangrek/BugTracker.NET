@@ -32,15 +32,12 @@
         @using (Html.BeginForm("MobileLogin", "Account", FormMethod.Post, new { @class = "frm" }))
         {
             @Html.AntiForgeryToken()
-
-            <div class="err" runat="server" id="msg">
-                @Html.ValidationMessage("Message")
-            </div>
+            @Html.Partial("_ValidationSummary")
 
             <label>User:</label>
             @Html.TextBoxFor(x => x.Login)
             <label>Password:</label>
-            @Html.TextBoxFor(x => x.Password, new { type="password" })
+            @Html.TextBoxFor(x => x.Password, new { type = "password" })
             <input data-role="button" type="submit" value="Logon" runat="server" />
             <input type="hidden" id="mobile" name="mobile" value="1" />
         }

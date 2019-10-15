@@ -20,82 +20,45 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <a href="@Url.Action("Index")">back to user defined attribute values</a>
-    <div>&nbsp;</div>
+@section BodySubHeader {
+}
 
-    <table style="border-collapse: collapse; border: 0;">
-        <tr>
-            <td>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light">
+            <div class="card-body">
                 @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "UserDefinedAttribute", FormMethod.Post, new { @class = "frm" }))
                 {
                     @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
 
-                    if (Model.Id != 0)
-                    {
-                        @Html.HiddenFor(x => x.Id)
-                    }
+                    @Html.HiddenFor(x => x.Id)
 
-                    <table border="0">
-                        <tr>
-                            <td class="lbl">Description:</td>
-                            <td>
-                                @Html.TextBoxFor(x => x.Name, new { @class = "txt", maxlength = "20", size = "20" })
-                            </td>
-                        </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "20", size = "20" })
+                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Name)
-                            </td>
-                        </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.SortSequence):
+                        @Html.TextBoxFor(x => x.SortSequence, new { @class = "form-control", maxlength = "2", size = "2" })
+                        <small class="form-text text-muted">Sort Sequence controls the sort order in the dropdowns.</small>
+                        @Html.ValidationMessageFor(x => x.SortSequence, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td colspan="2">
-                                <span class="smallnote">Sort Sequence controls the sort order in the dropdowns.</span>
-                            </td>
-                        </tr>
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.Default, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.Default, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.Default, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td class="lbl">Sort Sequence:</td>
-                            <td>
-                                @Html.TextBoxFor(x => x.SortSequence, new { @class = "txt", maxlength = "2", size = "2" })
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.SortSequence)
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="lbl">Default Selection:</td>
-                            <td>
-                                @Html.CheckBoxFor(x => x.Default, new { @class = "cb", id = "defaultSelection" })
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Default)
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td align="right">
-                                <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
-                            </td>
-                        </tr>
-                    </table>
+                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
                 }
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section BodyFooter {

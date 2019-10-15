@@ -122,8 +122,8 @@ order by svnrev_revision desc, svnap_path";
                 Response.Write("<td class=datad>" + msg.Replace(Environment.NewLine, "<br/>"));
 
                 Response.Write(
-                    "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Svn/View.aspx") + @"?revpathid=" + this.StringAffectedPathId
-                                                                                     + "&rev=" + revision
+                    "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Svn/Show") + @"?revpathid=" + this.StringAffectedPathId
+                                                                                     + "&revision=" + revision
                                                                                      + "&path=" +
                                                                                      HttpUtility.UrlEncode(path)
                                                                                      + ">");
@@ -132,7 +132,7 @@ order by svnrev_revision desc, svnap_path";
 
                 Response.Write(
                     "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Svn/Blame.aspx") + @"?revpathid=" + this.StringAffectedPathId
-                                                                                      + "&rev=" + revision
+                                                                                      + "&revision=" + revision
                                                                                       + "&path=" +
                                                                                       HttpUtility.UrlEncode(path)
                                                                                       + ">");

@@ -562,13 +562,21 @@ namespace BugTracker.Web.Core
         // common to add/edit custom files, project
         public static string ValidateDropdownValues(string vals)
         {
+            if (string.IsNullOrEmpty(vals))
+            {
+                return string.Empty;
+            }
+
             if (vals.Contains("'")
                 || vals.Contains("\"")
                 || vals.Contains("<")
                 || vals.Contains(">")
                 || vals.Contains("\t"))
+            {
                 return "Special characters like <, >, or quotes not allowed.";
-            return "";
+            }
+
+            return string.Empty;
         }
 
         public static string HowLongAgo(int seconds)

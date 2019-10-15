@@ -27,19 +27,24 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <a href="@Url.Action("Index")">back to projects</a>
+@section BodySubHeader {
+}
 
-    <p>or</p>
+<h5 class="card-title">Confirm deletion of project</h5>
 
-    @using (Html.BeginForm("Delete", "Project", FormMethod.Post, new { id = "frm" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(x => x.Id)
+@using (Html.BeginForm("Delete", "Project", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
 
-        <a href="javascript: submit_form()">confirm delete of project: "@Model.Name"</a>
-    }
-</div>
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Name): @Model.Name
+    </div>
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

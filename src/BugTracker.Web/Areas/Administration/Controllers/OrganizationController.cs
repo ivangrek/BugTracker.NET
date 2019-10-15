@@ -11,10 +11,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using BugTracker.Web.Core;
     using BugTracker.Web.Core.Controls;
     using BugTracker.Web.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class OrganizationController : Controller
     {
@@ -32,13 +36,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - priorities",
+                Title = $"{this.applicationSettings.AppTitle} - organizations",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -84,41 +86,43 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - create organization",
+                Title = $"{this.applicationSettings.AppTitle} - new organization",
                 SelectedItem = MainMenuSections.Administration
             };
 
-            //this.og_active.Checked = true;
-            ////other_orgs_permission_level.SelectedIndex = 2;
-            //this.can_search.Checked = true;
-            //this.can_be_assigned_to.Checked = true;
-            //this.other_orgs.SelectedValue = "2";
-
-            //this.project_field.SelectedValue = "2";
-            //this.org_field.SelectedValue = "2";
-            //this.category_field.SelectedValue = "2";
-            //this.tags_field.SelectedValue = "2";
-            //this.priority_field.SelectedValue = "2";
-            //this.status_field.SelectedValue = "2";
-            //this.assigned_to_field.SelectedValue = "2";
-            //this.udf_field.SelectedValue = "2";
-
-            //foreach (DataRow drCustom in this.DsCustom.Tables[0].Rows)
-            //{
-            //    var bgName = (string)drCustom["name"];
-            //    this.DictCustomFieldPermissionLevel[bgName] = SecurityPermissionLevel.PermissionAll;
-            //}
-
             var model = new EditModel
             {
-                //BackgroundColor = "#ffffff"
+                Active = true,
+
+                OtherOrgsPermissionLevel = SecurityPermissionLevel.PermissionAll,
+
+                CanSearch = true,
+
+                CategoryFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                PriorityFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                AssignedToFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                StatusFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                ProjectFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                OrgFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                UdfFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+                TagsFieldPermissionLevel = SecurityPermissionLevel.PermissionAll,
+
+                CanAssignToInternalUsers = true
             };
+
+            ViewBag.CustomColumns = Util.GetCustomColumns();
+            ViewBag.DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+
+            foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
+            {
+                var bgName = (string)drCustom["name"];
+
+                ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)SecurityPermissionLevel.PermissionAll;
+            }
 
             return View("Edit", model);
         }
@@ -127,61 +131,219 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
+            ViewBag.DCustom = Util.GetCustomColumns();
 
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Organization was not created.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - create organization",
+                    Title = $"{this.applicationSettings.AppTitle} - new organization",
                     SelectedItem = MainMenuSections.Administration
                 };
+
+                ViewBag.DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+
+                foreach (DataRow drCustom in ViewBag.DCustom.Tables[0].Rows)
+                {
+                    var bgName = (string)drCustom["name"];
+
+                    ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)SecurityPermissionLevel.PermissionAll;
+                }
 
                 return View("Edit", model);
             }
 
-            //var parameters = new Dictionary<string, string>
-            //{
-            //    { "$id", model.Id.ToString() },
-            //    { "$na", model.Name.Replace("'", "''")},
-            //    { "$ss", model.SortSequence.ToString() },
-            //    { "$co", model.BackgroundColor.Replace("'", "''")},
-            //    { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
-            //    { "$df", Util.BoolToString(model.Default)},
-            //};
+            var sql = @"
+                insert into orgs
+                    (og_name,
+                    og_domain,
+                    og_active,
+                    og_non_admins_can_use,
+                    og_external_user,
+                    og_can_edit_sql,
+                    og_can_delete_bug,
+                    og_can_edit_and_delete_posts,
+                    og_can_merge_bugs,
+                    og_can_mass_edit_bugs,
+                    og_can_use_reports,
+                    og_can_edit_reports,
+                    og_can_be_assigned_to,
+                    og_can_view_tasks,
+                    og_can_edit_tasks,
+                    og_can_search,
+                    og_can_only_see_own_reported,
+                    og_can_assign_to_internal_users,
+                    og_other_orgs_permission_level,
+                    og_project_field_permission_level,
+                    og_org_field_permission_level,
+                    og_category_field_permission_level,
+                    og_tags_field_permission_level,
+                    og_priority_field_permission_level,
+                    og_status_field_permission_level,
+                    og_assigned_to_field_permission_level,
+                    og_udf_field_permission_level
+                    $custom1$
+                    )
+                    values (
+                    N'$name', 
+                    N'$domain',
+                    $active,
+                    $non_admins_can_use,
+                    $external_user,
+                    $can_edit_sql,
+                    $can_delete_bug,
+                    $can_edit_and_delete_posts,
+                    $can_merge_bugs,
+                    $can_mass_edit_bugs,
+                    $can_use_reports,
+                    $can_edit_reports,
+                    $can_be_assigned_to,
+                    $can_view_tasks,
+                    $can_edit_tasks,
+                    $can_search,
+                    $can_only_see_own_reported,
+                    $can_assign_to_internal_users,
+                    $other_orgs,
+                    $flp_project,
+                    $flp_org,
+                    $flp_category,
+                    $flp_tags,
+                    $flp_priority,
+                    $flp_status,
+                    $flp_assigned_to,
+                    $flp_udf
+                    $custom2$
+                )";
 
-            //this.priorityService.Create(parameters);
+            sql = sql.Replace("$name", model.Name);
+            sql = sql.Replace("$domain", model.Domain);
+            sql = sql.Replace("$active", Util.BoolToString(model.Active));
 
-            return RedirectToAction(nameof(Index));
+            sql = sql.Replace("$other_orgs", Convert.ToString((int)model.OtherOrgsPermissionLevel));
+
+            sql = sql.Replace("$can_search", Util.BoolToString(model.CanSearch));
+            sql = sql.Replace("$external_user", Util.BoolToString(model.ExternalUser));
+            sql = sql.Replace("$can_only_see_own_reported", Util.BoolToString(model.CanOnlySeeOwnReported));
+            sql = sql.Replace("$can_be_assigned_to", Util.BoolToString(model.CanBeAssignedTo));
+            sql = sql.Replace("$non_admins_can_use", Util.BoolToString(model.NonAdminsCanUse));
+
+            sql = sql.Replace("$flp_project", Convert.ToString((int)model.ProjectFieldPermissionLevel));
+            sql = sql.Replace("$flp_org", Convert.ToString((int)model.OrgFieldPermissionLevel));
+            sql = sql.Replace("$flp_category", Convert.ToString((int)model.CategoryFieldPermissionLevel));
+            sql = sql.Replace("$flp_tags", Convert.ToString((int)model.TagsFieldPermissionLevel));
+            sql = sql.Replace("$flp_priority", Convert.ToString((int)model.PriorityFieldPermissionLevel));
+            sql = sql.Replace("$flp_status", Convert.ToString((int)model.StatusFieldPermissionLevel));
+            sql = sql.Replace("$flp_assigned_to", Convert.ToString((int)model.AssignedToFieldPermissionLevel));
+            sql = sql.Replace("$flp_udf", Convert.ToString((int)model.UdfFieldPermissionLevel));
+
+            sql = sql.Replace("$can_edit_sql", Util.BoolToString(model.CanEditSql));
+            sql = sql.Replace("$can_delete_bug", Util.BoolToString(model.CanDeleteBug));
+            sql = sql.Replace("$can_edit_and_delete_posts", Util.BoolToString(model.CanEditAndDeletePosts));
+            sql = sql.Replace("$can_merge_bugs", Util.BoolToString(model.CanMergeBugs));
+            sql = sql.Replace("$can_mass_edit_bugs", Util.BoolToString(model.CanMassEditBugs));
+            sql = sql.Replace("$can_use_reports", Util.BoolToString(model.CanUseReports));
+            sql = sql.Replace("$can_edit_reports", Util.BoolToString(model.CanEditReports));
+            sql = sql.Replace("$can_view_tasks", Util.BoolToString(model.CanViewTasks));
+            sql = sql.Replace("$can_edit_tasks", Util.BoolToString(model.CanEditTasks));
+            sql = sql.Replace("$can_assign_to_internal_users", Util.BoolToString(model.CanAssignToInternalUsers));
+
+            var custom1 = string.Empty;
+            var custom2 = string.Empty;
+
+            foreach (DataRow drCustom in ViewBag.DCustom.Tables[0].Rows)
+            {
+                var bgName = (string)drCustom["name"];
+                var ogColName = $"og_{bgName}_field_permission_level";
+
+                custom1 += ",[" + ogColName + "]";
+                custom2 += "," + Util.SanitizeInteger(Request[bgName]);
+            }
+
+            sql = sql.Replace("$custom1$", custom1);
+            sql = sql.Replace("$custom2$", custom2);
+
+            DbUtil.ExecuteNonQuery(sql);
+
+            return Redirect(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
-            // Get this entry's data from the db and fill in the form
-            //var dataRow = this.priorityService.LoadOne(id);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - update organization",
+                Title = $"{this.applicationSettings.AppTitle} - edit organization",
                 SelectedItem = MainMenuSections.Administration
             };
 
+            // Get this entry's data from the db and fill in the form
+            var sql = @"select *,isnull(og_domain,'') og_domain2 from orgs where og_id = $og_id"
+                .Replace("$og_id", Convert.ToString(id));
+
+            var dr = DbUtil.GetDataRow(sql);
+
             var model = new EditModel
             {
-                //Id = id,
-                //Name = dataRow.Name,
-                //SortSequence = dataRow.SortSequence,
-                //Style = dataRow.Style,
-                //BackgroundColor = dataRow.BackgroundColor,
-                //Default = dataRow.Default == 1
+                Id = id,
+                Name = (string)dr["og_name"],
+                Domain = (string)dr["og_domain2"],
+                Active = Convert.ToBoolean((int)dr["og_active"]),
+
+                OtherOrgsPermissionLevel = (SecurityPermissionLevel)(int)dr["og_other_orgs_permission_level"],
+
+                CanSearch = Convert.ToBoolean((int)dr["og_can_search"]),
+                ExternalUser = Convert.ToBoolean((int)dr["og_external_user"]),
+                CanOnlySeeOwnReported = Convert.ToBoolean((int)dr["og_can_only_see_own_reported"]),
+                CanBeAssignedTo = Convert.ToBoolean((int)dr["og_can_be_assigned_to"]),
+                NonAdminsCanUse = Convert.ToBoolean((int)dr["og_non_admins_can_use"]),
+
+                ProjectFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_project_field_permission_level"],
+                OrgFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_org_field_permission_level"],
+                CategoryFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_category_field_permission_level"],
+                PriorityFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_priority_field_permission_level"],
+                StatusFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_status_field_permission_level"],
+                AssignedToFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_assigned_to_field_permission_level"],
+                UdfFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_udf_field_permission_level"],
+                TagsFieldPermissionLevel = (SecurityPermissionLevel)(int)dr["og_tags_field_permission_level"],
+
+                CanEditSql = Convert.ToBoolean((int)dr["og_can_edit_sql"]),
+                CanDeleteBug = Convert.ToBoolean((int)dr["og_can_delete_bug"]),
+                CanEditAndDeletePosts = Convert.ToBoolean((int)dr["og_can_edit_and_delete_posts"]),
+                CanMergeBugs = Convert.ToBoolean((int)dr["og_can_merge_bugs"]),
+                CanMassEditBugs = Convert.ToBoolean((int)dr["og_can_mass_edit_bugs"]),
+                CanUseReports = Convert.ToBoolean((int)dr["og_can_use_reports"]),
+                CanEditReports = Convert.ToBoolean((int)dr["og_can_edit_reports"]),
+                CanViewTasks = Convert.ToBoolean((int)dr["og_can_view_tasks"]),
+                CanEditTasks = Convert.ToBoolean((int)dr["og_can_edit_tasks"]),
+                CanAssignToInternalUsers = Convert.ToBoolean((int)dr["og_can_assign_to_internal_users"])
             };
+
+            ViewBag.CustomColumns = Util.GetCustomColumns();
+            ViewBag.DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+
+            foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
+            {
+                var bgName = (string)drCustom["name"];
+                var obj = dr[$"og_{bgName}_field_permission_level"];
+                SecurityPermissionLevel permission;
+
+                if (Convert.IsDBNull(obj))
+                {
+                    permission = SecurityPermissionLevel.PermissionAll;
+                }
+                else
+                {
+                    permission = (SecurityPermissionLevel)(int)obj;
+                }
+
+                ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)permission;
+            }
 
             return View("Edit", model);
         }
@@ -190,32 +352,111 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
+            ViewBag.CustomColumns = Util.GetCustomColumns();
 
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError(string.Empty, "Organization was not updated.");
+
                 ViewBag.Page = new PageModel
                 {
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - update organization",
+                    Title = $"{this.applicationSettings.AppTitle} - edit organization",
                     SelectedItem = MainMenuSections.Administration
                 };
+
+                ViewBag.DictCustomFieldPermissionLevel = new Dictionary<string, int>();
+
+                foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
+                {
+                    var bgName = (string)drCustom["name"];
+
+                    ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)SecurityPermissionLevel.PermissionAll;
+                }
 
                 return View("Edit", model);
             }
 
-            //var parameters = new Dictionary<string, string>
-            //{
-            //    { "$id", model.Id.ToString() },
-            //    { "$na", model.Name.Replace("'", "''")},
-            //    { "$ss", model.SortSequence.ToString() },
-            //    { "$co", model.BackgroundColor.Replace("'", "''")},
-            //    { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
-            //    { "$df", Util.BoolToString(model.Default)},
-            //};
+            var sql = @"
+                update orgs set
+                    og_name = N'$name',
+                    og_domain = N'$domain',
+                    og_active = $active,
+                    og_non_admins_can_use = $non_admins_can_use,
+                    og_external_user = $external_user,
+                    og_can_edit_sql = $can_edit_sql,
+                    og_can_delete_bug = $can_delete_bug,
+                    og_can_edit_and_delete_posts = $can_edit_and_delete_posts,
+                    og_can_merge_bugs = $can_merge_bugs,
+                    og_can_mass_edit_bugs = $can_mass_edit_bugs,
+                    og_can_use_reports = $can_use_reports,
+                    og_can_edit_reports = $can_edit_reports,
+                    og_can_be_assigned_to = $can_be_assigned_to,
+                    og_can_view_tasks = $can_view_tasks,
+                    og_can_edit_tasks = $can_edit_tasks,
+                    og_can_search = $can_search,
+                    og_can_only_see_own_reported = $can_only_see_own_reported,
+                    og_can_assign_to_internal_users = $can_assign_to_internal_users,
+                    og_other_orgs_permission_level = $other_orgs,
+                    og_project_field_permission_level = $flp_project,
+                    og_org_field_permission_level = $flp_org,
+                    og_category_field_permission_level = $flp_category,
+                    og_tags_field_permission_level = $flp_tags,
+                    og_priority_field_permission_level = $flp_priority,
+                    og_status_field_permission_level = $flp_status,
+                    og_assigned_to_field_permission_level = $flp_assigned_to,
+                    og_udf_field_permission_level = $flp_udf
+                    $custom3$
+                    where og_id = $og_id";
 
-            //this.priorityService.Update(parameters);
+            sql = sql.Replace("$og_id", Convert.ToString(model.Id));
+
+            sql = sql.Replace("$name", model.Name);
+            sql = sql.Replace("$domain", model.Domain);
+            sql = sql.Replace("$active", Util.BoolToString(model.Active));
+
+            sql = sql.Replace("$other_orgs", Convert.ToString((int)model.OtherOrgsPermissionLevel));
+
+            sql = sql.Replace("$can_search", Util.BoolToString(model.CanSearch));
+            sql = sql.Replace("$external_user", Util.BoolToString(model.ExternalUser));
+            sql = sql.Replace("$can_only_see_own_reported", Util.BoolToString(model.CanOnlySeeOwnReported));
+            sql = sql.Replace("$can_be_assigned_to", Util.BoolToString(model.CanBeAssignedTo));
+            sql = sql.Replace("$non_admins_can_use", Util.BoolToString(model.NonAdminsCanUse));
+
+            sql = sql.Replace("$flp_project", Convert.ToString((int)model.ProjectFieldPermissionLevel));
+            sql = sql.Replace("$flp_org", Convert.ToString((int)model.OrgFieldPermissionLevel));
+            sql = sql.Replace("$flp_category", Convert.ToString((int)model.CategoryFieldPermissionLevel));
+            sql = sql.Replace("$flp_tags", Convert.ToString((int)model.TagsFieldPermissionLevel));
+            sql = sql.Replace("$flp_priority", Convert.ToString((int)model.PriorityFieldPermissionLevel));
+            sql = sql.Replace("$flp_status", Convert.ToString((int)model.StatusFieldPermissionLevel));
+            sql = sql.Replace("$flp_assigned_to", Convert.ToString((int)model.AssignedToFieldPermissionLevel));
+            sql = sql.Replace("$flp_udf", Convert.ToString((int)model.UdfFieldPermissionLevel));
+
+            sql = sql.Replace("$can_edit_sql", Util.BoolToString(model.CanEditSql));
+            sql = sql.Replace("$can_delete_bug", Util.BoolToString(model.CanDeleteBug));
+            sql = sql.Replace("$can_edit_and_delete_posts", Util.BoolToString(model.CanEditAndDeletePosts));
+            sql = sql.Replace("$can_merge_bugs", Util.BoolToString(model.CanMergeBugs));
+            sql = sql.Replace("$can_mass_edit_bugs", Util.BoolToString(model.CanMassEditBugs));
+            sql = sql.Replace("$can_use_reports", Util.BoolToString(model.CanUseReports));
+            sql = sql.Replace("$can_edit_reports", Util.BoolToString(model.CanEditReports));
+            sql = sql.Replace("$can_view_tasks", Util.BoolToString(model.CanViewTasks));
+            sql = sql.Replace("$can_edit_tasks", Util.BoolToString(model.CanEditTasks));
+            sql = sql.Replace("$can_assign_to_internal_users", Util.BoolToString(model.CanAssignToInternalUsers));
+
+            var custom3 = string.Empty;
+
+            foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
+            {
+                var bgName = (string)drCustom["name"];
+                var ogColName = $"og_{bgName}_field_permission_level";
+
+                custom3 += ",[" + ogColName + "]=" + Util.SanitizeInteger(Request[bgName]);
+            }
+
+            sql = sql.Replace("$custom3$", custom3);
+
+            DbUtil.ExecuteNonQuery(sql);
 
             return RedirectToAction(nameof(Index));
         }
@@ -223,8 +464,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             var sql = @"declare @cnt int
                 select @cnt = count(1) from users where us_org = $1;
                 select @cnt = @cnt + count(1) from queries where qu_org = $1;
@@ -260,8 +499,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.MustBeAdmin);
-
             // do delete here
             var sql = @"delete orgs where og_id = $1"
                 .Replace("$1", model.Id.ToString());

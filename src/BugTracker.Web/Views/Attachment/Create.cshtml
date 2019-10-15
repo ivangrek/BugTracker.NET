@@ -43,6 +43,8 @@
                         @using (Html.BeginForm("Create", "Attachment", FormMethod.Post, new { @class = "frm", target = "hiddenframe", enctype = "multipart/form-data", onsubmit = "return waiting()" }))
                         {
                             @Html.AntiForgeryToken()
+                            @Html.Partial("_ValidationSummary")
+
                             @Html.HiddenFor(x => x.BugId)
 
                             <table border="0">
@@ -84,12 +86,6 @@
                                         </td>
                                     </tr>
                                 }
-
-                                <tr>
-                                    <td colspan="2" align="left" id="msg" class="err">
-                                        @Html.ValidationMessage("Message")
-                                    </td>
-                                </tr>
 
                                 <tr>
                                     <td colspan="2" align="center">

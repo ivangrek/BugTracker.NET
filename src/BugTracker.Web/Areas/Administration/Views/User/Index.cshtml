@@ -14,14 +14,11 @@
 }
 
 @section Head {
-    @*TODO
-        <body onload="filter_changed()">*@
-
     <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 
     <script>
         function filter_changed() {
-            el = document.getElementById("filter_users");
+            el = document.getElementById("Filter");
 
             if (el.value != "") {
                 el.style.background = "yellow";
@@ -29,6 +26,8 @@
                 el.style.background = "white";
             }
         }
+
+        document.addEventListener("DOMContentLoaded", filter_changed);
     </script>
 }
 
@@ -36,39 +35,39 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <a href="@Url.Action("Create", "User")"><img src="~/Content/images/add.png" align="top">&nbsp;add new user</a>
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="@Url.Action("Create", "User")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+        </nav>
+    </div>
+}
 
-    <table border="0" width="80%">
-        <tr>
-            @*<td align="left" valign="top">
-                    <a href="<%= ResolveUrl(" ~/Admin/Users/Edit.aspx")%>">add new user </a>
-                </td>*@
-
-            <td align="right" valign="top">
-                <form runat="server">
-                    <span class="lbl">Show only usernames starting with:</span>
-                    <input type="text" runat="server" id="filter_users" class="txt" value="" onkeyup="filter_changed()" style="color: red;" />
-                    &nbsp;&nbsp;&nbsp;
-
-                    <span class="lbl">hide inactive users:</span>
-                    <asp:CheckBox ID="hide_inactive_users" class="cb" runat="server" />
-
-                    <input type="submit" class="btn" value="Refresh User List">
-                </form>
-            </td>
-        </tr>
-    </table>
-
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+<div class="row px-3 mb-3">
+    @using (Html.BeginForm("Index", "User", new { area = "Administration" }, FormMethod.Post, new { @class = "form-inline ml-auto" }))
     {
-        @Html.Partial("_SortableTable", Model);
-    }
-    else
-    {
-        <div>No users to display.</div>
+        @Html.AntiForgeryToken()
+
+        @Html.Label("Filter", "Show only usernames starting with:", new { @class = "mr-sm-2" })
+        @Html.TextBox("Filter", (string)ViewBag.Filter, new { type = "search", @class = "form-control mb-2 mr-sm-2", onkeyup = "filter_changed()", style = "color: red;" })
+
+        <div class="form-check mb-2 mr-sm-2">
+            @Html.CheckBox("HideInactive", (bool)ViewBag.HideInactive, new { @class = "form-check-input" })
+            @Html.Label("HideInactive", "hide inactive users:", new { @class = "form-check-label" })
+        </div>
+
+        <input type="submit" class="btn btn-primary mb-2" value="Apply">
     }
 </div>
+
+@if (Model.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", Model);
+}
+else
+{
+    <div>No users to display.</div>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

@@ -20,76 +20,77 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<div class="main">
-    <div style="width: 600px;" class="smallnote">
-        Email notifications are put into a table into the database and then the system attempts to send them.
-        If the system fails to send the notification, it records the reason for the failure with the row.
-        <br>
-        <br>
-        The system makes 3 attempts to send the notification. After the 3rd attempt,
-        you can either give up and delete the unsent notifications
-        or you can reset the retry count and let the system continue trying.
-    </div>
+@section BodySubHeader {
+}
 
-    <p></p>
+<div style="width: 600px;" class="smallnote">
+    Email notifications are put into a table into the database and then the system attempts to send them.
+    If the system fails to send the notification, it records the reason for the failure with the row.
+    <br>
+    <br>
+    The system makes 3 attempts to send the notification. After the 3rd attempt,
+    you can either give up and delete the unsent notifications
+    or you can reset the retry count and let the system continue trying.
+</div>
 
-    <div class="align">
-        @{
-            var formId = Guid.NewGuid().ToString();
-        }
+<p></p>
 
-        @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.Hidden("Action", "delete")
-            @Html.Hidden("Session", (string)ViewBag.Sesion)
+<div class="align">
+    @{
+        var formId = Guid.NewGuid().ToString();
+    }
 
-            <a href="#" onclick="document.getElementById('@formId').submit();">Delete unsent notifications</a>
-        }
+    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("Action", "delete")
+        @Html.Hidden("Session", (string)ViewBag.Sesion)
 
-        <br>
-        <br>
-        @{
-            formId = Guid.NewGuid().ToString();
-        }
+        <a href="#" onclick="document.getElementById('@formId').submit();">Delete unsent notifications</a>
+    }
 
-        @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.Hidden("Action", "reset")
-            @Html.Hidden("Session", (string)ViewBag.Sesion)
+    <br>
+    <br>
+    @{
+        formId = Guid.NewGuid().ToString();
+    }
 
-            <a href="#" onclick="document.getElementById('@formId').submit();">Reset retry count to zero</a>
-        }
+    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("Action", "reset")
+        @Html.Hidden("Session", (string)ViewBag.Sesion)
 
-        <br>
-        <br>
+        <a href="#" onclick="document.getElementById('@formId').submit();">Reset retry count to zero</a>
+    }
 
-        @{
-            formId = Guid.NewGuid().ToString();
-        }
+    <br>
+    <br>
 
-        @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.Hidden("Action", "resend")
-            @Html.Hidden("Session", (string)ViewBag.Sesion)
+    @{
+        formId = Guid.NewGuid().ToString();
+    }
 
-            <a href="#" onclick="document.getElementById('@formId').submit();">Try to resend</a>
-        }
+    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("Action", "resend")
+        @Html.Hidden("Session", (string)ViewBag.Sesion)
 
-        <br>
-        <br>
+        <a href="#" onclick="document.getElementById('@formId').submit();">Try to resend</a>
+    }
 
-        @if (Model.DataSet.Tables[0].Rows.Count > 0)
-        {
-            @Html.Partial("_SortableTable", Model);
-        }
-        else
-        {
-            <div>No queued email notifications in the database.</div>
-        }
-    </div>
+    <br>
+    <br>
+
+    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+    {
+        @Html.Partial("_SortableTable", Model);
+    }
+    else
+    {
+        <div>No queued email notifications in the database.</div>
+    }
 </div>
 
 @section BodyFooter {
