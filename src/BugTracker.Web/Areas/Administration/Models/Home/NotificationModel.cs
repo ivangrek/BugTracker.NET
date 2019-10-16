@@ -9,7 +9,5 @@ namespace BugTracker.Web.Areas.Administration.Models.Home
     public sealed class NotificationModel
     {
         public string Action { get; set; }
-
-        public string Session { get; set; }
     }
 }

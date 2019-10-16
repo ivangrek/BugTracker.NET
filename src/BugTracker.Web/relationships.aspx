@@ -87,7 +87,6 @@
                                 </table>
                                 <input runat="server" id="bgid" type="hidden" name="bgid" value=""/>
                                 <input id="actn" type="hidden" name="actn" value="add"/>
-                                <input id="ses" type="hidden" name="ses" value="<% Response.Write(this.Ses); %>">
                             </form>
                             <% } %>
                     </td>

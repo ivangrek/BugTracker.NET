@@ -95,9 +95,7 @@ function toggle_notifications(bugid) {
     var el = get_el("get_stop_notifications");
     var text = get_text(el);
 
-    var url = "/Bug/Subscribe?ses="
-        + get_cookie("se_id2")
-        + "&id="
+    var url = "/Bug/Subscribe?id="
         + bugid
         + "&actn=";
 

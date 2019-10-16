@@ -76,9 +76,8 @@ namespace BugTracker.Web
                 Directory.CreateDirectory(dir);
             }
 
-            Util.SetContext(HttpContext.Current); // required for map path calls to work in util.cs
-
             var sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_header.html"));
+
             Application["custom_header"] = sr.ReadToEnd();
             sr.Close();
 
@@ -126,7 +125,11 @@ namespace BugTracker.Web
 
             var aspNetContext = HttpContext.Current;
 
-            Util.SetContext(aspNetContext);
+            if (aspNetContext.Request.Path.Contains("Account"))
+            {
+                return; // allow
+            }
+
             var request = aspNetContext.Request;
             var response = aspNetContext.Response;
             var cookie = request.Cookies["se_id2"];

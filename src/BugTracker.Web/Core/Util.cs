@@ -22,8 +22,8 @@ namespace BugTracker.Web.Core
     {
         private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
-        public static HttpContext Context;
-        private static HttpRequest _request;
+        public static HttpContext Context => HttpContext.Current;
+        private static HttpRequest _request => HttpContext.Current.Request;
 
         private static readonly object Dummy = new object();
 
@@ -36,20 +36,6 @@ namespace BugTracker.Web.Core
         public static bool ValidateEmail(string s)
         {
             return ReEmail.IsMatch(s);
-        }
-
-        public static void SetContext(HttpContext aspNetContext)
-        {
-            Context = aspNetContext;
-
-            try
-            {
-                _request = Context.Request;
-            }
-            catch (Exception e)
-            {
-                WriteToLog("caught exception in util.SetContext:" + e.Message);
-            }
         }
 
         public static string GetLogFilePath()

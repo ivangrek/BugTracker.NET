@@ -44,7 +44,6 @@
     {
         @Html.AntiForgeryToken()
         @Html.Hidden("Action", "delete")
-        @Html.Hidden("Session", (string)ViewBag.Sesion)
 
         <a href="#" onclick="document.getElementById('@formId').submit();">Delete unsent notifications</a>
     }
@@ -59,7 +58,6 @@
     {
         @Html.AntiForgeryToken()
         @Html.Hidden("Action", "reset")
-        @Html.Hidden("Session", (string)ViewBag.Sesion)
 
         <a href="#" onclick="document.getElementById('@formId').submit();">Reset retry count to zero</a>
     }
@@ -75,7 +73,6 @@
     {
         @Html.AntiForgeryToken()
         @Html.Hidden("Action", "resend")
-        @Html.Hidden("Session", (string)ViewBag.Sesion)
 
         <a href="#" onclick="document.getElementById('@formId').submit();">Try to resend</a>
     }

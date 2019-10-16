@@ -492,8 +492,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 from queued_notifications
                 order by id;");
 
-            ViewBag.Sesion = (string)Session["session_cookie"];
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -514,11 +512,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Notification(NotificationModel model)
         {
-            if (model.Session != (string)Session["session_cookie"])
-            {
-                return Content("session in URL doesn't match session cookie");
-            }
-
             if (model.Action == "delete")
             {
                 var sql = @"delete from queued_notifications where qn_status = N'not sent'";

@@ -275,8 +275,6 @@
         [HttpGet]
         public ActionResult Hook()
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             var username = Request["username"];
             var password = Request["password"];
             var gitLog = Request["GitLog"];

@@ -77,7 +77,7 @@ namespace BugTracker.Web
             {
                 this.Sql = @"
 select
-'<a href=DeleteSubscriber.aspx?ses=$ses&bg_id=$bg&us_id=' + convert(varchar,us_id) + '>unsubscribe</a>'	[$no_sort_unsubscriber],
+'<a href=DeleteSubscriber.aspx?bg_id=$bg&us_id=' + convert(varchar,us_id) + '>unsubscribe</a>'	[$no_sort_unsubscriber],
 us_username [user],
 us_lastname + ', ' + us_firstname [name],
 us_email [email],
@@ -89,7 +89,6 @@ and us_enable_notifications = 1
 and us_active = 1
 order by 1";
 
-                this.Sql = this.Sql.Replace("$ses", Convert.ToString(Session["session_cookie"]));
             }
             else
             {

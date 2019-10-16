@@ -21,7 +21,6 @@ namespace BugTracker.Web
         protected DataSet Ds { get; set; }
         protected SecurityPermissionLevel PermissionLevel { get; set; }
         public int Previd;
-        protected string Ses { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -55,17 +54,10 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            this.Ses = (string) Session["session_cookie"];
             var action = Request["actn"];
 
             if (!string.IsNullOrEmpty(action))
             {
-                if (Request["ses"] != this.Ses)
-                {
-                    Response.Write("session in Request doesn't match session cookie");
-                    Response.End();
-                }
-
                 if (this.PermissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {
                     Response.Write("You are not allowed to edit this item");

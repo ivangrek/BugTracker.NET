@@ -21,7 +21,6 @@ namespace BugTracker.Web.Bugs
 
         public void Page_Load(object sender, EventArgs e)
         {
-            Util.SetContext(HttpContext.Current);
             Util.DoNotCache(Response);
 
             var username = Request["username"];

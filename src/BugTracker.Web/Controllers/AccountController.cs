@@ -41,8 +41,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!this.applicationSettings.AllowSelfRegistration)
             {
                 return Content("Sorry, Web.config AllowSelfRegistration is set to 0");
@@ -62,8 +60,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!this.applicationSettings.AllowSelfRegistration)
             {
                 return Content("Sorry, Web.config AllowSelfRegistration is set to 0");
@@ -138,8 +134,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult CompleteRegistration(string id)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             var sql = @"
                 declare @expiration datetime
                 set @expiration = dateadd(n,-$minutes,getdate())
@@ -199,8 +193,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             // see if the connection string works
             try
             {
@@ -306,8 +298,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             // see if the connection string works
             try
             {
@@ -611,8 +601,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult MobileLogin()
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!this.applicationSettings.EnableMobile)
             {
                 return Content("BugTracker.NET EnableMobile is not set to 1 in Web.config");
@@ -632,8 +620,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult MobileLogin(LoginModel model)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!this.applicationSettings.EnableMobile)
             {
                 return Content("BugTracker.NET EnableMobile is not set to 1 in Web.config");
@@ -678,8 +664,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Forgot()
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!this.applicationSettings.ShowForgotPasswordLink)
             {
                 return Content("Sorry, Web.config ShowForgotPasswordLink is set to 0");
@@ -699,8 +683,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Forgot(ForgotModel model)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!this.applicationSettings.ShowForgotPasswordLink)
             {
                 return Content("Sorry, Web.config ShowForgotPasswordLink is set to 0");
@@ -830,8 +812,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult ChangePassword(string id)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -851,8 +831,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(ChangePasswordModel model)
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             if (!Util.CheckPasswordStrength(model.Password))
             {
                 ModelState.AddModelError(string.Empty, "Password is not difficult enough to guess.<br>Avoid common words.<br>Try using a mixture of lowercase, uppercase, digits, and special characters.");
@@ -920,8 +898,6 @@ namespace BugTracker.Web.Controllers
         //[ValidateAntiForgeryToken]    // TODO uncomment after migration
         public ActionResult Logoff()
         {
-            Util.SetContext(System.Web.HttpContext.Current);
-
             using (DbUtil.GetSqlConnection())
             { }
 
@@ -960,6 +936,7 @@ namespace BugTracker.Web.Controllers
             return Redirect("~/");
         }
 
+        [Authorize]
         [HttpGet]
         public ActionResult Settings()
         {
@@ -1047,6 +1024,7 @@ namespace BugTracker.Web.Controllers
             return View(model);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Settings(SettingsModel model)

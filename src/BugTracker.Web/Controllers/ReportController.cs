@@ -21,6 +21,7 @@ namespace BugTracker.Web.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class ReportController : Controller
     {
@@ -467,8 +468,6 @@ order by ds_col, ds_row";
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Sesion = (string)Session["session_cookie"];
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -495,7 +494,7 @@ order by ds_col, ds_row";
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType, string sesion)
+        public ActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType)
         {
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
@@ -505,11 +504,6 @@ order by ds_col, ds_row";
             if (!isAuthorized)
             {
                 return Content("You are not allowed to use this page.");
-            }
-
-            if (sesion != (string)Session["session_cookie"])
-            {
-                return Content("session in URL doesn't match session cookie");
             }
 
             var sql = string.Empty;

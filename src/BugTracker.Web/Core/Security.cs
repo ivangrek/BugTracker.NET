@@ -69,7 +69,6 @@ namespace BugTracker.Web.Core
             {
                 var aspNetContext = HttpContext.Current;
 
-                Util.SetContext(aspNetContext);
                 var request = aspNetContext.Request;
                 var cookie = request.Cookies["se_id2"];
 
@@ -167,37 +166,20 @@ namespace BugTracker.Web.Core
 
         public void CheckSecurity(SecurityLevel level)
         {
-            var aspNetContext = HttpContext.Current;
-
-            Util.SetContext(aspNetContext);
-            var request = aspNetContext.Request;
-            var response = aspNetContext.Response;
-            var cookie = request.Cookies["se_id2"];
-
-            if (cookie != null)
-            {
-                aspNetContext.Session["session_cookie"] = cookie.Value;
-            }
-            else
-            {
-                Util.WriteToLog("blanking cookie");
-                aspNetContext.Session["session_cookie"] = "";
-            }
-
             if (level == SecurityLevel.MustBeAdmin && !this.User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
-                response.Redirect("~/Account/Login");
+                HttpContext.Current.Response.Redirect("~/Account/Login");
             }
             else if (level == SecurityLevel.AnyUserOkExceptGuest && this.User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
-                response.Redirect("~/Account/Login");
+                HttpContext.Current.Response.Redirect("~/Account/Login");
             }
             else if (level == SecurityLevel.MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
-                response.Redirect("~/Account/Login");
+                HttpContext.Current.Response.Redirect("~/Account/Login");
             }
         }
 

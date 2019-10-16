@@ -228,17 +228,15 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Subscribe(int id, string ses, string actn)
+        public ActionResult Subscribe(int id, string actn)
         {
             this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
-            if (permissionLevel == SecurityPermissionLevel.PermissionNone) Response.End();
-
-            if (ses != (string)Session["session_cookie"])
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
-                return Content("session in URL doesn't match session cookie");
+                return Content(string.Empty);
             }
 
             string sql;
@@ -511,6 +509,150 @@ namespace BugTracker.Web.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult Vote(int bugid, int vote)
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var dv = (DataView)Session["bugs"];
+
+            if (dv == null)
+            {
+                return Content(string.Empty);
+            }
+
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content(string.Empty);
+            }
+
+            for (var i = 0; i < dv.Count; i++)
+            {
+                if ((int)dv[i][1] == bugid)
+                {
+                    // treat it like a delta and update the cached vote count.
+                    var objVoteCount = HttpContext.ApplicationInstance.Application[Convert.ToString(bugid)];
+                    var voteCount = 0;
+
+                    if (objVoteCount != null)
+                    {
+                        voteCount = (int)objVoteCount;
+                    }
+
+                    voteCount += vote;
+
+                    HttpContext.ApplicationInstance.Application[Convert.ToString(bugid)] = voteCount;
+
+                    // now treat it more like a boolean
+                    if (vote == -1)
+                    {
+                        vote = 0;
+                    }
+
+                    dv[i]["$VOTE"] = vote;
+
+                    var sql = @"
+                        if not exists (select bu_bug from bug_user where bu_bug = $bg and bu_user = $us)
+                        insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($bg, $us, 0, 0, 1) 
+                        update bug_user set bu_vote = $vote, bu_vote_datetime = getdate() where bu_bug = $bg and bu_user = $us and bu_vote <> $vote"
+                        .Replace("$vote", Convert.ToString(vote))
+                        .Replace("$bg", Convert.ToString(bugid))
+                        .Replace("$us", Convert.ToString(this.security.User.Usid));
+
+                    DbUtil.ExecuteNonQuery(sql);
+
+                    break;
+                }
+            }
+
+            return Content("OK");
+        }
+
+        [HttpGet]
+        public ActionResult Flag(int bugid, int flag)
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var dv = (DataView)Session["bugs"];
+
+            if (dv == null)
+            {
+                return Content(string.Empty);
+            }
+
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content(string.Empty);
+            }
+
+            for (var i = 0; i < dv.Count; i++)
+            {
+                if ((int)dv[i][1] == bugid)
+                {
+                    dv[i]["$FLAG"] = flag;
+
+                    var sql = @"
+                        if not exists (select bu_bug from bug_user where bu_bug = $bg and bu_user = $us)
+                        insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($bg, $us, 1, 0, 0) 
+                        update bug_user set bu_flag = $fl, bu_flag_datetime = getdate() where bu_bug = $bg and bu_user = $us and bu_flag <> $fl"
+                    .Replace("$bg", Convert.ToString(bugid))
+                    .Replace("$us", Convert.ToString(this.security.User.Usid))
+                    .Replace("$fl", Convert.ToString(flag));
+
+                    DbUtil.ExecuteNonQuery(sql);
+                    break;
+                }
+            }
+
+            return Content("OK");
+        }
+
+        [HttpGet]
+        public ActionResult Seen(int bugid, int seen)
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var dv = (DataView)Session["bugs"];
+
+            if (dv == null)
+            {
+                return Content(string.Empty);
+            }
+
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content(string.Empty);
+            }
+
+            for (var i = 0; i < dv.Count; i++)
+            {
+                if ((int)dv[i][1] == bugid)
+                {
+                    dv[i]["$SEEN"] = seen;
+
+                    var sql = @"
+                        if not exists (select bu_bug from bug_user where bu_bug = $bg and bu_user = $us)
+                        insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($bg, $us, 0, 1, 0) 
+                        update bug_user set bu_seen = $seen, bu_seen_datetime = getdate() where bu_bug = $bg and bu_user = $us and bu_seen <> $seen"
+                    .Replace("$seen", Convert.ToString(seen))
+                    .Replace("$bg", Convert.ToString(bugid))
+                    .Replace("$us", Convert.ToString(this.security.User.Usid));
+
+                    DbUtil.ExecuteNonQuery(sql);
+
+                    break;
+                }
+            }
+
+            return Content("OK");
         }
 
         private void PrintAsHtml(DataView dataView)

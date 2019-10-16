@@ -17,6 +17,7 @@ namespace BugTracker.Web.Controllers
     using System.Text;
     using System.Web.Mvc;
 
+    [Authorize]
     public class SearchController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

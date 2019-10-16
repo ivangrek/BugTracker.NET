@@ -20,7 +20,6 @@ namespace BugTracker.Web
         protected int Bugid { get; set; }
         protected DataSet Ds { get; set; }
         protected SecurityPermissionLevel PermissionLevel { get; set; }
-        protected string Ses { get; set; }
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -54,15 +53,13 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            this.Ses = (string) Session["session_cookie"];
-
             var sql = "select tsk_id [id],";
 
             if (this.PermissionLevel == SecurityPermissionLevel.PermissionAll && !Security.User.IsGuest &&
                 (Security.User.IsAdmin || Security.User.CanEditTasks))
                 sql += @"
 '<a   href=EditTask.aspx?bugid=$bugid&id=' + convert(varchar,tsk_id) + '>edit</a>'   [$no_sort_edit],
-'<a href=DeleteTask.aspx?ses=$ses&bugid=$bugid&id=' + convert(varchar,tsk_id) + '>delete</a>' [$no_sort_delete],";
+'<a href=DeleteTask.aspx?bugid=$bugid&id=' + convert(varchar,tsk_id) + '>delete</a>' [$no_sort_delete],";
 
             sql += "tsk_description [description]";
 
@@ -129,7 +126,6 @@ where tsk_bug = $bugid
 order by tsk_sort_sequence, tsk_id";
 
             sql = sql.Replace("$bugid", Convert.ToString(this.Bugid));
-            sql = sql.Replace("$ses", this.Ses);
 
             this.Ds = DbUtil.GetDataSet(sql);
         }

@@ -109,7 +109,6 @@
         @Html.AntiForgeryToken()
         @Html.Hidden("dashboardId", id)
         @Html.Hidden("action", action)
-        @Html.Hidden("sesion", (string)ViewBag.Sesion)
 
         <a href="#" onclick="document.getElementById('@formId').submit();">[@text]</a>
     }
@@ -146,7 +145,6 @@
         @Html.Hidden("chartType")
         @Html.Hidden("column")
         @Html.Hidden("action", "add")
-        @Html.Hidden("sesion", (string)ViewBag.Sesion)
     }
 </div>
 

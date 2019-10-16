@@ -21,12 +21,6 @@ namespace BugTracker.Web
 
             Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            if (Request.QueryString["ses"] != (string) Session["session_cookie"])
-            {
-                Response.Write("session in URL doesn't match session cookie");
-                Response.End();
-            }
-
             var sql = "delete from bug_subscriptions where bs_bug = $bg_id and bs_user = $us_id";
             sql = sql.Replace("$bg_id", Util.SanitizeInteger(Request["bg_id"]));
             sql = sql.Replace("$us_id", Util.SanitizeInteger(Request["us_id"]));

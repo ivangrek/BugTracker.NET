@@ -29,12 +29,6 @@ namespace BugTracker.Web
 
             Security.CheckSecurity(SecurityLevel.MustBeAdmin);
 
-            if (Request.QueryString["ses"] != (string) Session["session_cookie"])
-            {
-                Response.Write("session in URL doesn't match session cookie");
-                Response.End();
-            }
-
             var stringBugid = Util.SanitizeInteger(Request["bugid"]);
             var bugid = Convert.ToInt32(stringBugid);
 

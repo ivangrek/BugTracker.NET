@@ -18,6 +18,7 @@ namespace BugTracker.Web.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class AttachmentController : Controller
     {
