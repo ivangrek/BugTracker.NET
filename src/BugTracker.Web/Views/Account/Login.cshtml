@@ -8,93 +8,90 @@
 @model BugTracker.Web.Models.Account.LoginModel
 
 @{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
 
-@section Head {
-}
+<div class="p-3 mx-auto w-100 flex-grow-1" style="max-width: 360px;">
+    <h1 class="h3 mb-3 font-weight-normal text-center">@Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])</h1>
 
-@section BodyHeader {
-    <div style="float: right;">
-        <span>
-            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="http://ifdefined.com/bugtrackernet.html">BugTracker.NET</a>
-            <br>
-            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="http://ifdefined.com/README.html">Help</a>
-            <br>
-            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="mailto:ctrager@yahoo.com">Feedback</a>
-            <br>
-            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="~/Content/about.html">About</a>
-            <br>
-            <a target="_blank" style="font-family: arial; font-size: 7pt; letter-spacing: 1px;" href="http://ifdefined.com/README.html">Donate</a>
-        </span>
+    <div class="card mr-auto ml-auto mb-3">
+        <div class="card-body">
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Partial("_ValidationSummary")
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Login):
+                    @Html.TextBoxFor(x => x.Login, new { @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.ValidationMessageFor(x => x.Login, null, new { @class = "text-danger" }, "small")
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Password):
+                    @Html.TextBoxFor(x => x.Password, new { type = "password", autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" }, "small")
+                </div>
+
+                <div class="form-group form-check">
+                    @Html.CheckBoxFor(x => x.RememberMe, new { @class = "form-check-input" })
+                    @Html.LabelFor(x => x.RememberMe, new { @class = "form-check-label" })
+                    @Html.ValidationMessageFor(x => x.RememberMe, null, new { @class = "text-danger" }, "small")
+                </div>
+
+                <button type="submit" class="btn btn-primary">Logon</button>
+
+                if (page.ApplicationSettings.AllowSelfRegistration)
+                {
+                    <a href="@Url.Action("Register", "Account")" class="btn btn-link float-right">Register</a>
+                }
+            }
+        </div>
     </div>
 
-    <table style="border-spacing: 0;">
-        <tr>
-            @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])
-        </tr>
-    </table>
-}
-
-<div style="width: 320px; margin: 0 auto;">
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "frm" }))
+    @if (page.ApplicationSettings.AllowGuestWithoutLogin || page.ApplicationSettings.ShowForgotPasswordLink)
     {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_ValidationSummary")
+        <ul class="list-unstyled text-center">
+            @if (page.ApplicationSettings.AllowGuestWithoutLogin)
+            {
+                <li>
+                    <a href="~/Bugs/List.aspx">Continue as "guest" without logging in</a>
+                </li>
+            }
 
-        if (page.ApplicationSettings.WindowsAuthentication != 0)
-        {
-            <div style="margin-bottom: 8px;">
-                <span class="smallnote">To login using your Windows ID, leave User blank</span>
-            </div>
-        }
-
-        <div style="margin-bottom: 8px;">
-            <div class="lbl" style="margin-bottom: 4px;">User:</div>
-            <div>
-                @Html.TextBoxFor(x => x.Login, new { @class = "txt", id = "user", style = "box-sizing: border-box; width: 100%;" })
-            </div>
-        </div>
-
-        <div style="margin-bottom: 8px;">
-            <div class="lbl" style="margin-bottom: 4px;">Password:</div>
-            <div>
-                @Html.TextBoxFor(x => x.Password, new { @class = "txt", type = "password", id = "pw", style = "box-sizing: border-box; width: 100%;" })
-            </div>
-        </div>
-
-        <div style="text-align: right;">
-            <input class="btn" type="submit" value="Logon" />
-        </div>
+            @if (page.ApplicationSettings.ShowForgotPasswordLink)
+            {
+                <li>
+                    <a href="@Url.Action("Forgot", "Account")">Forgot your username or password?</a>
+                </li>
+            }
+        </ul>
     }
-
-    <div>
-        @if (page.ApplicationSettings.AllowGuestWithoutLogin)
-        {
-            <p>
-                <a href="~/Bugs/List.aspx">Continue as "guest" without logging in</a>
-            </p>
-        }
-
-        @if (page.ApplicationSettings.AllowSelfRegistration)
-        {
-            <p>
-                <a href="@Url.Action("Register", "Account")">Register</a>
-            </p>
-        }
-
-        @if (page.ApplicationSettings.ShowForgotPasswordLink)
-        {
-            <p>
-                <a href="@Url.Action("Forgot", "Account")">Forgot your username or password?</a>
-            </p>
-        }
-    </div>
-
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_welcome"])
 </div>
 
-@section BodyFooter {
-}
+<ul class="nav nav mb-5">
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href=" http://ifdefined.com/bugtrackernet.html">BugTracker.NET</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="http://ifdefined.com/README.html">Help</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="~/Content/about.html">About</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="mailto:ctrager@yahoo.com">Feedback</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="http://ifdefined.com/README.html">Donate</a>
+    </li>
+</ul>
+

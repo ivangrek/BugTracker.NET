@@ -35,7 +35,7 @@ select us_username, us_id, us_password, isnull(us_salt,0) us_salt, us_active
 from users
 where us_username = N'$username'";
 
-            sql = sql.Replace("$username", username.Replace("'", "''"));
+            sql = sql.Replace("$username", username);
 
             var dr = DbUtil.GetDataRow(sql);
 
