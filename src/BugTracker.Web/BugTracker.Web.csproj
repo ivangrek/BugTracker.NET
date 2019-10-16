@@ -516,7 +516,6 @@
     <Content Include="Content\images\git.png" />
     <Content Include="Global.asax" />
     <Content Include="Content\images\hg.png" />
-    <Content Include="Versioning\Hg\Blame.aspx" />
     <Content Include="Versioning\Hg\Diff.aspx" />
     <Content Include="Versioning\Hg\Log.aspx" />
     <Content Include="Bugs\Insert.aspx" />
@@ -740,13 +739,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Versioning\Hg\Blame.aspx.cs">
-      <DependentUpon>Blame.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Hg\Blame.aspx.designer.cs">
-      <DependentUpon>Blame.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Versioning\Hg\Diff.aspx.cs">
       <DependentUpon>Diff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -966,6 +958,7 @@
     <Content Include="Areas\Administration\Views\CustomField\Create.cshtml" />
     <Content Include="Areas\Administration\Views\CustomField\Update.cshtml" />
     <Content Include="Areas\Administration\Views\User\Edit.cshtml" />
+    <Content Include="Areas\Versioning\Views\Hg\Blame.cshtml" />
     <None Include="packages.config" />
     <Content Include="Site.Master" />
     <Content Include="Views\_ViewStart.cshtml" />

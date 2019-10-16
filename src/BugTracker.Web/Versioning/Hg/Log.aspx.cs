@@ -104,7 +104,7 @@ order by hgrev_revision desc, hgap_path";
                 Response.Write("view</a>");
 
                 Response.Write(
-                    "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Hg/Blame.aspx") + @"?revpathid=" + this.StringAffectedPathId
+                    "<td class=datad><a target=_blank href=" + ResolveUrl("~/Versioning/Hg/Blame") + @"?revpathid=" + this.StringAffectedPathId
                                                                                      + "&revision=" + revision
                                                                                      + ">");
 

@@ -118,6 +118,45 @@
         }
 
         [HttpGet]
+        public ActionResult Blame(int revpathid, string revision)
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            var sql = @"
+                select hgrev_revision, hgrev_bug, hgrev_repository, hgap_path 
+                from hg_revisions
+                inner join hg_affected_paths on hgap_hgrev_id = hgrev_id
+                where hgap_id = $id";
+
+            sql = sql.Replace("$id", Convert.ToString(revpathid));
+
+            var dr = DbUtil.GetDataRow(sql);
+
+            // check if user has permission for this bug
+            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["hgrev_bug"], this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                Response.Write("You are not allowed to view this item");
+                Response.End();
+            }
+
+            var repo = (string)dr["hgrev_repository"];
+
+            ViewBag.BlameText = VersionControl.HgBlame(repo, (string)dr["hgap_path"], revision);
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = "hg blame " + HttpUtility.HtmlEncode(revision) + " -- " + HttpUtility.HtmlEncode((string)dr["hgap_path"]),
+                SelectedItem = MainMenuSections.Administration
+            };
+
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult Hook()
         {
             var username = Request["username"];
