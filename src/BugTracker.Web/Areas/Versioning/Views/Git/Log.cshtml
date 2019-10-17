@@ -13,7 +13,10 @@
     ViewBag.Title = page.Title;
 }
 
-@section Head {
+@section Styles {
+}
+
+@section Scripts {
     <script type="text/javascript" src="~/Scripts/version_control_sel_rev.js"></script>
 }
 
@@ -26,7 +29,7 @@
     @using (Html.BeginForm("Diff", "Git", FormMethod.Get))
     {
         @*<input type="hidden" name="rev_0" id="rev_0" value="0" />
-        <input type="hidden" name="rev_1" id="rev_1" value="0" />*@
+            <input type="hidden" name="rev_1" id="rev_1" value="0" />*@
         <input type="hidden" name="revpathid" id="revpathid" value="@ViewBag.RevPathId" />
     }
 

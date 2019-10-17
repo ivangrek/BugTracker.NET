@@ -13,7 +13,10 @@
     ViewBag.Title = page.Title;
 }
 
-@section Head {
+@section Styles {
+}
+
+@section Scripts {
     <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
@@ -31,10 +34,10 @@
                 </td>
 
                 <td align="right" valign="top">
-                    @{ 
+                    @{
                         var formId = Guid.NewGuid().ToString();
                     }
-                    
+
                     @using (Html.BeginForm("Index", "Query", FormMethod.Get, new { id = formId }))
                     {
                         var code = "document.getElementById('" + formId + "').submit();";

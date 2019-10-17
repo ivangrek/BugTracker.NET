@@ -11,7 +11,19 @@
     ViewBag.Title = page.Title;
 }
 
-@section Head {
+@section Styles {
+    <style>
+        .show_pane_button {
+            background: #CCCCCC;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+            margin-top: 3px;
+            padding: 2px;
+        }
+    </style>
+}
+
+@section Scripts {
     @*TODO <body style="margin-right: 3px;">*@
 
     <script>
@@ -57,16 +69,6 @@
             el.style.display = "block";
         }
     </script>
-
-    <style>
-        .show_pane_button {
-            background: #CCCCCC;
-            border-bottom: 1px solid black;
-            border-right: 1px solid black;
-            margin-top: 3px;
-            padding: 2px;
-        }
-    </style>
 }
 
 @section BodyHeader {

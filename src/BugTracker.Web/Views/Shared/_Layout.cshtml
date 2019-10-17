@@ -14,13 +14,15 @@
     <link rel="shortcut icon" type="image/png" href="~/Content/favicon.ico">
 
     @Styles.Render("~/bundles/css/app")
-    @Scripts.Render("~/bundles/js/app")
 
-    @RenderSection("Head", false)
+    @RenderSection("Styles", false)
 </head>
 <body>
     @RenderSection("BodyHeader", false)
     @RenderBody()
     @RenderSection("BodyFooter", false)
+
+    @Scripts.Render("~/bundles/js/app")
+    @RenderSection("Scripts", false)
 </body>
 </html>
