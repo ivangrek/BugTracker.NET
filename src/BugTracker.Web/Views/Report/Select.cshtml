@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -30,16 +32,14 @@
 @section BodyHeader {
 }
 
-<div class="main">
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
-    {
-        @Html.Partial("_SortableTable", Model);
-    }
-    else
-    {
-        <div>No reports in the database.</div>
-    }
-</div>
+@if (Model.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", Model);
+}
+else
+{
+    <div>No reports in the database.</div>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

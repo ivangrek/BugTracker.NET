@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.Report.DashboardModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -15,21 +17,8 @@
 
 @section Styles {
     <style>
-        body {
-            background: #ffffff;
-        }
-
-        .panel {
-            background: #ffffff;
-            border: 3px solid #cccccc;
-            margin-bottom: 10px;
-            padding: 10px;
-        }
-
         iframe {
-            border: 1px solid white;
-            height: 300px;
-            width: 90%;
+            height: 320px;
         }
     </style>
 }
@@ -38,7 +27,18 @@
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", page)
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+    @if (!page.Security.User.IsGuest) /* no dashboard */
+    {
+        <div class="nav-scroller bg-light border-bottom">
+            <nav class="nav nav-underline">
+                <a href="@Url.Action("EditDashboard", "Report")" class="nav-link">Edit</a>
+            </nav>
+        </div>
+    }
 }
 
 @helper WriteColumn(int column)
@@ -51,40 +51,36 @@
         {
             if ((string)dr["ds_chart_type"] == "data")
             {
-                <div class="panel">
-                    <iframe frameborder="0" src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = "data" })"></iframe>
+                <div class="card mb-3">
+                    <div class="card-body text-center">
+                        <iframe frameborder="0" src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = "data" })" class="w-100"></iframe>
+                    </div>
                 </div>
             }
             else
             {
-                <div class="panel">
-                    <img src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = dr["ds_chart_type"], scale = 2 })">
+                <div class="card mb-3">
+                    <div class="card-body text-center">
+                        <img src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = dr["ds_chart_type"], scale = 2 })">
+                    </div>
                 </div>
             }
         }
     }
 }
 
-<div class="main">
-    @if (page.Security.User.IsGuest) /* no dashboard */
-    {
-        <span class="disabled_link">edit dashboard not available to "guest" user</span>
-    }
-    else
-    {
-        <a href="@Url.Action("EditDashboard", "Report")">edit dashboard</a>
-    }
+<div class="row">
+    <div class="col">
+        @WriteColumn(1)
+    </div>
 
-    <table border="0" cellspacing="0" cellpadding="10">
-        <tr>
-            <td valign="top">
-                @WriteColumn(1)
-            </td>
+    <div class="col">
+        @WriteColumn(2)
+    </div>
 
-            <td valign="top">
-                @WriteColumn(2)
-            </td>
-    </table>
+    <div class="col">
+        @WriteColumn(3)
+    </div>
 </div>
 
 @section BodyFooter {

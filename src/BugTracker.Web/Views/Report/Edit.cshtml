@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.Report.EditModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -35,105 +37,101 @@
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", page)
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
 }
 
-<div class="main">
-    <a href="@Url.Action("Index")">back to reports</a>
-    <div>&nbsp;</div>
+@section BodySubHeader {
+}
 
-    <table style="border-collapse: collapse; border: 0;">
-        <tr>
-            <td>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
                 @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Report", FormMethod.Post, new { @class = "frm" }))
                 {
                     @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
 
-                    if (Model.Id != 0)
-                    {
-                        @Html.HiddenFor(x => x.Id)
-                    }
+                    @Html.HiddenFor(x => x.Id)
 
-                    <table border="0">
-                        <tr>
-                            <td class="lbl">Description:</td>
-                            <td>
-                                @Html.TextBoxFor(x => x.Name, new { @class = "txt", id = "desc", maxlength = "80", size = "80" })
-                            </td>
-                        </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "80", size = "80" })
+                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.Name)
-                            </td>
-                        </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.ChartType):
 
-                        <tr>
-                            <td class="lbl">Chart Type:</td>
-                            <td>
-                                <label>@Html.RadioButtonFor(x => x.ChartType, "Table")Table</label>
-                                &nbsp;&nbsp;&nbsp;
-                                <label>@Html.RadioButtonFor(x => x.ChartType, "Pie")Pie</label>
-                                &nbsp;&nbsp;&nbsp;
-                                <label>@Html.RadioButtonFor(x => x.ChartType, "Bar")Bar</label>
-                                &nbsp;&nbsp;&nbsp;
-                                <label>@Html.RadioButtonFor(x => x.ChartType, "Line")Line</label>
-                                &nbsp;&nbsp;&nbsp;
-                            </td>
-                        </tr>
+                        <div>
+                            <div class="form-check">
+                                @{
+                                    var id = Guid.NewGuid();
+                                }
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.ChartType)
-                            </td>
-                        </tr>
+                                @Html.RadioButtonFor(x => x.ChartType, "Table", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Table", new { @for = id, @class = "form-check-label" })
+                            </div>
 
-                        <tr>
-                            <td class="lbl">SQL:</td>
-                            <td>
-                                @Html.TextAreaFor(x => x.SqlText, new { @class = "txt", id = "sqlText", rows = "10", cols = "70" })
-                            </td>
-                        </tr>
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td class="err">
-                                @Html.ValidationMessageFor(x => x.SqlText)
-                            </td>
-                        </tr>
+                                @Html.RadioButtonFor(x => x.ChartType, "Pie", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Pie", new { @for = id, @class = "form-check-label" })
+                            </div>
 
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td align="center">
-                                <input class="btn" type="submit" value="@(Model.Id == 0 ? "Create" : "Update")" />
-                            </td>
-                        </tr>
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
 
-                        <tr>
-                            <td>&nbsp</td>
-                            <td class="cmt">
-                                To use "Pie", "Bar", or "Line", your SQL statement should have two columns
-                                <br>
-                                where the first column is the label and the second column contains the value.
-                                <br>
-                                <br>
-                                You can use the pseudo-variable $ME in your report which will be replaced by your user ID.
-                                <br>
-                                For example:
-                                <ul>
-                                    select .... from ....
-                                    <br>
-                                    where bg_assigned_to_user = $ME
-                                </ul>
-                            </td>
-                        </tr>
-                    </table>
+                                @Html.RadioButtonFor(x => x.ChartType, "Bar", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Bar", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.ChartType, "Line", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Line", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.ChartType, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.SqlText):
+                        @Html.TextAreaFor(x => x.SqlText, new { id = "sqlText", @class = "form-control", rows = "10", cols = "70" })
+                        @Html.ValidationMessageFor(x => x.SqlText, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
                 }
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            To use "Pie", "Bar", or "Line", your SQL statement should have two columns
+            <br>
+            where the first column is the label and the second column contains the value.
+            <br>
+            <br>
+            You can use the pseudo-variable $ME in your report which will be replaced by your user ID.
+            <br>
+            For example:
+            <ul>
+                select .... from ....
+                <br>
+                where bg_assigned_to_user = $ME
+            </ul>
+        </div>
+    </div>
 </div>
 
 @section BodyFooter {

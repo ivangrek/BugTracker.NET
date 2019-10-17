@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -23,24 +25,14 @@
 @section BodyHeader {
 }
 
-<div class="main">
-    <table border=0>
-        <tr>
-            <td>
-                <h2>@page.Title</h2>
-
-                @if (Model.DataSet.Tables[0].Rows.Count > 0)
-                {
-                    @Html.Partial("_SortableTable", Model);
-                }
-                else
-                {
-                    <font size="+1">The database query for this report returned zero rows.</font>
-                }
-            </td>
-        </tr>
-    </table>
-</div>
+@if (Model.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", Model);
+}
+else
+{
+    <font size="+1">The database query for this report returned zero rows.</font>
+}
 
 @section BodyFooter {
 }

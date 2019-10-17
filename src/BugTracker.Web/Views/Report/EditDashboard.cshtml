@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.Report.EditDashboardModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -49,7 +51,15 @@
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", page)
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="@Url.Action("Dashboard", "Report")" class="nav-link"><img src="~/Content/images/brick.png" align="top">&nbsp;Dashboard</a>
+        </nav>
+    </div>
 }
 
 @helper WriteColumn(int column)
@@ -69,33 +79,35 @@
     {
         if ((int)dr["ds_col"] == column)
         {
-            <div class="panel">
-                @WriteLink((int)dr["ds_id"], "delete", "delete")
+            <div class="card mb-3">
+                <div class="card-body">
+                    @WriteLink((int)dr["ds_id"], "delete", "delete")
 
-                @if (firstRow)
-                {
-                    firstRow = false;
-                }
-                else
-                {
-                    @WriteLink((int)dr["ds_id"], "moveup", "move up")
-                }
+                    @if (firstRow)
+                    {
+                        firstRow = false;
+                    }
+                    else
+                    {
+                        @WriteLink((int)dr["ds_id"], "moveup", "move up")
+                    }
 
-                @if ((int)dr["ds_row"] == lastRow)
-                {
-                    // skip
-                }
-                else
-                {
-                    @WriteLink((int)dr["ds_id"], "movedown", "move down")
-                }
+                    @if ((int)dr["ds_row"] == lastRow)
+                    {
+                        // skip
+                    }
+                    else
+                    {
+                        @WriteLink((int)dr["ds_id"], "movedown", "move down")
+                    }
 
-                @*//WriteLink((int) dr["ds_id"], "switchcols", "switch columns");*@
+                    @*//WriteLink((int) dr["ds_id"], "switchcols", "switch columns");*@
 
-                <p></p>
+                    <p></p>
 
-                <div style="text-align: center; font-weight: bold;">
-                    @dr["rp_desc"]&nbsp;-&nbsp;@dr["ds_chart_type"]
+                    <div style="text-align: center; font-weight: bold;">
+                        @dr["rp_desc"]&nbsp;-&nbsp;@dr["ds_chart_type"]
+                    </div>
                 </div>
             </div>
         }
@@ -118,37 +130,46 @@
     <span>&nbsp;&nbsp;&nbsp;</span>
 }
 
-<div class="main">
-    <a href="@Url.Action("Dashboard", "Report")">back to dashboard</a>
+<div class="row">
+    <div class="col">
+        @WriteColumn(1)
 
-    <table border="0" cellspacing="0" cellpadding="10">
-        <tr>
-            <td valign="top">
-                @WriteColumn(1)
+        <div class="card mb-3">
+            <div class="card-body">
+                <a href="javascript:show_select_report_page(1)">[add report to dashboard column 1]</a>
+            </div>
+        </div>
+    </div>
 
-                <div class="panel">
-                    <a href="javascript:show_select_report_page(1)">[add report to dashboard column 1]</a>
-                </div>
-            </td>
+    <div class="col">
+        @WriteColumn(2)
 
-            <td valign="top">
-                @WriteColumn(2)
+        <div class="card mb-3">
+            <div class="card-body">
+                <a href="javascript:show_select_report_page(2)">[add report to dashboard column 2]</a>
+            </div>
+        </div>
+    </div>
 
-                <div class="panel">
-                    <a href="javascript:show_select_report_page(2)">[add report to dashboard column 2]</a>
-                </div>
-            </td>
-    </table>
+    <div class="col">
+        @WriteColumn(3)
 
-    @using (Html.BeginForm("UpdateDashboard", "Report", FormMethod.Post, new { id = "addform" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.Hidden("reportId")
-        @Html.Hidden("chartType")
-        @Html.Hidden("column")
-        @Html.Hidden("action", "add")
-    }
+        <div class="card mb-3">
+            <div class="card-body">
+                <a href="javascript:show_select_report_page(3)">[add report to dashboard column 3]</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+@using (Html.BeginForm("UpdateDashboard", "Report", FormMethod.Post, new { id = "addform" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("reportId")
+    @Html.Hidden("chartType")
+    @Html.Hidden("column")
+    @Html.Hidden("action", "add")
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

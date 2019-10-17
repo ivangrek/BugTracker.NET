@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -21,26 +23,26 @@
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", page)
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
 }
 
-<div class="main">
-    @if (page.Security.User.IsAdmin || page.Security.User.CanEditReports)
-    {
-        <a href="@Url.Action("Create")"><img src="~/Content/images/add.png" align="top">&nbsp;add new report</a>@:&nbsp;&nbsp;&nbsp;&nbsp;
-    }
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="@Url.Action("Create", "Report")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+            <a href="@Url.Action("Dashboard", "Report")" class="nav-link"><img src="~/Content/images/brick.png" align="top">&nbsp;Dashboard</a>
+        </nav>
+    </div>
+}
 
-    <a href="@Url.Action("Dashboard")">dashboard</a>
-
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
-    {
-        @Html.Partial("_SortableTable", Model);
-    }
-    else
-    {
-        <div>No reports in the database.</div>
-    }
-</div>
+@if (Model.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", Model);
+}
+else
+{
+    <div>No reports in the database.</div>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
