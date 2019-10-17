@@ -1,0 +1,179 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Query.EditModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/edit_area/edit_area_full.js"></script>
+
+    <script>
+        editAreaLoader.init({
+            id: "sqlText", // id of the textarea to transform
+            start_highlight: true, // if start with highlight
+            toolbar: "search, go_to_line, undo, redo, help",
+            browsers: "all",
+            language: "en",
+            syntax: "sql",
+            allow_toggle: false,
+            min_height: 300,
+            min_width: 400
+        });
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Query", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "80", size = "80" })
+                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Visibility):
+
+                        <div>
+                            <div class="form-check">
+                                @{
+                                    var id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.Visibility, 0, new { id = id, @class = "form-check-input" })
+                                @Html.Label("Everybody", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.Visibility, 1, new { id = id, @class = "form-check-input" })
+                                @Html.Label("For User", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            @Html.DropDownListFor(x => x.UserId, (List<SelectListItem>)ViewBag.Users, new { @class = "form-control" })
+
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.Visibility, 2, new { id = id, @class = "form-check-input" })
+                                @Html.Label("For Organization", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            @Html.DropDownListFor(x => x.QrganizationId, (List<SelectListItem>)ViewBag.Organizations, new { @class = "form-control" })
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.Visibility, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.SqlText):
+                        @Html.TextAreaFor(x => x.SqlText, new { id = "sqlText", @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.SqlText, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+                }
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            In order to work with the /Bug page, your SQL must be structured in a particular way.
+            The first column must be either a color starting with "#" or a CSS style class.
+            If it starts with "#", it will be interpreted as the background color of the row.
+            Otherwise, it will be interpreted as the name of a CSS style class in your CSS file.
+            <br>
+            <br>
+            View this <a target="_blank" href="~/Administration/Home/EditStyles">example</a> of one way to change the color of your rows.
+            The example uses a combination of priority and status to determine the CSS style, but feel free to come up with your own scheme.
+            <br>
+            <br>
+            The second column must be "bg_id".
+            <br>
+            <br>
+            <b>"$ME"</b> is a magic word you can use in your query that gets replaced by your user ID.
+            <br>
+            For example:
+            <br>
+            <ul>
+                select isnull(pr_background_color,'#ffffff'), bg_id [id], bg_short_desc
+                <br>
+                from bugs
+                <br>
+                left outer join priorities on bg_priority = pr_id
+                <br>
+                where bg_assigned_to_user = $ME
+            </ul>
+            <br>
+            <b>"$FLAG"</b> is a magic word that controls whether a query shows the "flag" column that lets an individual user flag items for himself.<br>
+            To use it, add the SQL shown below to your select columns and do a "left outer join" to the bug_user table.
+            <ul>
+                Select ...., isnull(bu_flag,0) [$FLAG],...
+                <br>
+                from bugs
+                <br>
+                left outer join bug_user on bu_bug = bg_id and bu_user = $ME
+            </ul>
+            <br>
+            <b>"$SEEN"</b> is a magic word that controls whether a query shows the "new" column. The new column works the same as an indicator for unread email.
+            To use it, add the SQL shown below to your select columns and do a "left outer join" to the bug_user table.
+            <ul>
+                Select ...., isnull(bu_seen,0) [$SEEN],...
+                <br>
+                from bugs
+                <br>
+                left outer join bug_user on bu_bug = bg_id and bu_user = $ME
+            </ul>
+            <br>
+            <b>"$VOTE"</b> is a magic word that controls whether a query shows the "votes" column. Each user can upvote a bug just once.
+            To use it, add the strange looking SQL shown below to your select columns and do the two joins shown below, to votes_view and bug_user.
+            <ul>
+                Select ...., (isnull(vote_total,0) * 10000) + isnull(bu_vote,0) [$VOTE],...
+                <br>
+                from bugs
+                <br>
+                left outer join bug_user on bu_bug = bg_id and bu_user = $ME
+                <br>
+                left outer join votes_view on vote_bug = bg_id
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

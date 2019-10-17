@@ -508,7 +508,6 @@
     <Content Include="Scripts\edit_area\template.html" />
     <Content Include="Bugs\Edit.aspx" />
     <Content Include="Scripts\edit_bug.js" />
-    <Content Include="Queries\Edit.aspx" />
     <Content Include="EditTask.aspx" />
     <Content Include="Content\images\email_edit.png" />
     <Content Include="Content\images\email_open.png" />
@@ -716,13 +715,7 @@
     <Compile Include="Bugs\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Queries\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Queries\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-    </Compile>
+    <Compile Include="Models\Query\EditModel.cs" />
     <Compile Include="EditTask.aspx.cs">
       <DependentUpon>EditTask.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -990,6 +983,7 @@
     <Content Include="Views\Account\Settings.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Bug\Index.cshtml" />
+    <Content Include="Views\Query\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

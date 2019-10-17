@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -21,46 +23,46 @@
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", page)
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
 }
 
-<div class="main">
-    @if (page.Security.User.IsAdmin || page.Security.User.CanEditSql)
-    {
-        <table border="0" width="80%">
-            <tr>
-                <td align="left" valign="top">
-                    <a href="~/Queries/Edit.aspx"><img src="~/Content/images/add.png" align="top">&nbsp;add new query</a>
-                </td>
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="@Url.Action("Create", "Query")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+        </nav>
+    </div>
+}
 
-                <td align="right" valign="top">
-                    @{
-                        var formId = Guid.NewGuid().ToString();
-                    }
+@if (page.Security.User.IsAdmin || page.Security.User.CanEditSql)
+{
+    <div class="row px-3 mb-3">
+        @{
+            var formId = Guid.NewGuid().ToString();
+            var code = "document.getElementById('" + formId + "').submit();";
+        }
 
-                    @using (Html.BeginForm("Index", "Query", FormMethod.Get, new { id = formId }))
-                    {
-                        var code = "document.getElementById('" + formId + "').submit();";
-                        <label>show everybody's private queries:@Html.CheckBox("ShowAll", new { @class = "cb", onchange = code })</label>
-                    }
-                </td>
-            </tr>
-        </table>
-    }
-    else
-    {
-        <p></p>
-    }
+        @using (Html.BeginForm("Index", "Query", FormMethod.Get, new { id = formId, @class = "form-inline ml-auto" }))
+        {
+            <div class="form-check mb-2 mr-sm-2">
+                @Html.CheckBox("ShowAll", (bool)ViewBag.ShowAll, new { @class = "form-check-input",  onchange = code })
+                @Html.Label("ShowAll", "show everybody's private queries:", new { @class = "form-check-label" })
+            </div>
+        }
+    </div>
+}
+else
+{
+}
 
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
-    {
-        @Html.Partial("_SortableTable", Model);
-    }
-    else
-    {
-        <div>No queries in the database.</div>
-    }
-</div>
+@if (Model.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", Model);
+}
+else
+{
+    <div>No queries in the database.</div>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

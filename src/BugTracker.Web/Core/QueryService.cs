@@ -91,7 +91,7 @@ namespace BugTracker.Web.Core
                     var printListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?queryId={query.Id}")}'>print list</a>";
                     var exportValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?format=excel&queryId={query.Id}")}'>export as excel</a>";
                     var printListDetailValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/PrintDetail?queryId={query.Id}")}'>print detail</a>";
-                    var renameValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Queries/Edit.aspx?id={query.Id}")}'>rename</a>";
+                    var renameValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Query/Update/{query.Id}")}'>edit</a>";
                     var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Query/Delete/{query.Id}")}'>delete</a>";
                     var sqlValue = query.Sql.Replace("\n", "<br>");
 
@@ -121,7 +121,7 @@ namespace BugTracker.Web.Core
                     var printListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?queryId={query.Id}")}'>print list</a>";
                     var exportValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?format=excel&queryId={query.Id}")}'>export as excel</a>";
                     var printListDetailValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/PrintPrintDetail?queryId={query.Id}")}'>print detail</a>";
-                    var renameValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Queries/Edit.aspx?id={query.Id}")}'>rename</a>";
+                    var renameValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Query/Update/{query.Id}")}'>edit</a>";
                     var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Query/Delete/{query.Id}")}'>delete</a>";
 
                     dataTable.Rows.Add(query.Name, viewListValue,
