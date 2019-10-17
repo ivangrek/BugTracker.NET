@@ -42,8 +42,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanUseReports
                 || this.security.User.CanEditReports;
@@ -73,8 +71,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Show(int id, string view, int scale = 1)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanUseReports;
 
@@ -180,8 +176,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Select()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanUseReports;
 
@@ -208,10 +202,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditReports;
 
@@ -239,10 +232,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditReports;
 
@@ -278,10 +270,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditReports;
 
@@ -315,10 +306,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditReports;
 
@@ -354,10 +344,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditReports;
 
@@ -392,10 +381,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditReports;
 
@@ -456,10 +444,9 @@ order by ds_col, ds_row";
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult EditDashboard()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanUseReports;
 
@@ -494,10 +481,9 @@ order by ds_col, ds_row";
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanUseReports;
 

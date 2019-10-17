@@ -10,6 +10,7 @@
     using System.Web.UI;
     using System.Xml;
 
+    [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class HgController : Controller
     {
@@ -30,8 +31,6 @@
         [HttpGet]
         public ActionResult Index(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
@@ -89,8 +88,6 @@
         {
             Response.ContentType = "text/plain";
 
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var sql = @"
                 select hgrev_revision, hgrev_bug, hgrev_repository, hgap_path 
                 from hg_revisions
@@ -120,8 +117,6 @@
         [HttpGet]
         public ActionResult Blame(int revpathid, string revision)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var sql = @"
                 select hgrev_revision, hgrev_bug, hgrev_repository, hgap_path 
                 from hg_revisions
@@ -157,6 +152,7 @@
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Hook()
         {
             var username = Request["username"];

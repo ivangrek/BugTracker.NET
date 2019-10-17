@@ -41,8 +41,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -113,8 +111,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(IndexModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             // posting back a query change?
             // posting back a filter change?
             // posting back a sort change?
@@ -140,8 +136,8 @@ namespace BugTracker.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [AllowAnonymous]
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Insert()
         {
             var username = Request["username"];
@@ -462,10 +458,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanDeleteBug;
 
@@ -505,10 +500,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanDeleteBug;
 
@@ -537,8 +531,6 @@ namespace BugTracker.Web.Controllers
             //{
             //    Util.DoNotCache(System.Web.HttpContext.Current.Response);
             //};
-
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
 
             DataView dataView;
 
@@ -581,8 +573,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult PrintDetail(int? id, int? queryId)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             if (id.HasValue)
             {
                 ViewBag.DataRow = Bug.GetBugDataRow(id.Value, this.security);
@@ -659,10 +649,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Subscribe(int id, string actn)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
@@ -692,8 +681,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult WritePosts(int id, bool imagesInline, bool historyInline)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
@@ -716,10 +703,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Merge(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAutorized = this.security.User.IsAdmin
                 || this.security.User.CanMergeBugs;
 
@@ -749,10 +735,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Merge(MergeModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAutorized = this.security.User.IsAdmin
                 || this.security.User.CanMergeBugs;
 
@@ -945,8 +930,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Vote(int bugid, int vote)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var dv = (DataView)Session["bugs"];
 
             if (dv == null)
@@ -1006,8 +989,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Flag(int bugid, int flag)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var dv = (DataView)Session["bugs"];
 
             if (dv == null)
@@ -1047,8 +1028,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Seen(int bugid, int seen)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var dv = (DataView)Session["bugs"];
 
             if (dv == null)
@@ -1234,7 +1213,7 @@ namespace BugTracker.Web.Controllers
             return string.Empty;
         }
 
-        public void CallSortAndFilterBuglistDataview(IndexModel model, bool postBack)
+        private void CallSortAndFilterBuglistDataview(IndexModel model, bool postBack)
         {
             var filterVal = model.Filter;
             var sortVal = model.Sort.ToString();

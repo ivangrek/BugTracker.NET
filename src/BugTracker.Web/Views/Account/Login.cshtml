@@ -20,7 +20,7 @@
 
     <div class="card mr-auto ml-auto mb-3">
         <div class="card-body">
-            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "frm" }))
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 @Html.Partial("_ValidationSummary")
@@ -33,7 +33,7 @@
 
                 <div class="form-group">
                     @Html.LabelFor(x => x.Password):
-                    @Html.TextBoxFor(x => x.Password, new { type = "password", autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.PasswordFor(x => x.Password, new { autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
                     @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" }, "small")
                 </div>
 
@@ -58,8 +58,18 @@
         <ul class="list-unstyled text-center">
             @if (page.ApplicationSettings.AllowGuestWithoutLogin)
             {
+                var formId = Guid.NewGuid().ToString();
+
                 <li>
-                    <a href="@Url.Action("Index", "Bug")">Continue as "guest" without logging in</a>
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = formId }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Partial("_ValidationSummary")
+
+                        @Html.Hidden("AsGuest", true)
+
+                        <a href="#" onclick="document.getElementById('@formId').submit();">Continue as "guest"</a>
+                    }
                 </li>
             }
 

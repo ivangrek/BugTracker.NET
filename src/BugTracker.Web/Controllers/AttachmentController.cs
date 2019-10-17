@@ -39,8 +39,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Show(int id, int bugId, bool download)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var sql = @"
                 select bp_file, isnull(bp_content_type,'') [bp_content_type] 
                 from bug_posts 
@@ -162,8 +160,6 @@ namespace BugTracker.Web.Controllers
         {
             var bugId = id;
 
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             if (bugId == 0)
             {
                 var message = BuildMsg("Invalid id.", false, bugId);
@@ -209,8 +205,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(CreateModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             if (model.BugId == 0)
             {
                 var message = BuildMsg("Invalid id.", false, model.BugId);
@@ -328,10 +322,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Update(int id, int bugId)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditAndDeletePosts;
 
@@ -387,10 +380,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Update(UpdateModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditAndDeletePosts;
 
@@ -434,10 +426,9 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Delete(int id, int bugId)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditAndDeletePosts;
 
@@ -478,10 +469,9 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditAndDeletePosts;
 

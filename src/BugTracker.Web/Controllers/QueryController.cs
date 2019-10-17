@@ -43,8 +43,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Index(bool? showAll)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                  || this.security.User.CanEditSql;
 
@@ -75,8 +73,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -134,8 +130,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditSql;
 
@@ -253,8 +247,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -340,8 +332,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditSql;
 
@@ -460,8 +450,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditSql;
 
@@ -498,8 +486,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var isAuthorized = this.security.User.IsAdmin
                 || this.security.User.CanEditSql;
 

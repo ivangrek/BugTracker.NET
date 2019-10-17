@@ -40,8 +40,6 @@ namespace BugTracker.Web.Controllers
                 return Content(string.Empty);
             }
 
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,

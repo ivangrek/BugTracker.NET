@@ -10,6 +10,7 @@
     using System.Web.UI;
     using System.Xml;
 
+    [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class SvnController : Controller
     {
@@ -30,8 +31,6 @@
         [HttpGet]
         public ActionResult Index(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
@@ -97,8 +96,6 @@
         {
             Response.ContentType = "text/plain";
 
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             // get info about revision
 
             var sql = @"
@@ -138,6 +135,7 @@
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Hook()
         {
             var username = Request["username"];

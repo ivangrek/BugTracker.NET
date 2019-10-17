@@ -365,12 +365,11 @@ namespace BugTracker.Web.Controllers
                 return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
             }
 
-            var authenticated = this.authenticate.CheckPassword(model.Login, model.Password);
-
-            if (authenticated)
+            if (model.AsGuest)
             {
+                // for now
                 var sql = "select us_id from users where us_username = N'$us'"
-                    .Replace("$us", model.Login.Replace("'", "''"));
+                    .Replace("$us", "guest");
 
                 var dr = DbUtil.GetDataRow(sql);
 
@@ -378,9 +377,9 @@ namespace BugTracker.Web.Controllers
                 {
                     var usId = (int)dr["us_id"];
 
-                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response, usId, model.Login, "0");
+                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response, usId, "guest", "0");
 
-                    FormsAuthentication.SetAuthCookie(model.Login, false);
+                    FormsAuthentication.SetAuthCookie("guest", false);
 
                     return Redirect(Util.RedirectUrl(System.Web.HttpContext.Current.Request));
                 }
@@ -394,7 +393,37 @@ namespace BugTracker.Web.Controllers
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid User or Password.");
+                var authenticated = this.authenticate.CheckPassword(model.Login, model.Password);
+
+                if (authenticated)
+                {
+                    var sql = "select us_id from users where us_username = N'$us'"
+                        .Replace("$us", model.Login.Replace("'", "''"));
+
+                    var dr = DbUtil.GetDataRow(sql);
+
+                    if (dr != null)
+                    {
+                        var usId = (int)dr["us_id"];
+
+                        this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response, usId, model.Login, "0");
+
+                        FormsAuthentication.SetAuthCookie(model.Login, model.RememberMe);
+
+                        return Redirect(Util.RedirectUrl(System.Web.HttpContext.Current.Request));
+                    }
+                    else
+                    {
+                        // How could this happen?  If someday the authentication
+                        // method uses, say LDAP, then check_password could return
+                        // true, even though there's no user in the database";
+                        ModelState.AddModelError(string.Empty, "User not found in database");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid User or Password.");
+                }
             }
 
             ViewBag.Page = new PageModel
@@ -898,50 +927,60 @@ namespace BugTracker.Web.Controllers
         //[ValidateAntiForgeryToken]    // TODO uncomment after migration
         public ActionResult Logoff()
         {
-            using (DbUtil.GetSqlConnection())
-            { }
+            //using (DbUtil.GetSqlConnection())
+            //{ }
 
             // delete the session row
-            var cookie = Request.Cookies["se_id2"];
+            //var cookie = Request.Cookies["se_id2"];
 
-            if (cookie != null)
-            {
-                var seId = cookie.Value.Replace("'", "''");
+            //if (cookie != null)
+            //{
+            //    var seId = cookie.Value.Replace("'", "''");
 
-                var sql = @"delete from sessions
-                    where se_id = N'$se'
-                    or datediff(d, se_date, getdate()) > 2"
-                    .Replace("$se", seId);
+            //    var sql = @"delete from sessions
+            //        where se_id = N'$se'
+            //        or datediff(d, se_date, getdate()) > 2"
+            //        .Replace("$se", seId);
 
-                DbUtil.ExecuteNonQuery(sql);
+            //    DbUtil.ExecuteNonQuery(sql);
 
-                Session[seId] = 0;
+            //    Session[seId] = 0;
 
-                Session["SelectedBugQuery"] = null;
-                Session["bugs"] = null;
-                Session["bugs_unfiltered"] = null;
-                Session["project"] = null;
+            //    Session["SelectedBugQuery"] = null;
+            //    Session["bugs"] = null;
+            //    Session["bugs_unfiltered"] = null;
+            //    Session["project"] = null;
 
-                Session.Abandon();
+            //    Session.Abandon();
 
-                foreach (string key in Request.Cookies.AllKeys)
-                {
-                    Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
-                }
-            }
+            //    foreach (string key in Request.Cookies.AllKeys)
+            //    {
+            //        Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
+            //    }
+            //}
 
             // for now, quik code
+            Session["SelectedBugQuery"] = null;
+            Session["bugs"] = null;
+            Session["bugs_unfiltered"] = null;
+            Session["project"] = null;
+
+            Session.Abandon();
+
+            foreach (string key in Request.Cookies.AllKeys)
+            {
+                Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
+            }
+
             FormsAuthentication.SignOut();
 
-            return Redirect("~/");
+            return RedirectToAction(nameof(Login));
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Settings()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -1024,13 +1063,11 @@ namespace BugTracker.Web.Controllers
             return View(model);
         }
 
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
         public ActionResult Settings(SettingsModel model)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -1192,7 +1229,7 @@ namespace BugTracker.Web.Controllers
             return View(model);
         }
 
-        private string GetLdapPropertyValue(SearchResult result, string propertyName, string defaultValue)
+        private static string GetLdapPropertyValue(SearchResult result, string propertyName, string defaultValue)
         {
             var values = result.Properties[propertyName];
 

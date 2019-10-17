@@ -9,6 +9,7 @@ namespace BugTracker.Web.Core
 {
     using System;
     using System.Data;
+    using System.Security.Authentication;
     using System.Web;
 
     public enum SecurityLevel
@@ -67,66 +68,31 @@ namespace BugTracker.Web.Core
         {
             get
             {
+                var identity = HttpContext.Current.User.Identity;
+
+                if (!identity.IsAuthenticated)
+                {
+                    throw new AuthenticationException();
+                }
+
+
                 var aspNetContext = HttpContext.Current;
 
-                var request = aspNetContext.Request;
-                var cookie = request.Cookies["se_id2"];
+                //var request = aspNetContext.Request;
+                //var cookie = request.Cookies["se_id2"];
 
                 DataRow dr = null;
 
-                if (cookie == null)
+                if (identity.Name == "guest")
                 {
-                }
-                else
-                {
-                    // guard against "Sql Injection" exploit
-                    var seId = cookie.Value.Replace("'", "''");
-
-                    // check for existing session for active user
                     var sql = @"
-                    /* check session */
-                    declare @project_admin int
-                    select @project_admin = count(1)
-                        from sessions
-                        inner join project_user_xref on pu_user = se_user
-                        and pu_admin = 1
-                        where se_id = '$se';
-
-                    select us_id, us_admin,
-                    us_username, us_firstname, us_lastname,
-                    isnull(us_email,'') us_email,
-                    isnull(us_bugs_per_page,10) us_bugs_per_page,
-                    isnull(us_forced_project,0) us_forced_project,
-                    us_use_fckeditor,
-                    us_enable_bug_list_popups,
-                    og.*,
-                    isnull(us_forced_project, 0 ) us_forced_project,
-                    isnull(pu_permission_level, $dpl) pu_permission_level,
-                    @project_admin [project_admin]
-                    from sessions
-                    inner join users on se_user = us_id
-                    inner join orgs og on us_org = og_id
-                    left outer join project_user_xref
-                        on pu_project = us_forced_project
-                        and pu_user = us_id
-                    where se_id = '$se'
-                    and us_active = 1";
-
-                    sql = sql.Replace("$se", seId);
-                    sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
-
-                    dr = DbUtil.GetDataRow(sql);
-                }
-
-                if (dr == null)
-                    if (ApplicationSettings.AllowGuestWithoutLogin)
-                    {
-                        // allow users in, even without logging on.
-                        // The user will have the permissions of the "guest" user.
-                        var sql = @"
-                            /* get guest  */
-                            select us_id, us_admin,
-                            us_username, us_firstname, us_lastname,
+                        /* get guest  */
+                        SELECT
+                            us_id,
+                            us_admin,
+                            us_username,
+                            us_firstname,
+                            us_lastname,
                             isnull(us_email,'') us_email,
                             isnull(us_bugs_per_page,10) us_bugs_per_page,
                             isnull(us_forced_project,0) us_forced_project,
@@ -136,17 +102,90 @@ namespace BugTracker.Web.Core
                             isnull(us_forced_project, 0 ) us_forced_project,
                             isnull(pu_permission_level, $dpl) pu_permission_level,
                             0 [project_admin]
-                            from users
-                            inner join orgs og on us_org = og_id
-                            left outer join project_user_xref
-                                on pu_project = us_forced_project
-                                and pu_user = us_id
-                            where us_username = 'guest'
-                            and us_active = 1";
+                        FROM
+                            users
 
-                        sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
-                        dr = DbUtil.GetDataRow(sql);
-                    }
+                            INNER JOIN
+                                orgs og
+                            ON
+                                us_org = og_id
+
+                            LEFT OUTER JOIN
+                                project_user_xref
+                            ON
+                                pu_project = us_forced_project
+                                AND
+                                pu_user = us_id
+                        WHERE
+                            us_username = 'guest'
+                            AND
+                            us_active = 1";
+
+                    sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
+
+                    dr = DbUtil.GetDataRow(sql);
+                }
+                else
+                {
+                    var sql = @"
+                        /* check session */
+                        DECLARE @project_admin INT
+
+                        SELECT
+                            @project_admin = COUNT(1)
+                        FROM
+                            users
+
+                            INNER JOIN
+                                project_user_xref
+                            ON
+                                pu_id = us_id
+                                AND
+                                pu_admin = 1
+                        WHERE
+                            us_username = '$username'
+                            AND
+                            us_active = 1;
+
+                        SELECT
+                            us_id,
+                            us_admin,
+                            us_username,
+                            us_firstname,
+                            us_lastname,
+                            isnull(us_email,'') us_email,
+                            isnull(us_bugs_per_page,10) us_bugs_per_page,
+                            isnull(us_forced_project,0) us_forced_project,
+                            us_use_fckeditor,
+                            us_enable_bug_list_popups,
+                            og.*,
+                            isnull(us_forced_project, 0 ) us_forced_project,
+                            isnull(pu_permission_level, $dpl) pu_permission_level,
+                            @project_admin [project_admin]
+                        FROM
+                            users
+
+                            INNER JOIN
+                                orgs og
+                            ON
+                                us_org = og_id
+
+                            LEFT OUTER JOIN
+                                project_user_xref
+                            ON
+                                pu_project = us_forced_project
+                                AND
+                                pu_user = us_id
+                        WHERE
+                            us_username = '$username'
+                            AND
+                            us_active = 1";
+
+                    sql = sql.Replace("$username", identity.Name);
+                    sql = sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
+
+                    dr = DbUtil.GetDataRow(sql);
+                }
 
                 // no previous session, no guest login allowed
                 if (dr == null)
@@ -188,23 +227,23 @@ namespace BugTracker.Web.Core
             // Generate a random session id
             // Don't use a regularly incrementing identity
             // column because that can be guessed.
-            var guid = Guid.NewGuid().ToString();
+            //var guid = Guid.NewGuid().ToString();
 
-            Util.WriteToLog("guid=" + guid);
+            //Util.WriteToLog("guid=" + guid);
 
-            var sql = @"insert into sessions (se_id, se_user) values('$gu', $us)";
-            sql = sql.Replace("$gu", guid);
-            sql = sql.Replace("$us", Convert.ToString(userid));
+            //var sql = @"insert into sessions (se_id, se_user) values('$gu', $us)";
+            //sql = sql.Replace("$gu", guid);
+            //sql = sql.Replace("$us", Convert.ToString(userid));
 
-            DbUtil.ExecuteNonQuery(sql);
+            //DbUtil.ExecuteNonQuery(sql);
 
-            HttpContext.Current.Session[guid] = userid;
+            //HttpContext.Current.Session[guid] = userid;
 
-            var sAppPath = request.Url.AbsolutePath;
-            sAppPath = sAppPath.Substring(0, sAppPath.LastIndexOf('/'));
-            Util.WriteToLog("AppPath:" + sAppPath);
+            //var sAppPath = request.Url.AbsolutePath;
+            //sAppPath = sAppPath.Substring(0, sAppPath.LastIndexOf('/'));
+            //Util.WriteToLog("AppPath:" + sAppPath);
 
-            response.Cookies.Set(new HttpCookie("se_id2", guid));
+            //response.Cookies.Set(new HttpCookie("se_id2", guid));
             //response.Cookies["se_id2"].Path = sAppPath;
             response.Cookies["user"]["name"] = username;
             response.Cookies["user"]["NTLM"] = ntlm;

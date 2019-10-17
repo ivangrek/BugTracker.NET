@@ -10,6 +10,7 @@
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class GitController : Controller
     {
@@ -30,8 +31,6 @@
         [HttpGet]
         public ActionResult Index(int id)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
@@ -87,8 +86,6 @@
         [HttpGet]
         public ActionResult Show(int revpathid, string commit)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var sql = @"
                 select gitcom_commit, gitcom_bug, gitcom_repository, gitap_path 
                 from git_commits
@@ -117,8 +114,6 @@
         [HttpGet]
         public ActionResult Blame(int revpathid, string commit)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var sql = @"
             select gitcom_commit, gitcom_bug, gitcom_repository, gitap_path 
             from git_commits
@@ -152,8 +147,6 @@
         [HttpGet]
         public ActionResult Log(int revpathid)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             // get info about commit
 
             var sql = @"
@@ -194,8 +187,6 @@
         [HttpGet]
         public ActionResult Diff(int revpathid)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             // get info about revision
             var sql = @"
                 select gitcom_commit, gitcom_bug, gitcom_repository, gitap_path 
@@ -273,6 +264,7 @@
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Hook()
         {
             var username = Request["username"];

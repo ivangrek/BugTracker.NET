@@ -35,8 +35,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public void Ajax(int bugid)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             // check permission
             var permissionLevel = Bug.GetBugPermissionLevel(/*Convert.ToInt32(*/bugid/*)*/, this.security);
 
@@ -86,8 +84,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public void Ajax2(string q)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             // will this be too slow?
             // we could index on bg_short_desc and then do '$str%' rather than '%$str%'
 
@@ -134,6 +130,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Hello()
         {
             var currentCultureSeparator = new CultureInfo(Thread.CurrentThread.CurrentCulture.Name)
@@ -146,6 +143,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Install(string dbname)
         {
             if (!string.IsNullOrEmpty(dbname))
@@ -191,6 +189,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Upgrade273To274()
         {
             var sql = "select us_username, us_id, us_password from users where len(us_password) < 32";
@@ -224,8 +223,6 @@ namespace BugTracker.Web.Controllers
                 return Content(string.Empty);
             }
 
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             Response.ContentType = "text/plain";
             Response.AddHeader("content-disposition", "inline; filename=\"memory_log.txt\"");
 
@@ -253,8 +250,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult GenerateBtnetscReg()
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             var stringBuilder = new StringBuilder();
 
             Response.ContentType = "text/reg";

@@ -13,6 +13,7 @@ namespace BugTracker.Web.Core
     {
         public const string Administrator = "Administrator";
         public const string ProjectAdministrator = "ProjectAdministrator";
+        public const string Member = "Member";
         public const string Guest = "Guest";
 
         public const string Administrators = Administrator + "," + ProjectAdministrator;
@@ -48,6 +49,7 @@ namespace BugTracker.Web.Core
             {
                 ApplicationRoles.Administrator,
                 ApplicationRoles.ProjectAdministrator,
+                ApplicationRoles.Member,
                 ApplicationRoles.Guest
             };
 
@@ -58,7 +60,6 @@ namespace BugTracker.Web.Core
         {
             var roles = new List<string>();
 
-            // TODO investigate
             if (username == "guest")
             {
                 roles.Add(ApplicationRoles.Guest);
@@ -67,22 +68,50 @@ namespace BugTracker.Web.Core
             }
 
             var sql = $@"
+                DECLARE @project_admin INT
                 SELECT
-                    us_admin
+                    @project_admin = COUNT(1)
+                FROM
+                    users
+
+                    INNER JOIN
+                        project_user_xref
+                    ON
+                        pu_id = us_id
+                        AND
+                        pu_admin = 1
+                WHERE
+                    us_username = '{username}'
+                    AND
+                    us_active = 1
+
+                SELECT
+                    us_admin,
+                    @project_admin project_admin
                 FROM
                     users
                 WHERE
-                    us_username = '{username}'";
+                    us_username = '{username}'
+                    AND
+                    us_active = 1";
 
             var dataRow = DbUtil.GetDataRow(sql);
 
-            if (dataRow != null && (int)dataRow["us_admin"] == 1)
+            if (dataRow != null)
             {
-                roles.Add(ApplicationRoles.Administrator);
+                if ((int)dataRow["us_admin"] == 1)
+                {
+                    roles.Add(ApplicationRoles.Administrator);
+                }
+                else if ((int)dataRow["project_admin"] == 1)
+                {
+                    roles.Add(ApplicationRoles.ProjectAdministrator);
+                }
+                else
+                {
+                    roles.Add(ApplicationRoles.Member);
+                }
             }
-
-            // TODO investigate
-            //roles.Add(ApplicationRoles.ProjectAdministrator");
 
             return roles.ToArray();
         }

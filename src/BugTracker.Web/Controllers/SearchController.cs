@@ -34,8 +34,6 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult SearchText(string query)
         {
-            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
-
             Query searchQuery;
 
             try

@@ -124,8 +124,6 @@
                         <a href="@Url.Action("Settings", "Account", new { area = string.Empty })" class="dropdown-item @(Model.SelectedItem == "settings" ? "active" : string.Empty)">Settings</a>
                     }
 
-                    <div class="dropdown-divider"></div>
-
                     @*TODO investigate*@
                     @if (Model.Security.AuthMethod == "plain" && !(Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin))
                     {
@@ -135,6 +133,8 @@
                         {
                             @Html.AntiForgeryToken()
 
+                            <div class="dropdown-divider"></div>
+
                             <div class="dropdown-item">
                                 <button type="submit" class="btn btn-block btn-primary">Logoff</button>
                             </div>
@@ -142,6 +142,22 @@
                     }
                 </div>
             </li>
+
+            @if (Model.Security.AuthMethod == "plain")
+            {
+                if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Login", "Account", new { area = string.Empty })" class="nav-item nav-link">Login</a>
+                    </li>
+                }
+                @*else
+                    {
+                        <td class="menu_td">
+                            <a href="<%= ResolveUrl(" ~/Account/Logoff") %>"><span class="<%= SelectedItem == " logoff" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">logoff</span></a>
+                        </td>
+                    }*@
+            }
         </ul>
     </div>
 </header>
