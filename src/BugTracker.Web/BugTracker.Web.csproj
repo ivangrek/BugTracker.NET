@@ -969,7 +969,6 @@
     <Content Include="Views\Query\Delete.cshtml" />
     <Content Include="Views\Query\Index.cshtml" />
     <Content Include="Views\Account\LoginNt.cshtml" />
-    <Content Include="Views\Account\MobileLogin.cshtml" />
     <Content Include="Views\Bug\Merge.cshtml" />
     <Content Include="Views\Shared\_ValidationSummary.cshtml" />
     <Content Include="Views\Account\Settings.cshtml" />

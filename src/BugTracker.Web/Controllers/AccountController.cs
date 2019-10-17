@@ -628,69 +628,6 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult MobileLogin()
-        {
-            if (!this.applicationSettings.EnableMobile)
-            {
-                return Content("BugTracker.NET EnableMobile is not set to 1 in Web.config");
-            }
-
-            ViewBag.Page = new PageModel
-            {
-                ApplicationSettings = this.applicationSettings,
-                Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - logon"
-            };
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult MobileLogin(LoginModel model)
-        {
-            if (!this.applicationSettings.EnableMobile)
-            {
-                return Content("BugTracker.NET EnableMobile is not set to 1 in Web.config");
-            }
-
-            var authenticated = this.authenticate.CheckPassword(model.Login, model.Password);
-
-            if (authenticated)
-            {
-                var sql = "select us_id from users where us_username = N'$us'"
-                    .Replace("$us", model.Login.Replace("'", "''"));
-
-                var dr = DbUtil.GetDataRow(sql);
-
-                if (dr != null)
-                {
-                    var usId = (int)dr["us_id"];
-
-                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
-                        usId, model.Login, "0");
-
-                    var url = Util.RedirectUrl(System.Web.HttpContext.Current.Request);
-
-                    return Redirect(url);
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid User or Password.");
-            }
-
-            ViewBag.Page = new PageModel
-            {
-                ApplicationSettings = this.applicationSettings,
-                Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - logon"
-            };
-
-            return View();
-        }
-
-        [HttpGet]
         public ActionResult Forgot()
         {
             if (!this.applicationSettings.ShowForgotPasswordLink)
