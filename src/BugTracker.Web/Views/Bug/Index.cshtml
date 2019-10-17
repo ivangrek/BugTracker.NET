@@ -1,0 +1,113 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Bug.IndexModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <link href="~/Content/custom/btnet_custom.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/bug_list.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.filter').click(on_invert_filter);
+            $('.filter_selected').click(on_invert_filter);
+        });
+
+        function on_query_changed() {
+            var frm = document.getElementById(asp_form_id);
+            frm.actn.value = "query";
+            frm.submit();
+        }
+    </script>
+
+    <script>
+        var enable_popups = @(page.Security.User.EnablePopups ? "1" : "0");
+        var asp_form_id = '@page.ApplicationSettings.AspNetFormId';
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            @if (!page.Security.User.AddsNotAllowed)
+            {
+                <a href="~/Bugs/Edit.aspx" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+            }
+
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="~/Content/images/printer.png" align="top">&nbsp;Print</a>
+
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a href="~/Bug/Print" target="_blank" class="dropdown-item" title="Export to excel">Print list</a>
+                    <a href="~/Bug/PrintDetail" target="_blank" class="dropdown-item" title="Export to excel">Print detail</a>
+                </div>
+            </div>
+
+            <a href="~/Bug/Print?format=excel" class="nav-link" title="Export to excel"><img src="~/Content/images/database.png" align="top">&nbsp;Export</a>
+            <a href="~/Content/btnet_screen_capture.exe" class="nav-link ml-auto" title="Download screen capture utility"><img src="~/Content/images/camera.png" align="top">&nbsp;Screen</a>
+        </nav>
+    </div>
+}
+
+@using (Html.BeginForm("Index", "Bug", FormMethod.Post, new { id = @page.ApplicationSettings.AspNetFormId, @class = "frm" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.Action, new { id = "actn" })
+    @Html.HiddenFor(x => x.NewPage, new { id = "new_page" })
+
+    @Html.HiddenFor(x => x.Filter, new { id = "filter" })
+    @Html.HiddenFor(x => x.Sort, new { id = "sort" })
+    @Html.HiddenFor(x => x.PrevSort, new { id = "prev_sort" })
+    @Html.HiddenFor(x => x.PrevDir, new { id = "prev_dir" })
+    @Html.HiddenFor(x => x.Tags, new { id = "tags" })
+
+    @Html.DropDownListFor(x => x.QueryId, (List<SelectListItem>)ViewBag.Queries, new { id = "query", onchange = "on_query_changed()" })
+
+    if (ViewBag.DataView != null)
+    {
+        if (ViewBag.DataView.Table.Rows.Count > 0)
+        {
+            if (page.ApplicationSettings.EnableTags)
+            {
+                @Html.Raw(BugTracker.Web.Core.BugList.DisplayBugListTagsLineInline(page.Security));
+            }
+
+            @Html.Raw(BugTracker.Web.Core.BugList.DisplayBugsInline(false, (System.Data.DataView)ViewBag.DataView,
+               page.Security, Model.NewPage.ToString(), ViewBag.PostBack, /*this.DsCustomCols*/null, Model.Filter ?? string.Empty));
+        }
+        else
+        {
+            <p>No yet.@page.ApplicationSettings.PluralBugLabel</p>
+        }
+    }
+    else
+    {
+        <div class=err>Error in query SQL: @ViewBag.SqlError</div>
+    }
+
+    <div id="popup" class="buglist_popup"></div>
+}
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

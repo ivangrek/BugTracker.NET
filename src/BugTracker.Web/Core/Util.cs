@@ -929,7 +929,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
         public static void Redirect(HttpRequest request, HttpResponse response)
         {
-            // redirect to the page the user was going to or start off with Bugs/List.aspx
+            // redirect to the page the user was going to or start off with /Bug
             var url = request.QueryString["url"];
             var qs = request.QueryString["qs"];
 
@@ -937,13 +937,13 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             {
                 var mobile = request["mobile"];
                 if (string.IsNullOrEmpty(mobile))
-                    response.Redirect("~/Bugs/List.aspx");
+                    response.Redirect("~/Bug");
                 else
                     response.Redirect("~/Bugs/MobileList.aspx");
             }
             else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
             {
-                response.Redirect("~/Bugs/List.aspx");
+                response.Redirect("~/Bug");
             }
             else
             {
@@ -953,7 +953,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
         public static string RedirectUrl(HttpRequest request)
         {
-            // redirect to the page the user was going to or start off with Bugs/List.aspx
+            // redirect to the page the user was going to or start off with /Bug
             var url = request.QueryString["url"];
             var qs = request.QueryString["qs"];
 
@@ -963,7 +963,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
                 if (string.IsNullOrEmpty(mobile))
                 {
-                    return "~/Bugs/List.aspx";
+                    return "~/Bug";
                 }
                 else
                 {
@@ -972,7 +972,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             }
             else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
             {
-                return "~/Bugs/List.aspx";
+                return "~/Bug";
             }
 
             return RemoveLineBreaks(url) + "?" + RemoveLineBreaks(HttpUtility.UrlDecode(qs));

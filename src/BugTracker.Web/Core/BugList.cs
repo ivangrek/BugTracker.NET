@@ -10,6 +10,7 @@ namespace BugTracker.Web.Core
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Text;
     using System.Web;
 
     public static class BugList
@@ -346,6 +347,115 @@ namespace BugTracker.Web.Core
             response.Write("</select>");
         }
 
+        private static string DisplayBugListFilterSelectInline(
+            string filterVal,
+            string which,
+            DataTable table,
+            string dropdownVals,
+            int col)
+        {
+            var stringBuilder = new StringBuilder();
+            
+            // determine what the selected item in the dropdown should be
+            var selectedValue = "[no filter]";
+            var op = " =";
+            var somethingSelected = false;
+
+            if (filterVal.IndexOf("66 = 66") > -1)
+            {
+                var pos = filterVal.IndexOf(which);
+                if (pos != -1)
+                {
+                    // move past the variable
+                    pos += which.Length;
+                    pos += 5; // to move past the " =$$$" and the single quote
+                    var pos2 = filterVal.IndexOf("$$$", pos); // find the trailing $$$
+                    selectedValue = filterVal.Substring(pos, pos2 - pos);
+                    op = filterVal.Substring(pos - 5, 2);
+                }
+            }
+
+            if (selectedValue == "")
+            {
+                if (op == " =")
+                    selectedValue = "[none]";
+                else
+                    selectedValue = "[any]";
+            }
+
+            // at this point we have the selected value
+
+            if (selectedValue == "[no filter]")
+                stringBuilder.Append("<select class=filter ");
+            else
+                stringBuilder.Append("<select class=filter_selected ");
+
+            stringBuilder.Append(" id='sel_" + which + "' onchange='on_filter()'>");
+            stringBuilder.Append("<option>[no filter]</option>");
+
+            if (which != "[$SEEN]")
+            {
+                if (selectedValue == "[none]")
+                {
+                    stringBuilder.Append("<option selected value=''>[none]</option>");
+                    somethingSelected = true;
+                }
+                else
+                {
+                    stringBuilder.Append("<option value=''>[none]</option>");
+                }
+            }
+
+            if (which != "[$SEEN]")
+            {
+                if (selectedValue == "[any]")
+                {
+                    stringBuilder.Append("<option selected value=''>[any]</option>");
+                    somethingSelected = true;
+                }
+                else
+                {
+                    stringBuilder.Append("<option value=''>[any]</option>");
+                }
+            }
+
+            if (dropdownVals != null)
+            {
+                var options = Util.SplitDropdownVals(dropdownVals);
+                for (var i = 0; i < options.Length; i++)
+                    if (selectedValue == options[i])
+                    {
+                        stringBuilder.Append("<option selected>" + MaybeNot(op, options[i]) + "</option>");
+                        somethingSelected = true;
+                    }
+                    else
+                    {
+                        stringBuilder.Append("<option>" + options[i] + "</option>");
+                    }
+            }
+            else
+            {
+                foreach (DataRow dr in table.Rows)
+                    if (selectedValue == Convert.ToString(dr[col]))
+                    {
+                        stringBuilder.Append("<option selected>" + MaybeNot(op, Convert.ToString(dr[col])) + "</option>");
+                        somethingSelected = true;
+                    }
+                    else
+                    {
+                        stringBuilder.Append("<option>" + Convert.ToString(dr[col]) + "</option>");
+                    }
+            }
+
+            if (!somethingSelected)
+                if (selectedValue != "[no filter]")
+                    stringBuilder.Append("<option selected>" + selectedValue + "</option>");
+
+            stringBuilder.Append("</select>");
+
+            return stringBuilder.ToString();
+        }
+
         public static void DisplayBugListTagsLine(HttpResponse response, ISecurity security)
         {
             if (security.User.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone) return;
@@ -359,11 +469,41 @@ namespace BugTracker.Web.Core
             response.Write("<br><br>\n");
         }
 
+        public static string DisplayBugListTagsLineInline(ISecurity security)
+        {
+            var stringBuilder = new StringBuilder();
+
+            if (security.User.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return string.Empty;
+            }
+
+            stringBuilder.Append("\n<p>Show only rows with the following tags:&nbsp;");
+            stringBuilder.Append("<input class=txt size=40 name=tags_input id=tags_input onchange='javascript:on_tags_change()' value=\"");
+            stringBuilder.Append(HttpUtility.HtmlEncode(HttpContext.Current.Request["tags"]));
+            stringBuilder.Append("\">");
+            stringBuilder.Append("<a href='javascript:show_tags()'>&nbsp;&nbsp;select tags</a>");
+            stringBuilder.Append("<br><br>\n");
+
+            return stringBuilder.ToString();
+        }
+
         private static void DisplayFilterSelect(HttpResponse response, string filterVal, string which,
             DataTable table)
         {
             DisplayBugListFilterSelect(
                 response,
+                filterVal,
+                which,
+                table,
+                null,
+                0);
+        }
+
+        private static string DisplayFilterSelectInline(string filterVal, string which,
+            DataTable table)
+        {
+            return DisplayBugListFilterSelectInline(
                 filterVal,
                 which,
                 table,
@@ -383,11 +523,33 @@ namespace BugTracker.Web.Core
                 col);
         }
 
+        private static string DisplayFilterSelectInline(string filterVal, string which,
+            DataTable table, int col)
+        {
+            return DisplayBugListFilterSelectInline(
+                filterVal,
+                which,
+                table,
+                null,
+                col);
+        }
+
         private static void DisplayFilterSelect(HttpResponse response, string filterVal, string which,
             string dropdownVals)
         {
             DisplayBugListFilterSelect(
                 response,
+                filterVal,
+                which,
+                null,
+                dropdownVals,
+                0);
+        }
+
+        private static string DisplayFilterSelectInline(string filterVal, string which,
+            string dropdownVals)
+        {
+            return DisplayBugListFilterSelectInline(
                 filterVal,
                 which,
                 null,
@@ -803,6 +965,417 @@ namespace BugTracker.Web.Core
             response.Write("</table>");
             response.Write(pagingString);
             response.Write(bugCountString);
+        }
+
+        public static string DisplayBugsInline(
+            bool showCheckbox,
+            DataView dv,
+            ISecurity security,
+            string newPageVal,
+            bool isPostBack,
+            DataSet dsCustomCols,
+            string filterVal
+        )
+        {
+            var stringBuilder = new StringBuilder();
+            
+            var thisPage = 0;
+            var pagingString = GetBugListPagingString(
+                dv,
+                security,
+                isPostBack,
+                newPageVal,
+                ref thisPage);
+
+            var bugCountString = GetBugListBugCountString(dv);
+
+            stringBuilder.Append("<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td align=left valign=top>");
+            stringBuilder.Append(pagingString);
+            stringBuilder.Append(
+                "<td align=right valign=top><span class='text-info'>clicking while holding Ctrl key toggles \"NOT\" in a filter: \"NOT project 1\"</span></table>");
+            stringBuilder.Append("\n<table class='bugt table table-sm table-striped table-bordered'><tr>\n");
+
+            ///////////////////////////////////////////////////////////////////
+            // headings
+            ///////////////////////////////////////////////////////////////////
+
+            var dbColumnCount = 0;
+            var descriptionColumn = -1;
+
+            var searchDescColumn = -1;
+            var searchSourceColumn = -1;
+            var searchTextColumn = -1;
+
+            foreach (DataColumn dc in dv.Table.Columns)
+            {
+                if (dbColumnCount == 0)
+                {
+                    // skip color/style
+
+                    if (showCheckbox) stringBuilder.Append("<th class=bugh><font size=0>sel</font>");
+                }
+                else if (dc.ColumnName == "$SCORE")
+                {
+                    // don't display the score, but the "union" and "order by" in the
+                    // query forces us to include it as one of the columns
+                }
+                else
+                {
+                    stringBuilder.Append("<th class=bugh>\n");
+                    // sorting
+                    var s = "<a href='javascript: on_sort($col)'>";
+                    s = s.Replace("$col", Convert.ToString(dbColumnCount - 1));
+                    stringBuilder.Append(s);
+
+                    if (dc.ColumnName == "$FLAG")
+                    {
+                        stringBuilder.Append("flag");
+                    }
+                    else if (dc.ColumnName == "$SEEN")
+                    {
+                        stringBuilder.Append("new");
+                    }
+                    else if (dc.ColumnName == "$VOTE")
+                    {
+                        stringBuilder.Append("votes");
+                    }
+                    else if (dc.ColumnName.ToLower().IndexOf("desc") == 0)
+                    {
+                        // remember this column so that we can make it a link
+                        descriptionColumn = dbColumnCount; // zero based here
+                        stringBuilder.Append(dc.ColumnName);
+                    }
+                    else if (dc.ColumnName == "search_desc")
+                    {
+                        searchDescColumn = dbColumnCount;
+                        stringBuilder.Append("desc");
+                    }
+                    else if (dc.ColumnName == "search_text")
+                    {
+                        searchTextColumn = dbColumnCount;
+                        stringBuilder.Append("context");
+                    }
+                    else if (dc.ColumnName == "search_source")
+                    {
+                        searchSourceColumn = dbColumnCount;
+                        stringBuilder.Append("text source");
+                    }
+                    else
+                    {
+                        stringBuilder.Append(dc.ColumnName);
+                    }
+
+                    stringBuilder.Append("</a>");
+                    stringBuilder.Append("\n");
+                }
+
+                dbColumnCount++;
+            }
+
+            stringBuilder.Append("\n<tr>");
+
+            ////////////////////////////////////////////////////////////////////
+            /// filter row
+            ////////////////////////////////////////////////////////////////////
+
+            if (dsCustomCols == null) dsCustomCols = Util.GetCustomColumns();
+
+            dbColumnCount = 0;
+            var udfColumnName = ApplicationSettings.UserDefinedBugAttributeName;
+
+            foreach (DataColumn dc in dv.Table.Columns)
+            {
+                var lowercaseColumnName = dc.ColumnName.ToLower();
+
+                // skip color
+                if (dbColumnCount == 0)
+                {
+                    if (showCheckbox) stringBuilder.Append("<td class=bugf>&nbsp;");
+                }
+                else if (dc.ColumnName == "$SCORE")
+                {
+                    // skip
+                }
+                else
+                {
+                    stringBuilder.Append("<td class=bugf> ");
+
+                    if (dc.ColumnName == "$FLAG")
+                    {
+                        stringBuilder.Append(DisplayFilterSelectInline(filterVal, "[$FLAG]", "red|green"));
+                    }
+                    else if (dc.ColumnName == "$SEEN")
+                    {
+                        stringBuilder.Append(DisplayFilterSelectInline(filterVal, "[$SEEN]", "yes|no"));
+                    }
+                    else if (lowercaseColumnName == "project"
+                             || lowercaseColumnName == "organization"
+                             || lowercaseColumnName == "category"
+                             || lowercaseColumnName == "priority"
+                             || lowercaseColumnName == "status"
+                             || lowercaseColumnName == "reported by"
+                             || lowercaseColumnName == "assigned to"
+                             || lowercaseColumnName == udfColumnName.ToLower())
+                    {
+                        var stringVals = GetDistinctValsFromDataset(
+                            (DataTable)HttpContext.Current.Session["bugs_unfiltered"],
+                            dbColumnCount);
+
+                        stringBuilder.Append(DisplayFilterSelectInline(
+                            filterVal,
+                            "[" + dc.ColumnName + "]",
+                            stringVals));
+                    }
+                    else
+                    {
+                        var withFilter = false;
+                        foreach (DataRow drcc in dsCustomCols.Tables[0].Rows)
+                            if (dc.ColumnName.ToLower() == Convert.ToString(drcc["name"]).ToLower())
+                            {
+                                if ((string)drcc["dropdown type"] == "normal"
+                                    || (string)drcc["dropdown type"] == "users")
+                                {
+                                    withFilter = true;
+
+                                    var stringVals = GetDistinctValsFromDataset(
+                                        (DataTable)HttpContext.Current.Session["bugs_unfiltered"],
+                                        dbColumnCount);
+
+                                    stringBuilder.Append(DisplayFilterSelectInline(
+                                        filterVal,
+                                        "[" + (string)drcc["name"] + "]",
+                                        stringVals));
+                                }
+
+                                break;
+                            }
+
+                        if (!withFilter) stringBuilder.Append("&nbsp");
+                    }
+
+                    stringBuilder.Append("\n");
+                }
+
+                dbColumnCount++;
+            }
+
+            stringBuilder.Append("\n");
+
+            var classOrColor = "class=bugd";
+            string colOne;
+
+            ///////////////////////////////////////////////////////////////////
+            // data
+            ///////////////////////////////////////////////////////////////////
+            var rowsThisPage = 0;
+            var j = 0;
+
+            foreach (DataRowView drv in dv)
+            {
+                // skip over rows prior to this page
+                if (j < security.User.BugsPerPage * thisPage)
+                {
+                    j++;
+                    continue;
+                }
+
+                // do not show rows beyond this page
+                rowsThisPage++;
+                if (rowsThisPage > security.User.BugsPerPage) break;
+
+                var dr = drv.Row;
+
+                var stringBugid = Convert.ToString(dr[1]);
+
+                stringBuilder.Append("\n<tr>");
+
+                if (showCheckbox)
+                {
+                    stringBuilder.Append("<td class=bugd><input type=checkbox name=");
+                    stringBuilder.Append(stringBugid);
+                    stringBuilder.Append(">");
+                }
+
+                for (var i = 0; i < dv.Table.Columns.Count; i++)
+                    if (i == 0)
+                    {
+                        colOne = Convert.ToString(dr[0]);
+
+                        if (colOne == "")
+                        {
+                            classOrColor = "class=bugd";
+                        }
+                        else
+                        {
+                            if (colOne[0] == '#')
+                                classOrColor = "class=bugd bgcolor=" + colOne;
+                            else
+                                classOrColor = "class=\"" + colOne + "\"";
+                        }
+                    }
+                    else
+                    {
+                        if (dv.Table.Columns[i].ColumnName == "$SCORE")
+                        {
+                            // skip
+                        }
+                        else if (dv.Table.Columns[i].ColumnName == "$FLAG")
+                        {
+                            var flag = (int)dr[i];
+                            var cls = "wht";
+                            if (flag == 1) cls = "red";
+                            else if (flag == 2) cls = "grn";
+
+                            stringBuilder.Append(
+                                "<td class=bugd align=center><span title='click to flag/unflag this for yourself' class="
+                                + cls
+                                + " onclick='flag(this, "
+                                + stringBugid
+                                + ")'>&nbsp;</span>");
+                        }
+                        else if (dv.Table.Columns[i].ColumnName == "$SEEN")
+                        {
+                            var seen = (int)dr[i];
+                            var cls = "old";
+                            if (seen == 0) cls = "new";
+
+                            stringBuilder.Append("<td class=bugd align=center><span title='click to toggle new/old' class="
+                                           + cls
+                                           + " onclick='seen(this, "
+                                           + stringBugid
+                                           + ")'>&nbsp;</span>");
+                        }
+                        else if (dv.Table.Columns[i].ColumnName == "$VOTE")
+                        {
+                            // we're going to use a scheme here to represent both the total votes
+                            // and this particular user's vote.
+
+                            // We'll assume that there will never be more than 10,000 votes.
+                            // So, we'll encode the vote vount as 10,000 * vote count, and
+                            // we'll use the 1 column as the yes/no of this user.
+                            // So...
+                            //  30,001 means 3 votes, 1 from this user.
+                            // 120,000 means 12 votes, 0 from this user.
+                            // The purpose of this is so that we can sort the column by votes,
+                            // but still color it by THIS user's vote.
+
+                            var voteCount = 0;
+                            var thisUsersVote = 0;
+                            var magicNumber = 10000;
+
+                            var val = (int)dr[i];
+                            thisUsersVote = val % magicNumber;
+
+                            var objVoteCount = HttpContext.Current.Application[stringBugid];
+                            if (objVoteCount != null) voteCount = (int)objVoteCount;
+
+                            dr[i] = voteCount * magicNumber + thisUsersVote;
+
+                            var cls = "novote";
+                            if (thisUsersVote == 1) cls = "yesvote";
+
+                            stringBuilder.Append("<td class=bugd align=right><span title='click to toggle your vote' class="
+                                           + cls
+                                           + " onclick='vote(this, "
+                                           + stringBugid
+                                           + ")'>" + Convert.ToString(voteCount) + "</span>");
+                        }
+
+                        else
+                        {
+                            var datatype = dv.Table.Columns[i].DataType;
+
+                            if (Util.IsNumericDataType(datatype))
+                                stringBuilder.Append("<td " + classOrColor + " align=right>");
+                            else
+                                stringBuilder.Append("<td " + classOrColor + " >");
+
+                            // write the data
+                            if (dr[i].ToString() == "")
+                            {
+                                stringBuilder.Append("&nbsp;");
+                            }
+                            else
+                            {
+                                if (datatype == typeof(DateTime))
+                                {
+                                    // Some columns we'd like both date and time, some just date,
+                                    // so let's be clever and if the time is exactly midnight, space it out
+                                    stringBuilder.Append(Util.FormatDbDateTime(dr[i]));
+                                }
+                                else
+                                {
+                                    if (i == descriptionColumn)
+                                    {
+                                        // write description as a link
+                                        stringBuilder.Append(
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
+                                        stringBuilder.Append(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
+                                        stringBuilder.Append("</a>");
+                                    }
+                                    else if (i == searchDescColumn)
+                                    {
+                                        // write description as a link
+                                        stringBuilder.Append(
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
+                                        stringBuilder.Append(dr[i].ToString()); // already encoded
+                                        stringBuilder.Append("</a>");
+                                    }
+                                    else if (i == searchSourceColumn)
+                                    {
+                                        var val = dr[i].ToString();
+                                        if (string.IsNullOrEmpty(val))
+                                        {
+                                            stringBuilder.Append("&nbsp;");
+                                        }
+                                        else
+                                        {
+                                            var parts = Util.SplitStringUsingCommas(val);
+
+                                            if (parts.Length < 2)
+                                            {
+                                                stringBuilder.Append(val);
+                                            }
+                                            else
+                                            {
+                                                stringBuilder.Append("<a href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id="));
+                                                stringBuilder.Append(stringBugid); // bg_id
+                                                stringBuilder.Append("#");
+                                                stringBuilder.Append(parts[1]); // bp_id, the post id
+                                                stringBuilder.Append(">");
+                                                stringBuilder.Append(parts[0]); // sent, received, comment
+                                                stringBuilder.Append(" #");
+                                                stringBuilder.Append(parts[1]);
+                                                stringBuilder.Append("</a>");
+                                            }
+                                        }
+                                    }
+                                    else if (i == searchTextColumn)
+                                    {
+                                        stringBuilder.Append(dr[i].ToString()); // already encoded
+                                    }
+                                    else
+                                    {
+                                        stringBuilder.Append(HttpContext.Current.Server.HtmlEncode(dr[i].ToString())
+                                            .Replace("\n", "<br>"));
+                                    }
+                                }
+                            }
+                        }
+
+                        stringBuilder.Append("");
+                    }
+
+                stringBuilder.Append("\n");
+
+                j++;
+            }
+
+            stringBuilder.Append("</table>");
+            stringBuilder.Append(pagingString);
+            stringBuilder.Append(bugCountString);
+
+            return stringBuilder.ToString();
         }
     }
 }

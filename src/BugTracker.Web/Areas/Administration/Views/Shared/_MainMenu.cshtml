@@ -30,7 +30,7 @@
 <span id="debug" style="position: absolute; top: 0; left: 0;"></span>
 
 <header class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a href="~/Bugs/List.aspx" class="navbar-brand">BugTracker.NET</a>
+    <a href="@Url.Action("Index", "Bug", new { area = string.Empty })" class="navbar-brand">BugTracker.NET</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -39,7 +39,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a href="~/Bugs/List.aspx" class="nav-item nav-link @(Model.SelectedItem == "bugs" ? "active" : string.Empty)">Bugs<!--<span class="sr-only">(current)</span>--></a>
+                <a href="@Url.Action("Index", "Bug", new { area = string.Empty })" class="nav-item nav-link @(Model.SelectedItem == "bugs" ? "active" : string.Empty)">Bugs<!--<span class="sr-only">(current)</span>--></a>
             </li>
 
             @if (Model.Security.User.CanSearch)

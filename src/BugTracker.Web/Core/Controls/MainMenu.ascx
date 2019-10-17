@@ -31,7 +31,7 @@
         <td width="20">&nbsp;</td>
 
         <td class="menu_td">
-            <a href="<%= ResolveUrl("~/Bugs/List.aspx") %>"><span class="<%= SelectedItem == ApplicationSettings.PluralBugLabel ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;"><%= ApplicationSettings.PluralBugLabel %></span></a>
+            <a href="<%= ResolveUrl("~/Bug") %>"><span class="<%= SelectedItem == ApplicationSettings.PluralBugLabel ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;"><%= ApplicationSettings.PluralBugLabel %></span></a>
         </td>
 
         <% if (Security.User.CanSearch)

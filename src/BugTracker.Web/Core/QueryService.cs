@@ -87,7 +87,7 @@ namespace BugTracker.Web.Core
                         visibilityValue = $"org:{organisation.Name}";
                     }
 
-                    var viewListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bugs/List.aspx?qu_id={query.Id}")}'>view list</a>";
+                    var viewListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug?qu_id={query.Id}")}'>view list</a>";
                     var printListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?queryId={query.Id}")}'>print list</a>";
                     var exportValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?format=excel&queryId={query.Id}")}'>export as excel</a>";
                     var printListDetailValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/PrintDetail?queryId={query.Id}")}'>print detail</a>";
@@ -117,7 +117,7 @@ namespace BugTracker.Web.Core
 
                 foreach (var query in queries)
                 {
-                    var viewListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bugs/List.aspx?qu_id={query.Id}")}'>view list</a>";
+                    var viewListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug?qu_id={query.Id}")}'>view list</a>";
                     var printListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?queryId={query.Id}")}'>print list</a>";
                     var exportValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/Print?format=excel&queryId={query.Id}")}'>export as excel</a>";
                     var printListDetailValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug/PrintPrintDetail?queryId={query.Id}")}'>print detail</a>";

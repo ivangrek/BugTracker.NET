@@ -11,11 +11,15 @@ namespace BugTracker.Web.Controllers
     using BugTracker.Web.Models;
     using BugTracker.Web.Models.Bug;
     using System;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Data;
+    using System.Data.SqlClient;
     using System.Text;
     using System.Web.Mvc;
     using System.Web.UI;
 
+    [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class BugController : Controller
     {
@@ -28,6 +32,108 @@ namespace BugTracker.Web.Controllers
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
+        }
+
+        [HttpGet]
+        public ActionResult Index()
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - {this.applicationSettings.PluralBugLabel}",
+                SelectedItem = this.applicationSettings.PluralBugLabel
+            };
+
+            LoadQueryDropdown();
+
+            var model = (IndexModel)TempData["IndexModel"] ?? new IndexModel
+            {
+                QueryId = 0,
+                Action = string.Empty,
+                NewPage = 0,
+                Filter = string.Empty,
+                Sort = -1,
+                PrevSort = -1,
+                PrevDir = "ASC"
+            };
+
+            ViewBag.PostBack = false;
+
+            if (!string.IsNullOrEmpty(model.Action) && model.Action != "query")
+            {
+                // sorting, paging, filtering, so don't go back to the database
+                ViewBag.DataView = (DataView)Session["bugs"];
+
+                if (ViewBag.DataView == null)
+                {
+                    DoQuery(model);
+                }
+                else if (model.Action == "sort")
+                {
+                    model.NewPage = 0;
+                }
+
+                ViewBag.PostBack = true;
+            }
+            else
+            {
+                if (Session["just_did_text_search"] == null)
+                {
+                    var message = DoQuery(model);
+
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        return Content(message);
+                    }
+                }
+                // from search page
+                else
+                {
+                    Session["just_did_text_search"] = null;
+
+                    ViewBag.DataView = (DataView)Session["bugs"];
+                }
+            }
+
+            CallSortAndFilterBuglistDataview(model, ViewBag.PostBack);
+
+            model.Action = string.Empty;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Index(IndexModel model)
+        {
+            this.security.CheckSecurity(SecurityLevel.AnyUserOk);
+
+            // posting back a query change?
+            // posting back a filter change?
+            // posting back a sort change?
+
+            if (model.Action == "query")
+            {
+                TempData["IndexModel"] = new IndexModel
+                {
+                    QueryId = model.QueryId,
+                    Action = model.Action,
+                    NewPage = 0,
+                    Filter = string.Empty,
+                    Sort = -1,
+                    PrevSort = -1,
+                    PrevDir = "ASC"
+                };
+            }
+            else
+            {
+                TempData["IndexModel"] = model;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -95,7 +201,7 @@ namespace BugTracker.Web.Controllers
 
             Bug.DeleteBug(model.Id);
 
-            return Redirect("~/Bugs/List.aspx");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -653,6 +759,173 @@ namespace BugTracker.Web.Controllers
             }
 
             return Content("OK");
+        }
+
+        private void LoadQueryDropdown()
+        {
+            // populate query drop down
+            var sql = @"/* query dropdown */
+                select qu_id, qu_desc
+                from queries
+                where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
+                or isnull(qu_user,0) = $us
+                or isnull(qu_org,0) = $org
+                order by qu_desc";
+
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql = sql.Replace("$org", Convert.ToString(this.security.User.Org));
+
+            ViewBag.Queries = new List<SelectListItem>();
+
+            foreach (DataRowView row in DbUtil.GetDataView(sql))
+            {
+                ViewBag.Queries.Add(new SelectListItem
+                {
+                    Value = ((int)row["qu_id"]).ToString(),
+                    Text = (string)row["qu_desc"],
+                });
+            }
+        }
+
+        private string DoQuery(IndexModel model)
+        {
+            // figure out what SQL to run and run it.
+            string bugSql = null;
+
+            // From the URL
+            if (model.QueryId == 0)
+            {
+                // specified in URL?
+                model.QueryId = Convert.ToInt32(Util.SanitizeInteger(Request["qu_id"]));
+            }
+
+            // From a previous viewing of this page
+            if (model.QueryId == 0 && Session["SelectedBugQuery"] != null)
+            {
+                // Is there a previously selected query, from a use of this page
+                // earlier in this session?
+                model.QueryId = (int)Session["SelectedBugQuery"];
+            }
+
+            if (model.QueryId != 0)
+            {
+                // Use sql specified in query string.
+                // This is the normal path from the queries page.
+                var sql = @"select qu_sql from queries where qu_id = $quid";
+
+                sql = sql.Replace("$quid", Convert.ToString(model.QueryId));
+
+                bugSql = (string)DbUtil.ExecuteScalar(sql);
+            }
+
+            if (bugSql == null)
+            {
+                // This is the normal path after logging in.
+                // Use sql associated with user
+                var sql = @"select qu_id, qu_sql from queries where qu_id in
+                    (select us_default_query from users where us_id = $us)";
+
+                sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+
+                var dr = DbUtil.GetDataRow(sql);
+
+                if (dr != null)
+                {
+                    model.QueryId = (int)dr["qu_id"];
+
+                    bugSql = (string)dr["qu_sql"];
+                }
+            }
+
+            // As a last resort, grab some query.
+            if (bugSql == null)
+            {
+                var sql =
+                    @"select top 1 qu_id, qu_sql from queries order by case when qu_default = 1 then 1 else 0 end desc";
+
+                var dr = DbUtil.GetDataRow(sql);
+
+                bugSql = (string)dr["qu_sql"];
+
+                if (dr != null)
+                {
+                    model.QueryId = (int)dr["qu_id"];
+
+                    bugSql = (string)dr["qu_sql"];
+                }
+            }
+
+            if (bugSql == null)
+            {
+                return "Error!. No queries available for you to use!<p>Please contact your BugTracker.NET administrator.";
+            }
+
+            // replace magic variables
+            bugSql = bugSql.Replace("$ME", Convert.ToString(this.security.User.Usid));
+
+            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
+
+            if (!this.applicationSettings.UseFullNames)
+            {
+                // false condition
+                bugSql = bugSql.Replace("$fullnames", "0 = 1");
+            }
+            else
+            {
+                // true condition
+                bugSql = bugSql.Replace("$fullnames", "1 = 1");
+            }
+
+            // run the query
+            DataSet ds = null;
+
+            try
+            {
+                ds = DbUtil.GetDataSet(bugSql);
+
+                ViewBag.DataView = new DataView(ds.Tables[0]);
+            }
+            catch (SqlException e)
+            {
+                ViewBag.SqlError = e.Message;
+                ViewBag.DataView = null;
+            }
+
+            // Save it.
+            Session["bugs"] = ViewBag.DataView;
+            Session["SelectedBugQuery"] = model.QueryId;
+
+            // Save it again.  We use the unfiltered query to determine the
+            // values that go in the filter dropdowns.
+            if (ds != null)
+            {
+                Session["bugs_unfiltered"] = ds.Tables[0];
+            }
+            else
+            {
+                Session["bugs_unfiltered"] = null;
+            }
+
+            return string.Empty;
+        }
+
+        public void CallSortAndFilterBuglistDataview(IndexModel model, bool postBack)
+        {
+            var filterVal = model.Filter;
+            var sortVal = model.Sort.ToString();
+            var prevSortVal = model.PrevSort.ToString();
+            var prevDirVal = model.PrevDir;
+
+            BugList.SortAndFilterBugListDataView((DataView)ViewBag.DataView, postBack, model.Action,
+                ref filterVal,
+                ref sortVal,
+                ref prevSortVal,
+                ref prevDirVal);
+
+            model.Filter = filterVal;
+            model.Sort = Convert.ToInt32(sortVal);
+            model.PrevSort = Convert.ToInt32(prevSortVal);
+            model.PrevDir = prevDirVal;
         }
 
         private void PrintAsHtml(DataView dataView)

@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\about.html" />
+    <Content Include="Content\site.css" />
     <Content Include="Content\btnet_screen_capture.exe" />
     <Content Include="Content\custom\btnet_custom.css" />
     <Content Include="Content\custom\btnet_edit_bug.css" />
@@ -154,7 +155,6 @@
     <Content Include="Content\images\brick.png" />
     <Content Include="Content\btnet.css" />
     <Content Include="Content\btnet_base.css" />
-    <Content Include="Bugs\List.aspx" />
     <Content Include="Content\images\bugtracker_screen_capture.jpeg" />
     <Content Include="Core\Controls\MainMenu.ascx" />
     <Content Include="Scripts\bug_list.js" />
@@ -592,6 +592,7 @@
     <Compile Include="Areas\Administration\Controllers\StatusController.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
+    <Compile Include="Models\Bug\IndexModel.cs" />
     <Compile Include="Areas\Administration\Models\Category\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\Category\EditModel.cs" />
     <Compile Include="Areas\Administration\Models\CustomField\UpdateModel.cs" />
@@ -621,13 +622,6 @@
     <Compile Include="Areas\Versioning\Controllers\HgController.cs" />
     <Compile Include="Areas\Versioning\Controllers\GitController.cs" />
     <Compile Include="Areas\Versioning\VersioningAreaRegistration.cs" />
-    <Compile Include="Bugs\List.aspx.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\List.aspx.designer.cs">
-      <DependentUpon>List.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BugController.cs" />
     <Compile Include="Controllers\QueryController.cs" />
@@ -995,6 +989,7 @@
     <Content Include="Views\Shared\_ValidationSummary.cshtml" />
     <Content Include="Views\Account\Settings.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
+    <Content Include="Views\Bug\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

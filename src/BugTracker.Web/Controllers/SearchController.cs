@@ -179,10 +179,10 @@ namespace BugTracker.Web.Controllers
             Session["bugs_unfiltered"] = ds.Tables[0];
             Session["bugs"] = new DataView(ds.Tables[0]);
 
-            Session["just_did_text_search"] = "yes"; // switch for Bugs/List.aspx
+            Session["just_did_text_search"] = "yes"; // switch for /Bug
             Session["query"] = query; // for util.cs, to persist the text in the search <input>
 
-            return Redirect("~/Bugs/List.aspx");
+            return RedirectToAction("Index", "Bug");
         }
 
         private static string DisplayException(Exception e)

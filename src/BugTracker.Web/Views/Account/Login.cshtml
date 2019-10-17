@@ -59,7 +59,7 @@
             @if (page.ApplicationSettings.AllowGuestWithoutLogin)
             {
                 <li>
-                    <a href="~/Bugs/List.aspx">Continue as "guest" without logging in</a>
+                    <a href="@Url.Action("Index", "Bug")">Continue as "guest" without logging in</a>
                 </li>
             }
 

@@ -145,7 +145,7 @@ function sort_by_col_impl() {
 
 
     string_array[k++] = "<table id=" + table.id
-        + " class='datat table table-sm'"
+        + " class='table table-sm table-striped table-bordered'"
         + ">"
         + (gecko ? GET_OUTER_HTML(table.rows[0]) : table.rows[0].outerHTML);
 
