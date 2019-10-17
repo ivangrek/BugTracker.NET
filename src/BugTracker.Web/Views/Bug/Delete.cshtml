@@ -8,6 +8,8 @@
 @model BugTracker.Web.Models.Bug.DeleteModel
 
 @{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
@@ -17,32 +19,30 @@
 }
 
 @section Scripts {
-    <script>
-        function submit_form() {
-            var frm = document.getElementById("frm");
-            frm.submit();
-            return true;
-        }
-    </script>
 }
 
 @section BodyHeader {
-    @Html.Partial("_MainMenu", page)
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
 }
 
-<div class="main">
-    <a href="~/Bugs/Edit.aspx?id=@Model.Id">back to @page.ApplicationSettings.SingularBugLabel</a>
+@section BodySubHeader {
+}
 
-    <p>or</p>
+<h5 class="card-title">Confirm deletion of bug</h5>
 
-    @using (Html.BeginForm("Delete", "Bug", FormMethod.Post, new { id = "frm" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(x => x.Id)
+@using (Html.BeginForm("Delete", "Bug", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
 
-        <a href="javascript: submit_form()">confirm delete of @page.ApplicationSettings.SingularBugLabel: "@Model.Name"</a>
-    }
-</div>
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Name): @Model.Name
+    </div>
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

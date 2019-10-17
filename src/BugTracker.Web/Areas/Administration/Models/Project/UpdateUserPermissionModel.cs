@@ -11,7 +11,7 @@ namespace BugTracker.Web.Areas.Administration.Models.Project
     public sealed class UpdateUserPermissionModel
     {
         public int Id { get; set; }
-        
+
         public bool ToProjects { get; set; }
 
         public Dictionary<string, string[]> Permission { get; set; }

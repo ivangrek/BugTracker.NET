@@ -46,7 +46,7 @@ namespace BugTracker.Web
             float total = tags.Count;
             var soFar = 0.0F;
             var previousCount = -1;
-            var previousFont = "";
+            var previousFont = string.Empty;
 
             foreach (var tl in tagsByCount)
             {

@@ -39,18 +39,18 @@ namespace BugTracker.Web.Core
         public SecurityPermissionLevel CategoryFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
 
         public Dictionary<string, SecurityPermissionLevel> DictCustomFieldPermissionLevel = new Dictionary<string, SecurityPermissionLevel>();
-        public string Email = "";
+        public string Email = string.Empty;
         public bool EnablePopups = true;
 
         public bool ExternalUser;
         public int ForcedProject;
-        public string Fullname = "";
+        public string Fullname = string.Empty;
         public bool IsAdmin;
         public bool IsGuest;
         public bool IsProjectAdmin;
         public int Org;
         public SecurityPermissionLevel OrgFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
-        public string OrgName = "";
+        public string OrgName = string.Empty;
 
         public SecurityPermissionLevel OtherOrgsPermissionLevel = SecurityPermissionLevel.PermissionAll;
         public SecurityPermissionLevel PriorityFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
@@ -59,7 +59,7 @@ namespace BugTracker.Web.Core
         public SecurityPermissionLevel TagsFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
         public SecurityPermissionLevel UdfFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
         public bool UseFckeditor;
-        public string Username = "";
+        public string Username = string.Empty;
         public int Usid;
 
         public void SetFromDb(DataRow dr)
@@ -183,7 +183,7 @@ namespace BugTracker.Web.Core
             Util.WriteToLog("CopyUser creating " + username + " from template user " + templateUsername);
             var orgColumns = new StringBuilder();
 
-            var sql = "";
+            var sql = string.Empty;
 
             if (useDomainAsOrgName)
             {

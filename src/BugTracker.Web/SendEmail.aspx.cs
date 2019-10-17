@@ -38,7 +38,7 @@ namespace BugTracker.Web
 
             Page.Title = $"{ApplicationSettings.AppTitle} - send email";
 
-            this.msg.InnerText = "";
+            this.msg.InnerText = string.Empty;
 
             var stringBpId = Request["bp_id"];
             var stringBgId = Request["bg_id"];
@@ -135,7 +135,7 @@ namespace BugTracker.Web
                     {
                         var regex = new Regex("\n");
                         var lines = regex.Split((string) dr["bp_comment"]);
-                        var ccAddrs = "";
+                        var ccAddrs = string.Empty;
 
                         var max = lines.Length < 5 ? lines.Length : 5;
 
@@ -149,7 +149,7 @@ namespace BugTracker.Web
 
                                 if (ccAddr.IndexOf(this.from.SelectedItem.Value) == -1)
                                 {
-                                    if (ccAddrs != "") ccAddrs += ",";
+                                    if (!string.IsNullOrEmpty(ccAddrs)) ccAddrs += ",";
 
                                     ccAddrs += ccAddr;
                                 }
@@ -158,7 +158,7 @@ namespace BugTracker.Web
                         this.cc.Value = ccAddrs;
                     }
 
-                    if (dr["us_signature"].ToString() != "")
+                    if (!string.IsNullOrEmpty(dr["us_signature"].ToString()))
                     {
                         if (Security.User.UseFckeditor)
                         {
@@ -241,7 +241,7 @@ namespace BugTracker.Web
 
                     if (reply == "forward")
                     {
-                        this.to.Value = "";
+                        this.to.Value = string.Empty;
                         //original attachments
                         //dv.RowFilter = "bp_parent = " + string_bp_id;
                         dv.RowFilter = "bp_type = 'file'";
@@ -295,7 +295,7 @@ namespace BugTracker.Web
                     if (ApplicationSettings.StripDisplayNameFromEmailAddress)
                         this.to.Value = Email.SimplifyEmailAddress(this.to.Value);
 
-                    if (dr["us_signature"].ToString() != "")
+                    if (!string.IsNullOrEmpty(dr["us_signature"].ToString()))
                     {
                         if (Security.User.UseFckeditor)
                         {
@@ -339,36 +339,36 @@ namespace BugTracker.Web
 
             if (projectFirst)
             {
-                if (projectEmail != "")
+                if (!string.IsNullOrEmpty(projectEmail))
                 {
                     this.from.Items.Add(new ListItem(projectEmail));
-                    if (usFirstname != "" && usLastname != "")
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
                         this.from.Items.Add(
                             new ListItem("\"" + usFirstname + " " + usLastname + "\" <" + projectEmail + ">"));
                 }
 
-                if (usEmail != "")
+                if (!string.IsNullOrEmpty(usEmail))
                 {
                     this.from.Items.Add(new ListItem(usEmail));
-                    if (usFirstname != "" && usLastname != "")
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
                         this.from.Items.Add(
                             new ListItem("\"" + usFirstname + " " + usLastname + "\" <" + usEmail + ">"));
                 }
             }
             else
             {
-                if (usEmail != "")
+                if (!string.IsNullOrEmpty(usEmail))
                 {
                     this.from.Items.Add(new ListItem(usEmail));
-                    if (usFirstname != "" && usLastname != "")
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
                         this.from.Items.Add(
                             new ListItem("\"" + usFirstname + " " + usLastname + "\" <" + usEmail + ">"));
                 }
 
-                if (projectEmail != "")
+                if (!string.IsNullOrEmpty(projectEmail))
                 {
                     this.from.Items.Add(new ListItem(projectEmail));
-                    if (usFirstname != "" && usLastname != "")
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
                         this.from.Items.Add(
                             new ListItem("\"" + usFirstname + " " + usLastname + "\" <" + projectEmail + ">"));
                 }
@@ -381,7 +381,7 @@ namespace BugTracker.Web
         {
             var good = true;
 
-            if (this.to.Value == "")
+            if (string.IsNullOrEmpty(this.to.Value))
             {
                 good = false;
                 this.to_err.InnerText = "\"To\" is required.";
@@ -392,7 +392,7 @@ namespace BugTracker.Web
                 {
                     var dummyMsg = new MailMessage();
                     Email.AddAddressesToEmail(dummyMsg, this.to.Value, Email.AddrType.To);
-                    this.to_err.InnerText = "";
+                    this.to_err.InnerText = string.Empty;
                 }
                 catch
                 {
@@ -401,12 +401,12 @@ namespace BugTracker.Web
                 }
             }
 
-            if (this.cc.Value != "")
+            if (!string.IsNullOrEmpty(this.cc.Value))
                 try
                 {
                     var dummyMsg = new MailMessage();
                     Email.AddAddressesToEmail(dummyMsg, this.cc.Value, Email.AddrType.Cc);
-                    this.cc_err.InnerText = "";
+                    this.cc_err.InnerText = string.Empty;
                 }
                 catch
                 {
@@ -421,17 +421,17 @@ namespace BugTracker.Web
             }
             else
             {
-                this.from_err.InnerText = "";
+                this.from_err.InnerText = string.Empty;
             }
 
-            if (this.subject.Value == "")
+            if (string.IsNullOrEmpty(this.subject.Value))
             {
                 good = false;
                 this.subject_err.InnerText = "\"Subject\" is required.";
             }
             else
             {
-                this.subject_err.InnerText = "";
+                this.subject_err.InnerText = string.Empty;
             }
 
             this.msg.InnerText = "Email was not sent.";
@@ -565,7 +565,7 @@ update bugs set
             Bug.SendNotifications(Bug.Update, Convert.ToInt32(this.bg_id.Value), security);
             Core.WhatsNew.AddNews(Convert.ToInt32(this.bg_id.Value), this.short_desc.Value, "email sent", security);
 
-            if (result == "")
+            if (string.IsNullOrEmpty(result))
                 Response.Redirect($"~/Bugs/Edit.aspx?id={this.bg_id.Value}");
             else
                 this.msg.InnerText = result;
@@ -576,7 +576,7 @@ update bugs set
             var attachments = new ArrayList();
 
             var filename = Path.GetFileName(this.attached_file.PostedFile.FileName);
-            if (filename != "")
+            if (!string.IsNullOrEmpty(filename))
             {
                 //add attachment
                 var maxUploadSize = ApplicationSettings.MaxUploadSize;

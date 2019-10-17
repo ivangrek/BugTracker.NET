@@ -98,8 +98,8 @@ order by svnrev_revision desc, svnap_path";
                 var commit = (XmlElement) commits[i];
                 Response.Write("<tr><td nowrap>" + commit.GetAttribute("revision"));
 
-                var author = "";
-                var date = "";
+                var author = string.Empty;
+                var date = string.Empty;
 
                 foreach (XmlNode node in commit.ChildNodes)
                     if (node.Name == "author") author = node.InnerText;

@@ -23,7 +23,6 @@ namespace BugTracker.Web.Core
         private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
         public static HttpContext Context => HttpContext.Current;
-        private static HttpRequest _request => HttpContext.Current.Request;
 
         private static readonly object Dummy = new object();
 
@@ -77,7 +76,7 @@ namespace BugTracker.Web.Core
 
                 // write to it
 
-                var url = "";
+                var url = string.Empty;
 
                 try // To workaround problem with IIS integrated mode
                 {
@@ -107,7 +106,7 @@ namespace BugTracker.Web.Core
 
         //    if (GetSetting("MemoryLogEnabled", "0") == "0") return;
 
-        //    var url = "";
+        //    var url = string.Empty;
         //    if (HttpContext.Current.Request != null) url = HttpContext.Current.Request.Url.ToString();
 
         //    var line = DateTime.Now.ToString("yyy-MM-dd HH:mm:ss:fff")
@@ -250,7 +249,7 @@ namespace BugTracker.Web.Core
 
             if (date is string s)
             {
-                if (s == "") return "";
+                if (string.IsNullOrEmpty(s)) return "";
                 date = Convert.ToDateTime(date);
             }
 
@@ -264,7 +263,7 @@ namespace BugTracker.Web.Core
 
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
-            var dateTimeFormat = "";
+            var dateTimeFormat = string.Empty;
             if ((dt.Hour == 0 || dt.Hour == 12) && dt.Minute == 0 && dt.Second == 0)
                 dateTimeFormat = applicationSettings.JustDateFormat;
             else
@@ -503,7 +502,7 @@ namespace BugTracker.Web.Core
         public static string GetFolder(string name, string dflt)
         {
             var folder = ApplicationSettings[name];
-            if (folder == "")
+            if (string.IsNullOrEmpty(folder))
                 return dflt;
 
             folder = GetAbsoluteOrRelativeFolder(folder);

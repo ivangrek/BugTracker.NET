@@ -83,13 +83,13 @@ order by svnrev_revision desc, svnap_path";
             foreach (XmlElement logentry in logNode)
             {
                 var revision = logentry.GetAttribute("revision");
-                var author = "";
-                var date = "";
-                var path = "";
-                var action = "";
-                //string copy_from = "";
-                //string copy_from_rev = "";
-                var msg = "";
+                var author = string.Empty;
+                var date = string.Empty;
+                var path = string.Empty;
+                var action = string.Empty;
+                //string copy_from = string.Empty;
+                //string copy_from_rev = string.Empty;
+                var msg = string.Empty;
 
                 foreach (XmlNode node in logentry.ChildNodes)
                     if (node.Name == "author") author = node.InnerText;
@@ -107,7 +107,7 @@ order by svnrev_revision desc, svnap_path";
                                 {
                                     path = pathNode.InnerText;
                                     path = adjustedFilePath;
-                                    if (pathEl.GetAttribute("copyfrom-path") != "")
+                                    if (!string.IsNullOrEmpty(pathEl.GetAttribute("copyfrom-path")))
                                         adjustedFilePath = pathEl.GetAttribute("copyfrom-path");
                                 }
                             }

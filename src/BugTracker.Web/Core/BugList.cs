@@ -23,11 +23,11 @@ namespace BugTracker.Web.Core
 
             foreach (DataRow row in dt.Rows) dict[Convert.ToString(row[col])] = 1;
 
-            var vals = "";
+            var vals = string.Empty;
 
             foreach (var s in dict.Keys)
             {
-                if (vals != "") vals += "|";
+                if (!string.IsNullOrEmpty(vals)) vals += "|";
 
                 vals += s;
             }
@@ -77,7 +77,7 @@ namespace BugTracker.Web.Core
                 HttpContext.Current.Session["page"] = thisPage;
             }
 
-            var pagingString = "";
+            var pagingString = string.Empty;
 
             if (totalPages > 1)
             {
@@ -176,7 +176,7 @@ namespace BugTracker.Web.Core
                 try
                 {
                     var filterString2 = adjust_filter_val(filterVal).Replace("'", "''").Replace("$$$", "'");
-                    if (HttpContext.Current.Request["tags"] != null && HttpContext.Current.Request["tags"] != "")
+                    if (HttpContext.Current.Request["tags"] != null && !string.IsNullOrEmpty(HttpContext.Current.Request["tags"]))
                         filterString2 += Tags.BuildFilterClause(
                             HttpContext.Current.Application,
                             HttpContext.Current.Request["tags"]);
@@ -268,7 +268,7 @@ namespace BugTracker.Web.Core
                 }
             }
 
-            if (selectedValue == "")
+            if (string.IsNullOrEmpty(selectedValue))
             {
                 if (op == " =")
                     selectedValue = "[none]";
@@ -375,7 +375,7 @@ namespace BugTracker.Web.Core
                 }
             }
 
-            if (selectedValue == "")
+            if (string.IsNullOrEmpty(selectedValue))
             {
                 if (op == " =")
                     selectedValue = "[none]";
@@ -792,7 +792,7 @@ namespace BugTracker.Web.Core
                     {
                         colOne = Convert.ToString(dr[0]);
 
-                        if (colOne == "")
+                        if (string.IsNullOrEmpty(colOne))
                         {
                             classOrColor = "class=bugd";
                         }
@@ -882,7 +882,7 @@ namespace BugTracker.Web.Core
                                 response.Write("<td " + classOrColor + " >");
 
                             // write the data
-                            if (dr[i].ToString() == "")
+                            if (string.IsNullOrEmpty(dr[i].ToString()))
                             {
                                 response.Write("&nbsp;");
                             }
@@ -1201,7 +1201,7 @@ namespace BugTracker.Web.Core
                     {
                         colOne = Convert.ToString(dr[0]);
 
-                        if (colOne == "")
+                        if (string.IsNullOrEmpty(colOne))
                         {
                             classOrColor = "class=bugd";
                         }
@@ -1291,7 +1291,7 @@ namespace BugTracker.Web.Core
                                 stringBuilder.Append("<td " + classOrColor + " >");
 
                             // write the data
-                            if (dr[i].ToString() == "")
+                            if (string.IsNullOrEmpty(dr[i].ToString()))
                             {
                                 stringBuilder.Append("&nbsp;");
                             }

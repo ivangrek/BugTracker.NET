@@ -21,26 +21,26 @@ namespace BugTracker.Web.Bugs
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public bool AssignedToChanged;
+        protected bool AssignedToChanged;
 
-        public string CommentFormated;
-        public string CommentSearch;
-        public string CommentType;
-        public DataRow DrBug;
+        protected string CommentFormated;
+        protected string CommentSearch;
+        protected string CommentType;
+        protected DataRow DrBug;
 
-        public DataSet DsCustomCols;
+        protected DataSet DsCustomCols;
         protected DataSet DsPosts { get; set; }
         protected DataTable DtUsers { get; set; }
 
-        public bool Good = true;
-        public SortedDictionary<string, string> HashCustomCols = new SortedDictionary<string, string>();
-        public bool HistoryInline;
-        public int Id;
+        protected bool Good = true;
+        protected SortedDictionary<string, string> HashCustomCols = new SortedDictionary<string, string>();
+        protected bool HistoryInline;
+        protected int Id;
 
-        public bool ImagesInline = true;
+        protected bool ImagesInline = true;
         protected SecurityPermissionLevel PermissionLevel { get; set; }
         protected string Sql {get; set; }
-        public bool StatusChanged;
+        protected bool StatusChanged;
 
         public void Page_Init(object sender, EventArgs e)
         {
@@ -528,7 +528,7 @@ namespace BugTracker.Web.Bugs
             }
 
             // custom bug link
-            if (ApplicationSettings.CustomBugLinkLabel != "")
+            if (!string.IsNullOrEmpty(ApplicationSettings.CustomBugLinkLabel))
             {
                 var customBugLink = "<a href="
                                       + ApplicationSettings.CustomBugLinkUrl
@@ -642,9 +642,9 @@ namespace BugTracker.Web.Bugs
             var pcd2 = Request["pcd2"];
             var pcd3 = Request["pcd3"];
 
-            if (pcd1 == null) pcd1 = "";
-            if (pcd2 == null) pcd2 = "";
-            if (pcd3 == null) pcd3 = "";
+            if (pcd1 == null) pcd1 = string.Empty;
+            if (pcd2 == null) pcd2 = string.Empty;
+            if (pcd3 == null) pcd3 = string.Empty;
 
             pcd1 = pcd1.Replace("'", "''");
             pcd2 = pcd2.Replace("'", "''");
@@ -666,7 +666,7 @@ namespace BugTracker.Web.Bugs
                 this.CommentType, this.internal_only.Checked, this.HashCustomCols,
                 true); // send notifications
 
-            if (this.tags.Value != "" && ApplicationSettings.EnableTags)
+            if (!string.IsNullOrEmpty(this.tags.Value) && ApplicationSettings.EnableTags)
             {
                 Tags.BuildTagIndex(Application);
             }
@@ -780,9 +780,9 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                 var pcd2 = Request["pcd2"];
                 var pcd3 = Request["pcd3"];
 
-                if (pcd1 == null) pcd1 = "";
-                if (pcd2 == null) pcd2 = "";
-                if (pcd3 == null) pcd3 = "";
+                if (pcd1 == null) pcd1 = string.Empty;
+                if (pcd2 == null) pcd2 = string.Empty;
+                if (pcd3 == null) pcd3 = string.Empty;
 
                 this.Sql = this.Sql.Replace("$pcd1", pcd1.Replace("'", "''"));
                 this.Sql = this.Sql.Replace("$pcd2", pcd2.Replace("'", "''"));
@@ -795,7 +795,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
             }
             else
             {
-                var customColsSql = "";
+                var customColsSql = string.Empty;
 
                 foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                 {
@@ -863,7 +863,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
 
             set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was updated.");
 
-            this.comment.Value = "";
+            this.comment.Value = string.Empty;
 
             set_controls_field_permission(this.PermissionLevel, security);
 
@@ -1004,7 +1004,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
         public void load_user_dropdown(ISecurity security)
         {
             // What's selected now?   Save it before we refresh the dropdown.
-            var currentValue = "";
+            var currentValue = string.Empty;
 
             if (IsPostBack) currentValue = this.assigned_to.SelectedItem.Value;
 
@@ -1089,7 +1089,7 @@ order by us_username; ";
 
             // At this point, all the users we need are in the dropdown.
             // Now selected the selected.
-            if (currentValue == "") currentValue = this.prev_assigned_to.Value;
+            if (string.IsNullOrEmpty(currentValue)) currentValue = this.prev_assigned_to.Value;
 
             // Select the user.  We are either restoring the previous selection
             // or selecting what was in the database.
@@ -1119,7 +1119,7 @@ order by us_username; ";
             }
         }
 
-        public string get_custom_col_default_value(object o)
+        public static string get_custom_col_default_value(object o)
         {
             var defaultval = Convert.ToString(o);
 
@@ -1157,7 +1157,7 @@ order by us_username; ";
 
                 if (Security.User.IsGuest) // wouldn't make sense to share an email address
                 {
-                    this.subscriptions.InnerHtml = "";
+                    this.subscriptions.InnerHtml = string.Empty;
                 }
                 else
                 {
@@ -1366,7 +1366,7 @@ order by us_username; ";
             }
         }
 
-        public void set_udf_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
+        public  void set_udf_field_permission(SecurityPermissionLevel bugPermissionLevel, ISecurity security)
         {
             // pick the most restrictive permission
             var permLevel = bugPermissionLevel < Security.User.UdfFieldPermissionLevel
@@ -1481,7 +1481,7 @@ order by us_username; ";
                     }
                 }
 
-                var prevNextLink = "";
+                var prevNextLink = string.Empty;
 
                 if (thisBugFound)
                 {
@@ -1584,7 +1584,7 @@ order by us_username; ";
             this.udf.Items.Insert(0, new ListItem("[none]", "0"));
         }
 
-        public string get_dropdown_text_from_value(DropDownList dropdown, string value)
+        public static string get_dropdown_text_from_value(DropDownList dropdown, string value)
         {
             foreach (ListItem li in dropdown.Items)
                 if (li.Value == value)
@@ -1651,7 +1651,7 @@ order by us_username; ";
             baseSql = baseSql.Replace("$us", Convert.ToString(Security.User.Usid));
 
             string from;
-            this.Sql = "";
+            this.Sql = string.Empty;
 
             var doUpdate = false;
 
@@ -1804,18 +1804,18 @@ order by us_username; ";
                 var before = Util.FormatDbValue(this.DrBug[columnName]);
                 var after = this.HashCustomCols[columnName];
 
-                if (before == "0") before = "";
+                if (before == "0") before = string.Empty;
 
-                if (after == "0") after = "";
+                if (after == "0") after = string.Empty;
 
                 if (before.Trim() != after.Trim())
                 {
                     if ((string) drcc["dropdown type"] == "users")
                     {
-                        var sqlGetUsername = "";
-                        if (before == "")
+                        var sqlGetUsername = string.Empty;
+                        if (string.IsNullOrEmpty(before))
                         {
-                            before = "";
+                            before = string.Empty;
                         }
                         else
                         {
@@ -1824,9 +1824,9 @@ order by us_username; ";
                                 Util.SanitizeInteger(before)));
                         }
 
-                        if (after == "")
+                        if (string.IsNullOrEmpty(after))
                         {
-                            after = "";
+                            after = string.Empty;
                         }
                         else
                         {
@@ -1923,16 +1923,16 @@ order by us_username; ";
         public bool validate(ISecurity security)
         {
             var good = true;
-            this.custom_validation_err_msg.InnerText = "";
+            this.custom_validation_err_msg.InnerText = string.Empty;
 
-            if (this.short_desc.Value == "")
+            if (string.IsNullOrEmpty(this.short_desc.Value))
             {
                 good = false;
                 this.short_desc_err.InnerText = "Short Description is required.";
             }
             else
             {
-                this.short_desc_err.InnerText = "";
+                this.short_desc_err.InnerText = string.Empty;
             }
 
             if (!did_something_change()) return false;
@@ -1981,7 +1981,7 @@ order by us_username; ";
                         var xscale = Convert.ToInt32(drcc["xscale"]);
 
                         var decimalError = Util.IsValidDecimal(name, val, xprec - xscale, xscale);
-                        if (decimalError != "")
+                        if (!string.IsNullOrEmpty(decimalError))
                         {
                             append_custom_field_msg(decimalError + "<br>");
                             good = false;
@@ -2010,7 +2010,7 @@ order by us_username; ";
             }
             else
             {
-                this.assigned_to_err.InnerText = "";
+                this.assigned_to_err.InnerText = string.Empty;
             }
 
             // custom validations go here
@@ -2021,7 +2021,7 @@ order by us_username; ";
             return good;
         }
 
-        public bool does_assigned_to_have_permission_for_org(int assignedTo, int org)
+        public static bool does_assigned_to_have_permission_for_org(int assignedTo, int org)
         {
             if (assignedTo < 1) return true;
 
@@ -2092,7 +2092,7 @@ where us_id = @us_id";
 
                 var permissionOnOriginal = this.PermissionLevel;
 
-                if (this.prev_project.Value != string.Empty
+                if (!string.IsNullOrEmpty(this.prev_project.Value)
                     && (this.project.SelectedItem == null ||
                         this.project.SelectedItem.Value != this.prev_project.Value))
                     permissionOnOriginal = fetch_permission_level(this.prev_project.Value, security);
@@ -2179,7 +2179,7 @@ where us_id = @us_id";
                     {
                         var dropdownVals = Convert.ToString(drcc["vals"]);
 
-                        if (dropdownType != "" || dropdownVals != "")
+                        if (!string.IsNullOrEmpty(dropdownType) || !string.IsNullOrEmpty(dropdownVals))
                         {
                             var selectedValue = this.HashCustomCols[columnName].Trim();
 
@@ -2296,7 +2296,7 @@ where us_id = @us_id";
                             Response.Write("<td nowrap>");
 
                             var permissionOnOriginal = this.PermissionLevel;
-                            if (this.prev_project.Value != string.Empty &&
+                            if (!string.IsNullOrEmpty(this.prev_project.Value) &&
                                 this.project.SelectedItem.Value != this.prev_project.Value)
                                 permissionOnOriginal = fetch_permission_level(this.prev_project.Value, security);
 
@@ -2360,7 +2360,7 @@ where us_id = @us_id";
                                 var options = Util.SplitDropdownVals(
                                     (string) projectDr["pj_custom_dropdown_values" + Convert.ToString(i)]);
 
-                                var selectedValue = "";
+                                var selectedValue = string.Empty;
 
                                 if (IsPostBack)
                                 {

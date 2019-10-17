@@ -319,7 +319,7 @@ namespace BugTracker.Web.Core
 
         public string List()
         {
-            var temp = "";
+            var temp = string.Empty;
             if (this.State != ConnectState.Transaction)
             {
                 //the pop command LIST is only valid in the TRANSACTION state
@@ -336,7 +336,7 @@ namespace BugTracker.Web.Core
 
         public string List(int msgNumber)
         {
-            var temp = "";
+            var temp = string.Empty;
 
             if (this.State != ConnectState.Transaction)
             {
@@ -424,7 +424,7 @@ namespace BugTracker.Web.Core
 
         public string Retr(int msg)
         {
-            var temp = "";
+            var temp = string.Empty;
             if (this.State != ConnectState.Transaction)
             {
                 //the pop command RETR is only valid in the TRANSACTION state

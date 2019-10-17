@@ -28,7 +28,7 @@ namespace BugTracker.Web
 
         public Dictionary<int, BtnetProject> MapProjects = new Dictionary<int, BtnetProject>();
 
-        public string ProjectDropdownSelectCols = "";
+        public string ProjectDropdownSelectCols = string.Empty;
         public bool ShowUdf;
 
         protected string Sql {get; set; }
@@ -170,11 +170,11 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
         public string build_where(string where, string clause)
         {
-            if (clause == "") return where;
+            if (string.IsNullOrEmpty(clause)) return where;
 
-            var sql = "";
+            var sql = string.Empty;
 
-            if (where == "")
+            if (string.IsNullOrEmpty(where))
             {
                 sql = " where ";
                 sql += clause;
@@ -190,13 +190,13 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             return sql;
         }
 
-        public string build_clause_from_listbox(ListBox lb, string columnName)
+        public static string build_clause_from_listbox(ListBox lb, string columnName)
         {
-            var clause = "";
+            var clause = string.Empty;
             foreach (ListItem li in lb.Items)
                 if (li.Selected)
                 {
-                    if (clause == "")
+                    if (string.IsNullOrEmpty(clause))
                         clause += columnName + " in (";
                     else
                         clause += ",";
@@ -204,20 +204,20 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                     clause += li.Value;
                 }
 
-            if (clause != "") clause += ") ";
+            if (!string.IsNullOrEmpty(clause)) clause += ") ";
 
             return clause;
         }
 
-        public string format_in_not_in(string s)
+        public static string format_in_not_in(string s)
         {
             var vals = "(";
-            var opts = "";
+            var opts = string.Empty;
 
             var s2 = Util.SplitStringUsingCommas(s);
             for (var i = 0; i < s2.Length; i++)
             {
-                if (opts != "") opts += ",";
+                if (!string.IsNullOrEmpty(opts)) opts += ",";
 
                 var oneOpt = "N'";
                 oneOpt += s2[i].Replace("'", "''");
@@ -251,7 +251,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
             // Create "WHERE" clause
 
-            var where = "";
+            var where = string.Empty;
 
             var reportedByClause = build_clause_from_listbox(this.reported_by, "bg_reported_user");
             var assignedToClause = build_clause_from_listbox(this.assigned_to, "bg_assigned_to_user");
@@ -268,7 +268,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             var categoryClause = build_clause_from_listbox(this.category, "bg_category");
             var priorityClause = build_clause_from_listbox(this.priority, "bg_priority");
             var statusClause = build_clause_from_listbox(this.status, "bg_status");
-            var udfClause = "";
+            var udfClause = string.Empty;
 
             if (this.ShowUdf) udfClause = build_clause_from_listbox(this.udf, "bg_user_defined_attribute");
 
@@ -284,15 +284,15 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             like2String = like2String.Replace("%", "[%]");
             like2String = like2String.Replace("_", "[_]");
 
-            var descClause = "";
-            if (this.like.Value != "")
+            var descClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.like.Value))
             {
                 descClause = " bg_short_desc like";
                 descClause += " N'%" + likeString + "%'\n";
             }
 
-            var commentsClause = "";
-            if (this.like2.Value != "")
+            var commentsClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.like2.Value))
             {
                 commentsClause =
                     " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and isnull(bp_comment_search,bp_comment) like";
@@ -301,8 +301,8 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 commentsClause += ")\n";
             }
 
-            var commentsSinceClause = "";
-            if (this.comments_since.Value != "")
+            var commentsSinceClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.comments_since.Value))
             {
                 commentsSinceClause =
                     " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and bp_date > '";
@@ -310,20 +310,20 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 commentsSinceClause += "')\n";
             }
 
-            var fromClause = "";
-            if (this.from_date.Value != "")
+            var fromClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.from_date.Value))
                 fromClause = " bg_reported_date >= '" + format_from_date(this.from_date.Value) + "'\n";
 
-            var toClause = "";
-            if (this.to_date.Value != "")
+            var toClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.to_date.Value))
                 toClause = " bg_reported_date <= '" + format_to_date(this.to_date.Value) + "'\n";
 
-            var luFromClause = "";
-            if (this.lu_from_date.Value != "")
+            var luFromClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.lu_from_date.Value))
                 luFromClause = " bg_last_updated_date >= '" + format_from_date(this.lu_from_date.Value) + "'\n";
 
-            var luToClause = "";
-            if (this.lu_to_date.Value != "")
+            var luToClause = string.Empty;
+            if (!string.IsNullOrEmpty(this.lu_to_date.Value))
                 luToClause = " bg_last_updated_date <= '" + format_to_date(this.lu_to_date.Value) + "'\n";
 
             where = build_where(where, reportedByClause);
@@ -358,14 +358,14 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 {
                     values = values.Replace("'", "''");
 
-                    var customClause = "";
+                    var customClause = string.Empty;
 
                     var datatype = (string) drcc["datatype"];
 
                     if ((datatype == "varchar" || datatype == "nvarchar" || datatype == "char" || datatype == "nchar")
-                        && (string) drcc["dropdown type"] == "")
+                        && string.IsNullOrEmpty((string)drcc["dropdown type"]))
                     {
-                        if (values != "")
+                        if (!string.IsNullOrEmpty(values))
                         {
                             customClause = " [" + columnName + "] like '%" + values + "%'\n";
                             where = build_where(where, customClause);
@@ -373,15 +373,15 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                     }
                     else if (datatype == "datetime")
                     {
-                        if (values != "")
+                        if (!string.IsNullOrEmpty(values))
                         {
                             customClause = " [" + columnName + "] >= '" + format_from_date(values) + "'\n";
                             where = build_where(where, customClause);
 
                             // reset, and do the to date
-                            customClause = "";
+                            customClause = string.Empty;
                             values = Request["to__" + columnName];
-                            if (values != "")
+                            if (!string.IsNullOrEmpty(values))
                             {
                                 customClause = " [" + columnName + "] <= '" + format_to_date(values) + "'\n";
                                 where = build_where(where, customClause);
@@ -390,7 +390,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                     }
                     else
                     {
-                        if (values == "" && (datatype == "int" || datatype == "decimal"))
+                        if (string.IsNullOrEmpty(values) && (datatype == "int" || datatype == "decimal"))
                         {
                             // skip
                         }
@@ -408,7 +408,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
             var searchSql = ApplicationSettings.SearchSQL;
 
-            if (searchSql == "")
+            if (string.IsNullOrEmpty(searchSql))
             {
                 /*
             select isnull(pr_background_color,'#ffffff') [color], bg_id [id],
@@ -486,7 +486,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                     }
 
                 // let results include custom columns
-                var customColsSql = "";
+                var customColsSql = string.Empty;
                 var userTypeCnt = 1;
                 foreach (DataRow drcc in this.DsCustomCols.Tables[0].Rows)
                 {
@@ -522,7 +522,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 // Handle project custom dropdowns
                 var selectedProjects = get_selected_projects();
 
-                var projectDropdownSelectColsServerSide = "";
+                var projectDropdownSelectColsServerSide = string.Empty;
 
                 string alias1 = null;
                 string alias2 = null;
@@ -627,18 +627,18 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             Session["bugs_unfiltered"] = ds.Tables[0];
         }
 
-        public string format_from_date(string dt)
+        public static string format_from_date(string dt)
         {
             return Util.FormatLocalDateIntoDbFormat(dt).Replace(" 12:00:00", "").Replace(" 00:00:00", "");
         }
 
-        public string format_to_date(string dt)
+        public static string format_to_date(string dt)
         {
             return Util.FormatLocalDateIntoDbFormat(dt).Replace(" 12:00:00", " 23:59:59")
                 .Replace(" 00:00:00", " 23:59:59");
         }
 
-        public void load_project_custom_dropdown(ListBox dropdown, string valsString,
+        public static void load_project_custom_dropdown(ListBox dropdown, string valsString,
             Dictionary<string, string> duplicateDetectionDictionary)
         {
             var valsArray = Util.SplitDropdownVals(valsString);
@@ -676,11 +676,11 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 if (li.Selected)
                     previousSelectionDictionaries[2].Add(li.Value, li.Value);
 
-            this.ProjectDropdownSelectCols = "";
+            this.ProjectDropdownSelectCols = string.Empty;
 
-            this.project_custom_dropdown1_label.InnerText = "";
-            this.project_custom_dropdown2_label.InnerText = "";
-            this.project_custom_dropdown3_label.InnerText = "";
+            this.project_custom_dropdown1_label.InnerText = string.Empty;
+            this.project_custom_dropdown2_label.InnerText = string.Empty;
+            this.project_custom_dropdown3_label.InnerText = string.Empty;
 
             this.project_custom_dropdown1.Items.Clear();
             this.project_custom_dropdown2.Items.Clear();
@@ -702,7 +702,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
                     if (btnetProject.MapDropdowns[1].Enabled)
                     {
-                        if (this.project_custom_dropdown1_label.InnerText == "")
+                        if (string.IsNullOrEmpty(this.project_custom_dropdown1_label.InnerText))
                         {
                             this.project_custom_dropdown1_label.InnerText = btnetProject.MapDropdowns[1].Label;
                             this.project_custom_dropdown1_label.Style["display"] = "inline";
@@ -720,7 +720,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
                     if (btnetProject.MapDropdowns[2].Enabled)
                     {
-                        if (this.project_custom_dropdown2_label.InnerText == "")
+                        if (string.IsNullOrEmpty(this.project_custom_dropdown2_label.InnerText))
                         {
                             this.project_custom_dropdown2_label.InnerText = btnetProject.MapDropdowns[2].Label;
                             this.project_custom_dropdown2_label.Style["display"] = "inline";
@@ -738,7 +738,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
                     if (btnetProject.MapDropdowns[3].Enabled)
                     {
-                        if (this.project_custom_dropdown3_label.InnerText == "")
+                        if (string.IsNullOrEmpty(this.project_custom_dropdown3_label.InnerText))
                         {
                             this.project_custom_dropdown3_label.InnerText = btnetProject.MapDropdowns[3].Label;
                             this.project_custom_dropdown3_label.Style["display"] = "inline";
@@ -758,7 +758,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 }
             }
 
-            if (this.project_custom_dropdown1_label.InnerText == "")
+            if (string.IsNullOrEmpty(this.project_custom_dropdown1_label.InnerText))
             {
                 this.project_custom_dropdown1.Items.Clear();
                 this.project_custom_dropdown1_label.Style["display"] = "none";
@@ -773,7 +773,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                        this.project_custom_dropdown1_label.InnerText + "]";
             }
 
-            if (this.project_custom_dropdown2_label.InnerText == "")
+            if (string.IsNullOrEmpty(this.project_custom_dropdown2_label.InnerText))
             {
                 this.project_custom_dropdown2.Items.Clear();
                 this.project_custom_dropdown2_label.Style["display"] = "none";
@@ -788,7 +788,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                        this.project_custom_dropdown2_label.InnerText + "]";
             }
 
-            if (this.project_custom_dropdown3_label.InnerText == "")
+            if (string.IsNullOrEmpty(this.project_custom_dropdown3_label.InnerText))
             {
                 this.project_custom_dropdown3.Items.Clear();
                 this.project_custom_dropdown3_label.Style["display"] = "none";
@@ -960,7 +960,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             Response.Write(" id=\"" + name.Replace(" ", "") + "\"");
 
             Response.Write(" value=\"");
-            if (Request[name] != "") Response.Write(HttpUtility.HtmlEncode(Request[name]));
+            if (!string.IsNullOrEmpty(Request[name])) Response.Write(HttpUtility.HtmlEncode(Request[name]));
             Response.Write("\"");
             Response.Write(">");
 
@@ -1007,8 +1007,8 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
         public class ProjectDropdown
         {
             public bool Enabled { get; set; }
-            public string Label { get; set; } = "";
-            public string Values { get; set; } = "";
+            public string Label { get; set; } = string.Empty;
+            public string Values { get; set; } = string.Empty;
         }
 
         public class BtnetProject

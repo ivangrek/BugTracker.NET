@@ -404,7 +404,7 @@ namespace BugTracker.Web.Core
 
                     stringBuilder.Append(html);
 
-                    if (Convert.ToString(dr["ba_file"]) != "") // intentially "ba"
+                    if (!string.IsNullOrEmpty(Convert.ToString(dr["ba_file"]))) // intentially "ba"
                     {
                         html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
 
@@ -551,7 +551,7 @@ namespace BugTracker.Web.Core
                 else
                     stringBuilder.Append(HttpUtility.HtmlEncode((string)dr["bp_email_to"]));
 
-                if ((string)dr["bp_email_cc"] != "")
+                if (!string.IsNullOrEmpty((string)dr["bp_email_cc"]))
                 {
                     stringBuilder.Append(", cc: ");
 
@@ -707,7 +707,7 @@ namespace BugTracker.Web.Core
                 }
 
                 // custom bug link
-                if (applicationSettings.CustomPostLinkLabel != "")
+                if (!string.IsNullOrEmpty(applicationSettings.CustomPostLinkLabel))
                 {
                     var customPostLink = "&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;' href="
                                            + applicationSettings.CustomPostLinkUrl
@@ -884,7 +884,7 @@ namespace BugTracker.Web.Core
         {
             IApplicationSettings applicationSettings = new ApplicationSettings();
 
-            if (email != null && email != "" && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+            if (email != null && !string.IsNullOrEmpty(email) && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 return "<a href="
                        + applicationSettings.AbsoluteUrlPrefix
                        + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bg_id="
@@ -911,8 +911,8 @@ namespace BugTracker.Web.Core
 
         private static string FormatEmailFrom(int commentId, string from)
         {
-            var displayPart = "";
-            var emailPart = "";
+            var displayPart = string.Empty;
+            var emailPart = string.Empty;
             var pos = from.IndexOf("<"); // "
 
             if (pos > 0)

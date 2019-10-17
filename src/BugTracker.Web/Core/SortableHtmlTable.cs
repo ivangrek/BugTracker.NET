@@ -9,7 +9,6 @@ namespace BugTracker.Web.Core
 {
     using System;
     using System.Data;
-    using System.Text;
     using System.Web;
 
     public class SortableHtmlTable
@@ -100,16 +99,16 @@ namespace BugTracker.Web.Core
 
             foreach (DataColumn dc in ds.Tables[0].Columns)
             {
-                if ((editUrl != "" || deleteUrl != "")
+                if ((!string.IsNullOrEmpty(editUrl) || !string.IsNullOrEmpty(deleteUrl))
                     && dbColumnCount == ds.Tables[0].Columns.Count - 1)
                 {
-                    if (editUrl != "") r.Write("<td class=datah valign=bottom>edit</td>");
-                    if (deleteUrl != "") r.Write("<td class=datah valign=bottom>delete</td>");
+                    if (!string.IsNullOrEmpty(editUrl)) r.Write("<td class=datah valign=bottom>edit</td>");
+                    if (!string.IsNullOrEmpty(deleteUrl)) r.Write("<td class=datah valign=bottom>delete</td>");
                 }
                 else
                 {
                     // determine data type
-                    var datatype = "";
+                    var datatype = string.Empty;
                     if (Util.IsNumericDataType(dc.DataType))
                         datatype = "num";
                     else if (dc.DataType == typeof(DateTime))
@@ -165,13 +164,13 @@ namespace BugTracker.Web.Core
                 {
                     var datatype = ds.Tables[0].Columns[i].DataType;
 
-                    if ((editUrl != "" || deleteUrl != "")
+                    if ((!string.IsNullOrEmpty(editUrl) || !string.IsNullOrEmpty(deleteUrl))
                         && i == ds.Tables[0].Columns.Count - 1)
                     {
-                        if (editUrl != "")
+                        if (!string.IsNullOrEmpty(editUrl))
                             r.Write("<td class=datad><a href="
                                     + editUrl + dr[ds.Tables[0].Columns.Count - 1] + ">edit</a></td>");
-                        if (deleteUrl != "")
+                        if (!string.IsNullOrEmpty(deleteUrl))
                             r.Write("<td class=datad><a href="
                                     + deleteUrl + dr[ds.Tables[0].Columns.Count - 1] + ">delete</a></td>");
                     }
@@ -182,7 +181,7 @@ namespace BugTracker.Web.Core
                         else
                             r.Write("<td class=datad>");
 
-                        if (dr[i].ToString() == "")
+                        if (string.IsNullOrEmpty(dr[i].ToString()))
                         {
                             r.Write("&nbsp;");
                         }

@@ -209,7 +209,7 @@ namespace BugTracker.Web.Core
                 // SSL or not
                 var forceSsl = ApplicationSettings.SmtpForceSsl;
 
-                if (forceSsl == "")
+                if (string.IsNullOrEmpty(forceSsl))
                 {
                     // get the port so that we can guess whether SSL or not
                     var smtpSec = (SmtpSection)

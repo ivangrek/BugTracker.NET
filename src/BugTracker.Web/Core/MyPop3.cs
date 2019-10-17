@@ -103,7 +103,7 @@ namespace BugTracker.Web.Core
                     var fromAddr = MyMime.GetFromAddr(mimeMessage);
                     var subject = MyMime.GetSubject(mimeMessage);
 
-                    if (Pop3SubjectMustContain != "" && subject.IndexOf(Pop3SubjectMustContain) < 0)
+                    if (!string.IsNullOrEmpty(Pop3SubjectMustContain) && subject.IndexOf(Pop3SubjectMustContain) < 0)
                     {
                         Util.WriteToLog("skipping because subject does not contain: " + Pop3SubjectMustContain);
                         continue;
@@ -112,7 +112,7 @@ namespace BugTracker.Web.Core
                     var bSkip = false;
 
                     for (var k = 0; k < subjectCannotContainStrings.Length; k++)
-                        if (subjectCannotContainStrings[k] != "")
+                        if (!string.IsNullOrEmpty(subjectCannotContainStrings[k]))
                             if (subject.IndexOf(subjectCannotContainStrings[k]) >= 0)
                             {
                                 Util.WriteToLog("skipping because subject cannot contain: " +
@@ -123,14 +123,14 @@ namespace BugTracker.Web.Core
 
                     if (bSkip) continue;
 
-                    if (Pop3FromMustContain != "" && fromAddr.IndexOf(Pop3FromMustContain) < 0)
+                    if (!string.IsNullOrEmpty(Pop3FromMustContain) && fromAddr.IndexOf(Pop3FromMustContain) < 0)
                     {
                         Util.WriteToLog("skipping because from does not contain: " + Pop3FromMustContain);
                         continue; // that is, skip to next message
                     }
 
                     for (var k = 0; k < fromCannotContainStrings.Length; k++)
-                        if (fromCannotContainStrings[k] != "")
+                        if (!string.IsNullOrEmpty(fromCannotContainStrings[k]))
                             if (fromAddr.IndexOf(fromCannotContainStrings[k]) >= 0)
                             {
                                 Util.WriteToLog(
@@ -145,7 +145,7 @@ namespace BugTracker.Web.Core
                     var cc = MyMime.GetCc(mimeMessage);
                     var comment = MyMime.GetComment(mimeMessage);
                     var headers = MyMime.GetHeadersForComment(mimeMessage);
-                    if (headers != "") comment = headers + "\n" + comment;
+                    if (!string.IsNullOrEmpty(headers)) comment = headers + "\n" + comment;
 
                     var security = MyMime.GetSynthesizedSecurity(mimeMessage, fromAddr, Pop3ServiceUsername);
                     var orgid = security.User.Org;
@@ -192,7 +192,7 @@ namespace BugTracker.Web.Core
                         var statusResultingFromIncomingEmail =
                             ApplicationSettings.StatusResultingFromIncomingEmail;
 
-                        var sql = "";
+                        var sql = string.Empty;
 
                         if (statusResultingFromIncomingEmail != 0)
                         {
@@ -295,7 +295,7 @@ namespace BugTracker.Web.Core
         public static void AutoReply(int bugid, string fromAddr, string shortDesc, int projectid)
         {
             var autoReplyText = ApplicationSettings.AutoReplyText;
-            if (autoReplyText == "")
+            if (string.IsNullOrEmpty(autoReplyText))
                 return;
 
             autoReplyText = autoReplyText.Replace("$BUGID$", Convert.ToString(bugid));
@@ -317,7 +317,7 @@ namespace BugTracker.Web.Core
 
             var projectEmailString = Convert.ToString(projectEmail);
 
-            if (projectEmailString == "")
+            if (string.IsNullOrEmpty(projectEmailString))
             {
                 Util.WriteToLog("skipping auto reply because project email is blank");
                 return;

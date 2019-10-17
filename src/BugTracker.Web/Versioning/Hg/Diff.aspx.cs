@@ -17,12 +17,12 @@ namespace BugTracker.Web.Versioning.Hg
     {
         public ISecurity Security { get; set; }
 
-        public string LeftOut = "";
-        public string LeftTitle = "";
-        public string Path = "";
-        public string RightOut = "";
-        public string RightTitle = "";
-        public string UnifiedDiffText = "";
+        public string LeftOut = string.Empty;
+        public string LeftTitle = string.Empty;
+        public string Path = string.Empty;
+        public string RightOut = string.Empty;
+        public string RightTitle = string.Empty;
+        public string UnifiedDiffText = string.Empty;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -56,7 +56,7 @@ where hgap_id = $id";
             var repo = (string)dr["hgrev_repository"];
             this.Path = (string)dr["hgap_path"];
 
-            var error = "";
+            var error = string.Empty;
 
             var revision0 = Request["rev_0"];
 
@@ -68,7 +68,7 @@ where hgap_id = $id";
                 var log = VersionControl.HgLog(repo, revision, this.Path);
                 var prevRevision = get_previous_revision(log, revision);
 
-                if (prevRevision == "")
+                if (string.IsNullOrEmpty(prevRevision))
                 {
                     Response.Write("unable to determine previous revision from log");
                     Response.End();
@@ -104,14 +104,14 @@ where hgap_id = $id";
                     ref this.RightOut);
             }
 
-            if (error != "")
+            if (!string.IsNullOrEmpty(error))
             {
                 Response.Write(HttpUtility.HtmlEncode(error));
                 Response.End();
             }
         }
 
-        public string get_previous_revision(string logResult, string thisRevision)
+        public static string get_previous_revision(string logResult, string thisRevision)
         {
             var doc = new XmlDocument();
             doc.LoadXml("<log>" + logResult + "</log>");

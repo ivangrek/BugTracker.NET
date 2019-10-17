@@ -316,7 +316,7 @@
             string commit = null;
             string author = null;
             string date = null;
-            var msg = "";
+            var msg = string.Empty;
 
             var actions = new List<string>();
             var paths = new List<string>();
@@ -330,7 +330,7 @@
                     if (commit != null)
                     {
                         UpdateDb(bug, repo, commit, author, date, msg, actions, paths);
-                        msg = "";
+                        msg = string.Empty;
                         bug = 0;
                         actions.Clear();
                         paths.Clear();
@@ -348,7 +348,7 @@
                 }
                 else if (lines[i].StartsWith("    "))
                 {
-                    if (msg != string.Empty)
+                    if (!string.IsNullOrEmpty(msg))
                     {
                         msg += Environment.NewLine;
                     }
@@ -374,7 +374,7 @@
             return Content("OK:");
         }
 
-        private void UpdateDb(int bug, string repo, string commit, string author, string date, string msg,
+        private static void UpdateDb(int bug, string repo, string commit, string author, string date, string msg,
             List<string> actions, List<string> paths)
         {
             Util.WriteToLog(commit);

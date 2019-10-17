@@ -68,7 +68,7 @@
                     ''
                 end [view<br>history<br>(svn log)]";
 
-            //	if (websvn_url != "")
+            //	if (websvn_url != string.Empty)
             //	{
             //		sql += ",\n '<a target=_blank href=\"" + websvn_url + "\">WebSvn</a>' [WebSvn<br>URL]";
             //		sql = sql.Replace("$PATH","' + svnap_path + '");
@@ -198,7 +198,7 @@
 
                 var bugids = GetBugidsFromMsg(msg);
 
-                if (bugids == string.Empty) bugids = "0";
+                if (string.IsNullOrEmpty(bugids)) bugids = "0";
 
                 foreach (var bugid in bugids.Split(','))
                     if (Util.IsInt(bugid))
@@ -208,7 +208,7 @@
             return Content("OK:");
         }
 
-        private void InsertRevisionRowPerBug(string bugid, string repo, string revision, string author, string date,
+        private static void InsertRevisionRowPerBug(string bugid, string repo, string revision, string author, string date,
             string msg, XmlElement logentry)
         {
             var sql = @"

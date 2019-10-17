@@ -41,9 +41,9 @@ namespace BugTracker.Web
 
             var action = Request["actn"];
 
-            if (action == null) action = "";
+            if (action == null) action = string.Empty;
 
-            if (action != "")
+            if (!string.IsNullOrEmpty(action))
             {
                 if (permissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {

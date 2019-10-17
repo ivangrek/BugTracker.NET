@@ -36,7 +36,7 @@ namespace BugTracker.Web
             Page.Title = $"{ApplicationSettings.AppTitle} - relationships";
 
             string sql;
-            this.add_err.InnerText = "";
+            this.add_err.InnerText = string.Empty;
 
             this.Bugid = Convert.ToInt32(Util.SanitizeInteger(Request["bgid"]));
 
@@ -237,9 +237,9 @@ href='Relationships.aspx?bgid=$id&prev=$prev'>$id&nbsp;&nbsp;&nbsp;&nbsp;$title<
 
         public void display_hierarchy()
         {
-            var parents = "";
-            var siblings = "";
-            var children = "";
+            var parents = string.Empty;
+            var siblings = string.Empty;
+            var children = string.Empty;
 
             foreach (DataRow dr in this.Ds.Tables[0].Rows)
             {

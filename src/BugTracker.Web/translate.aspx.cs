@@ -34,7 +34,7 @@ namespace BugTracker.Web
 
             if (!IsPostBack)
             {
-                if (stringBpId != null && stringBpId != "")
+                if (stringBpId != null && !string.IsNullOrEmpty(stringBpId))
                 {
                     stringBpId = Util.SanitizeInteger(stringBpId);
 
@@ -50,7 +50,7 @@ namespace BugTracker.Web
                     var obj = dr["bp_comment"];
                     if (dr["bp_comment"] != DBNull.Value) this.source.InnerText = obj.ToString();
                 }
-                else if (stringBgId != null && stringBgId != "")
+                else if (stringBgId != null && !string.IsNullOrEmpty(stringBgId))
                 {
                     stringBgId = Util.SanitizeInteger(stringBgId);
 

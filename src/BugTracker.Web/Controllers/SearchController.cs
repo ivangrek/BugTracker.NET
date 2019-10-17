@@ -114,7 +114,7 @@ namespace BugTracker.Web.Controllers
                             var stream = MyLucene.Anal.TokenStream(string.Empty, new StringReader(rawText));
                             var highlightedText = highlighter.GetBestFragments(stream, rawText, 1, "...").Replace("'", "''");
 
-                            if (highlightedText == string.Empty) // someties the highlighter fails to emit text...
+                            if (string.IsNullOrEmpty(highlightedText)) // someties the highlighter fails to emit text...
                             {
                                 highlightedText = rawText.Replace("'", "''");
                             }

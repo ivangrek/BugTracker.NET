@@ -35,7 +35,7 @@ namespace BugTracker.Web
 
             Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            this.msg.InnerText = "";
+            this.msg.InnerText = string.Empty;
 
             var stringBugid = Util.SanitizeInteger(Request["bugid"]);
             this.Bugid = Convert.ToInt32(stringBugid);
@@ -187,7 +187,7 @@ namespace BugTracker.Web
             }
         }
 
-        public void load_date_hour_min(
+        public static void load_date_hour_min(
             HtmlInputText dateControl,
             DropDownList hourControl,
             DropDownList minControl,
@@ -195,7 +195,7 @@ namespace BugTracker.Web
         {
             if (Convert.IsDBNull(date))
             {
-                dateControl.Value = "";
+                dateControl.Value = string.Empty;
             }
             else
             {
@@ -210,7 +210,7 @@ namespace BugTracker.Web
         public void load_users_dropdowns(int bugid, ISecurity security)
         {
             // What's selected now?   Save it before we refresh the dropdown.
-            var currentValue = "";
+            var currentValue = string.Empty;
 
             if (IsPostBack) currentValue = this.assigned_to.SelectedItem.Value;
 
@@ -292,7 +292,7 @@ order by us_username; ";
         {
             var good = true;
 
-            if (this.sort_sequence.Value != "")
+            if (!string.IsNullOrEmpty(this.sort_sequence.Value))
             {
                 if (!Util.IsInt(this.sort_sequence.Value))
                 {
@@ -301,15 +301,15 @@ order by us_username; ";
                 }
                 else
                 {
-                    this.sort_sequence_err.InnerText = "";
+                    this.sort_sequence_err.InnerText = string.Empty;
                 }
             }
             else
             {
-                this.sort_sequence_err.InnerText = "";
+                this.sort_sequence_err.InnerText = string.Empty;
             }
 
-            if (this.percent_complete.Value != "")
+            if (!string.IsNullOrEmpty(this.percent_complete.Value))
             {
                 if (!Util.IsInt(this.percent_complete.Value))
                 {
@@ -322,7 +322,7 @@ order by us_username; ";
                     if (percentCompleteInt >= 0 && percentCompleteInt <= 100)
                     {
                         // good
-                        this.percent_complete_err.InnerText = "";
+                        this.percent_complete_err.InnerText = string.Empty;
                     }
                     else
                     {
@@ -333,52 +333,52 @@ order by us_username; ";
             }
             else
             {
-                this.percent_complete_err.InnerText = "";
+                this.percent_complete_err.InnerText = string.Empty;
             }
 
-            if (this.planned_duration.Value != "")
+            if (!string.IsNullOrEmpty(this.planned_duration.Value))
             {
                 var err = Util.IsValidDecimal("Planned Duration", this.planned_duration.Value, 4, 2);
 
-                if (err != "")
+                if (!string.IsNullOrEmpty(err))
                 {
                     good = false;
                     this.planned_duration_err.InnerText = err;
                 }
                 else
                 {
-                    this.planned_duration_err.InnerText = "";
+                    this.planned_duration_err.InnerText = string.Empty;
                 }
             }
             else
             {
-                this.planned_duration_err.InnerText = "";
+                this.planned_duration_err.InnerText = string.Empty;
             }
 
-            if (this.actual_duration.Value != "")
+            if (!string.IsNullOrEmpty(this.actual_duration.Value))
             {
                 var err = Util.IsValidDecimal("Actual Duration", this.actual_duration.Value, 4, 2);
 
-                if (err != "")
+                if (!string.IsNullOrEmpty(err))
                 {
                     good = false;
                     this.actual_duration_err.InnerText = err;
                 }
                 else
                 {
-                    this.actual_duration_err.InnerText = "";
+                    this.actual_duration_err.InnerText = string.Empty;
                 }
             }
             else
             {
-                this.actual_duration_err.InnerText = "";
+                this.actual_duration_err.InnerText = string.Empty;
             }
 
             return good;
         }
 
         // This might not be right.   Maybe use the commented out version, from Sergey Vasiliev
-        public string format_date_hour_min(string date, string hour, string min)
+        public static string format_date_hour_min(string date, string hour, string min)
         {
             if (!string.IsNullOrEmpty(date))
                 return Util.FormatLocalDateIntoDbFormat(
@@ -417,16 +417,16 @@ order by us_username; ";
     }  
     */
 
-        public string format_decimal_for_db(string s)
+        public static string format_decimal_for_db(string s)
         {
-            if (s == "")
+            if (string.IsNullOrEmpty(s))
                 return "null";
             return Util.FormatLocalDecimalIntoDbFormat(s);
         }
 
-        public string format_number_for_db(string s)
+        public static string format_number_for_db(string s)
         {
-            if (s == "")
+            if (string.IsNullOrEmpty(s))
                 return "null";
             return s;
         }

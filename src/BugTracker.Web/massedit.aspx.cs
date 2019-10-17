@@ -45,7 +45,7 @@ namespace BugTracker.Web
                 Response.End();
             }
 
-            var list = "";
+            var list = string.Empty;
 
             if (!IsPostBack)
             {
@@ -61,7 +61,7 @@ namespace BugTracker.Web
                 {
                     if (Util.IsInt(var))
                     {
-                        if (list != "") list += ",";
+                        if (!string.IsNullOrEmpty(list)) list += ",";
                         list += var;
                     }
 
@@ -93,56 +93,56 @@ namespace BugTracker.Web
 
                     this.Sql = "update bugs \nset ";
 
-                    var updates = "";
+                    var updates = string.Empty;
 
                     string val;
 
                     val = Request["mass_project"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_project = " + val;
                     }
 
                     val = Request["mass_org"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_org = " + val;
                     }
 
                     val = Request["mass_category"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_category = " + val;
                     }
 
                     val = Request["mass_priority"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_priority = " + val;
                     }
 
                     val = Request["mass_assigned_to"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_assigned_to_user = " + val;
                     }
 
                     val = Request["mass_reported_by"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_reported_user = " + val;
                     }
 
                     val = Request["mass_status"];
                     if (val != "-1" && Util.IsInt(val))
                     {
-                        if (updates != "") updates += ",\n";
+                        if (!string.IsNullOrEmpty(updates)) updates += ",\n";
                         updates += "bg_status = " + val;
                     }
 

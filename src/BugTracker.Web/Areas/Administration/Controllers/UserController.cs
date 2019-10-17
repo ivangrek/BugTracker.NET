@@ -1420,7 +1420,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 }
             }
 
-            if (projects != string.Empty)
+            if (!string.IsNullOrEmpty(projects))
             {
                 sql += @"
                     update project_user_xref
@@ -1461,7 +1461,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                             and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $us);";
                     }
 
-                    if (autoSubscribeProjects != string.Empty)
+                    if (!string.IsNullOrEmpty(autoSubscribeProjects))
                     {
                         sql += @"
                             insert into bug_subscriptions (bs_bug, bs_user)

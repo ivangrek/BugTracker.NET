@@ -19,14 +19,14 @@ namespace BugTracker.Web.Bugs
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public bool AssignedToChanged;
+        protected bool AssignedToChanged;
         protected DataSet DsPosts { get; set; }
-        public string ErrText;
-        public int Id;
+        protected string ErrText;
+        protected int Id;
 
-        public int PermissionLevel;
+        protected int PermissionLevel;
         protected string Sql {get; set; }
-        public bool StatusChanged;
+        protected bool StatusChanged;
 
         //SortedDictionary<string, string> hash_custom_cols = new SortedDictionary<string, string>();
         //SortedDictionary<string, string> hash_prev_custom_cols = new SortedDictionary<string, string>();
@@ -48,12 +48,12 @@ namespace BugTracker.Web.Bugs
                 Response.End();
             }
 
-            this.msg.InnerText = "";
-            this.ErrText = "";
+            this.msg.InnerText = string.Empty;
+            this.ErrText = string.Empty;
 
             var stringBugid = Request["id"];
 
-            if (stringBugid == null || stringBugid == "" || stringBugid == "0")
+            if (stringBugid == null || string.IsNullOrEmpty(stringBugid) || stringBugid == "0")
             {
                 this.Id = 0;
 
@@ -70,7 +70,7 @@ namespace BugTracker.Web.Bugs
                     else
                     {
                         var result = insert_bug(Security);
-                        if (result != "")
+                        if (!string.IsNullOrEmpty(result))
                             this.msg.InnerHtml = this.ErrText;
                         else
                             Response.Redirect("~/Bugs/MobileList.aspx");
@@ -147,7 +147,7 @@ namespace BugTracker.Web.Bugs
                     else
                     {
                         var result = update_bug(Security);
-                        if (result != "")
+                        if (!string.IsNullOrEmpty(result))
                             this.msg.InnerHtml = this.ErrText;
                         else
                             Response.Redirect("~/Bugs/MobileList.aspx");
@@ -288,7 +288,7 @@ namespace BugTracker.Web.Bugs
                     this.AssignedToChanged,
                     0); // Convert.ToInt32(assigned_to.SelectedItem.Value));
 
-            this.comment.Value = "";
+            this.comment.Value = string.Empty;
 
             return "";
         }
@@ -305,7 +305,7 @@ namespace BugTracker.Web.Bugs
             baseSql = baseSql.Replace("$us", Convert.ToString(Security.User.Usid));
 
             string from;
-            this.Sql = "";
+            this.Sql = string.Empty;
 
             var doUpdate = false;
 
@@ -408,7 +408,7 @@ namespace BugTracker.Web.Bugs
         {
             var isValid = true;
 
-            if (this.short_desc.Value == "")
+            if (string.IsNullOrEmpty(this.short_desc.Value))
             {
                 isValid = false;
                 this.ErrText += "Description is required.<br>";
@@ -418,7 +418,7 @@ namespace BugTracker.Web.Bugs
         }
 
         /// ////
-        public string get_dropdown_text_from_value(DropDownList dropdown, string value)
+        public static string get_dropdown_text_from_value(DropDownList dropdown, string value)
         {
             foreach (ListItem li in dropdown.Items)
                 if (li.Value == value)

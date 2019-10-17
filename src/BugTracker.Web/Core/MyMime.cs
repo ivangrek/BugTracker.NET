@@ -67,9 +67,9 @@ namespace BugTracker.Web.Core
 
         public static string GetFromAddr(SharpMimeMessage mimeMessage)
         {
-            var fromAddr = "";
+            var fromAddr = string.Empty;
 
-            if (mimeMessage.Header.From != null && mimeMessage.Header.From != "")
+            if (mimeMessage.Header.From != null && !string.IsNullOrEmpty(mimeMessage.Header.From))
             {
                 fromAddr = SharpMimeTools.parserfc2047Header(mimeMessage.Header.From);
 
@@ -86,9 +86,9 @@ namespace BugTracker.Web.Core
 
         public static string GetSubject(SharpMimeMessage mimeMessage)
         {
-            var subject = "";
+            var subject = string.Empty;
 
-            if (mimeMessage.Header.Subject != null && mimeMessage.Header.Subject != "")
+            if (mimeMessage.Header.Subject != null && !string.IsNullOrEmpty(mimeMessage.Header.Subject))
             {
                 subject = SharpMimeTools.parserfc2047Header(mimeMessage.Header.Subject);
 
@@ -105,8 +105,8 @@ namespace BugTracker.Web.Core
 
         public static string GetCc(SharpMimeMessage mimeMessage)
         {
-            var cc = "";
-            if (mimeMessage.Header.Cc != null && mimeMessage.Header.Cc != "")
+            var cc = string.Empty;
+            if (mimeMessage.Header.Cc != null && !string.IsNullOrEmpty(mimeMessage.Header.Cc))
             {
                 cc = SharpMimeTools.parserfc2047Header(mimeMessage.Header.Cc);
 
@@ -119,8 +119,8 @@ namespace BugTracker.Web.Core
 
         public static string GetTo(SharpMimeMessage mimeMessage)
         {
-            var to = "";
-            if (mimeMessage.Header.To != null && mimeMessage.Header.To != "")
+            var to = string.Empty;
+            if (mimeMessage.Header.To != null && !string.IsNullOrEmpty(mimeMessage.Header.To))
             {
                 to = SharpMimeTools.parserfc2047Header(mimeMessage.Header.To);
 
@@ -165,7 +165,7 @@ where us_username = N'$us'";
             {
                 // We can do a better job of parsing the from_addr here than we did in btnet_service.exe    
                 if (mimeMessage != null)
-                    if (mimeMessage.Header.From != null && mimeMessage.Header.From != "")
+                    if (mimeMessage.Header.From != null && !string.IsNullOrEmpty(mimeMessage.Header.From))
                     {
                         fromAddr = SharpMimeTools.parserfc2047Header(mimeMessage.Header.From);
 
@@ -263,14 +263,14 @@ where us_username = N'$us'";
             var filename = part.Header.ContentDispositionParameters["filename"];
             if (string.IsNullOrEmpty(filename)) filename = part.Header.ContentTypeParameters["name"];
 
-            if (filename != null && filename != "")
+            if (filename != null && !string.IsNullOrEmpty(filename))
                 return true;
             return false;
         }
 
         public static string DeterminePartFilename(SharpMimeMessage part)
         {
-            var filename = "";
+            var filename = string.Empty;
 
             filename = part.Header.ContentDispositionParameters["filename"];
 
@@ -301,7 +301,7 @@ where us_username = N'$us'";
                 }
             }
 
-            if (filename == null) filename = "";
+            if (filename == null) filename = string.Empty;
 
             return filename;
         }
@@ -321,7 +321,7 @@ where us_username = N'$us'";
                     {
                         var filename = DeterminePartFilename(part);
 
-                        if (filename != "") AddCttachment(filename, part, bugid, parentPostid, security);
+                        if (!string.IsNullOrEmpty(filename)) AddCttachment(filename, part, bugid, parentPostid, security);
                     }
             }
 
@@ -329,7 +329,7 @@ where us_username = N'$us'";
             {
                 var filename = DeterminePartFilename(mimeMessage);
 
-                if (filename != "") AddCttachment(filename, mimeMessage, bugid, parentPostid, security);
+                if (!string.IsNullOrEmpty(filename)) AddCttachment(filename, mimeMessage, bugid, parentPostid, security);
             }
         }
 
@@ -338,7 +338,7 @@ where us_username = N'$us'";
         {
             Util.WriteToLog("attachment:" + filename);
 
-            var missingAttachmentMsg = "";
+            var missingAttachmentMsg = string.Empty;
 
             var maxUploadSize = ApplicationSettings.MaxUploadSize;
             if (part.Size > maxUploadSize) missingAttachmentMsg = "ERROR: email attachment exceeds size limit.";
@@ -347,7 +347,7 @@ where us_username = N'$us'";
             string desc;
             var attachmentStream = new MemoryStream();
 
-            if (missingAttachmentMsg == "")
+            if (string.IsNullOrEmpty(missingAttachmentMsg))
                 desc = "email attachment";
             else
                 desc = missingAttachmentMsg;
@@ -369,15 +369,15 @@ where us_username = N'$us'";
 
         public static string GetHeadersForComment(SharpMimeMessage mimeMessage)
         {
-            var headers = "";
+            var headers = string.Empty;
 
-            if (mimeMessage.Header.Subject != null && mimeMessage.Header.Subject != "")
+            if (mimeMessage.Header.Subject != null && !string.IsNullOrEmpty(mimeMessage.Header.Subject))
                 headers = "Subject: " + GetSubject(mimeMessage) + "\n";
 
-            if (mimeMessage.Header.To != null && mimeMessage.Header.To != "")
+            if (mimeMessage.Header.To != null && !string.IsNullOrEmpty(mimeMessage.Header.To))
                 headers += "To: " + GetTo(mimeMessage) + "\n";
 
-            if (mimeMessage.Header.Cc != null && mimeMessage.Header.Cc != "")
+            if (mimeMessage.Header.Cc != null && !string.IsNullOrEmpty(mimeMessage.Header.Cc))
                 headers += "Cc: " + GetCc(mimeMessage) + "\n";
 
             return headers;

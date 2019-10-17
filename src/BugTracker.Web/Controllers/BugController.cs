@@ -145,7 +145,7 @@ namespace BugTracker.Web.Controllers
             var projectidString = Request["projectid"];
             var comment = Request["comment"];
             var fromAddr = Request["from"];
-            var cc = "";
+            var cc = string.Empty;
             var message = Request["message"];
             var attachmentAsBase64 = Request["attachment"];
             var attachmentContentType = Request["attachment_content_type"];
@@ -174,7 +174,7 @@ namespace BugTracker.Web.Controllers
 
                 var headers = MyMime.GetHeadersForComment(mimeMessage);
 
-                if (headers != string.Empty)
+                if (!string.IsNullOrEmpty(headers))
                 {
                     comment = headers + "\n" + comment;
                 }
@@ -183,7 +183,7 @@ namespace BugTracker.Web.Controllers
             }
             else
             {
-                if (comment == null) comment = "";
+                if (comment == null) comment = string.Empty;
             }
 
             if (string.IsNullOrEmpty(username))

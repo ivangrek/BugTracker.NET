@@ -18,15 +18,15 @@ namespace BugTracker.Web.Versioning.Svn
         public IApplicationSettings ApplicationSettings { get; set; }
         public ISecurity Security { get; set; }
 
-        public string LeftOut = "";
-        public string LeftTitle = "";
-        public string Path0 = "";
-        public string Path1 = "";
+        public string LeftOut = string.Empty;
+        public string LeftTitle = string.Empty;
+        public string Path0 = string.Empty;
+        public string Path1 = string.Empty;
 
         public string Repo;
-        public string RightOut = "";
+        public string RightOut = string.Empty;
 
-        public string RightTitle = "";
+        public string RightTitle = string.Empty;
         /*
 The following is an explanation of Unified Diff Format from this web page, from Guido van Rossum, the Python guy:
 http://www.artima.com/weblogs/viewpost.jsp?thread=164293
@@ -67,7 +67,7 @@ the literal text (starting in the first column):
 '\ No newline at end of file'
 
 */
-        public string UnifiedDiffText = "";
+        public string UnifiedDiffText = string.Empty;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -108,7 +108,7 @@ where svnap_id = $id";
                 this.Path0 = this.Path1 = (string) dr["svnap_path"];
             }
 
-            var error = "";
+            var error = string.Empty;
 
             var stringRevision0 = Request["rev_0"];
 
@@ -159,7 +159,7 @@ where svnap_id = $id";
                     ref this.RightOut);
             }
 
-            if (error != "")
+            if (!string.IsNullOrEmpty(error))
             {
                 Response.Write(HttpUtility.HtmlEncode(error));
                 Response.End();
@@ -168,7 +168,7 @@ where svnap_id = $id";
 
         public void examine_diff(string unifiedDiffText)
         {
-            if (unifiedDiffText == "")
+            if (string.IsNullOrEmpty(unifiedDiffText))
             {
                 Response.Write("No differences.");
                 Response.End();

@@ -46,13 +46,13 @@ namespace BugTracker.Web.Core
 
             var error = p.StandardError.ReadToEnd();
 
-            if (error != "")
+            if (!string.IsNullOrEmpty(error))
             {
                 Util.WriteToLog("stderr:" + error);
                 Util.WriteToLog("stdout:" + stdout);
             }
 
-            if (error != ""
+            if (!string.IsNullOrEmpty(error)
                 && !error.Contains("RUNTIME_PREFIX")) // ignore the git "RUNTIME_PREFIX" error
             {
                 var msg = "<div style='color:red; font-weight: bold; font-size: 10pt;'>";
@@ -99,7 +99,7 @@ namespace BugTracker.Web.Core
             argsWithoutPassword += " --non-interactive";
 
             var moreArgs = applicationSettings.SubversionAdditionalArgs;
-            if (moreArgs != "") argsWithoutPassword += " " + moreArgs;
+            if (!string.IsNullOrEmpty(moreArgs)) argsWithoutPassword += " " + moreArgs;
 
             Util.WriteToLog(filename + " " + argsWithoutPassword);
 
@@ -110,7 +110,7 @@ namespace BugTracker.Web.Core
 
             var parts = Util.RePipes.Split(usernameAndPasswordAndWebsvn);
             if (parts.Length > 1)
-                if (parts[0] != "" && parts[1] != "")
+                if (!string.IsNullOrEmpty(parts[0]) && !string.IsNullOrEmpty(parts[1]))
                 {
                     argsWithPassword += " --username ";
                     argsWithPassword += parts[0];
@@ -126,13 +126,13 @@ namespace BugTracker.Web.Core
 
             var error = p.StandardError.ReadToEnd();
 
-            if (error != "")
+            if (!string.IsNullOrEmpty(error))
             {
                 Util.WriteToLog("stderr:" + error);
                 Util.WriteToLog("stdout:" + stdout);
             }
 
-            if (error != "")
+            if (!string.IsNullOrEmpty(error))
             {
                 var msg = "<div style='color:red; font-weight: bold; font-size: 10pt;'>";
                 msg += "<br>Error executing svn command:";
@@ -278,7 +278,7 @@ namespace BugTracker.Web.Core
             for (var j = 0; j < plusCount; j++)
             {
                 var m = prevLine - j;
-                var sub = "";
+                var sub = string.Empty;
                 if (lines[m].Length > 0)
                     sub = lines[m].Substring(1);
                 lines[m] = "P" + sub;
@@ -288,7 +288,7 @@ namespace BugTracker.Web.Core
             for (var j = plusCount; j < 2 * plusCount; j++)
             {
                 var m = prevLine - j;
-                var sub = "";
+                var sub = string.Empty;
                 if (lines[m].Length > 0)
                     sub = lines[m].Substring(1);
                 lines[prevLine - j] = "M" + lines[prevLine - j].Substring(1);
@@ -363,7 +363,7 @@ namespace BugTracker.Web.Core
             ref string rightOut)
         {
             var regex = new Regex("\n");
-            var line = "";
+            var line = string.Empty;
 
             var diffText = unifiedDiffText;
 
@@ -371,7 +371,7 @@ namespace BugTracker.Web.Core
             var pos = unifiedDiffText.IndexOf("\n@@");
             if (pos > -1) diffText = unifiedDiffText.Substring(pos + 1);
 
-            if (diffText == "") return "No differences.";
+            if (string.IsNullOrEmpty(diffText)) return "No differences.";
 
             // first, split everything into lines
             var diffLines = regex.Split(diffText.Replace("\r\n", "\n"));
@@ -392,7 +392,7 @@ namespace BugTracker.Web.Core
 
             // I just want to pad left a certain number of places
             // probably any 5th grader would know how to do this better than me
-            var blank = "";
+            var blank = string.Empty;
             var digitPlaces = Convert.ToString(maxLines).Length;
 
             var lx = 0;
@@ -478,7 +478,7 @@ namespace BugTracker.Web.Core
                             sL.Append(leftLines[lx++]);
                             sL.Append("</span>\n");
                         }
-                        else if (line.StartsWith("\\") || line == "" || line.StartsWith("P"))
+                        else if (line.StartsWith("\\") || string.IsNullOrEmpty(line) || line.StartsWith("P"))
                         {
                         }
                         else
@@ -573,9 +573,9 @@ namespace BugTracker.Web.Core
                             sR.Append(Convert.ToString(rx + 1).PadLeft(digitPlaces, '0'));
                             sR.Append(" </span>");
 
-                            var part1 = "";
-                            var part2 = "";
-                            var part3 = "";
+                            var part1 = string.Empty;
+                            var part2 = string.Empty;
+                            var part3 = string.Empty;
 
                             WhichCharsChanged(changedLinesSavedForLaterCompare[
                                     indexOfChangedLines],
@@ -597,7 +597,7 @@ namespace BugTracker.Web.Core
                             indexOfChangedLines++;
                             sR.Append("</span>\n");
                         }
-                        else if (line.StartsWith("\\") || line == "" || line.StartsWith("M"))
+                        else if (line.StartsWith("\\") || string.IsNullOrEmpty(line) || line.StartsWith("M"))
                         {
                         }
                         else

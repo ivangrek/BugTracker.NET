@@ -243,7 +243,7 @@ namespace BugTracker.Web.Controllers
                 // If previous login was with windows authentication, then try it again
                 if (previousAuthMode == "1" && authMode == 2)
                 {
-                    Response.Cookies["user"]["name"] = "";
+                    Response.Cookies["user"]["name"] = string.Empty;
                     Response.Cookies["user"]["NTLM"] = "0";
 
                     return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
@@ -348,7 +348,7 @@ namespace BugTracker.Web.Controllers
                 // If previous login was with windows authentication, then try it again
                 if (previousAuthMode == "1" && authMode == 2)
                 {
-                    Response.Cookies["user"]["name"] = "";
+                    Response.Cookies["user"]["name"] = string.Empty;
                     Response.Cookies["user"]["NTLM"] = "0";
 
                     return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
@@ -1210,7 +1210,7 @@ namespace BugTracker.Web.Controllers
                         and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
                     }
 
-                    if (projects != "")
+                    if (!string.IsNullOrEmpty(projects))
                     {
                         sql += @"insert into bug_subscriptions (bs_bug, bs_user)
                         select bg_id, $id from bugs where bg_project in ($projects)

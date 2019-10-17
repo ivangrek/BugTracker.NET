@@ -86,7 +86,7 @@ group by bu_bug";
                     {
                         var label = NormalizeTag(labels[i]);
 
-                        if (label != "")
+                        if (!string.IsNullOrEmpty(label))
                         {
                             if (!tags.ContainsKey(label)) tags[label] = new List<int>();
 

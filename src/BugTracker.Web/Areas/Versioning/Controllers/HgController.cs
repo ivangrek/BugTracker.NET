@@ -212,7 +212,7 @@
                 var desc = changeset.GetElementsByTagName("desc")[0].InnerText;
                 var bug = GetBugidFromDesc(desc);
 
-                if (bug == "") bug = "0";
+                if (string.IsNullOrEmpty(bug)) bug = "0";
 
                 var revision = changeset.GetAttribute("rev");
                 var author = changeset.GetElementsByTagName("auth")[0].InnerText;
@@ -270,7 +270,7 @@
                     {
                         var pathElement = (XmlElement)paths[j];
 
-                        var action = ""; // no action in hg?  path_element.GetAttribute("action");
+                        var action = string.Empty; // no action in hg?  path_element.GetAttribute("action");
                         var filePath = pathElement.InnerText;
 
                         sql = @"

@@ -69,7 +69,7 @@
                         s = s.Replace("$STATUS$", HttpUtility.HtmlEncode(Convert.ToString(dr["status"])));
                         s = s.Replace("$REPORTED_USER$", HttpUtility.HtmlEncode(Convert.ToString(dr["reported_user"])));
                         var assignedUser = Convert.ToString(dr["assigned_user"]);
-                        if (assignedUser != "")
+                        if (assignedUser != string.Empty)
                             s = s.Replace("$ASSIGNED_USER$", "Assigned to " + HttpUtility.HtmlEncode(assignedUser));
                         else s = s.Replace("$ASSIGNED_USER$", "Unassigned");
 

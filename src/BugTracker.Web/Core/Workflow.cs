@@ -81,7 +81,7 @@ namespace BugTracker.Web.Core
                 return false;
             }
 
-            customValidationErrMsg.InnerHtml = "";
+            customValidationErrMsg.InnerHtml = string.Empty;
             return true;
         }
 

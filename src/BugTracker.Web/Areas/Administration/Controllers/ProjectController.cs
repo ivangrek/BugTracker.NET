@@ -372,7 +372,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 where pj_id = $id"
                 .Replace("$id", Convert.ToString(model.Id));
 
-            if (model.Pop3Password != string.Empty)
+            if (!string.IsNullOrEmpty(model.Pop3Password))
             {
                 sql = sql.Replace("$POP3_PASSWORD", "pj_pop3_password = N'" + model.Pop3Password + "',");
             }

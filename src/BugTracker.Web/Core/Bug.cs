@@ -152,7 +152,7 @@ where bs_bug = $id)";
             sql = sql.Replace("$bg", id);
 
             var ds = DbUtil.GetDataSet(sql);
-            if (uploadFolder != null && uploadFolder != "")
+            if (uploadFolder != null && !string.IsNullOrEmpty(uploadFolder))
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
                     // create path
@@ -631,7 +631,7 @@ where bg_id = $id";
             }
             else
             {
-                var customColsSql = "";
+                var customColsSql = string.Empty;
 
                 foreach (DataRow drcc in dsCustomCols.Tables[0].Rows) customColsSql += ",[" + drcc["name"] + "]";
                 sql = sql.Replace("$custom_cols_placeholder", customColsSql);
@@ -649,7 +649,7 @@ where bg_id = $id";
         {
             var sql = ApplicationSettings.UpdateBugAfterInsertBugAspxSql;
 
-            if (sql != "")
+            if (!string.IsNullOrEmpty(sql))
             {
                 sql = sql.Replace("$BUGID$", Convert.ToString(bugid));
                 DbUtil.ExecuteNonQuery(sql);
@@ -745,7 +745,7 @@ where bg_id = $bg";
             SortedDictionary<string, string> hashCustomCols,
             bool sendNotifications)
         {
-            if (shortDesc.Trim() == "") shortDesc = "[No Description]";
+            if (string.IsNullOrEmpty(shortDesc.Trim())) shortDesc = "[No Description]";
 
             if (assignedToUserid == 0) assignedToUserid = Util.GetDefaultUser(projectid);
 
@@ -793,8 +793,8 @@ where bg_id = $bg";
             }
             else
             {
-                var customColsSql1 = "";
-                var customColsSql2 = "";
+                var customColsSql1 = string.Empty;
+                var customColsSql2 = string.Empty;
 
                 var dsCustomCols = Util.GetCustomColumns();
 
@@ -851,7 +851,7 @@ where bg_id = $bg";
             string contentType,
             bool internalOnly)
         {
-            if (commentFormated != "")
+            if (!string.IsNullOrEmpty(commentFormated))
             {
                 var sql = @"
 declare @now datetime
@@ -898,7 +898,7 @@ select scope_identity();";
                 sql = sql.Replace("$comment_formatted", commentFormated.Replace("'", "''"));
                 sql = sql.Replace("$comment_search", commentSearch.Replace("'", "''"));
                 sql = sql.Replace("$content_type", contentType);
-                if (cc == null) cc = "";
+                if (cc == null) cc = string.Empty;
                 sql = sql.Replace("$cc", cc.Replace("'", "''"));
                 sql = sql.Replace("$internal", Util.BoolToString(internalOnly));
 
@@ -1050,7 +1050,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                 subject = subject.Replace("$THING$",
                     Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel));
 
-                var action = "";
+                var action = string.Empty;
                 if (insertOrUpdate == Insert)
                     action = "added";
                 else
@@ -1167,7 +1167,7 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
             var ds = DbUtil.GetDataSet(sql);
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
-                var err = "";
+                var err = string.Empty;
 
                 try
                 {
@@ -1184,7 +1184,7 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
                         (string)dr["qn_body"],
                         BtnetMailFormat.Html);
 
-                    if (err == "") sql = "delete from queued_notifications where qn_id = $qn_id";
+                    if (string.IsNullOrEmpty(err)) sql = "delete from queued_notifications where qn_id = $qn_id";
                 }
                 catch (Exception e)
                 {
@@ -1196,7 +1196,7 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
                     }
                 }
 
-                if (err != "")
+                if (!string.IsNullOrEmpty(err))
                 {
                     sql =
                         "update queued_notifications  set qn_retries = qn_retries + 1, qn_last_exception = N'$ex' where qn_id = $qn_id";

@@ -99,17 +99,16 @@ namespace BugTracker.Web.Core
 
             if (dataRow != null)
             {
+                roles.Add(ApplicationRoles.Member);
+
                 if ((int)dataRow["us_admin"] == 1)
                 {
                     roles.Add(ApplicationRoles.Administrator);
                 }
-                else if ((int)dataRow["project_admin"] == 1)
+                
+                if ((int)dataRow["project_admin"] == 1)
                 {
                     roles.Add(ApplicationRoles.ProjectAdministrator);
-                }
-                else
-                {
-                    roles.Add(ApplicationRoles.Member);
                 }
             }
 

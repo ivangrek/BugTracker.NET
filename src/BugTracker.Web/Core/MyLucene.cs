@@ -113,7 +113,7 @@ and sc.length > 30");
 
         private static string GetTextCustomColsNames(DataSet dsCustomFields)
         {
-            var customCols = "";
+            var customCols = string.Empty;
             foreach (DataRow dr in dsCustomFields.Tables[0].Rows) customCols += "[" + (string)dr["name"] + "],";
             return customCols;
         }
@@ -154,7 +154,7 @@ from bugs";
 
                         // tags
                         var tags = (string)dr["bg_tags"];
-                        if (tags != "")
+                        if (!string.IsNullOrEmpty(tags))
                             writer.AddDocument(CreateDoc(
                                 (int)dr["bg_id"],
                                 0,
@@ -166,7 +166,7 @@ from bugs";
                         {
                             var name = (string)drCustomCol["name"];
                             var val = Convert.ToString(dr[name]);
-                            if (val != "")
+                            if (!string.IsNullOrEmpty(val))
                                 writer.AddDocument(CreateDoc(
                                     (int)dr["bg_id"],
                                     0,
@@ -274,7 +274,7 @@ from bugs where bg_id = $bugid";
 
                     // tags
                     var tags = (string)dr["bg_tags"];
-                    if (tags != "")
+                    if (!string.IsNullOrEmpty(tags))
                         modifier.AddDocument(CreateDoc(
                             (int)dr["bg_id"],
                             0,
@@ -286,7 +286,7 @@ from bugs where bg_id = $bugid";
                     {
                         var name = (string)drCustomCol["name"];
                         var val = Convert.ToString(dr[name]);
-                        if (val != "")
+                        if (!string.IsNullOrEmpty(val))
                             modifier.AddDocument(CreateDoc(
                                 (int)dr["bg_id"],
                                 0,
