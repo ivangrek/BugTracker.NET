@@ -517,7 +517,6 @@
     <Content Include="Content\images\hg.png" />
     <Content Include="Versioning\Hg\Diff.aspx" />
     <Content Include="Versioning\Hg\Log.aspx" />
-    <Content Include="Bugs\Insert.aspx" />
     <Content Include="Scripts\jquery\grippie.png" />
     <Content Include="Scripts\jquery\images\ajax-loader.gif" />
     <Content Include="Scripts\jquery\images\icons-18-black.png" />
@@ -739,13 +738,6 @@
     </Compile>
     <Compile Include="Versioning\Hg\Log.aspx.designer.cs">
       <DependentUpon>Log.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Bugs\Insert.aspx.cs">
-      <DependentUpon>Insert.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\Insert.aspx.designer.cs">
-      <DependentUpon>Insert.aspx</DependentUpon>
     </Compile>
     <Compile Include="MassEdit.aspx.cs">
       <DependentUpon>MassEdit.aspx</DependentUpon>
