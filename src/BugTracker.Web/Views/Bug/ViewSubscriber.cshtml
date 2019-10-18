@@ -1,0 +1,72 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Bug.CreateSubscriberModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <link href="~/Content/custom/btnet_custom.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<h5>Subscribers for @Model.Id</h5>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                @using (Html.BeginForm("CreateSubscriber", "Bug", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.UserId, "Add subscriber"):
+                        @Html.DropDownListFor(x => x.UserId, (List<SelectListItem>)ViewBag.Users, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.UserId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Add</button>
+                    <a href="~/Bugs/Edit.aspx?id=@Model.Id" class="btn btn-link">Cancel</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+}
+else
+{
+    <div>"No subscribers for this bug.</div>
+}
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

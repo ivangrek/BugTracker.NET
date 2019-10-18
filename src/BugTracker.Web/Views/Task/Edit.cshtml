@@ -1,0 +1,267 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Task.EditModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+    <link rel="StyleSheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css">
+}
+
+@section Scripts {
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/datejs/date.js"></script>
+
+    <script>
+        $(document).ready(do_doc_ready);
+
+        function do_doc_ready() {
+            date_format = '@page.ApplicationSettings.DatepickerDateFormat';
+            $(".date").datepicker({ dateFormat: date_format, duration: 'fast' });
+        }
+
+        function show_calendar(el) {
+            $("#" + el).datepicker("show");
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Task", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.Id)
+                    @Html.HiddenFor(x => x.BugId)
+
+                    <div class="form-group">
+                        @Html.DisplayNameFor(x => x.BugId):
+                        @Html.DisplayFor(x => x.BugId, new { @class = "form-control-plaintext" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "200", size = "100" })
+                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    if (page.ApplicationSettings.ShowTaskAssignedTo)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.UserId):
+                            @Html.DropDownListFor(x => x.UserId, (List<SelectListItem>)ViewBag.Users, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.UserId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskPlannedStartDate)
+                    {
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                @Html.LabelFor(x => x.PlannedStartDate):
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.PlannedStartDate, new { @class = "form-control date", maxlength = "10", size = "10" })
+
+                                    <div class="input-group-append">
+                                        <a class="btn btn-outline-info" href="javascript:show_calendar('@Html.IdFor(x => x.PlannedStartDate)')">[?]</a>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(x => x.PlannedStartDate, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.PlannedStartHour):
+                                @Html.DropDownListFor(x => x.PlannedStartHour, (List<SelectListItem>)ViewBag.Hours, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.PlannedStartHour, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.PlannedStartMinute):
+                                @Html.DropDownListFor(x => x.PlannedStartMinute, (List<SelectListItem>)ViewBag.Minutes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.PlannedStartMinute, null, new { @class = "text-danger" }, "small")
+                            </div>
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskPlannedEndDate)
+                    {
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                @Html.LabelFor(x => x.PlannedEndDate):
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.PlannedEndDate, new { @class = "form-control date", maxlength = "10", size = "10" })
+
+                                    <div class="input-group-append">
+                                        <a class="btn btn-outline-info" href="javascript:show_calendar('@Html.IdFor(x => x.PlannedEndDate)')">[?]</a>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(x => x.PlannedEndDate, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.PlannedEndHour):
+                                @Html.DropDownListFor(x => x.PlannedEndHour, (List<SelectListItem>)ViewBag.Hours, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.PlannedEndHour, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.PlannedEndMinute):
+                                @Html.DropDownListFor(x => x.PlannedEndMinute, (List<SelectListItem>)ViewBag.Minutes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.PlannedEndMinute, null, new { @class = "text-danger" }, "small")
+                            </div>
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskActualStartDate)
+                    {
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                @Html.LabelFor(x => x.ActualStartDate):
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.ActualStartDate, new { @class = "form-control date", maxlength = "10", size = "10" })
+
+                                    <div class="input-group-append">
+                                        <a class="btn btn-outline-info" href="javascript:show_calendar('@Html.IdFor(x => x.ActualStartDate)')">[?]</a>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(x => x.ActualStartDate, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.ActualStartHour):
+                                @Html.DropDownListFor(x => x.ActualStartHour, (List<SelectListItem>)ViewBag.Hours, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.ActualStartHour, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.ActualStartMinute):
+                                @Html.DropDownListFor(x => x.ActualStartMinute, (List<SelectListItem>)ViewBag.Minutes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.ActualStartMinute, null, new { @class = "text-danger" }, "small")
+                            </div>
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskActualEndDate)
+                    {
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                @Html.LabelFor(x => x.ActualEndDate):
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.ActualEndDate, new { @class = "form-control date", maxlength = "10", size = "10" })
+
+                                    <div class="input-group-append">
+                                        <a class="btn btn-outline-info" href="javascript:show_calendar('@Html.IdFor(x => x.ActualEndDate)')">[?]</a>
+                                    </div>
+                                </div>
+
+                                @Html.ValidationMessageFor(x => x.ActualEndDate, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.ActualEndHour):
+                                @Html.DropDownListFor(x => x.ActualEndHour, (List<SelectListItem>)ViewBag.Hours, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.ActualEndHour, null, new { @class = "text-danger" }, "small")
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                @Html.LabelFor(x => x.ActualEndMinute):
+                                @Html.DropDownListFor(x => x.ActualEndMinute, (List<SelectListItem>)ViewBag.Minutes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(x => x.ActualEndMinute, null, new { @class = "text-danger" }, "small")
+                            </div>
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskPlannedDuration)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.PlannedDuration):
+                            @Html.TextBoxFor(x => x.PlannedDuration, new { @class = "form-control", maxlength = "7", size = "7" })
+                            @Html.ValidationMessageFor(x => x.PlannedDuration, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskActualDuration)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.ActualDuration):
+                            @Html.TextBoxFor(x => x.ActualDuration, new { @class = "form-control", maxlength = "7", size = "7" })
+                            @Html.ValidationMessageFor(x => x.ActualDuration, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskDurationUnits)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.DurationUnitId):
+                            @Html.DropDownListFor(x => x.DurationUnitId, (List<SelectListItem>)ViewBag.DurationUnits, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.DurationUnitId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskPercentComplete)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.PercentComplete):
+                            @Html.TextBoxFor(x => x.PercentComplete, new { @class = "form-control", maxlength = "6", size = "6" })
+                            @Html.ValidationMessageFor(x => x.PercentComplete, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskStatus)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.StatusId):
+                            @Html.DropDownListFor(x => x.StatusId, (List<SelectListItem>)ViewBag.Statuses, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.StatusId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    if (page.ApplicationSettings.ShowTaskSortSequence)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.SortSequence):
+                            @Html.TextBoxFor(x => x.SortSequence, new { @class = "form-control", maxlength = "3", size = "3" })
+                            @Html.ValidationMessageFor(x => x.SortSequence, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+                    <a href="@Url.Action("Index", "Task", new { bugId = Model.BugId })" class="btn btn-link">Cancel</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

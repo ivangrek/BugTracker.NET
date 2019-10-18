@@ -387,7 +387,7 @@ namespace BugTracker.Web.Bugs
 
             if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
             {
-                var subscribersLink = "<a target=_blank href='" + ResolveUrl($"~/ViewSubscribers.aspx?id={this.Id}")
+                var subscribersLink = "<a target=_blank href='" + ResolveUrl($"~/Bug/ViewSubscriber/{this.Id}")
                                        + "' title='View users who have subscribed to email notifications for this item'><img src=" + ResolveUrl("~/Content/images/telephone_edit.png") + " border=0 align=top>&nbsp;subscribers</a>";
                 this.subscribers.InnerHtml = subscribersLink;
             }
@@ -462,7 +462,7 @@ namespace BugTracker.Web.Bugs
                 {
                     var taskCnt = 0;
                     if (this.Id != 0) taskCnt = (int) this.DrBug["task_cnt"];
-                    var tasksLink = "<a target=_blank href=TasksFrame.aspx?bugid="
+                    var tasksLink = "<a target=_blank href=/Task?bugId="
                                      + Convert.ToString(this.Id)
                                      + " title='View sub-tasks/time-tracking entries related to this item'><img src=" + ResolveUrl("~/Content/images/clock.png") + " border=0 align=top>&nbsp;tasks/time(<span id=task_cnt>" +
                                      taskCnt + "</span>)</a>";

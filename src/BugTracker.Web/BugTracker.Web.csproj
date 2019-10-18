@@ -440,8 +440,6 @@
     <Content Include="Scripts\datejs\date.js" />
     <Content Include="Login.aspx" />
     <Content Include="Content\images\delete.png" />
-    <Content Include="DeleteSubscriber.aspx" />
-    <Content Include="DeleteTask.aspx" />
     <Content Include="Scripts\edit_area\autocompletion.js" />
     <Content Include="Scripts\edit_area\edit_area.css" />
     <Content Include="Scripts\edit_area\edit_area.js" />
@@ -508,7 +506,6 @@
     <Content Include="Scripts\edit_area\template.html" />
     <Content Include="Bugs\Edit.aspx" />
     <Content Include="Scripts\edit_bug.js" />
-    <Content Include="EditTask.aspx" />
     <Content Include="Content\images\email_edit.png" />
     <Content Include="Content\images\email_open.png" />
     <Content Include="Content\favicon.ico" />
@@ -564,15 +561,10 @@
     <Content Include="Versioning\Svn\Diff.aspx" />
     <Content Include="Versioning\Svn\Log.aspx" />
     <Content Include="Tags.aspx" />
-    <Content Include="Tasks.aspx" />
-    <Content Include="TasksAll.aspx" />
-    <Content Include="TasksAllExcel.aspx" />
-    <Content Include="TasksFrame.aspx" />
     <Content Include="Content\images\telephone.png" />
     <Content Include="Content\images\telephone_edit.png" />
     <Content Include="Translate.aspx" />
     <Content Include="Scripts\version_control_sel_rev.js" />
-    <Content Include="ViewSubscribers.aspx" />
     <Content Include="Content\images\vote_up.png" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -590,6 +582,10 @@
     <Compile Include="Areas\Administration\Controllers\StatusController.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Models\Task\DeleteModel.cs" />
+    <Compile Include="Models\Bug\DeleteSubscriberModel.cs" />
+    <Compile Include="Models\Bug\CreateSubscriberModel.cs" />
     <Compile Include="Models\Bug\IndexModel.cs" />
     <Compile Include="Areas\Administration\Models\Category\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\Category\EditModel.cs" />
@@ -693,20 +689,6 @@
     <Compile Include="Models\Bug\MergeModel.cs" />
     <Compile Include="Models\Bug\DeleteModel.cs" />
     <Compile Include="Models\Query\DeleteModel.cs" />
-    <Compile Include="DeleteSubscriber.aspx.cs">
-      <DependentUpon>DeleteSubscriber.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="DeleteSubscriber.aspx.designer.cs">
-      <DependentUpon>DeleteSubscriber.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="DeleteTask.aspx.cs">
-      <DependentUpon>DeleteTask.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="DeleteTask.aspx.designer.cs">
-      <DependentUpon>DeleteTask.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Bugs\Edit.aspx.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -715,16 +697,10 @@
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Query\EditModel.cs" />
-    <Compile Include="EditTask.aspx.cs">
-      <DependentUpon>EditTask.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="EditTask.aspx.designer.cs">
-      <DependentUpon>EditTask.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Task\EditModel.cs" />
     <Compile Include="Versioning\Hg\Diff.aspx.cs">
       <DependentUpon>Diff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -818,34 +794,6 @@
     <Compile Include="Tags.aspx.designer.cs">
       <DependentUpon>Tags.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Tasks.aspx.cs">
-      <DependentUpon>Tasks.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Tasks.aspx.designer.cs">
-      <DependentUpon>Tasks.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="TasksAll.aspx.cs">
-      <DependentUpon>TasksAll.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="TasksAll.aspx.designer.cs">
-      <DependentUpon>TasksAll.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="TasksAllExcel.aspx.cs">
-      <DependentUpon>TasksAllExcel.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="TasksAllExcel.aspx.designer.cs">
-      <DependentUpon>TasksAllExcel.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="TasksFrame.aspx.cs">
-      <DependentUpon>TasksFrame.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="TasksFrame.aspx.designer.cs">
-      <DependentUpon>TasksFrame.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Translate.aspx.cs">
       <DependentUpon>Translate.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -867,13 +815,6 @@
     <Compile Include="Models\Report\DeleteModel.cs" />
     <Compile Include="Models\Report\DashboardModel.cs" />
     <Compile Include="Models\SortableTableModel.cs" />
-    <Compile Include="ViewSubscribers.aspx.cs">
-      <DependentUpon>ViewSubscribers.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ViewSubscribers.aspx.designer.cs">
-      <DependentUpon>ViewSubscribers.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\ckeditor\.htaccess" />
@@ -975,6 +916,10 @@
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Bug\Index.cshtml" />
     <Content Include="Views\Query\Edit.cshtml" />
+    <Content Include="Views\Bug\ViewSubscriber.cshtml" />
+    <Content Include="Views\Task\Delete.cshtml" />
+    <Content Include="Views\Task\Index.cshtml" />
+    <Content Include="Views\Task\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

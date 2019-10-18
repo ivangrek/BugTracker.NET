@@ -12,11 +12,10 @@ namespace BugTracker.Web
     {
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/css/app")
+            bundles.Add(new StyleBundle("~/bundles/css/app")
                 .Include("~/Content/btnet.css"));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/app")
-                .Include("~/Scripts/jquery/jquery-1.3.2.min.js"));
+            bundles.Add(new ScriptBundle("~/bundles/js/app"));
         }
     }
 }

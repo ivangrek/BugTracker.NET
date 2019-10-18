@@ -928,6 +928,241 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
+        public ActionResult ViewSubscriber(int id)
+        {
+            var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - view subscribers",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            // clean up bug subscriptions that no longer fit the security restrictions
+
+            Bug.AutoSubscribe(id);
+
+            // show who is subscribed
+
+            var sql = string.Empty;
+            var token = new HtmlHelper(new ViewContext(), new ViewPage()).AntiForgeryToken().ToString();
+
+            if (this.security.User.IsAdmin)
+            {
+                sql = @"
+                    select
+                        '<form action=/Bug/DeleteSubscriber method=post id=f_$bg_' + convert(varchar, us_id) + '>
+                            $token
+                            <input type=hidden name=id value=$bg>
+                            <input type=hidden name=userId value=' + convert(varchar, us_id) + '>
+
+                            <a href=# onclick=document.getElementById(''f_$bg_' + convert(varchar, us_id) + ''').submit();>unsubscribe</a>
+                        </form>' [$no_sort_unsubscriber],
+                    us_username [user],
+                    us_lastname + ', ' + us_firstname [name],
+                    us_email [email],
+                    case when us_reported_notifications < 4 or us_assigned_notifications < 4 or us_subscribed_notifications < 4 then 'Y' else 'N' end [user is<br>filtering<br>notifications]
+                    from bug_subscriptions
+                    inner join users on bs_user = us_id
+                    where bs_bug = $bg
+                    and us_enable_notifications = 1
+                    and us_active = 1
+                    order by 1";
+            }
+            else
+            {
+                sql = @"
+                    select
+                    us_username [user],
+                    us_lastname + ', ' + us_firstname [name],
+                    us_email [email],
+                    case when us_reported_notifications < 4 or us_assigned_notifications < 4 or us_subscribed_notifications < 4 then 'Y' else 'N' end [user is<br>filtering<br>notifications]
+                    from bug_subscriptions
+                    inner join users on bs_user = us_id
+                    where bs_bug = $bg
+                    and us_enable_notifications = 1
+                    and us_active = 1
+                    order by 1";
+            }
+
+            sql = sql.Replace("$token", token);
+            sql = sql.Replace("$bg", Convert.ToString(id));
+
+            ViewBag.Table = new SortableTableModel
+            {
+                DataSet = DbUtil.GetDataSet(sql),
+                HtmlEncode = false
+            };
+
+            // Get list of users who could be subscribed to this bug.
+
+            sql = @"
+                declare @project int;
+                declare @org int;
+                select @project = bg_project, @org = bg_org from bugs where bg_id = $bg;";
+
+            // Only users explicitly allowed will be listed
+            if (this.applicationSettings.DefaultPermissionLevel == 0)
+            {
+                sql +=
+                    @"select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
+                    from users
+                    where us_active = 1
+                    and us_enable_notifications = 1
+                    and us_id in
+                        (select pu_user from project_user_xref
+                        where pu_project = @project
+                        and pu_permission_level <> 0)
+                    and us_id not in (
+                        select us_id
+                        from bug_subscriptions
+                        inner join users on bs_user = us_id
+                        where bs_bug = $bg
+                        and us_enable_notifications = 1
+                        and us_active = 1)
+                    and us_id not in (
+                        select us_id from users
+                        inner join orgs on us_org = og_id
+                        where us_org <> @org
+                        and og_other_orgs_permission_level = 0)
+                    order by us_username; ";
+                // Only users explictly DISallowed will be omitted
+            }
+            else
+            {
+                sql +=
+                    @"select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
+                    from users
+                    where us_active = 1
+                    and us_enable_notifications = 1
+                    and us_id not in
+                        (select pu_user from project_user_xref
+                        where pu_project = @project
+                        and pu_permission_level = 0)
+                    and us_id not in (
+                        select us_id
+                        from bug_subscriptions
+                        inner join users on bs_user = us_id
+                        where bs_bug = $bg
+                        and us_enable_notifications = 1
+                        and us_active = 1)
+                    and us_id not in (
+                        select us_id from users
+                        inner join orgs on us_org = og_id
+                        where us_org <> @org
+                        and og_other_orgs_permission_level = 0)
+                    order by us_username; ";
+            }
+
+            if (!this.applicationSettings.UseFullNames)
+            {
+                // false condition
+                sql = sql.Replace("$fullnames", "0 = 1");
+            }
+            else
+            {
+                // true condition
+                sql = sql.Replace("$fullnames", "1 = 1");
+            }
+
+            sql = sql.Replace("$bg", Convert.ToString(id));
+
+            ViewBag.Users = new List<SelectListItem>();
+
+            var usersDataView = DbUtil.GetDataView(sql);
+
+            foreach (DataRowView row in usersDataView)
+            {
+                ViewBag.Users.Add(new SelectListItem
+                {
+                    Value = ((int)row["us_id"]).ToString(),
+                    Text = (string)row["us_username"]
+                });
+            }
+
+            if (ViewBag.Users.Count == 0)
+            {
+                ViewBag.Users.Insert(0, new SelectListItem
+                {
+                    Value = "0",
+                    Text = "[no users to select]"
+                });
+            }
+            else
+            {
+                ViewBag.Users.Insert(0, new SelectListItem
+                {
+                    Value = "0",
+                    Text = "[select to add]"
+                });
+            }
+
+            var model = new CreateSubscriberModel
+            {
+                Id = id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateSubscriber(CreateSubscriberModel model)
+        {
+            var permissionLevel = Bug.GetBugPermissionLevel(model.Id, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionReadonly)
+            {
+                return Content("You are not allowed to edit this item");
+            }
+
+            if (model.UserId != 0)
+            {
+                var newSubscriberUserid = Convert.ToInt32(Request["userid"]);
+
+                var sql = @"delete from bug_subscriptions where bs_bug = $bg and bs_user = $us;
+                        insert into bug_subscriptions (bs_bug, bs_user) values($bg, $us)";
+
+                sql = sql.Replace("$bg", Convert.ToString(model.UserId));
+                sql = sql.Replace("$us", Convert.ToString(newSubscriberUserid));
+
+                DbUtil.ExecuteNonQuery(sql);
+
+                // send a notification to this user only
+                Bug.SendNotifications(Bug.Update, model.Id, this.security, newSubscriberUserid);
+            }
+
+            return RedirectToAction(nameof(ViewSubscriber), new { id = model.Id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Administrator)]
+        public ActionResult DeleteSubscriber(DeleteSubscriberModel model)
+        {
+            var sql = "delete from bug_subscriptions where bs_bug = $bg_id and bs_user = $us_id";
+
+            sql = sql.Replace("$bg_id", model.Id.ToString());
+            sql = sql.Replace("$us_id", model.UserId.ToString());
+
+            DbUtil.ExecuteNonQuery(sql);
+
+            return RedirectToAction(nameof(ViewSubscriber), new { id = model.Id });
+        }
+
+        [HttpGet]
         public ActionResult Vote(int bugid, int vote)
         {
             var dv = (DataView)Session["bugs"];
