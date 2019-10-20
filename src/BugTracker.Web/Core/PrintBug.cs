@@ -103,18 +103,6 @@ namespace BugTracker.Web.Core
                            + stringBugid
                            + "</a>");
 
-            if (applicationSettings.EnableMobile)
-                stringBuilder.Append(
-                    "&nbsp;&nbsp;&nbsp;&nbsp;Mobile link:&nbsp;<a href="
-                    + applicationSettings.AbsoluteUrlPrefix
-                    + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
-                    + stringBugid
-                    + ">"
-                    + applicationSettings.AbsoluteUrlPrefix
-                    + VirtualPathUtility.ToAbsolute("~/Bugs/MobileEdit.aspx?id=")
-                    + stringBugid
-                    + "</a>");
-
             stringBuilder.Append("<br>");
 
             stringBuilder.Append("Short desc:&nbsp;<a href="

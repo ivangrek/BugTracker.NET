@@ -934,11 +934,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
             if (string.IsNullOrEmpty(url))
             {
-                var mobile = request["mobile"];
-                if (string.IsNullOrEmpty(mobile))
-                    response.Redirect("~/Bug");
-                else
-                    response.Redirect("~/Bugs/MobileList.aspx");
+                response.Redirect("~/Bug");
             }
             else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
             {
@@ -958,16 +954,7 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
             if (string.IsNullOrEmpty(url))
             {
-                var mobile = request["mobile"];
-
-                if (string.IsNullOrEmpty(mobile))
-                {
-                    return "~/Bug";
-                }
-                else
-                {
-                    return "~/Bugs/MobileList.aspx";
-                }
+                return "~/Bug";
             }
             else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
             {
