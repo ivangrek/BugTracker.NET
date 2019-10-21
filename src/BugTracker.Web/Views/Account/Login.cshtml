@@ -18,7 +18,7 @@
 <div class="p-3 mx-auto w-100 flex-grow-1" style="max-width: 360px;">
     <h1 class="h3 mb-3 font-weight-normal text-center">@Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])</h1>
 
-    <div class="card mr-auto ml-auto mb-3">
+    <div class="card mr-auto ml-auto">
         <div class="card-body">
             @using (Html.BeginForm("Login", "Account", FormMethod.Post))
             {
@@ -55,7 +55,7 @@
 
     @if (page.ApplicationSettings.AllowGuestWithoutLogin || page.ApplicationSettings.ShowForgotPasswordLink)
     {
-        <ul class="list-unstyled text-center">
+        <ul class="list-unstyled p-3">
             @if (page.ApplicationSettings.AllowGuestWithoutLogin)
             {
                 var formId = Guid.NewGuid().ToString();
@@ -64,7 +64,6 @@
                     @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = formId }))
                     {
                         @Html.AntiForgeryToken()
-                        @Html.Partial("_ValidationSummary")
 
                         @Html.Hidden("AsGuest", true)
 

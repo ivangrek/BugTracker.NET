@@ -177,7 +177,7 @@ namespace BugTracker.Web.Controllers
 
                 DbUtil.ExecuteNonQuery(sql);
 
-                ModelState.AddModelError(string.Empty, "Your registration is complete.");
+                ModelState.AddModelError("Ok", "Your registration is complete.");
             }
 
             ViewBag.Page = new PageModel

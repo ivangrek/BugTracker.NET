@@ -6,33 +6,27 @@
 *@
 
 @{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
 
-@section Styles {
-}
+<div class="p-3 mx-auto w-100 flex-grow-1" style="max-width: 360px;">
+    <h1 class="h3 mb-3 font-weight-normal text-center">@Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])</h1>
 
-@section Scripts {
-}
-
-@section BodyHeader {
-    <table style="border-spacing: 0;">
-        <tr>
-            @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])
-        </tr>
-    </table>
-}
-
-<div style="width: 300px; margin: 0 auto;">
-    @Html.Partial("_ValidationSummary")
-
-    <div>
-        <p>
-            <a href="~/Account/Login">Return to login page</a>
-        </p>
+    <div class="card mr-auto ml-auto">
+        <div class="card-body">
+            @Html.Partial("_ValidationSummary")
+        </div>
     </div>
+
+    <ul class="list-unstyled p-3">
+        <li>
+            <a href="@Url.Action("Login", "Account")">Return to login page</a>
+        </li>
+    </ul>
 </div>
 
 @section BodyFooter {

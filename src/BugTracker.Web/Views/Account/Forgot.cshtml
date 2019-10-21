@@ -8,59 +8,45 @@
 @model BugTracker.Web.Models.Account.ForgotModel
 
 @{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
 
-@section Styles {
-}
+<div class="p-3 mx-auto w-100 flex-grow-1" style="max-width: 360px;">
+    <h1 class="h3 mb-3 font-weight-normal text-center">@Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])</h1>
 
-@section Scripts {
-}
+    <div class="card mr-auto ml-auto">
+        <div class="card-body">
+            @using (Html.BeginForm("Forgot", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Partial("_ValidationSummary")
 
-@section BodyHeader {
-    <table style="border-spacing: 0;">
-        <tr>
-            @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_logo"])
-        </tr>
-    </table>
-}
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Login):
+                    @Html.TextBoxFor(x => x.Login, new { @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.ValidationMessageFor(x => x.Login, null, new { @class = "text-danger" }, "small")
+                </div>
 
-<div style="width: 300px; margin: 0 auto;">
-    @using (Html.BeginForm("Forgot", "Account", FormMethod.Post, new { @class = "frm" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.Partial("_ValidationSummary")
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Email):
+                    @Html.TextBoxFor(x => x.Email, new { @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger" }, "small")
+                </div>
 
-        <div style="margin-bottom: 10px;">
-            <span class="smallnote">Enter Username or Email or both</span>
+                <button type="submit" class="btn btn-primary">Send password info to my email</button>
+            }
         </div>
-
-        <div style="margin-bottom: 10px;">
-            <div class="lbl" style="margin-bottom: 5px;">Username:</div>
-            <div>
-                @Html.TextBoxFor(x => x.Login, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
-            </div>
-        </div>
-
-        <div style="margin-bottom: 10px;">
-            <div class="lbl" style="margin-bottom: 5px;">Email:</div>
-            <div>
-                @Html.TextBoxFor(x => x.Email, new { @class = "txt", style = "box-sizing: border-box; width: 100%;" })
-            </div>
-        </div>
-
-        <div style="text-align: right;">
-            <input class="btn" type="submit" value="Send password info to my email" />
-        </div>
-    }
-
-    <div>
-        <p>
-            <a href="~/Account/Login">Return to login page</a>
-        </p>
     </div>
+
+    <ul class="list-unstyled p-3">
+        <li>
+            <a href="@Url.Action("Login", "Account")">Return to login page</a>
+        </li>
+    </ul>
 </div>
 
 @section BodyFooter {
