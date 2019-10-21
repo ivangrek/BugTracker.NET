@@ -561,7 +561,6 @@
     <Content Include="Tags.aspx" />
     <Content Include="Content\images\telephone.png" />
     <Content Include="Content\images\telephone_edit.png" />
-    <Content Include="Translate.aspx" />
     <Content Include="Scripts\version_control_sel_rev.js" />
     <Content Include="Content\images\vote_up.png" />
     <Content Include="Web.config" />
@@ -581,6 +580,7 @@
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Models\Asp\TranslateModel.cs" />
     <Compile Include="Models\Task\DeleteModel.cs" />
     <Compile Include="Models\Bug\DeleteSubscriberModel.cs" />
     <Compile Include="Models\Bug\CreateSubscriberModel.cs" />
@@ -778,13 +778,6 @@
     <Compile Include="Tags.aspx.designer.cs">
       <DependentUpon>Tags.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Translate.aspx.cs">
-      <DependentUpon>Translate.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Translate.aspx.designer.cs">
-      <DependentUpon>Translate.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Models\Account\ChangePasswordModel.cs" />
     <Compile Include="Models\Account\RegisterModel.cs" />
     <Compile Include="Models\Account\ForgotModel.cs" />
@@ -904,6 +897,7 @@
     <Content Include="Views\Task\Delete.cshtml" />
     <Content Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Task\Edit.cshtml" />
+    <Content Include="Views\Asp\Translate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

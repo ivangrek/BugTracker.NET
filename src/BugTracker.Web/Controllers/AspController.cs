@@ -8,6 +8,8 @@
 namespace BugTracker.Web.Controllers
 {
     using BugTracker.Web.Core;
+    using BugTracker.Web.Models;
+    using BugTracker.Web.Models.Asp;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -272,6 +274,105 @@ namespace BugTracker.Web.Controllers
             var array1 = nvcSrvElements.AllKeys;
 
             return Content(stringBuilder.ToString());
+        }
+
+        [HttpGet]
+        public ActionResult Translate(int? bugId, int? postId)
+        {
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - translate",
+                SelectedItem = this.applicationSettings.PluralBugLabel
+            };
+
+            var sql = string.Empty;
+            var model = new TranslateModel
+            {
+                BugId = bugId.Value
+            };
+
+            if (postId.HasValue)
+            {
+                sql = @"select bp_bug, bp_comment
+                        from bug_posts
+                        where bp_id = $id";
+
+                sql = sql.Replace("$id", postId.Value.ToString());
+
+                var dr = DbUtil.GetDataRow(sql);
+
+                bugId = (int)dr["bp_bug"];
+
+                var obj = dr["bp_comment"];
+
+                if (dr["bp_comment"] != DBNull.Value)
+                {
+                    model.Source = obj.ToString();
+                }
+            }
+            else if (bugId.HasValue)
+            {
+                sql = @"select bg_short_desc
+                        from bugs
+                        where bg_id = $id";
+
+                sql = sql.Replace("$id", bugId.Value.ToString());
+
+                var obj = DbUtil.ExecuteScalar(sql);
+
+                if (obj != DBNull.Value)
+                {
+                    model.Source = obj.ToString();
+                }
+            }
+
+            // added check for permission level - corey
+            var permissionLevel = Bug.GetBugPermissionLevel(bugId ?? 0, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            using (var ts = new TranslationService())
+            {
+                ViewBag.TranslationModes = new List<SelectListItem>();
+
+                foreach (var tm in ts.GetAllTranslationModes())
+                {
+                    ViewBag.TranslationModes.Add(new SelectListItem
+                    {
+                        Value = tm.ObjectID,
+                        Text = tm.VisualNameEN
+                    });
+                }
+
+                model.TranslationMode = "fr_nl";
+            }
+
+            ViewBag.Result = TempData["Result"];
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Translate(TranslateModel model)
+        {
+            var ts = new TranslationService();
+            var tm = ts.GetTranslationModeByObjectID(model.TranslationMode);
+            var result = ts.Translate(tm, model.Source);
+
+            result = result.Replace("\n", "<br>");
+
+            TempData["Result"] = result;
+
+            tm = null;
+            ts = null;
+
+            return RedirectToAction(nameof(Translate));
         }
     }
 }

@@ -1,0 +1,74 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Asp.TranslateModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                @using (Html.BeginForm("Translate", "Asp", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.BugId)
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.TranslationMode):
+                        @Html.DropDownListFor(x => x.TranslationMode, (List<SelectListItem>)ViewBag.TranslationMode, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.TranslationMode, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Source):
+                        @Html.TextAreaFor(x => x.Source, new { @class = "form-control", rows = "15", cols = "72" })
+                        @Html.ValidationMessageFor(x => x.Source, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Translate</button>
+                    <a href="~/Bugs/Edit.aspx?id=@Model.BugId" class="btn btn-link">Cancel</a>
+                }
+            </div>
+        </div>
+
+        @if (ViewBag.Result != null)
+        {
+            <div class="alert alert-success">
+                <h6>Translated from @Model.TranslationMode on @DateTime.Now</h6>
+
+                <div>
+                    @ViewBag.Result
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section BodyFooter {
+}
