@@ -260,7 +260,7 @@ function vote(el, bugid) {
 
 function show_tags() {
     popup_window = window.open(
-        'Tags.aspx',
+        '/Bug/Tag',
         'tags',
         "menubar=0,scrollbars=1,toolbar=0,resizable=1,width=500,height=400");
 

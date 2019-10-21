@@ -1300,6 +1300,19 @@ namespace BugTracker.Web.Controllers
             return Content("OK");
         }
 
+        [HttpGet]
+        public ActionResult Tag()
+        {
+            if (this.security.User.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("Not access");
+            }
+
+            var tags = PrintTags();
+
+            return View(tags);
+        }
+
         private void LoadQueryDropdown()
         {
             // populate query drop down
@@ -1561,6 +1574,97 @@ namespace BugTracker.Web.Controllers
             }
 
             Response.Write("</table></body></html>");
+        }
+
+        private static string PrintTags()
+        {
+            var stringBuilder = new StringBuilder();
+            var tags = (SortedDictionary<string, List<int>>)System.Web.HttpContext.Current.Application["tags"];
+            var tagsByCount = new List<TagLabel>();
+            var fonts = new Dictionary<string, string>();
+
+            foreach (var s in tags.Keys)
+            {
+                var tl = new TagLabel
+                {
+                    Count = tags[s].Count,
+                    Label = s
+                };
+
+                tagsByCount.Add(tl);
+            }
+
+            tagsByCount.Sort(); // sort in descending count order
+
+            float total = tags.Count;
+            var soFar = 0.0F;
+            var previousCount = -1;
+            var previousFont = string.Empty;
+
+            foreach (var tl in tagsByCount)
+            {
+                soFar++;
+
+                if (tl.Count == previousCount)
+                    fonts[tl.Label] = previousFont; // if same count, then same font
+                else if (soFar / total < .1)
+                    fonts[tl.Label] = "24pt";
+                else if (soFar / total < .2)
+                    fonts[tl.Label] = "22pt";
+                else if (soFar / total < .3)
+                    fonts[tl.Label] = "20pt";
+                else if (soFar / total < .4)
+                    fonts[tl.Label] = "18pt";
+                else if (soFar / total < .5)
+                    fonts[tl.Label] = "16pt";
+                else if (soFar / total < .6)
+                    fonts[tl.Label] = "14pt";
+                else if (soFar / total < .7)
+                    fonts[tl.Label] = "12pt";
+                else if (soFar / total < .8)
+                    fonts[tl.Label] = "10pt";
+                else
+                    fonts[tl.Label] = "8pt";
+
+                previousFont = fonts[tl.Label];
+                previousCount = tl.Count;
+            }
+
+            foreach (var s in tags.Keys)
+            {
+                stringBuilder.Append("\n<a style='font-size:");
+                stringBuilder.Append(fonts[s]);
+                stringBuilder.Append(";' href='javascript:opener.append_tag(\"");
+                stringBuilder.Append(s.Replace("'", "%27"));
+                stringBuilder.Append("\")'>");
+                stringBuilder.Append(s);
+                stringBuilder.Append("(");
+                stringBuilder.Append(tags[s].Count);
+                stringBuilder.Append(")</a>&nbsp;&nbsp; ");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private sealed class TagLabel : IComparable<TagLabel>
+        {
+            public int Count { get; set; }
+
+            public string Label { get; set; }
+
+            public int CompareTo(TagLabel other)
+            {
+                if (Count > other.Count)
+                {
+                    return -1;
+                }
+
+                if (Count < other.Count)
+                {
+                    return 1;
+                }
+                return 0;
+            }
         }
     }
 }

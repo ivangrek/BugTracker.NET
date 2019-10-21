@@ -405,7 +405,7 @@ function count_chars(textarea_id, max) {
 function show_tags() // also in bug_list.js
 {
     popup_window = window.open(
-        'Tags.aspx',
+        '/Bug/Tag',
         'tags',
         "menubar=0,scrollbars=1,toolbar=0,resizable=1,width=500,height=400");
 

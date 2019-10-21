@@ -558,7 +558,6 @@
     <Content Include="Versioning\Svn\Blame.aspx" />
     <Content Include="Versioning\Svn\Diff.aspx" />
     <Content Include="Versioning\Svn\Log.aspx" />
-    <Content Include="Tags.aspx" />
     <Content Include="Content\images\telephone.png" />
     <Content Include="Content\images\telephone_edit.png" />
     <Content Include="Scripts\version_control_sel_rev.js" />
@@ -771,13 +770,6 @@
     <Compile Include="Versioning\Svn\Log.aspx.designer.cs">
       <DependentUpon>Log.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Tags.aspx.cs">
-      <DependentUpon>Tags.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Tags.aspx.designer.cs">
-      <DependentUpon>Tags.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Models\Account\ChangePasswordModel.cs" />
     <Compile Include="Models\Account\RegisterModel.cs" />
     <Compile Include="Models\Account\ForgotModel.cs" />
@@ -898,6 +890,7 @@
     <Content Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Task\Edit.cshtml" />
     <Content Include="Views\Asp\Translate.cshtml" />
+    <Content Include="Views\Bug\Tag.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
