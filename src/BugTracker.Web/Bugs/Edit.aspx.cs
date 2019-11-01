@@ -400,7 +400,7 @@ namespace BugTracker.Web.Bugs
             {
                 var relationshipCnt = 0;
                 if (this.Id != 0) relationshipCnt = (int) this.DrBug["relationship_cnt"];
-                var relationshipsLink = "<a target=_blank href=Relationships.aspx?bgid="
+                var relationshipsLink = "<a target=_blank href=/Bug/Relationship?bugId="
                                          + Convert.ToString(this.Id)
                                          + " title='Create a relationship between this item and another item'><img src=" + ResolveUrl("~/Content/images/database_link.png") + " border=0 align=top>&nbsp;relationships(<span id=relationship_cnt>" +
                                          relationshipCnt + "</span>)</a>";

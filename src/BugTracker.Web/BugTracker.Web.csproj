@@ -548,7 +548,6 @@
     <Content Include="Content\mbtnet_base.css" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
-    <Content Include="Relationships.aspx" />
     <Content Include="Search.aspx" />
     <Content Include="SendEmail.aspx" />
     <Content Include="setup.sql" />
@@ -580,6 +579,7 @@
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
+    <Compile Include="Models\Bug\RelationshipModel.cs" />
     <Compile Include="Models\Task\DeleteModel.cs" />
     <Compile Include="Models\Bug\DeleteSubscriberModel.cs" />
     <Compile Include="Models\Bug\CreateSubscriberModel.cs" />
@@ -721,13 +721,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyInfoExt.cs" />
-    <Compile Include="Relationships.aspx.cs">
-      <DependentUpon>Relationships.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Relationships.aspx.designer.cs">
-      <DependentUpon>Relationships.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Search.aspx.cs">
       <DependentUpon>Search.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -891,6 +884,7 @@
     <Content Include="Views\Task\Edit.cshtml" />
     <Content Include="Views\Asp\Translate.cshtml" />
     <Content Include="Views\Bug\Tag.cshtml" />
+    <Content Include="Views\Bug\Relationship.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

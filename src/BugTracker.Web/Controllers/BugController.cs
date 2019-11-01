@@ -17,6 +17,7 @@ namespace BugTracker.Web.Controllers
     using System.Data.SqlClient;
     using System.IO;
     using System.Text;
+    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
 
@@ -1311,6 +1312,231 @@ namespace BugTracker.Web.Controllers
             var tags = PrintTags();
 
             return View(tags);
+        }
+
+        [HttpGet]
+        public ActionResult Relationship(int bugId)
+        {
+            var permissionLevel = Bug.GetBugPermissionLevel(bugId, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - relationships",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            var model = new RelationshipModel
+            {
+                BugId = bugId,
+                Action = "add"
+            };
+
+            var sql = @"
+                select bg_id [id],
+                    bg_short_desc [desc],
+                    re_type [comment],
+                    st_name [status],
+                    case
+                        when re_direction = 0 then ''
+                        when re_direction = 2 then 'child of $bg'
+                        else                       'parent of $bg' 
+                    end as [parent or child],
+                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
+
+            if (!this.security.User.IsGuest && permissionLevel == SecurityPermissionLevel.PermissionAll)
+            {
+                sql += @"
+                    ,'<a href=''javascript:remove(' + convert(varchar,re_bug2) + ')''>detach</a>' [$no_sort_detach]";
+
+                sql += @"
+                    from bugs
+                    inner join bug_relationships on bg_id = re_bug2
+                    left outer join statuses on st_id = bg_status
+                    where re_bug1 = $bg
+                    order by bg_id desc";
+            }
+
+            sql = sql.Replace("$bg", Convert.ToString(bugId));
+            sql = Util.AlterSqlPerProjectPermissions(sql, this.security);
+
+            ViewBag.SortableTable = new SortableTableModel
+            {
+                DataSet = DbUtil.GetDataSet(sql),
+                HtmlEncode = false
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Relationship(RelationshipModel model)
+        {
+            var permissionLevel = Bug.GetBugPermissionLevel(model.BugId, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionReadonly)
+            {
+                return Content("You are not allowed to edit this item");
+            }
+
+            var sql = string.Empty;
+
+            if (model.Action == "remove") // remove
+            {
+                if (this.security.User.IsGuest)
+                {
+                    return Content("You are not allowed to delete a relationship");
+                }
+
+                sql = @"
+                    delete from bug_relationships where re_bug2 = $bg2 and re_bug1 = $bg;
+                    delete from bug_relationships where re_bug1 = $bg2 and re_bug2 = $bg;
+                    insert into bug_posts
+                            (bp_bug, bp_user, bp_date, bp_comment, bp_type)
+                            values($bg, $us, getdate(), N'deleted relationship to $bg2', 'update')";
+
+                sql = sql.Replace("$bg2", Convert.ToString(model.RelatedBugId));
+                sql = sql.Replace("$bg", Convert.ToString(model.BugId));
+                sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+
+                DbUtil.ExecuteNonQuery(sql);
+
+                return RedirectToAction(nameof(Relationship), new { bugId = model.BugId });
+            }
+
+            // adding
+            if (model.BugId == model.RelatedBugId)
+            {
+                ModelState.AddModelError(string.Empty, "Cannot create a relationship to self.");
+            }
+
+            var rows = 0;
+
+            // check if bug exists
+            sql = @"select count(1) from bugs where bg_id = $bg2";
+
+            sql = sql.Replace("$bg2", Convert.ToString(model.RelatedBugId));
+
+            rows = (int)DbUtil.ExecuteScalar(sql);
+
+            if (rows == 0)
+            {
+                ModelState.AddModelError(string.Empty, "Not found.");
+            }
+
+            // check if relationship exists
+            sql = @"select count(1) from bug_relationships where re_bug1 = $bg and re_bug2 = $bg2";
+            sql = sql.Replace("$bg2", Convert.ToString(model.RelatedBugId));
+            sql = sql.Replace("$bg", Convert.ToString(model.BugId));
+
+            rows = (int)DbUtil.ExecuteScalar(sql);
+
+            if (rows > 0)
+            {
+                ModelState.AddModelError(string.Empty, "Relationship already exists.");
+            }
+            else
+            {
+                // check permission of related bug
+                var permissionLevel2 = Bug.GetBugPermissionLevel(model.RelatedBugId, this.security);
+
+                if (permissionLevel2 == SecurityPermissionLevel.PermissionNone)
+                {
+                    ModelState.AddModelError(string.Empty, "You are not allowed to view the related item.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Page = new PageModel
+                {
+                    ApplicationSettings = this.applicationSettings,
+                    Security = this.security,
+                    Title = $"{this.applicationSettings.AppTitle} - relationships",
+                    SelectedItem = ApplicationSettings.PluralBugLabelDefault
+                };
+
+                sql = @"
+                    select bg_id [id],
+                        bg_short_desc [desc],
+                        re_type [comment],
+                        st_name [status],
+                        case
+                            when re_direction = 0 then ''
+                            when re_direction = 2 then 'child of $bg'
+                            else                       'parent of $bg' 
+                        end as [parent or child],
+                        '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
+
+                if (!this.security.User.IsGuest && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                {
+                    sql += @"
+                    ,'<a href=''javascript:remove(' + convert(varchar,re_bug2) + ')''>detach</a>' [$no_sort_detach]";
+
+                    sql += @"
+                    from bugs
+                    inner join bug_relationships on bg_id = re_bug2
+                    left outer join statuses on st_id = bg_status
+                    where re_bug1 = $bg
+                    order by bg_id desc";
+                }
+
+                sql = sql.Replace("$bg", Convert.ToString(model.BugId));
+                sql = Util.AlterSqlPerProjectPermissions(sql, this.security);
+
+                ViewBag.SortableTable = new SortableTableModel
+                {
+                    DataSet = DbUtil.GetDataSet(sql),
+                    HtmlEncode = false
+                };
+
+                return View(model);
+            }
+
+            // insert the relationship both ways
+            sql = @"
+                insert into bug_relationships (re_bug1, re_bug2, re_type, re_direction) values($bg, $bg2, N'$ty', $dir1);
+                insert into bug_relationships (re_bug2, re_bug1, re_type, re_direction) values($bg, $bg2, N'$ty', $dir2);
+                insert into bug_posts
+                    (bp_bug, bp_user, bp_date, bp_comment, bp_type)
+                    values($bg, $us, getdate(), N'added relationship to $bg2', 'update');";
+
+            sql = sql.Replace("$bg2", Convert.ToString(model.RelatedBugId));
+            sql = sql.Replace("$bg", Convert.ToString(model.BugId));
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql = sql.Replace("$ty", model.Comment);
+
+            if (model.Relation == 0)
+            {
+                sql = sql.Replace("$dir2", "0");
+                sql = sql.Replace("$dir1", "0");
+            }
+            else if (model.Relation == 1)
+            {
+                sql = sql.Replace("$dir2", "1");
+                sql = sql.Replace("$dir1", "2");
+            }
+            else
+            {
+                sql = sql.Replace("$dir2", "2");
+                sql = sql.Replace("$dir1", "1");
+            }
+
+            DbUtil.ExecuteNonQuery(sql);
+
+            return RedirectToAction(nameof(Relationship), new { bugId = model.BugId });
         }
 
         private void LoadQueryDropdown()

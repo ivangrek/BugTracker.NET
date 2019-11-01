@@ -1,0 +1,177 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Bug.RelationshipModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
+
+    <script>
+        function remove(bugid2Arg) {
+            var frm = document.getElementById("frm");
+            var action = document.getElementById("@Html.IdFor(x => x.Action)");
+
+            action.value = "remove";
+
+            document.getElementById("@Html.IdFor(x => x.RelatedBugId)").value = bugid2Arg;
+
+            frm.submit();
+        }
+
+        function body_on_load() {
+            opener.set_relationship_cnt(@Model.BugId, '@ViewBag.SortableTable.DataSet.Tables[0].Rows.Count');
+        }
+
+        $(function () {
+            body_on_load();
+        })
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                @using (Html.BeginForm("Relationship", "Bug", FormMethod.Post, new { id = "frm", @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.BugId)
+                    @Html.HiddenFor(x => x.Action)
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.RelatedBugId):
+                        @Html.TextBoxFor(x => x.RelatedBugId, new { @class = "form-control", maxlength = "8", size = "8" })
+                        @Html.ValidationMessageFor(x => x.RelatedBugId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Comment):
+                        @Html.TextBoxFor(x => x.Comment, new { @class = "form-control", maxlength = "90", size = "90" })
+                        @Html.ValidationMessageFor(x => x.Comment, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Relation):
+
+                        <div>
+                            <div class="form-check">
+                                @{
+                                    var id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.Relation, "0", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Sibling", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.Relation, "1", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Child", new { @for = id, @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check">
+                                @{
+                                    id = Guid.NewGuid();
+                                }
+
+                                @Html.RadioButtonFor(x => x.Relation, "2", new { id = id, @class = "form-check-input" })
+                                @Html.Label("Parent", new { @for = id, @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.Relation, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Create</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.SortableTable.DataSet.Tables[0].Rows.Count > 0)
+{
+    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.SortableTable);
+
+    var parents = string.Empty;
+    var siblings = string.Empty;
+    var children = string.Empty;
+
+    foreach (System.Data.DataRow row in ViewBag.SortableTable.DataSet.Tables[0].Rows)
+    {
+        var level = (string)row["parent or child"];
+        var id = row["id"];
+        var title = row["desc"];
+        var item = $@"
+            <div class='col mb-2'>
+                <div class='card bg-light'>
+                    <div class='card-body'>
+                        <a href='/Bug/Relationship?bugId={id}'>{id}&nbsp;&nbsp;&nbsp;&nbsp;{title}</a>
+                    </div>
+                </div>
+            </div>";
+
+        if (level.StartsWith("parent"))
+        {
+            parents += item;
+        }
+        else if (level.StartsWith("child"))
+        {
+            children += item;
+        }
+        else
+        {
+            siblings += item;
+        }
+    }
+
+    <span>Parents:&nbsp;</span>
+    <div class="row">
+        @Html.Raw(parents)
+    </div>
+
+    <span>Siblings:&nbsp;</span>
+    <div class="row">
+        @Html.Raw(siblings)
+    </div>
+
+    <span>Children:&nbsp;</span>
+    <div class="row">
+        @Html.Raw(children)
+    </div>
+}
+else
+{
+    <div>"No related bugs.</div>
+}
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}
