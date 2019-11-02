@@ -544,7 +544,6 @@
     <Content Include="Scripts\jquery\jquery.textarearesizer.compressed.js" />
     <Content Include="Content\login.htm" />
     <Content Include="Content\lucene_syntax.html" />
-    <Content Include="MassEdit.aspx" />
     <Content Include="Content\mbtnet_base.css" />
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
@@ -579,6 +578,7 @@
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
+    <Compile Include="Models\Bug\MassEditModel.cs" />
     <Compile Include="Models\Bug\RelationshipModel.cs" />
     <Compile Include="Models\Task\DeleteModel.cs" />
     <Compile Include="Models\Bug\DeleteSubscriberModel.cs" />
@@ -711,13 +711,6 @@
     </Compile>
     <Compile Include="Versioning\Hg\Log.aspx.designer.cs">
       <DependentUpon>Log.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MassEdit.aspx.cs">
-      <DependentUpon>MassEdit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MassEdit.aspx.designer.cs">
-      <DependentUpon>MassEdit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyInfoExt.cs" />
@@ -885,6 +878,7 @@
     <Content Include="Views\Asp\Translate.cshtml" />
     <Content Include="Views\Bug\Tag.cshtml" />
     <Content Include="Views\Bug\Relationship.cshtml" />
+    <Content Include="Views\Bug\MassEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

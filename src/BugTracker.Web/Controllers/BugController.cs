@@ -9,6 +9,7 @@ namespace BugTracker.Web.Controllers
 {
     using anmar.SharpMimeTools;
     using BugTracker.Web.Core;
+    using BugTracker.Web.Core.Controls;
     using BugTracker.Web.Models;
     using BugTracker.Web.Models.Bug;
     using System;
@@ -456,6 +457,232 @@ namespace BugTracker.Web.Controllers
 
                 return Content("OK:" + Convert.ToString(bugid));
             }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = ApplicationRoles.Member)]
+        public ActionResult MassEdit()
+        {
+            var isAuthorized = this.security.User.IsAdmin
+                || this.security.User.CanMassEditBugs;
+
+            if (!isAuthorized)
+            {
+                return Content("You are not allowed to use this page.");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - massedit",
+                SelectedItem = MainMenuSections.Administration
+            };
+
+            var list = string.Empty;
+            var sql = string.Empty;
+            var model = new MassEditModel
+            {
+                Sql = sql
+            };
+
+            if (Request["mass_delete"] != null)
+            {
+                model.Action = "delete";
+            }
+            else
+            {
+                model.Action = "update";
+            }
+
+            // create list of bugs affected
+            foreach (string var in Request.QueryString)
+            {
+                if (Util.IsInt(var))
+                {
+                    if (!string.IsNullOrEmpty(list))
+                    {
+                        list += ",";
+                    }
+
+                    list += var;
+                }
+            }
+
+            model.BugList = list;
+
+            if (model.Action == "delete")
+            {
+                sql = "delete bug_post_attachments from bug_post_attachments inner join bug_posts on bug_post_attachments.bpa_post = bug_posts.bp_id where bug_posts.bp_bug in (" + list + ")";
+
+                sql += "\ndelete from bug_posts where bp_bug in (" + list + ")";
+                sql += "\ndelete from bug_subscriptions where bs_bug in (" + list + ")";
+                sql += "\ndelete from bug_relationships where re_bug1 in (" + list + ")";
+                sql += "\ndelete from bug_relationships where re_bug2 in (" + list + ")";
+                sql += "\ndelete from bug_user where bu_bug in (" + list + ")";
+                sql += "\ndelete from bug_tasks where tsk_bug in (" + list + ")";
+                sql += "\ndelete from bugs where bg_id in (" + list + ")";
+
+                model.ButtonText = "Confirm Delete";
+            }
+            else
+            {
+                sql = "update bugs \nset ";
+
+                var updates = string.Empty;
+
+                string val;
+
+                val = Request["mass_project"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_project = " + val;
+                }
+
+                val = Request["mass_org"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_org = " + val;
+                }
+
+                val = Request["mass_category"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_category = " + val;
+                }
+
+                val = Request["mass_priority"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_priority = " + val;
+                }
+
+                val = Request["mass_assigned_to"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_assigned_to_user = " + val;
+                }
+
+                val = Request["mass_reported_by"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_reported_user = " + val;
+                }
+
+                val = Request["mass_status"];
+
+                if (val != "-1" && Util.IsInt(val))
+                {
+                    if (!string.IsNullOrEmpty(updates))
+                    {
+                        updates += ",\n";
+                    }
+
+                    updates += "bg_status = " + val;
+                }
+
+                sql += updates + "\nwhere bg_id in (" + list + ")";
+
+                model.ButtonText = "Confirm Update";
+            }
+
+            model.Sql = sql;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = ApplicationRoles.Member)]
+        public ActionResult MassEdit(MassEditModel model)
+        {
+            var isAuthorized = this.security.User.IsAdmin
+                || this.security.User.CanMassEditBugs;
+
+            if (!isAuthorized)
+            {
+                return Content("You are not allowed to use this page.");
+            }
+
+            if (model.Action == "delete")
+            {
+                var uploadFolder = Util.GetUploadFolder();
+
+                if (uploadFolder != null)
+                {
+                    // double check the bug_list
+                    var ints = model.BugList.Split(',');
+
+                    for (var i = 0; i < ints.Length; i++)
+                    {
+                        if (!Util.IsInt(ints[i]))
+                        {
+                            return Content(string.Empty);
+                        }
+                    }
+
+                    var sql2 = $@"select bp_bug, bp_id, bp_file from bug_posts where bp_type = 'file' and bp_bug in ({model.BugList})";
+                    var ds = DbUtil.GetDataSet(sql2);
+
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        // create path
+                        var path = new StringBuilder(uploadFolder);
+
+                        path.Append("\\");
+                        path.Append(Convert.ToString(dr["bp_bug"]));
+                        path.Append("_");
+                        path.Append(Convert.ToString(dr["bp_id"]));
+                        path.Append("_");
+                        path.Append(Convert.ToString(dr["bp_file"]));
+
+                        if (System.IO.File.Exists(path.ToString()))
+                        {
+                            System.IO.File.Delete(path.ToString());
+                        }
+                    }
+                }
+            }
+
+            DbUtil.ExecuteNonQuery(model.Sql);
+
+            return Redirect("~/Search.aspx");
         }
 
         [HttpGet]

@@ -1,0 +1,55 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Bug.MassEditModel
+
+@{
+    Layout = "~/Areas/Administration/Views/Shared/_Layout.cshtml";
+
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<h5>Confirm mass edit</h5>
+<div class="alert alert-danger">Email notifications are not sent when updates are made via this page.</div>
+
+@using (Html.BeginForm("MassEdit", "Bug", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.Action)
+    @Html.HiddenFor(x => x.BugList)
+    @Html.HiddenFor(x => x.Sql)
+
+    <button type="submit" class="btn btn-success">@Model.ButtonText</button>
+    <a href="~/Search.aspx" class="btn btn-link">Cancel</a>
+}
+
+<div class="card bg-light mt-3">
+    <div class="card-body">
+        <h6 class="card-title">This SQL statement will execute when you confirm:</h6>
+        <pre>@Model.Sql</pre>
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

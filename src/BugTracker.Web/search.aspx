@@ -1089,7 +1089,7 @@
 
                     if (!Security.User.IsGuest && (Security.User.IsAdmin || Security.User.CanMassEditBugs))
                     {
-                        Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=MassEdit.aspx>");
+                        Response.Write("<form id=massform onsubmit='return validate_mass()' method=get action=/Bug/MassEdit>");
                         display_bugs(true, Security);
                         Response.Write("<p><table class=frm><tr><td colspan=5 class=smallnote>Update or delete all checked items");
                         Response.Write("<tr><td colspan=5>");
