@@ -438,7 +438,6 @@
     <Content Include="Scripts\datejs\date-de-DE.js" />
     <Content Include="Scripts\datejs\date-fr-FR.js" />
     <Content Include="Scripts\datejs\date.js" />
-    <Content Include="Login.aspx" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Scripts\edit_area\autocompletion.js" />
     <Content Include="Scripts\edit_area\edit_area.css" />
@@ -674,13 +673,6 @@
     <Compile Include="Core\VersionControl.cs" />
     <Compile Include="Core\WhatsNew.cs" />
     <Compile Include="Core\Workflow.cs" />
-    <Compile Include="Login.aspx.cs">
-      <DependentUpon>Login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Login.aspx.designer.cs">
-      <DependentUpon>Login.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Models\Account\SettingsModel.cs" />
     <Compile Include="Models\Attachment\UpdateModel.cs" />
     <Compile Include="Models\Bug\MergeModel.cs" />

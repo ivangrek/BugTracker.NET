@@ -18,10 +18,19 @@ namespace BugTracker.Web
 
             routes.MapRoute(
                 "Default",
+                string.Empty,
+                new
+                {
+                    controller = "Account",
+                    action = "Login"
+                }
+            );
+
+            routes.MapRoute(
+                "Main",
                 "{controller}/{action}/{id}",
                 new
                 {
-                    //controller = "Account",
                     action = "Index",
                     id = UrlParameter.Optional
                 }
