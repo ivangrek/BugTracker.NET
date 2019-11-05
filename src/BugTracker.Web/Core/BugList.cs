@@ -993,6 +993,7 @@ namespace BugTracker.Web.Core
             stringBuilder.Append(pagingString);
             stringBuilder.Append(
                 "<td align=right valign=top><span class='text-info'>clicking while holding Ctrl key toggles \"NOT\" in a filter: \"NOT project 1\"</span></table>");
+            stringBuilder.Append("\n<div class='table-responsive'>");
             stringBuilder.Append("\n<table class='bugt table table-sm table-striped table-bordered'><tr>\n");
 
             ///////////////////////////////////////////////////////////////////
@@ -1372,6 +1373,7 @@ namespace BugTracker.Web.Core
             }
 
             stringBuilder.Append("</table>");
+            stringBuilder.Append("</div>");
             stringBuilder.Append(pagingString);
             stringBuilder.Append(bugCountString);
 

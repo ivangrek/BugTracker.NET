@@ -70,6 +70,7 @@
             pp.submit();
         }
     </script>
+
     <form name="pp" id="pp" action="https://www.paypal.com/cgi-bin/webscr" method="post">
         <span id="nagspan" style="background: #ff0000; border: dotted 1px blue; padding: 5px;">
             Is BugTracker.NET helping you or your company? Please consider <a href="javascript:donate()">donating</a>. Thanks in advance.
@@ -77,76 +78,10 @@
         <input type="hidden" name="cmd" value="_s-xclick">
         <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
     </form>
-
 }
 
-<h6>Main:</h6>
-<ul class="pl-4">
-    <li class="listitem">
-        <a href="@Url.Action("Index", "User")">Users</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "Organization")">Organizations</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "Project")">Projects</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "Category")">Categories</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "Priority")">Priorities</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "Status")">Statuses</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "UserDefinedAttribute")">User Defined Attributes</a>
-        <small class="text-muted">(see "ShowUserDefinedBugAttribute" and "UserDefinedBugAttributeName" in Web.config)</small>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Index", "CustomField")">Custom Fields</a>
-        <small class="text-muted">(add custom fields to the bug page)</small>
-    </li>
-</ul>
-
-<h6>Special:</h6>
-<ul class="pl-4">
-    <li class="listitem">
-        <a target="_blank" href="@Url.Action("Query", "Home")">Run Ad-hoc Query</a>
-        <small class="text-danger border border-danger">This links to Query.&nbsp;Query is potentially unsafe.&nbsp;Delete it if you are deploying on a public web server.</small>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("Notification", "Home")">Queued Email Notifications</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
-        <small class="text-danger border border-danger">Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!</small>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("BackupDb", "Home")">Backup Database</a>
-    </li>
-
-    <li class="listitem">
-        <a href="@Url.Action("ManageLogs", "Home")">Manage Logs</a>
-    </li>
-</ul>
-
 <h6>Server Info:</h6>
+
 <ul class="pl-4">
     <li>
         Path = @HttpContext.Current.Server.MapPath(null)
