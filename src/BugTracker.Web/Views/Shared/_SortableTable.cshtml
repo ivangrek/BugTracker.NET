@@ -19,10 +19,10 @@
                 var dbColumnCount = 0;
             }
 
-            @foreach (System.Data.DataColumn dc in Model.DataSet.Tables[0].Columns)
+            @foreach (System.Data.DataColumn dc in Model.DataTable.Columns)
             {
                 if ((Model.EditUrl != string.Empty || Model.DeleteUrl != string.Empty)
-                    && dbColumnCount == Model.DataSet.Tables[0].Columns.Count - 1)
+                    && dbColumnCount == Model.DataTable.Columns.Count - 1)
                 {
                     if (Model.EditUrl != string.Empty)
                     {
@@ -76,27 +76,27 @@
             }
         </tr>
 
-        @foreach (System.Data.DataRow dr in Model.DataSet.Tables[0].Rows)
+        @foreach (System.Data.DataRow dr in Model.DataTable.Rows)
         {
             <tr>
-                @for (var i = 0; i < Model.DataSet.Tables[0].Columns.Count; i++)
+                @for (var i = 0; i < Model.DataTable.Columns.Count; i++)
                 {
-                    var datatype = Model.DataSet.Tables[0].Columns[i].DataType;
+                    var datatype = Model.DataTable.Columns[i].DataType;
 
                     if ((Model.EditUrl != string.Empty || Model.DeleteUrl != string.Empty)
-                        && i == Model.DataSet.Tables[0].Columns.Count - 1)
+                        && i == Model.DataTable.Columns.Count - 1)
                     {
                         if (Model.EditUrl != string.Empty)
                         {
                             <td class="datad">
-                                <a href="@(Model.EditUrl + dr[Model.DataSet.Tables[0].Columns.Count - 1])">edit</a>
+                                <a href="@(Model.EditUrl + dr[Model.DataTable.Columns.Count - 1])">edit</a>
                             </td>
                         }
 
                         if (Model.DeleteUrl != string.Empty)
                         {
                             <td class="datad">
-                                <a href="@(Model.DeleteUrl + dr[Model.DataSet.Tables[0].Columns.Count - 1])">delete</a>
+                                <a href="@(Model.DeleteUrl + dr[Model.DataTable.Columns.Count - 1])">delete</a>
                             </td>
                         }
                     }

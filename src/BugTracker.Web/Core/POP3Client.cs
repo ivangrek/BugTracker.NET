@@ -143,7 +143,7 @@ namespace BugTracker.Web.Core
                 else
                 {
                     this.netStrm = new SslStream(this.server.GetStream());
-                    ((SslStream)this.netStrm).AuthenticateAsClient(this.Pop);
+                    ((SslStream) this.netStrm).AuthenticateAsClient(this.Pop);
                 }
 
                 this.rdStrm = new StreamReader(this.netStrm);

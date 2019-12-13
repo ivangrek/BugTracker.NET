@@ -7,10 +7,10 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Account;
+    using Core;
+    using Core.Controls;
+    using Models;
+    using Models.Account;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -108,8 +108,7 @@ namespace BugTracker.Web.Controllers
 
             DbUtil.ExecuteNonQuery(sql);
 
-            var result = Email.SendEmail(model.Email,
-                this.applicationSettings.NotificationEmailFrom,
+            var result = Email.SendEmail(model.Email, this.applicationSettings.NotificationEmailFrom,
                 string.Empty, // cc
                 "Please complete registration",
                 "Click to <a href='"
@@ -167,8 +166,7 @@ namespace BugTracker.Web.Controllers
                     (string)dr["el_lastname"],
                     string.Empty,
                     (int)dr["el_salt"],
-                    (string)dr["el_password"],
-                    this.applicationSettings.SelfRegisteredUserTemplate,
+                    (string)dr["el_password"], this.applicationSettings.SelfRegisteredUserTemplate,
                     false);
 
                 //  Delete the temp link
@@ -515,8 +513,7 @@ namespace BugTracker.Web.Controllers
 
                             de.AuthenticationType =
                                 (AuthenticationTypes)Enum.Parse(
-                                    typeof(AuthenticationTypes),
-                                    this.applicationSettings.LdapDirectoryEntryAuthenticationType);
+                                    typeof(AuthenticationTypes), this.applicationSettings.LdapDirectoryEntryAuthenticationType);
 
                             de.Username = this.applicationSettings.LdapDirectoryEntryUsername;
                             de.Password = this.applicationSettings.LdapDirectoryEntryPassword;
@@ -737,8 +734,7 @@ namespace BugTracker.Web.Controllers
                     var dr = DbUtil.GetDataRow(sql);
 
                     var result = Email.SendEmail(
-                        (string)dr["us_email"],
-                        this.applicationSettings.NotificationEmailFrom,
+                        (string)dr["us_email"], this.applicationSettings.NotificationEmailFrom,
                         string.Empty, // cc
                         "reset password",
                         "Click to <a href='"

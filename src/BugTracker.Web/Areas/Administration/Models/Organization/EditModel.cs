@@ -6,8 +6,8 @@
 
 namespace BugTracker.Web.Areas.Administration.Models.Organization
 {
-    using BugTracker.Web.Core;
     using System.ComponentModel.DataAnnotations;
+    using Core;
 
     public sealed class EditModel
     {
@@ -80,8 +80,7 @@ namespace BugTracker.Web.Areas.Administration.Models.Organization
         [Display(Name = "Can mass edit bugs on search page")]
         public bool CanMassEditBugs { get; set; }
 
-        [Display(Name = "Can use reports")]
-        public bool CanUseReports { get; set; }
+        [Display(Name = "Can use reports")] public bool CanUseReports { get; set; }
 
         [Display(Name = "Can create/edit reports")]
         public bool CanEditReports { get; set; }

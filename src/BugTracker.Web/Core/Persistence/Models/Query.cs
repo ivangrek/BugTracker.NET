@@ -18,6 +18,6 @@ namespace BugTracker.Web.Core.Persistence.Models
 
         public int? UserId { get; set; }
 
-        public int? OrganisationId { get; set; }
+        public int? OrganizationId { get; set; }
     }
 }

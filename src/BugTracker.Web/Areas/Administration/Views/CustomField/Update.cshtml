@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.CustomField.UpdateModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -30,7 +32,7 @@
     <div class="col-lg-6">
         <div class="card bg-light">
             <div class="card-body">
-                @using (Html.BeginForm("Update", "CustomField", FormMethod.Post, new { @class = "frm" }))
+                @using (Html.BeginForm("Update", "CustomField", FormMethod.Post, new {@class = "frm"}))
                 {
                     @Html.AntiForgeryToken()
                     @Html.Partial("_ValidationSummary")
@@ -48,16 +50,16 @@
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.Default):
-                        @Html.TextBoxFor(x => x.Default, new { @class = "form-control", maxlength = "50", size = "50" })
-                        @Html.ValidationMessageFor(x => x.Default, null, new { @class = "text-danger" }, "small")
+                        @Html.TextBoxFor(x => x.Default, new {@class = "form-control", maxlength = "50", size = "50"})
+                        @Html.ValidationMessageFor(x => x.Default, null, new {@class = "text-danger"}, "small")
                     </div>
 
                     if (Model.DropdownType == "normal")
                     {
                         <div class="form-group">
                             @Html.LabelFor(x => x.DropdownValues):
-                            @Html.TextAreaFor(x => x.DropdownValues, new { @class = "form-control", rows = "6", cols = "60" })
-                            @Html.ValidationMessageFor(x => x.DropdownValues, null, new { @class = "text-danger" }, "small")
+                            @Html.TextAreaFor(x => x.DropdownValues, new {@class = "form-control", rows = "6", cols = "60"})
+                            @Html.ValidationMessageFor(x => x.DropdownValues, null, new {@class = "text-danger"}, "small")
                             <small class="form-text text-muted">
                                 Use the following if you want the custom field to be a "normal" dropdown.
                                 <br>
@@ -83,8 +85,8 @@
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.SortSequence):
-                        @Html.TextBoxFor(x => x.SortSequence, new { @class = "form-control", maxlength = "2", size = "2" })
-                        @Html.ValidationMessageFor(x => x.SortSequence, null, new { @class = "text-danger" }, "small")
+                        @Html.TextBoxFor(x => x.SortSequence, new {@class = "form-control", maxlength = "2", size = "2"})
+                        @Html.ValidationMessageFor(x => x.SortSequence, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">Controls what order the custom fields display on the page.</small>
                     </div>
 
@@ -97,5 +99,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

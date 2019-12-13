@@ -7,12 +7,13 @@
 namespace BugTracker.Web.Areas.Administration.Models.Status
 {
     using System.ComponentModel.DataAnnotations;
+    using Tracking.Changing.Statuses.Commands;
 
-    public sealed class DeleteModel
+    public sealed class DeleteModel : IDeleteCommand
     {
-        public int Id { get; set; }
-
         [Display(Name = "Name")]
         public string Name { get; set; }
+
+        public int Id { get; set; }
     }
 }

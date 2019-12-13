@@ -926,7 +926,7 @@
                                                 }
                                                 else
                                                 {
-                                                    var dvUsers = new DataView(this.DtUsers);
+                                                    var dvUsers = new DataView(DtUsers);
                                                     foreach (DataRowView drv in dvUsers)
                                                     {
                                                         var userId = Convert.ToString(drv[0]);

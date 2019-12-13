@@ -1,22 +1,22 @@
 ﻿namespace BugTracker.Web.Areas.Versioning.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
     using System;
     using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using System.Xml;
+    using Core;
+    using Core.Controls;
+    using Models;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class SvnController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
-        private readonly ISecurity security;
         private readonly IAuthenticate authenticate;
+        private readonly ISecurity security;
 
         public SvnController(
             IApplicationSettings applicationSettings,
@@ -34,9 +34,7 @@
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
             ViewBag.Page = new PageModel
             {
@@ -57,13 +55,15 @@
                 replace(substring(svnrev_msg,1,4000),char(13),'<br>') [msg],
 
                 case when svnap_action not like '%D%' and svnap_action not like 'A%' then
-                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Svn/Diff.aspx") + @"?revpathid=' + convert(varchar,svnap_id) + '>diff</a>'
+                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Svn/Diff.aspx") +
+                      @"?revpathid=' + convert(varchar,svnap_id) + '>diff</a>'
                     else
                     ''
                 end [view<br>diff],
 
                 case when svnap_action not like '%D%' then
-                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Svn/Log.aspx") + @"?revpathid=' + convert(varchar,svnap_id) + '>history</a>'
+                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Svn/Log.aspx") +
+                      @"?revpathid=' + convert(varchar,svnap_id) + '>history</a>'
                     else
                     ''
                 end [view<br>history<br>(svn log)]";
@@ -84,7 +84,7 @@
 
             var model = new SortableTableModel
             {
-                DataSet = DbUtil.GetDataSet(sql),
+                DataTable = DbUtil.GetDataSet(sql).Tables[0],
                 HtmlEncode = false
             };
 
@@ -112,24 +112,18 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["svnrev_bug"], this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["svnrev_bug"], this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
             string realPath;
             if (this.applicationSettings.SvnTrustPathsInUrls)
-            {
                 realPath = path;
-            }
             else
-            {
-                realPath = (string)dr["svnap_path"];
-            }
+                realPath = (string) dr["svnap_path"];
 
-            var rawText = VersionControl.SvnCat((string)dr["svnrev_repository"], realPath, Convert.ToInt32(revpathid));
+            var rawText = VersionControl.SvnCat((string) dr["svnrev_repository"], realPath, Convert.ToInt32(revpathid));
 
             return Content(rawText);
         }
@@ -189,7 +183,7 @@
 
             for (var i = 0; i < revisions.Count; i++)
             {
-                var logentry = (XmlElement)revisions[i];
+                var logentry = (XmlElement) revisions[i];
 
                 var msg = logentry.GetElementsByTagName("msg")[0].InnerText;
                 var revision = logentry.GetAttribute("revision");
@@ -208,7 +202,8 @@
             return Content("OK:");
         }
 
-        private static void InsertRevisionRowPerBug(string bugid, string repo, string revision, string author, string date,
+        private static void InsertRevisionRowPerBug(string bugid, string repo, string revision, string author,
+            string date,
             string msg, XmlElement logentry)
         {
             var sql = @"
@@ -262,7 +257,7 @@
 
                 for (var j = 0; j < paths.Count; j++)
                 {
-                    var pathElement = (XmlElement)paths[j];
+                    var pathElement = (XmlElement) paths[j];
 
                     var action = pathElement.GetAttribute("action");
                     var filePath = pathElement.InnerText;
@@ -297,10 +292,7 @@
             var reIntegerAtEnd = new Regex(regexPattern1);
             var m = reIntegerAtEnd.Match(withoutLineBreaks);
 
-            if (m.Success)
-            {
-                return m.Groups[1].ToString();
-            }
+            if (m.Success) return m.Groups[1].ToString();
 
             var regexPattern2 = this.applicationSettings.SvnBugidRegexPattern2; // comma delimited at start
             var reIntegerAtStart = new Regex(regexPattern2);

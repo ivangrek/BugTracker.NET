@@ -32,7 +32,7 @@ namespace BugTracker.Web.Core.Persistence.Configurations
             Property(x => x.UserId)
                 .HasColumnName("qu_user");
 
-            Property(x => x.OrganisationId)
+            Property(x => x.OrganizationId)
                 .HasColumnName("qu_org");
         }
     }

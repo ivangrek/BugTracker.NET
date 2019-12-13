@@ -20,17 +20,16 @@
             el.focus();
 
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
 </script>
 
-<span id="debug" style="position: absolute; top: 0; left: 0;"></span>
+<span id="debug" style="left: 0; position: absolute; top: 0;"></span>
 
 <header class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a href="@Url.Action("Index", "Bug", new { area = string.Empty })" class="navbar-brand">BugTracker.NET</a>
+    <a href="@Url.Action("Index", "Bug", new {area = string.Empty})" class="navbar-brand">BugTracker.NET</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -39,7 +38,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a href="@Url.Action("Index", "Bug", new { area = string.Empty })" class="nav-item nav-link @(Model.SelectedItem == "bugs" ? "active" : string.Empty)">Bugs<!--<span class="sr-only">(current)</span>--></a>
+                <a href="@Url.Action("Index", "Bug", new {area = string.Empty})" class="nav-item nav-link @(Model.SelectedItem == "bugs" ? "active" : string.Empty)">Bugs<!--<span class="sr-only">(current)</span>--></a>
             </li>
 
             @if (Model.Security.User.CanSearch)
@@ -52,21 +51,21 @@
             @if (Model.ApplicationSettings.EnableWhatsNewPage)
             {
                 <li class="nav-item">
-                    <a href="@Url.Action("Index", "News", new { area = string.Empty })" class="nav-item nav-link @(Model.SelectedItem == "news" ? "active" : string.Empty)">News</a>
+                    <a href="@Url.Action("Index", "News", new {area = string.Empty})" class="nav-item nav-link @(Model.SelectedItem == "news" ? "active" : string.Empty)">News</a>
                 </li>
             }
 
             @if (!Model.Security.User.IsGuest)
             {
                 <li class="nav-item">
-                    <a href="@Url.Action("Index", "Query", new { area = string.Empty })" class="nav-item nav-link @(Model.SelectedItem == "queries" ? "active" : string.Empty)">Queries</a>
+                    <a href="@Url.Action("Index", "Query", new {area = string.Empty})" class="nav-item nav-link @(Model.SelectedItem == "queries" ? "active" : string.Empty)">Queries</a>
                 </li>
             }
 
             @if (Model.Security.User.IsAdmin || Model.Security.User.CanUseReports || Model.Security.User.CanEditReports)
             {
                 <li class="nav-item">
-                    <a href="@Url.Action("Index", "Report", new { area = string.Empty })" class="nav-item nav-link @(Model.SelectedItem == "reports" ? "active" : string.Empty)">Reports</a>
+                    <a href="@Url.Action("Index", "Report", new {area = string.Empty})" class="nav-item nav-link @(Model.SelectedItem == "reports" ? "active" : string.Empty)">Reports</a>
                 </li>
             }
 
@@ -80,18 +79,18 @@
             @if (Model.Security.User.IsAdmin)
             {
                 <li class="nav-item">
-                    <a href="@Url.Action("Index", "Home", new { area = "Administration" })" class="nav-item nav-link @(Model.SelectedItem == "admin" ? "active" : string.Empty)">Administration</a>
+                    <a href="@Url.Action("Index", "Home", new {area = "Administration"})" class="nav-item nav-link @(Model.SelectedItem == "admin" ? "active" : string.Empty)">Administration</a>
                 </li>
             }
             else if (Model.Security.User.IsProjectAdmin)
             {
                 <li class="nav-item">
-                    <a href="@Url.Action("Index", "User", new { area = "Administration" })" class="nav-item nav-link @(Model.SelectedItem == "users" ? "active" : string.Empty)">Users</a>
+                    <a href="@Url.Action("Index", "User", new {area = "Administration"})" class="nav-item nav-link @(Model.SelectedItem == "users" ? "active" : string.Empty)">Users</a>
                 </li>
             }
 
             <li class="nav-item">
-                <form action="~/Bugs/Edit.aspx?id=" method="get" class="form-inline mt-1">
+                <form action="~/Bugs/Edit.aspx?id=" method="get" class="form-inline flex-nowrap m mt-1">
                     <input class="form-control form-control-sm mr-sm-2" type="search" placeholder="ID" aria-label="Go to ID" size="4" name="id" accesskey="g">
                     <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Go to ID</button>
                 </form>
@@ -99,11 +98,11 @@
 
             @if (Model.ApplicationSettings.EnableLucene && Model.Security.User.CanSearch)
             {
-                var query = (string)HttpContext.Current.Session["query"] ?? string.Empty;
+                var query = (string) HttpContext.Current.Session["query"] ?? string.Empty;
 
                 <li class="nav-item">
-                    <form action="@Url.Action("SearchText", "Search", new { area = string.Empty })" method="get" onsubmit="return on_submit_search()" class="form-inline mt-1">
-                        <input class="form-control form-control-sm mr-sm-2" type="search" placeholder="Text" aria-label="Text" id="lucene_input" size="24" value='@query.Replace("' ", " ")' name="query" accesskey="s">
+                    <form action="@Url.Action("SearchText", "Search", new {area = string.Empty})" method="get" onsubmit="return on_submit_search()" class="form-inline flex-nowrap mt-1">
+                        <input class="form-control form-control-sm mr-2" type="search" placeholder="Text" aria-label="Text" id="lucene_input" size="24" value='@query.Replace("' ", " ")' name="query" accesskey="s">
                         <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Search</button>
                         <a href="~/Content/lucene_syntax.html" target="_blank" class="btn btn-link btn-sm">advanced</a>
                     </form>
@@ -121,7 +120,7 @@
                     @*// for guest account, suppress display of "edit_self*@
                     @if (!Model.Security.User.IsGuest)
                     {
-                        <a href="@Url.Action("Settings", "Account", new { area = string.Empty })" class="dropdown-item @(Model.SelectedItem == "settings" ? "active" : string.Empty)">Settings</a>
+                        <a href="@Url.Action("Settings", "Account", new {area = string.Empty})" class="dropdown-item @(Model.SelectedItem == "settings" ? "active" : string.Empty)">Settings</a>
                     }
 
                     @*TODO investigate*@
@@ -129,7 +128,7 @@
                     {
                         var formId = Guid.NewGuid().ToString();
 
-                        using (Html.BeginForm("Logoff", "Account", new { area = string.Empty }, FormMethod.Post, new { id = formId, style = "display: inline;" }))
+                        using (Html.BeginForm("Logoff", "Account", new {area = string.Empty}, FormMethod.Post, new {id = formId, style = "display: inline;"}))
                         {
                             @Html.AntiForgeryToken()
 
@@ -148,7 +147,7 @@
                 if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
                 {
                     <li class="nav-item">
-                        <a href="@Url.Action("Login", "Account", new { area = string.Empty })" class="nav-item nav-link">Login</a>
+                        <a href="@Url.Action("Login", "Account", new {area = string.Empty})" class="nav-item nav-link">Login</a>
                     </li>
                 }
                 @*else

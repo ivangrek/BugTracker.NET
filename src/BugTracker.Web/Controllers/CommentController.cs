@@ -7,9 +7,9 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Comment;
+    using Core;
+    using Models;
+    using Models.Comment;
     using System;
     using System.Web;
     using System.Web.Mvc;
@@ -201,7 +201,7 @@ namespace BugTracker.Web.Controllers
             if (!model.InternalOnly)
             {
                 Bug.SendNotifications(Bug.Update, model.BugId, this.security);
-                WhatsNew.AddNews(model.BugId, (string)dr["bg_short_desc"], "updated", security);
+                WhatsNew.AddNews(model.BugId, (string)dr["bg_short_desc"], "updated", this.security);
             }
 
             return Redirect($"~/Bugs/Edit.aspx?id={model.BugId}");

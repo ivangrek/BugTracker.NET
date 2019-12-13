@@ -1255,8 +1255,8 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
 
             public NewIds(int b, int p)
             {
-                this.Bugid = b;
-                this.Postid = p;
+                Bugid = b;
+                Postid = p;
             }
         }
     }

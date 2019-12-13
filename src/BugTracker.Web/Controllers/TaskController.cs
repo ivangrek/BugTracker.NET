@@ -7,9 +7,9 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Task;
+    using Core;
+    using Models;
+    using Models.Task;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -63,7 +63,7 @@ namespace BugTracker.Web.Controllers
             {
                 ViewBag.ShowToolbar = false;
 
-                model.DataSet = Util.GetAllTasks(this.security, 0);
+                model.DataTable = Util.GetAllTasks(this.security, 0).Tables[0];
 
                 return View(model);
             }
@@ -152,7 +152,7 @@ namespace BugTracker.Web.Controllers
 
             sql = sql.Replace("$bugid", Convert.ToString(bugId.Value));
 
-            model.DataSet = DbUtil.GetDataSet(sql);
+            model.DataTable = DbUtil.GetDataSet(sql).Tables[0];
 
             ViewBag.BugId = bugId;
             ViewBag.ShowToolbar = (permissionLevel == SecurityPermissionLevel.PermissionAll)
@@ -684,7 +684,7 @@ namespace BugTracker.Web.Controllers
             sql += "\nselect isnull(@assigned_to,0) ";
 
             sql = sql.Replace("$og_id", Convert.ToString(this.security.User.Org));
-            sql = sql.Replace("$og_other_orgs_permission_level", Convert.ToString((int)this.security.User.OtherOrgsPermissionLevel));
+            sql = sql.Replace("$og_other_orgs_permission_level", Convert.ToString((int) this.security.User.OtherOrgsPermissionLevel));
             sql = sql.Replace("$bg_id", Convert.ToString(bugId));
 
             if (!this.applicationSettings.UseFullNames)

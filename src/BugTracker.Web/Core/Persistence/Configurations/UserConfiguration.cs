@@ -94,7 +94,7 @@ namespace BugTracker.Web.Core.Persistence.Configurations
             Property(x => x.CreatedUserId)
               .HasColumnName("us_created_user");
 
-            Property(x => x.OrganisationId)
+            Property(x => x.OrganizationId)
               .HasColumnName("us_org");
 
             Property(x => x.MostRecentLoginDateTime)

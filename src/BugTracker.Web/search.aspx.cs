@@ -13,7 +13,7 @@ namespace BugTracker.Web
     using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
-    using BugTracker.Web.Core.Controls;
+    using Core.Controls;
     using Core;
 
     public partial class Search : Page
@@ -40,7 +40,7 @@ namespace BugTracker.Web
 
             Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            MainMenu.SelectedItem = MainMenuSections.Search;
+            this.MainMenu.SelectedItem = MainMenuSections.Search;
 
             if (Security.User.IsAdmin || Security.User.CanSearch)
             {
@@ -59,7 +59,7 @@ namespace BugTracker.Web
 
             this.DsCustomCols = Util.GetCustomColumns();
 
-            this.DtUsers = Util.GetRelatedUsers(Security, false);
+            DtUsers = Util.GetRelatedUsers(Security, false);
 
             if (!IsPostBack)
             {
@@ -611,17 +611,17 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 if (this.ShowUdf)
                     select += "left outer join user_defined_attribute on udf_id = bg_user_defined_attribute";
 
-                this.Sql = select + where + " order by bg_id desc";
+                Sql = select + where + " order by bg_id desc";
             }
             else
             {
                 searchSql = searchSql.Replace("[br]", "\n");
-                this.Sql = searchSql.Replace("$WHERE$", where);
+                Sql = searchSql.Replace("$WHERE$", where);
             }
 
-            this.Sql = Util.AlterSqlPerProjectPermissions(this.Sql, security);
+            Sql = Util.AlterSqlPerProjectPermissions(Sql, security);
 
-            var ds = DbUtil.GetDataSet(this.Sql);
+            var ds = DbUtil.GetDataSet(Sql);
             this.Dv = new DataView(ds.Tables[0]);
             Session["bugs"] = this.Dv;
             Session["bugs_unfiltered"] = ds.Tables[0];
@@ -769,8 +769,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 this.project_custom_dropdown1_label.Style["display"] = "inline";
                 this.project_custom_dropdown1.Style["display"] = "block";
                 this.ProjectDropdownSelectCols
-                    += ",\\nisnull(bg_project_custom_dropdown_value1,'') [" +
-                       this.project_custom_dropdown1_label.InnerText + "]";
+                    += ",\\nisnull(bg_project_custom_dropdown_value1,'') [" + this.project_custom_dropdown1_label.InnerText + "]";
             }
 
             if (string.IsNullOrEmpty(this.project_custom_dropdown2_label.InnerText))
@@ -784,8 +783,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 this.project_custom_dropdown2_label.Style["display"] = "inline";
                 this.project_custom_dropdown2.Style["display"] = "block";
                 this.ProjectDropdownSelectCols
-                    += ",\\nisnull(bg_project_custom_dropdown_value2,'') [" +
-                       this.project_custom_dropdown2_label.InnerText + "]";
+                    += ",\\nisnull(bg_project_custom_dropdown_value2,'') [" + this.project_custom_dropdown2_label.InnerText + "]";
             }
 
             if (string.IsNullOrEmpty(this.project_custom_dropdown3_label.InnerText))
@@ -799,8 +797,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
                 this.project_custom_dropdown3_label.Style["display"] = "inline";
                 this.project_custom_dropdown3.Style["display"] = "block";
                 this.ProjectDropdownSelectCols
-                    += ",\\nisnull(bg_project_custom_dropdown_value3,'') [" +
-                       this.project_custom_dropdown3_label.InnerText + "]";
+                    += ",\\nisnull(bg_project_custom_dropdown_value3,'') [" + this.project_custom_dropdown3_label.InnerText + "]";
             }
 
             // Restore user's previous selections.
@@ -814,7 +811,7 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
 
         public void load_drop_downs(ISecurity security)
         {
-            this.reported_by.DataSource = this.DtUsers;
+            this.reported_by.DataSource = DtUsers;
             this.reported_by.DataTextField = "us_username";
             this.reported_by.DataValueField = "us_id";
             this.reported_by.DataBind();
@@ -822,41 +819,41 @@ or isnull(pj_enable_custom_dropdown3,0) = 1";
             // only show projects where user has permissions
             if (Security.User.IsAdmin)
             {
-                this.Sql = "/* drop downs */ select pj_id, pj_name from projects order by pj_name;";
+                Sql = "/* drop downs */ select pj_id, pj_name from projects order by pj_name;";
             }
             else
             {
-                this.Sql = @"/* drop downs */ select pj_id, pj_name
+                Sql = @"/* drop downs */ select pj_id, pj_name
             from projects
             left outer join project_user_xref on pj_id = pu_project
             and pu_user = $us
             where isnull(pu_permission_level,$dpl) <> 0
             order by pj_name;";
 
-                this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
-                this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
+                Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+                Sql = Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
             }
 
             if (Security.User.OtherOrgsPermissionLevel != 0)
             {
-                this.Sql += " select og_id, og_name from orgs order by og_name;";
+                Sql += " select og_id, og_name from orgs order by og_name;";
             }
             else
             {
-                this.Sql += " select og_id, og_name from orgs where og_id = " +
+                Sql += " select og_id, og_name from orgs where og_id = " +
                             Convert.ToInt32(Security.User.Org) +
                             " order by og_name;";
                 this.org.Visible = false;
                 this.org_label.Visible = false;
             }
 
-            this.Sql += @"
+            Sql += @"
     select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
     select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
     select st_id, st_name from statuses order by st_sort_seq, st_name;
     select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name";
 
-            var dsDropdowns = DbUtil.GetDataSet(this.Sql);
+            var dsDropdowns = DbUtil.GetDataSet(Sql);
 
             this.project.DataSource = dsDropdowns.Tables[0];
             this.project.DataTextField = "pj_name";

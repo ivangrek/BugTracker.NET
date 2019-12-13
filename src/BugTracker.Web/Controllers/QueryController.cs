@@ -7,17 +7,20 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
+    using Core;
+    using Core.Controls;
     using BugTracker.Web.Core.Persistence;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Query;
+    using Models;
+    using Models.Query;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Identification.Querying;
+    using Querying;
+    using Tracking.Querying.Organizations;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
@@ -27,17 +30,23 @@ namespace BugTracker.Web.Controllers
         private readonly ISecurity security;
         private readonly IQueryService queryService;
         private readonly ApplicationContext applicationContext;
+        private readonly IApplicationFacade applicationFacade;
+        private readonly IQueryBuilder queryBuilder;
 
         public QueryController(
             IApplicationSettings applicationSettings,
             ISecurity security,
             IQueryService queryService,
-            ApplicationContext applicationContext)
+            ApplicationContext applicationContext,
+            IApplicationFacade applicationFacade,
+            IQueryBuilder queryBuilder)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
             this.queryService = queryService;
             this.applicationContext = applicationContext;
+            this.applicationFacade = applicationFacade;
+            this.queryBuilder = queryBuilder;
         }
 
         [HttpGet]
@@ -61,7 +70,9 @@ namespace BugTracker.Web.Controllers
 
             var model = new SortableTableModel
             {
-                DataSet = this.queryService.LoadList(showAll ?? false),
+                DataTable = this.queryService
+                    .LoadList(showAll ?? false)
+                    .Tables[0],
                 HtmlEncode = false
             };
 
@@ -89,7 +100,17 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Users = this.applicationContext.Users
+            var userQuery = this.queryBuilder
+                .From<IUserSource>()
+                .To<IUserComboBoxResult>()
+                .Sort()
+                    .AscendingBy(x => x.Name)
+                .Build();
+
+            var userResult = this.applicationFacade
+                .Run(userQuery);
+
+            ViewBag.Users = userResult
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -103,7 +124,17 @@ namespace BugTracker.Web.Controllers
                 Text = "[select user]"
             });
 
-            ViewBag.Organizations = this.applicationContext.Organisations
+            var organizationQuery = this.queryBuilder
+                .From<IOrganizationSource>()
+                .To<IOrganizationComboBoxResult>()
+                .Sort()
+                    .AscendingBy(x => x.Name)
+                .Build();
+
+            var organizationResult = this.applicationFacade
+                .Run(organizationQuery);
+
+            ViewBag.Organizations = organizationResult
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -166,13 +197,23 @@ namespace BugTracker.Web.Controllers
             {
                 ModelState.AddModelError(string.Empty, "Query was not created.");
 
-                ViewBag.Users = this.applicationContext.Users
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                })
-                .ToList();
+                var userQuery = this.queryBuilder
+                    .From<IUserSource>()
+                    .To<IUserComboBoxResult>()
+                    .Sort()
+                    .AscendingBy(x => x.Name)
+                    .Build();
+
+                var userResult = this.applicationFacade
+                    .Run(userQuery);
+
+                ViewBag.Users = userResult
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name
+                    })
+                    .ToList();
 
                 ViewBag.Users.Insert(0, new SelectListItem
                 {
@@ -180,7 +221,17 @@ namespace BugTracker.Web.Controllers
                     Text = "[select user]"
                 });
 
-                ViewBag.Organizations = this.applicationContext.Organisations
+                var organizationQuery = this.queryBuilder
+                    .From<IOrganizationSource>()
+                    .To<IOrganizationComboBoxResult>()
+                    .Sort()
+                    .AscendingBy(x => x.Name)
+                    .Build();
+
+                var organizationResult = this.applicationFacade
+                    .Run(organizationQuery);
+
+                ViewBag.Organizations = organizationResult
                     .Select(x => new SelectListItem
                     {
                         Value = x.Id.ToString(),
@@ -263,7 +314,17 @@ namespace BugTracker.Web.Controllers
                 return Content("You are not allowed to use this page.");
             }
 
-            ViewBag.Users = this.applicationContext.Users
+            var userQuery = this.queryBuilder
+                .From<IUserSource>()
+                .To<IUserComboBoxResult>()
+                .Sort()
+                .AscendingBy(x => x.Name)
+                .Build();
+
+            var userResult = this.applicationFacade
+                .Run(userQuery);
+
+            ViewBag.Users = userResult
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -277,7 +338,17 @@ namespace BugTracker.Web.Controllers
                 Text = "[select user]"
             });
 
-            ViewBag.Organizations = this.applicationContext.Organisations
+            var organizationQuery = this.queryBuilder
+                .From<IOrganizationSource>()
+                .To<IOrganizationComboBoxResult>()
+                .Sort()
+                .AscendingBy(x => x.Name)
+                .Build();
+
+            var organizationResult = this.applicationFacade
+                .Run(organizationQuery);
+
+            ViewBag.Organizations = organizationResult
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -310,7 +381,7 @@ namespace BugTracker.Web.Controllers
                 SqlText = dataRow.Sql
             };
 
-            if ((dataRow.UserId == null || dataRow.UserId.Value == 0) && (dataRow.OrganisationId == null || dataRow.OrganisationId.Value == 0))
+            if ((dataRow.UserId == null || dataRow.UserId.Value == 0) && (dataRow.OrganizationId == null || dataRow.OrganizationId.Value == 0))
             {
                 model.Visibility = 0;
             }
@@ -322,7 +393,7 @@ namespace BugTracker.Web.Controllers
             else
             {
                 model.Visibility = 2;
-                model.QrganizationId = dataRow.OrganisationId ?? 0;
+                model.QrganizationId = dataRow.OrganizationId ?? 0;
             }
 
             return View("Edit", model);
@@ -369,13 +440,23 @@ namespace BugTracker.Web.Controllers
             {
                 ModelState.AddModelError(string.Empty, "Query was not updated.");
 
-                ViewBag.Users = this.applicationContext.Users
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                })
-                .ToList();
+                var userQuery = this.queryBuilder
+                    .From<IUserSource>()
+                    .To<IUserComboBoxResult>()
+                    .Sort()
+                    .AscendingBy(x => x.Name)
+                    .Build();
+
+                var userResult = this.applicationFacade
+                    .Run(userQuery);
+
+                ViewBag.Users = userResult
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name
+                    })
+                    .ToList();
 
                 ViewBag.Users.Insert(0, new SelectListItem
                 {
@@ -383,7 +464,17 @@ namespace BugTracker.Web.Controllers
                     Text = "[select user]"
                 });
 
-                ViewBag.Organizations = this.applicationContext.Organisations
+                var organizationQuery = this.queryBuilder
+                    .From<IOrganizationSource>()
+                    .To<IOrganizationComboBoxResult>()
+                    .Sort()
+                    .AscendingBy(x => x.Name)
+                    .Build();
+
+                var organizationResult = this.applicationFacade
+                    .Run(organizationQuery);
+
+                ViewBag.Organizations = organizationResult
                     .Select(x => new SelectListItem
                     {
                         Value = x.Id.ToString(),

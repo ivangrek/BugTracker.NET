@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.Home.QueryModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -67,18 +69,18 @@
         </div>
 
         <div class="form-group">
-            @Html.DropDownList("DbTables", (List<SelectListItem>)ViewBag.DbTables, new { id = "dbtables_select", onchange = "on_dbtables_changed()" })
+            @Html.DropDownList("DbTables", (List<SelectListItem>) ViewBag.DbTables, new {id = "dbtables_select", onchange = "on_dbtables_changed()"})
         </div>
 
         <div class="card bg-light" id="card">
             <div class="card-body">
-                @using (Html.BeginForm("Query", "Home", FormMethod.Post, new { id = "frm", @class = "frm" }))
+                @using (Html.BeginForm("Query", "Home", FormMethod.Post, new {id = "frm", @class = "frm"}))
                 {
                     @Html.AntiForgeryToken()
 
                     <div class="form-group">
                         <label>Or enter SQL:</label>
-                        @Html.TextAreaFor(x => x.Text, new { id = "queryText", @class = "form-control", rows = "15", cols = "70" })
+                        @Html.TextAreaFor(x => x.Text, new {id = "queryText", @class = "form-control", rows = "15", cols = "70"})
                     </div>
 
                     <button type="submit" class="btn btn-primary">Execute SQL</button>
@@ -96,7 +98,8 @@
 
 @if (ViewBag.Table != null && ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
 {
-    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+    @Html.Partial("_SortableTable", (SortableTableModel) ViewBag.Table)
+    ;
 }
 else
 {
@@ -104,5 +107,5 @@ else
 }
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

@@ -21,7 +21,7 @@
     <script>
         function body_on_load() {
             // TODO investigate
-            opener.set_task_cnt(@Model.DataSet.Tables[0].Rows.Count);
+            opener.set_task_cnt(@Model.DataTable.Rows.Count);
         }
 
         $(function () {
@@ -57,7 +57,7 @@ else
 }
 
 
-@if (Model.DataSet.Tables[0].Rows.Count > 0)
+@if (Model.DataTable.Rows.Count > 0)
 {
     @Html.Partial("_SortableTable", Model);
 }

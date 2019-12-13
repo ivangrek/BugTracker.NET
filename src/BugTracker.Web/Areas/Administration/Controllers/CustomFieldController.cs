@@ -7,15 +7,15 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.CustomField;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
     using System;
     using System.Collections.Generic;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core;
+    using Core.Controls;
+    using Models.CustomField;
+    using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
@@ -45,7 +45,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             var model = new SortableTableModel
             {
-                DataSet = Util.GetCustomColumns(),
+                DataTable = Util.GetCustomColumns().Tables[0],
                 EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/CustomField/Update/"),
                 DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/CustomField/Delete/")
             };
@@ -81,53 +81,43 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (!string.IsNullOrEmpty(model.Name))
             {
                 if (model.Name.ToLower() == "url")
-                {
                     ModelState.AddModelError("Name", "Field name of \"URL\" causes problems with ASP.NET.");
-                }
                 else if (model.Name.Contains("'")
                          || model.Name.Contains("\\")
                          || model.Name.Contains("/")
                          || model.Name.Contains("\"")
                          || model.Name.Contains("<")
                          || model.Name.Contains(">"))
-                {
                     ModelState.AddModelError("Name", "Some special characters like quotes, slashes are not allowed.");
-                }
             }
 
             if (model.Length == 0)
             {
                 if (model.DataType != "int" && model.DataType != "datetime")
-                {
                     ModelState.AddModelError("Length", "Length or Precision is required for this datatype.");
-                }
             }
             else
             {
                 if (model.DataType == "int" || model.DataType == "datetime")
-                {
                     ModelState.AddModelError("Length", "Length or Precision not allowed for this datatype.");
-                }
             }
 
             if (model.Required)
             {
                 if (string.IsNullOrEmpty(model.Default))
-                {
                     ModelState.AddModelError("Default", "If \"Required\" is checked, then Default is required.");
-                }
 
                 if (!string.IsNullOrEmpty(model.DropdownType))
-                {
-                    ModelState.AddModelError("Required", "Checking \"Required\" is not compatible with a normal or users dropdown");
-                }
+                    ModelState.AddModelError("Required",
+                        "Checking \"Required\" is not compatible with a normal or users dropdown");
             }
 
             if (model.DropdownType == "normal")
             {
                 if (string.IsNullOrEmpty(model.DropdownValues))
                 {
-                    ModelState.AddModelError("DropdownValues", "Dropdown values are required for dropdown type of \"normal\".");
+                    ModelState.AddModelError("DropdownValues",
+                        "Dropdown values are required for dropdown type of \"normal\".");
                 }
                 else
                 {
@@ -142,27 +132,21 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                         if (model.DataType == "int"
                             || model.DataType == "decimal"
                             || model.DataType == "datetime")
-                        {
-                            ModelState.AddModelError("DataType", "For a normal dropdown datatype must be char, varchar, nchar, or nvarchar.");
-                        }
+                            ModelState.AddModelError("DataType",
+                                "For a normal dropdown datatype must be char, varchar, nchar, or nvarchar.");
                     }
                 }
             }
             else if (model.DropdownType == "users")
             {
                 if (model.DataType != "int")
-                {
                     ModelState.AddModelError("DataType", "For a users dropdown datatype must be int.");
-                }
             }
 
             if (model.DropdownType != "normal")
-            {
                 if (!string.IsNullOrEmpty(model.DropdownValues))
-                {
-                    ModelState.AddModelError("DropdownValues", "Dropdown values are only used for dropdown of type \"normal\".");
-                }
-            }
+                    ModelState.AddModelError("DropdownValues",
+                        "Dropdown values are only used for dropdown of type \"normal\".");
 
             if (!ModelState.IsValid)
             {
@@ -188,29 +172,21 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 .Replace("$dt", model.DataType);
 
             if (model.Length != 0)
-            {
                 //if (this.length.Value.StartsWith("("))
                 //    this.Sql = this.Sql.Replace("$ln", this.length.Value);
                 //else
                 //    this.Sql = this.Sql.Replace("$ln", "(" + this.length.Value + ")");
 
                 sql = sql.Replace("$ln", "(" + model.Length + ")");
-            }
             else
-            {
                 sql = sql.Replace("$ln", string.Empty);
-            }
 
             if (!string.IsNullOrEmpty(model.Default))
             {
                 if (model.Default.StartsWith("("))
-                {
                     sql = sql.Replace("$df", "DEFAULT " + model.Default);
-                }
                 else
-                {
                     sql = sql.Replace("$df", "DEFAULT (" + model.Default + ")");
-                }
             }
             else
             {
@@ -218,13 +194,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             }
 
             if (model.Required)
-            {
                 sql = sql.Replace("$null", "NOT NULL");
-            }
             else
-            {
                 sql = sql.Replace("$null", "NULL");
-            }
 
             var alterTableWorked = false;
 
@@ -235,7 +207,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "The generated SQL was invalid:<br><br>SQL:&nbsp;" + sql +
-                                     "<br><br>Error:&nbsp;" + ex.Message);
+                                                       "<br><br>Error:&nbsp;" + ex.Message);
 
                 ViewBag.Page = new PageModel
                 {
@@ -306,12 +278,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var model = new UpdateModel
             {
                 Id = id,
-                Name = (string)dr["name"],
+                Name = (string) dr["name"],
                 DropdownType = Convert.ToString(dr["dropdown_type"]),
 
-                DropdownValues = (string)dr["vals"],
+                DropdownValues = (string) dr["vals"],
 
-                SortSequence = (int)dr["column order"],
+                SortSequence = (int) dr["column order"],
                 Default = Convert.ToString(dr["default value"]),
 
                 DefaultName = Convert.ToString(dr["default name"]),
@@ -329,16 +301,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
                 if (string.IsNullOrEmpty(model.DropdownValues))
                 {
-                    ModelState.AddModelError("DropdownValues", "Dropdown values are required for dropdown type of \"normal\".");
+                    ModelState.AddModelError("DropdownValues",
+                        "Dropdown values are required for dropdown type of \"normal\".");
                 }
                 else
                 {
                     var valsErrorString = Util.ValidateDropdownValues(model.DropdownValues);
 
                     if (!string.IsNullOrEmpty(valsErrorString))
-                    {
                         ModelState.AddModelError("DropdownValues", valsErrorString);
-                    }
                 }
             }
 
@@ -381,7 +352,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 if (!string.IsNullOrEmpty(model.Default) && !string.IsNullOrEmpty(model.DefaultValue))
                 {
                     sql = "alter table bugs drop constraint [" +
-                               model.DefaultValue + "]";
+                          model.DefaultValue + "]";
 
                     DbUtil.ExecuteNonQuery(sql);
                     System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
@@ -390,7 +361,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 if (!string.IsNullOrEmpty(model.Default))
                 {
                     sql = "alter table bugs add constraint [" + Guid.NewGuid() + "] default " +
-                               model.Default + " for [" + model.Name + "]";
+                          model.Default + " for [" + model.Name + "]";
 
                     DbUtil.ExecuteNonQuery(sql);
                     System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
@@ -424,7 +395,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var model = new DeleteModel
             {
                 Id = id,
-                Name = (string)dr["name"]
+                Name = (string) dr["name"]
             };
 
             return View(model);
@@ -449,7 +420,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (!string.IsNullOrEmpty(dr["default_constraint_name"].ToString()))
             {
                 sql = @"alter table bugs drop constraint [$df]"
-                    .Replace("$df", (string)dr["default_constraint_name"]);
+                    .Replace("$df", (string) dr["default_constraint_name"]);
 
                 DbUtil.ExecuteNonQuery(sql);
             }
@@ -458,7 +429,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = @"
                 alter table orgs drop column [og_$nm_field_permission_level]
                 alter table bugs drop column [$nm]"
-                .Replace("$nm", (string)dr["column_name"]);
+                .Replace("$nm", (string) dr["column_name"]);
 
             DbUtil.ExecuteNonQuery(sql);
 
@@ -531,7 +502,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 {
                     Value = "varchar",
                     Text = "varchar"
-                },
+                }
             };
         }
     }

@@ -140,7 +140,7 @@
                                         <td nowrap>
                                             <span runat="server" id="reported_by"></span>
 
-                                            <% if (this.Id == 0 || this.PermissionLevel == SecurityPermissionLevel.PermissionAll)
+                                            <% if (this.Id == 0 || PermissionLevel == SecurityPermissionLevel.PermissionAll)
                                                 { %>
                                         <td nowrap align="right" id="presets">Presets:
     <a title="Use previously saved settings for project, category, priority, etc..."
@@ -234,7 +234,7 @@
 
                                             <span class="smallnote" style="margin-left: 170px">
                                                 <%
-                                                    if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                                                    if (PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                                                     {
                                                         Response.Write("Entering \""
                                                                        + ApplicationSettings.BugLinkMarker
@@ -309,12 +309,10 @@
                 if (this.Id != 0)
                 {
                     var (_, html) = PrintBug.WritePosts(
-                        this.DsPosts,
-                        this.Id,
-                        this.PermissionLevel,
+                        DsPosts, this.Id,
+                        PermissionLevel,
                         true, // write links
-                        this.ImagesInline,
-                        this.HistoryInline,
+                        this.ImagesInline, this.HistoryInline,
                         true, // internal_posts
                         Security.User);
 

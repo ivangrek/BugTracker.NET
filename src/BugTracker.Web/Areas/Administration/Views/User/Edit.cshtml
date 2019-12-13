@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.User.EditModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -27,246 +29,246 @@
 }
 
 <div class="row">
-    <div class="col-lg-6">
-        <div class="card bg-light">
-            <div class="card-body">
-                <ul class="nav nav-pills mb-3">
-                    <li class="nav-item">
-                        <a href="#main" class="nav-link active" data-toggle="tab" aria-controls="main" aria-selected="true">Main</a>
-                    </li>
+<div class="col-lg-6">
+<div class="card bg-light">
+<div class="card-body">
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a href="#main" class="nav-link active" data-toggle="tab" aria-controls="main" aria-selected="true">Main</a>
+    </li>
 
-                    <li class="nav-item">
-                        <a href="#email" class="nav-link" data-toggle="tab" aria-controls="email" aria-selected="false">Email</a>
-                    </li>
+    <li class="nav-item">
+        <a href="#email" class="nav-link" data-toggle="tab" aria-controls="email" aria-selected="false">Email</a>
+    </li>
 
-                    <li class="nav-item">
-                        <a href="#permissions" class="nav-link" data-toggle="tab" aria-controls="permissions" aria-selected="false">Permissions</a>
-                    </li>
-                </ul>
+    <li class="nav-item">
+        <a href="#permissions" class="nav-link" data-toggle="tab" aria-controls="permissions" aria-selected="false">Permissions</a>
+    </li>
+</ul>
 
-                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "User", FormMethod.Post, new { @class = "frm" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.Partial("_ValidationSummary")
+@using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "User", FormMethod.Post, new {@class = "frm"}))
+{
+    @Html.AntiForgeryToken()
+    @Html.Partial("_ValidationSummary")
 
-                    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.Id)
 
-                    <div class="tab-content mt-3">
-                        <div class="tab-pane active" id="main" role="tabpanel" aria-labelledby="main-tab">
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Login):
-                                @Html.TextBoxFor(x => x.Login, new { autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
-                                @Html.ValidationMessageFor(x => x.Login, null, new { @class = "text-danger" }, "small")
-                            </div>
+    <div class="tab-content mt-3">
+    <div class="tab-pane active" id="main" role="tabpanel" aria-labelledby="main-tab">
+        <div class="form-group">
+            @Html.LabelFor(x => x.Login):
+            @Html.TextBoxFor(x => x.Login, new {autocomplete = "off", @class = "form-control", maxlength = "20", size = "20"})
+            @Html.ValidationMessageFor(x => x.Login, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Password):
-                                @Html.TextBoxFor(x => x.Password, new { type = "password", autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
-                                @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" }, "small")
-                            </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.Password):
+            @Html.TextBoxFor(x => x.Password, new {type = "password", autocomplete = "off", @class = "form-control", maxlength = "20", size = "20"})
+            @Html.ValidationMessageFor(x => x.Password, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.ConfirmedPassword):
-                                @Html.TextBoxFor(x => x.ConfirmedPassword, new { type = "password", autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
-                                @Html.ValidationMessageFor(x => x.ConfirmedPassword, null, new { @class = "text-danger" }, "small")
-                            </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.ConfirmedPassword):
+            @Html.TextBoxFor(x => x.ConfirmedPassword, new {type = "password", autocomplete = "off", @class = "form-control", maxlength = "20", size = "20"})
+            @Html.ValidationMessageFor(x => x.ConfirmedPassword, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.FirstName):
-                                @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", maxlength = "20", size = "20" })
-                                @Html.ValidationMessageFor(x => x.FirstName, null, new { @class = "text-danger" }, "small")
-                            </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.FirstName):
+            @Html.TextBoxFor(x => x.FirstName, new {@class = "form-control", maxlength = "20", size = "20"})
+            @Html.ValidationMessageFor(x => x.FirstName, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.OrganizationId):
-                                @Html.DropDownListFor(x => x.OrganizationId, (List<SelectListItem>)ViewBag.Organizations, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.OrganizationId, null, new { @class = "text-danger" }, "small")
-                            </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.OrganizationId):
+            @Html.DropDownListFor(x => x.OrganizationId, (List<SelectListItem>) ViewBag.Organizations, new {@class = "form-control"})
+            @Html.ValidationMessageFor(x => x.OrganizationId, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.LastName):
-                                @Html.TextBoxFor(x => x.LastName, new { @class = "form-control", maxlength = "20", size = "20" })
-                                @Html.ValidationMessageFor(x => x.LastName, null, new { @class = "text-danger" }, "small")
-                            </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.LastName):
+            @Html.TextBoxFor(x => x.LastName, new {@class = "form-control", maxlength = "20", size = "20"})
+            @Html.ValidationMessageFor(x => x.LastName, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.Active, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.Active, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.Active, null, new { @class = "text-danger" }, "small")
-                            </div>
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.Active, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.Active, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.Active, null, new {@class = "text-danger"}, "small")
+        </div>
 
-                            @if (page.Security.User.IsAdmin)
-                            {
-                                <div class="form-group form-check">
-                                    @Html.CheckBoxFor(x => x.Admin, new { @class = "form-check-input" })
-                                    @Html.LabelFor(x => x.Admin, new { @class = "form-check-label" })
-                                    @Html.ValidationMessageFor(x => x.Admin, null, new { @class = "text-danger" }, "small")
-                                </div>
-                            }
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.BugsPerPage):
-                                @Html.TextBoxFor(x => x.BugsPerPage, new { @class = "form-control", maxlength = "3", size = "3" })
-                                @Html.ValidationMessageFor(x => x.BugsPerPage, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EnableBugListPopups, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EnableBugListPopups, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EnableBugListPopups, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EditText, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EditText, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EditText, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.DefaultQueryId):
-                                @Html.DropDownListFor(x => x.DefaultQueryId, (List<SelectListItem>)ViewBag.Queries, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.DefaultQueryId, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">Default bug Query is what you see when you click on the "bugs" link</small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Email):
-                                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", maxlength = "60", size = "60" })
-                                @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.EmailSignature):
-                                @Html.TextAreaFor(x => x.EmailSignature, new { @class = "form-control", rows = "2", cols = "50" })
-                                @Html.ValidationMessageFor(x => x.EmailSignature, null, new { @class = "text-danger" }, "small")
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="email" role="tabpanel" aria-labelledby="email-tab">
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EnableNotifications, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EnableNotifications, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EnableNotifications, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">
-                                    ADMIN - SEE "NotificationEmailEnabled", "NotificationEmailFrom", "SmtpServer" settings in Web.config.
-                                    <br>
-                                    To receive email notifications when items are added or changed, fill in your email address, enable notifications, and then select "Auto-subscribe to all items" or the other options.
-                                </small>
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.AutoSubscribeToAllItems, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.AutoSubscribeToAllItems, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.AutoSubscribeToAllItems, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">You can AUTOMATICALLY subscribe to receive notifications to items by selecting either "Auto-subscribe to all items" or by selecting the other options.</small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.AutoSubscribePerProjectIds):
-                                @Html.ListBoxFor(x => x.AutoSubscribePerProjectIds, (List<SelectListItem>)ViewBag.Projects, new { @class = "form-control", size = 4, multiple = "multiple" })
-                                @Html.ValidationMessageFor(x => x.AutoSubscribePerProjectIds, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">Hold down Ctrl key to select multiple items.</small>
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.AutoSubscribeToAllItemsAssignedToYou, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.AutoSubscribeToAllItemsAssignedToYou, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.AutoSubscribeToAllItemsAssignedToYou, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.AutoSubscribeToAllItemsReportedByYou, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.AutoSubscribeToAllItemsReportedByYou, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.AutoSubscribeToAllItemsReportedByYou, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.ApplySubscriptionChangesRetroactively, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.ApplySubscriptionChangesRetroactively, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.ApplySubscriptionChangesRetroactively, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">Delete old subscriptions and create new ones, according to above settings.</small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.NotificationsSubscribedBugsReportedByMe):
-                                @Html.DropDownListFor(x => x.NotificationsSubscribedBugsReportedByMe, (List<SelectListItem>)ViewBag.Notifications, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.NotificationsSubscribedBugsReportedByMe, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">You can REDUCE or INCREASE the amount of email you receive by selecting the following.</small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.NotificationsSubscribedBugsAssignedToMe):
-                                @Html.DropDownListFor(x => x.NotificationsSubscribedBugsAssignedToMe, (List<SelectListItem>)ViewBag.Notifications, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.NotificationsSubscribedBugsAssignedToMe, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">You can REDUCE or INCREASE the amount of email you receive by selecting the following.</small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.NotificationsForAllOtherSubscribedBugs):
-                                @Html.DropDownListFor(x => x.NotificationsForAllOtherSubscribedBugs, (List<SelectListItem>)ViewBag.Notifications, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.NotificationsForAllOtherSubscribedBugs, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">You can REDUCE or INCREASE the amount of email you receive by selecting the following.</small>
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.SendNotificationsEvenForItemsAddOrChange, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.SendNotificationsEvenForItemsAddOrChange, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.SendNotificationsEvenForItemsAddOrChange, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">Delete old subscriptions and create new ones, according to above settings.</small>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.ForcedProjectId):
-                                @Html.DropDownListFor(x => x.ForcedProjectId, (List<SelectListItem>)ViewBag.ForcedProjects, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.ForcedProjectId, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">If you have only given view permissions to this user, set the forced project to any of the view-only projects.</small>
-                            </div>
-
-                            <div class="form-group">
-                                <table class="table table-sm bg-white">
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Permissions</th>
-                                    </tr>
-
-                                    @foreach (var row in ViewBag.ProjectPermissions)
-                                    {
-                                        <tr>
-                                            <td>@row["pj_name"]</td>
-                                            <td>
-                                                <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "0", (int)row["pu_permission_level"] == 0)&nbsp;none</label>
-                                                <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "1", (int)row["pu_permission_level"] == 1)&nbsp;view only</label>
-                                                <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "3", (int)row["pu_permission_level"] == 3)&nbsp;report (add and comment only)</label>
-                                                <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "2", (int)row["pu_permission_level"] == 2)&nbsp;all (add and edit)</label>
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                                <small class="form-text text-muted">If you have only given view permissions to this user, set the forced project to any of the view-only projects.</small>
-                            </div>
-
-                            @if (page.Security.User.IsAdmin)
-                            {
-                                <div class="form-group">
-                                    @Html.LabelFor(x => x.AdminProjectIds):
-                                    @Html.ListBoxFor(x => x.AdminProjectIds, (List<SelectListItem>)ViewBag.Projects, new { @class = "form-control", size = 4, multiple = "multiple" })
-                                    @Html.ValidationMessageFor(x => x.AdminProjectIds, null, new { @class = "text-danger" }, "small")
-                                    <small class="form-text text-muted">Hold down Ctrl key to select multiple items.</small>
-                                </div>
-                            }
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
-                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
-                }
+        @if (page.Security.User.IsAdmin)
+        {
+            <div class="form-group form-check">
+                @Html.CheckBoxFor(x => x.Admin, new {@class = "form-check-input"})
+                @Html.LabelFor(x => x.Admin, new {@class = "form-check-label"})
+                @Html.ValidationMessageFor(x => x.Admin, null, new {@class = "text-danger"}, "small")
             </div>
+        }
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.BugsPerPage):
+            @Html.TextBoxFor(x => x.BugsPerPage, new {@class = "form-control", maxlength = "3", size = "3"})
+            @Html.ValidationMessageFor(x => x.BugsPerPage, null, new {@class = "text-danger"}, "small")
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.EnableBugListPopups, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.EnableBugListPopups, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.EnableBugListPopups, null, new {@class = "text-danger"}, "small")
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.EditText, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.EditText, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.EditText, null, new {@class = "text-danger"}, "small")
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.DefaultQueryId):
+            @Html.DropDownListFor(x => x.DefaultQueryId, (List<SelectListItem>) ViewBag.Queries, new {@class = "form-control"})
+            @Html.ValidationMessageFor(x => x.DefaultQueryId, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">Default bug Query is what you see when you click on the "bugs" link</small>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.Email):
+            @Html.TextBoxFor(x => x.Email, new {@class = "form-control", maxlength = "60", size = "60"})
+            @Html.ValidationMessageFor(x => x.Email, null, new {@class = "text-danger"}, "small")
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.EmailSignature):
+            @Html.TextAreaFor(x => x.EmailSignature, new {@class = "form-control", rows = "2", cols = "50"})
+            @Html.ValidationMessageFor(x => x.EmailSignature, null, new {@class = "text-danger"}, "small")
         </div>
     </div>
+
+    <div class="tab-pane" id="email" role="tabpanel" aria-labelledby="email-tab">
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.EnableNotifications, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.EnableNotifications, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.EnableNotifications, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">
+                ADMIN - SEE "NotificationEmailEnabled", "NotificationEmailFrom", "SmtpServer" settings in Web.config.
+                <br>
+                To receive email notifications when items are added or changed, fill in your email address, enable notifications, and then select "Auto-subscribe to all items" or the other options.
+            </small>
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.AutoSubscribeToAllItems, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.AutoSubscribeToAllItems, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.AutoSubscribeToAllItems, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">You can AUTOMATICALLY subscribe to receive notifications to items by selecting either "Auto-subscribe to all items" or by selecting the other options.</small>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.AutoSubscribePerProjectIds):
+            @Html.ListBoxFor(x => x.AutoSubscribePerProjectIds, (List<SelectListItem>) ViewBag.Projects, new {@class = "form-control", size = 4, multiple = "multiple"})
+            @Html.ValidationMessageFor(x => x.AutoSubscribePerProjectIds, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">Hold down Ctrl key to select multiple items.</small>
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.AutoSubscribeToAllItemsAssignedToYou, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.AutoSubscribeToAllItemsAssignedToYou, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.AutoSubscribeToAllItemsAssignedToYou, null, new {@class = "text-danger"}, "small")
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.AutoSubscribeToAllItemsReportedByYou, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.AutoSubscribeToAllItemsReportedByYou, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.AutoSubscribeToAllItemsReportedByYou, null, new {@class = "text-danger"}, "small")
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.ApplySubscriptionChangesRetroactively, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.ApplySubscriptionChangesRetroactively, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.ApplySubscriptionChangesRetroactively, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">Delete old subscriptions and create new ones, according to above settings.</small>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.NotificationsSubscribedBugsReportedByMe):
+            @Html.DropDownListFor(x => x.NotificationsSubscribedBugsReportedByMe, (List<SelectListItem>) ViewBag.Notifications, new {@class = "form-control"})
+            @Html.ValidationMessageFor(x => x.NotificationsSubscribedBugsReportedByMe, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">You can REDUCE or INCREASE the amount of email you receive by selecting the following.</small>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.NotificationsSubscribedBugsAssignedToMe):
+            @Html.DropDownListFor(x => x.NotificationsSubscribedBugsAssignedToMe, (List<SelectListItem>) ViewBag.Notifications, new {@class = "form-control"})
+            @Html.ValidationMessageFor(x => x.NotificationsSubscribedBugsAssignedToMe, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">You can REDUCE or INCREASE the amount of email you receive by selecting the following.</small>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(x => x.NotificationsForAllOtherSubscribedBugs):
+            @Html.DropDownListFor(x => x.NotificationsForAllOtherSubscribedBugs, (List<SelectListItem>) ViewBag.Notifications, new {@class = "form-control"})
+            @Html.ValidationMessageFor(x => x.NotificationsForAllOtherSubscribedBugs, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">You can REDUCE or INCREASE the amount of email you receive by selecting the following.</small>
+        </div>
+
+        <div class="form-group form-check">
+            @Html.CheckBoxFor(x => x.SendNotificationsEvenForItemsAddOrChange, new {@class = "form-check-input"})
+            @Html.LabelFor(x => x.SendNotificationsEvenForItemsAddOrChange, new {@class = "form-check-label"})
+            @Html.ValidationMessageFor(x => x.SendNotificationsEvenForItemsAddOrChange, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">Delete old subscriptions and create new ones, according to above settings.</small>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
+        <div class="form-group">
+            @Html.LabelFor(x => x.ForcedProjectId):
+            @Html.DropDownListFor(x => x.ForcedProjectId, (List<SelectListItem>) ViewBag.ForcedProjects, new {@class = "form-control"})
+            @Html.ValidationMessageFor(x => x.ForcedProjectId, null, new {@class = "text-danger"}, "small")
+            <small class="form-text text-muted">If you have only given view permissions to this user, set the forced project to any of the view-only projects.</small>
+        </div>
+
+        <div class="form-group">
+            <table class="table table-sm bg-white">
+                <tr>
+                    <th>User</th>
+                    <th>Permissions</th>
+                </tr>
+
+                @foreach (var row in ViewBag.ProjectPermissions)
+                {
+                    <tr>
+                        <td>@row["pj_name"]</td>
+                        <td>
+                            <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "0", (int) row["pu_permission_level"] == 0)&nbsp;none</label>
+                            <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "1", (int) row["pu_permission_level"] == 1)&nbsp;view only</label>
+                            <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "3", (int) row["pu_permission_level"] == 3)&nbsp;report (add and comment only)</label>
+                            <label>@Html.RadioButton($"Permissions[{row["pj_id"]}]", "2", (int) row["pu_permission_level"] == 2)&nbsp;all (add and edit)</label>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <small class="form-text text-muted">If you have only given view permissions to this user, set the forced project to any of the view-only projects.</small>
+        </div>
+
+        @if (page.Security.User.IsAdmin)
+        {
+            <div class="form-group">
+                @Html.LabelFor(x => x.AdminProjectIds):
+                @Html.ListBoxFor(x => x.AdminProjectIds, (List<SelectListItem>) ViewBag.Projects, new {@class = "form-control", size = 4, multiple = "multiple"})
+                @Html.ValidationMessageFor(x => x.AdminProjectIds, null, new {@class = "text-danger"}, "small")
+                <small class="form-text text-muted">Hold down Ctrl key to select multiple items.</small>
+            </div>
+        }
+    </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+}
+</div>
+</div>
+</div>
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

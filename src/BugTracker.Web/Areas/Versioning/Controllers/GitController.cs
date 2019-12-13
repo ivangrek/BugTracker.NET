@@ -1,22 +1,22 @@
 ﻿namespace BugTracker.Web.Areas.Versioning.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
     using System;
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core;
+    using Core.Controls;
+    using Models;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class GitController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
-        private readonly ISecurity security;
         private readonly IAuthenticate authenticate;
+        private readonly ISecurity security;
 
         public GitController(
             IApplicationSettings applicationSettings,
@@ -34,9 +34,7 @@
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
             ViewBag.Page = new PageModel
             {
@@ -57,13 +55,15 @@
                 replace(substring(gitcom_msg,1,4000),char(13),'<br>') [msg],
 
                 case when gitap_action not like '%D%' and gitap_action not like 'A%' then
-                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Git/Diff") + @"?revpathid=' + convert(varchar,gitap_id) + '>diff</a>'
+                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Git/Diff") +
+                      @"?revpathid=' + convert(varchar,gitap_id) + '>diff</a>'
                     else
                     ''
                 end [view<br>diff],
 
                 case when gitap_action not like '%D%' then
-                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Git/Log") + @"?revpathid =' + convert(varchar,gitap_id) + '>history</a>'
+                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Git/Log") +
+                      @"?revpathid =' + convert(varchar,gitap_id) + '>history</a>'
                     else
                     ''
                 end [view<br>history<br>(git log)]
@@ -72,11 +72,12 @@
                 inner join git_affected_paths on gitap_gitcom_id = gitcom_id
                 where gitcom_bug = $bg
                 order by gitcom_git_date desc, gitap_path"
-                .Replace("$bg", Convert.ToString(id));
+                          .Replace("$bg", Convert.ToString(id));
 
             var model = new SortableTableModel
             {
-                DataSet = DbUtil.GetDataSet(sql),
+                DataTable = DbUtil.GetDataSet(sql)
+                    .Tables[0],
                 HtmlEncode = false
             };
 
@@ -96,15 +97,13 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["gitcom_bug"], this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
-            var repo = (string)dr["gitcom_repository"];
-            var path = (string)dr["gitap_path"];
+            var repo = (string) dr["gitcom_repository"];
+            var path = (string) dr["gitap_path"];
 
             var text = VersionControl.HgGetFileContents(repo, commit, path);
 
@@ -124,20 +123,21 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["gitcom_bug"], this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], this.security);
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 Response.Write("You are not allowed to view this item");
                 Response.End();
             }
 
-            ViewBag.BlameText.BlameText = VersionControl.GitBlame((string)dr["gitcom_repository"], (string)dr["gitap_path"], commit);
+            ViewBag.BlameText.BlameText =
+                VersionControl.GitBlame((string) dr["gitcom_repository"], (string) dr["gitap_path"], commit);
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"git blame {commit} -- {HttpUtility.HtmlEncode((string)dr["gitap_path"])}",
+                Title = $"git blame {commit} -- {HttpUtility.HtmlEncode((string) dr["gitap_path"])}",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -160,24 +160,23 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var bugid = (int)dr["gitcom_bug"];
+            var bugid = (int) dr["gitcom_bug"];
             var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
             ViewBag.RevPathId = revpathid;
-            ViewBag.Commit = (string)dr["gitcom_commit"];
+            ViewBag.Commit = (string) dr["gitcom_commit"];
 
-            ViewBag.LogResult = VersionControl.GitLog((string)dr["gitcom_repository"], (string)dr["gitcom_commit"], (string)dr["gitap_path"]);
+            ViewBag.LogResult = VersionControl.GitLog((string) dr["gitcom_repository"], (string) dr["gitcom_commit"],
+                (string) dr["gitap_path"]);
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"git log {HttpUtility.HtmlEncode((string)dr["gitap_path"])}",
+                Title = $"git log {HttpUtility.HtmlEncode((string) dr["gitap_path"])}",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -199,14 +198,12 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["gitcom_bug"], this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["gitcom_bug"], this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
-            var repo = (string)dr["gitcom_repository"];
+            var repo = (string) dr["gitcom_repository"];
 
             var error = string.Empty;
             var commit0 = Request["rev_0"];
@@ -215,48 +212,49 @@
 
             if (string.IsNullOrEmpty(commit0))
             {
-                var commit = (string)dr["gitcom_commit"];
+                var commit = (string) dr["gitcom_commit"];
 
-                ViewBag.UnifiedDiffText = VersionControl.GitGetUnifiedDiffOneCommit(repo, commit, (string)dr["gitap_path"]);
+                ViewBag.UnifiedDiffText =
+                    VersionControl.GitGetUnifiedDiffOneCommit(repo, commit, (string) dr["gitap_path"]);
 
                 // get the source code for both the left and right
-                var leftText = VersionControl.GitGetFileContents(repo, commit + "^", (string)dr["gitap_path"]);
-                var rightText = VersionControl.GitGetFileContents(repo, commit, (string)dr["gitap_path"]);
+                var leftText = VersionControl.GitGetFileContents(repo, commit + "^", (string) dr["gitap_path"]);
+                var rightText = VersionControl.GitGetFileContents(repo, commit, (string) dr["gitap_path"]);
 
                 ViewBag.LeftTitle = commit + "^";
                 ViewBag.RightTitle = commit;
 
-                error = VersionControl.VisualDiff(ViewBag.UnifiedDiffText, leftText, rightText, ref leftOut, ref rightOut);
+                error = VersionControl.VisualDiff(ViewBag.UnifiedDiffText, leftText, rightText, ref leftOut,
+                    ref rightOut);
             }
             else
             {
                 var commit1 = Request["rev_1"];
 
-                ViewBag.UnifiedDiffText = VersionControl.GitGetUnifiedDiffTwoCommits(repo, commit0, commit1, ViewBag.Path);
+                ViewBag.UnifiedDiffText =
+                    VersionControl.GitGetUnifiedDiffTwoCommits(repo, commit0, commit1, ViewBag.Path);
 
                 // get the source code for both the left and right
-                var leftText = VersionControl.GitGetFileContents(repo, commit0, (string)dr["gitap_path"]);
-                var rightText = VersionControl.GitGetFileContents(repo, commit1, (string)dr["gitap_path"]);
+                var leftText = VersionControl.GitGetFileContents(repo, commit0, (string) dr["gitap_path"]);
+                var rightText = VersionControl.GitGetFileContents(repo, commit1, (string) dr["gitap_path"]);
 
                 ViewBag.LeftTitle = commit0;
                 ViewBag.RightTitle = commit1;
 
-                error = VersionControl.VisualDiff(ViewBag.UnifiedDiffText, leftText, rightText, ref leftOut, ref rightOut);
+                error = VersionControl.VisualDiff(ViewBag.UnifiedDiffText, leftText, rightText, ref leftOut,
+                    ref rightOut);
             }
 
             ViewBag.LeftOut = leftOut;
             ViewBag.RightOut = rightOut;
 
-            if (!string.IsNullOrEmpty(error))
-            {
-                return Content(HttpUtility.HtmlEncode(error));
-            }
+            if (!string.IsNullOrEmpty(error)) return Content(HttpUtility.HtmlEncode(error));
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"git diff {HttpUtility.HtmlEncode((string)dr["gitap_path"])}",
+                Title = $"git diff {HttpUtility.HtmlEncode((string) dr["gitap_path"])}",
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -366,10 +364,7 @@
                     paths.Add(lines[i].Substring(2));
                 }
 
-            if (commit != null)
-            {
-                UpdateDb(bug, repo, commit, author, date, msg, actions, paths);
-            }
+            if (commit != null) UpdateDb(bug, repo, commit, author, date, msg, actions, paths);
 
             return Content("OK:");
         }

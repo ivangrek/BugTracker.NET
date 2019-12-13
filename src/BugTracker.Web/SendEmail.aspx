@@ -242,7 +242,7 @@
                     {
                         if (this.Project == 0)
                         {
-                            this.Sql = @"select us_id
+                            Sql = @"select us_id
                     from users
                     where us_active = 1
                     and len(us_email) > 0
@@ -252,7 +252,7 @@
                         {
                             // Only users explicitly allowed will be listed
                             if (ApplicationSettings.DefaultPermissionLevel == 0)
-                                this.Sql = @"select us_id
+                                Sql = @"select us_id
                         from users
                         where us_active = 1
                         and len(us_email) > 0
@@ -263,7 +263,7 @@
                         order by us_email";
                             // Only users explictly DISallowed will be omitted
                             else
-                                this.Sql = @"select us_id
+                                Sql = @"select us_id
                         from users
                         where us_active = 1
                         and len(us_email) > 0
@@ -274,8 +274,8 @@
                         order by us_email";
                         }
 
-                        this.Sql = this.Sql.Replace("$pr", Convert.ToString(this.Project));
-                        var dsUsersForThisProject = DbUtil.GetDataSet(this.Sql);
+                        Sql = Sql.Replace("$pr", Convert.ToString(this.Project));
+                        var dsUsersForThisProject = DbUtil.GetDataSet(Sql);
 
                         // remember the users for this this project
                         foreach (DataRow dr in dsUsersForThisProject.Tables[0].Rows)

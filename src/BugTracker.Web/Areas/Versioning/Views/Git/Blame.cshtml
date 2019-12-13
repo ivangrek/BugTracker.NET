@@ -5,10 +5,13 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using System.Text.RegularExpressions
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -36,7 +39,7 @@
             //f36d6c45 (corey 2009-10-04 19:44:42 -0500  2) asdf
             //9f3ac5e7 (corey 2009-10-04 19:46:05 -0500  3) asdfab
 
-            var regex = new System.Text.RegularExpressions.Regex("\n");
+            var regex = new Regex("\n");
             var lines = regex.Split(ViewBag.BlameText);
         }
 
@@ -60,7 +63,7 @@
                     <td>@commit</td>
                     <td nowrap>@author</td>
                     <td nowrap style='background: #ddffdd'>
-                        <pre style='display:inline;'>@HttpUtility.HtmlEncode(text)</pre>
+                    <pre style='display: inline;'>@HttpUtility.HtmlEncode(text)</pre>
                     <td>
                     <td nowrap>@date
                     <td>
@@ -71,5 +74,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

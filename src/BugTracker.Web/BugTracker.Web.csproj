@@ -1,4 +1,5 @@
 ﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props" Condition="Exists('..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" />
   <Import Project="..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
   <Import Project="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props')" />
   <Import Project="..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props')" />
@@ -61,10 +62,10 @@
       <HintPath>..\..\packages\Autofac.Web.4.0.0\lib\net45\Autofac.Integration.Web.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.3.0-preview8-19405-04\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EntityFramework.6.3.0-preview8-19405-04\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Highlighter.Net">
       <HintPath>App_Code\Highlighter.Net.dll</HintPath>
@@ -621,21 +622,17 @@
     <Compile Include="Controllers\AspController.cs" />
     <Compile Include="Controllers\AttachmentController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
-    <Compile Include="Core\Administration\UserDefinedAttributeService.cs" />
-    <Compile Include="Core\Administration\CategoryService.cs" />
-    <Compile Include="Core\Administration\PriorityService.cs" />
-    <Compile Include="Core\Administration\StatusService.cs" />
     <Compile Include="Core\ApplicationRoleProvider.cs" />
     <Compile Include="Core\ApplicationSettings.cs" />
     <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
     <Compile Include="Core\BugList.cs" />
     <Compile Include="Core\Persistence\Configurations\DashboardItemConfiguration.cs" />
-    <Compile Include="Core\Persistence\Configurations\OrganisationConfiguration.cs" />
+    <Compile Include="Core\Persistence\Configurations\OrganizationConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\UserConfiguration.cs" />
     <Compile Include="Core\Persistence\Configurations\QueryConfiguration.cs" />
     <Compile Include="Core\Persistence\Models\DashboardItem.cs" />
-    <Compile Include="Core\Persistence\Models\Organisation.cs" />
+    <Compile Include="Core\Persistence\Models\Organization.cs" />
     <Compile Include="Core\Persistence\Models\User.cs" />
     <Compile Include="Core\Persistence\Models\Query.cs" />
     <Compile Include="Core\QueryService.cs" />
@@ -650,10 +647,6 @@
     <Compile Include="Core\Email.cs" />
     <Compile Include="Core\Persistence\ApplicationContext.cs" />
     <Compile Include="Core\Persistence\Configurations\ReportConfiguration.cs" />
-    <Compile Include="Core\Persistence\Configurations\UserDefinedAttributeConfiguration.cs" />
-    <Compile Include="Core\Persistence\Configurations\CategoryConfiguration.cs" />
-    <Compile Include="Core\Persistence\Configurations\PriorityConfiguration.cs" />
-    <Compile Include="Core\Persistence\Configurations\StatusConfiguration.cs" />
     <Compile Include="Core\Persistence\Models\Report.cs" />
     <Compile Include="Core\Persistence\Models\UserDefinedAttribute.cs" />
     <Compile Include="Core\Persistence\Models\Category.cs" />
@@ -882,6 +875,28 @@
     <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BugTracker.Identification\BugTracker.Identification.csproj">
+      <Project>{225a07ca-61db-4ecc-8fb6-a1c7d49530e8}</Project>
+      <Name>BugTracker.Identification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BugTracker.Tracking\BugTracker.Tracking.csproj">
+      <Project>{515650f6-0e45-42e3-ae49-6c6533e02730}</Project>
+      <Name>BugTracker.Tracking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BugTracker\BugTracker.csproj">
+      <Project>{1e06c8a8-49e7-472c-b8df-bab0158bb531}</Project>
+      <Name>BugTracker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\BugTracker.Persistence\BugTracker.Persistence.csproj">
+      <Project>{9373ce0b-5e3e-42ad-9f6e-10178652d5d9}</Project>
+      <Name>BugTracker.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\BugTracker.Utilities\BugTracker.Utilities.csproj">
+      <Project>{D1D5CDF6-C6FE-4298-BFEE-50181CBAACA2}</Project>
+      <Name>BugTracker.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -912,14 +927,15 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.3\build\Microsoft.CodeQuality.Analyzers.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.NetCore.Analyzers.2.9.3\build\Microsoft.NetCore.Analyzers.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.NetFramework.Analyzers.2.9.3\build\Microsoft.NetFramework.Analyzers.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.3\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
+    <Error Condition="!Exists('..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets'))" />
   </Target>
-  <Import Project="..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets" Condition="Exists('..\..\packages\EntityFramework.6.3.0-preview8-19405-04\build\EntityFramework.targets')" />
+  <Import Project="..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets" Condition="Exists('..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

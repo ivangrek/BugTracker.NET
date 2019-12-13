@@ -7,15 +7,21 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.Category;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Administration;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
+    using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Net;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Changing.Results;
+    using Core;
+    using Core.Controls;
+    using Models.Category;
+    using Querying;
+    using Tracking.Changing.Categories.Commands;
+    using Tracking.Querying.Categories;
+    using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
@@ -23,16 +29,19 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     {
         private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
-        private readonly ICategoryService categoryService;
+        private readonly IApplicationFacade applicationFacade;
+        private readonly IQueryBuilder queryBuilder;
 
         public CategoryController(
             IApplicationSettings applicationSettings,
             ISecurity security,
-            ICategoryService categoryService)
+            IApplicationFacade applicationFacade,
+            IQueryBuilder queryBuilder)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
-            this.categoryService = categoryService;
+            this.applicationFacade = applicationFacade;
+            this.queryBuilder = queryBuilder;
         }
 
         [HttpGet]
@@ -46,9 +55,37 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
+            var query = this.queryBuilder
+                .From<ICategorySource>()
+                .To<ICategoryListResult>()
+                .Sort()
+                .AscendingBy(x => x.SortSequence)
+                .AscendingBy(x => x.Name)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            var dataTable = new DataTable();
+
+            dataTable.Columns.Add("id");
+            dataTable.Columns.Add("name");
+            dataTable.Columns.Add("sort seq");
+            dataTable.Columns.Add("default");
+            dataTable.Columns.Add("hidden");
+
+            foreach (var category in result)
+            {
+                var defaultValue = category.Default == 1
+                    ? "Y"
+                    : "N";
+
+                dataTable.Rows.Add(category.Id, category.Name, category.SortSequence, defaultValue, category.Id);
+            }
+
             var model = new SortableTableModel
             {
-                DataSet = this.categoryService.LoadList(),
+                DataTable = dataTable,
                 EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Category/Update/"),
                 DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Category/Delete/")
             };
@@ -67,47 +104,41 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            return View("Edit", new EditModel());
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            model = new EditModel();
+
+            return View("Edit", model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            if (!ModelState.IsValid)
+            this.applicationFacade
+                .Run<ICreateCommand>(model, out var commandResult);
+
+            switch (commandResult)
             {
-                ModelState.AddModelError(string.Empty, "Categoty was not created.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
 
-                ViewBag.Page = new PageModel
-                {
-                    ApplicationSettings = this.applicationSettings,
-                    Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - new category",
-                    SelectedItem = MainMenuSections.Administration
-                };
-
-                return View("Edit", model);
+                    return RedirectToAction(nameof(Create));
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
-                { "$ss", model.SortSequence.ToString() },
-                { "$df", Util.BoolToString(model.Default)},
-            };
-
-            this.categoryService.Create(parameters);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Update(int id)
         {
-            // Get this entry's data from the db and fill in the form
-            var dataRow = this.categoryService.LoadOne(id);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -116,12 +147,28 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new EditModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            var query = this.queryBuilder
+                .From<ICategorySource>()
+                .To<ICategoryStateResult>()
+                .Filter()
+                .Equal(x => x.Id, id)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            model = new EditModel
             {
-                Id = id,
-                Name = dataRow.Name,
-                SortSequence = dataRow.SortSequence,
-                Default = dataRow.Default == 1
+                Id = result.Id,
+                Name = result.Name,
+                SortSequence = result.SortSequence,
+                Default = Convert.ToBoolean(result.Default)
             };
 
             return View("Edit", model);
@@ -131,44 +178,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            if (!ModelState.IsValid)
+            this.applicationFacade
+                .Run<IUpdateCommand>(model, out var commandResult);
+
+            switch (commandResult)
             {
-                ModelState.AddModelError(string.Empty, "Categoty was not updated.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
 
-                ViewBag.Page = new PageModel
-                {
-                    ApplicationSettings = this.applicationSettings,
-                    Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - edit category",
-                    SelectedItem = MainMenuSections.Administration
-                };
-
-                return View("Edit", model);
+                    return RedirectToAction(nameof(Update));
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
-                { "$ss", model.SortSequence.ToString() },
-                { "$df", Util.BoolToString(model.Default)},
-            };
-
-            this.categoryService.Update(parameters);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            var (valid, name) = this.categoryService.CheckDeleting(id);
-
-            if (!valid)
-            {
-                return Content($"You can't delete category \"{name}\" because some bugs still reference it.");
-            }
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -177,10 +206,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new DeleteModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is DeleteModel model) return View(model);
+
+            var query = this.queryBuilder
+                .From<ICategorySource>()
+                .To<ICategoryDeletePreviewResult>()
+                .Filter()
+                .Equal(x => x.Id, id)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            model = new DeleteModel
             {
-                Id = id,
-                Name = name
+                Id = result.Id,
+                Name = result.Name
             };
 
             return View(model);
@@ -190,16 +235,21 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            var (valid, name) = this.categoryService.CheckDeleting(model.Id);
+            this.applicationFacade
+                .Run<IDeleteCommand>(model, out var commandResult);
 
-            if (!valid)
+            switch (commandResult)
             {
-                return Content($"You can't delete category \"{name}\" because some bugs still reference it.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
+
+                    return RedirectToAction(nameof(Delete), new { id = model.Id });
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            this.categoryService.Delete(model.Id);
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }

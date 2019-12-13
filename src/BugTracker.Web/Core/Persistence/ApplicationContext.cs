@@ -17,15 +17,7 @@ namespace BugTracker.Web.Core.Persistence
 
         public DbSet<User> Users { get; set; }
 
-        public DbSet<Organisation> Organisations { get; set; }
-
-        public DbSet<Category> Categories { get; set; }
-
-        public DbSet<Priority> Priorities { get; set; }
-
-        public DbSet<Status> Statuses { get; set; }
-
-        public DbSet<UserDefinedAttribute> UserDefinedAttributes { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
 
         public DbSet<Query> Queries { get; set; }
 
@@ -36,11 +28,7 @@ namespace BugTracker.Web.Core.Persistence
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new UserConfiguration());
-            modelBuilder.Configurations.Add(new OrganisationConfiguration());
-            modelBuilder.Configurations.Add(new CategoryConfiguration());
-            modelBuilder.Configurations.Add(new PriorityConfiguration());
-            modelBuilder.Configurations.Add(new StatusConfiguration());
-            modelBuilder.Configurations.Add(new UserDefinedAttributeConfiguration());
+            modelBuilder.Configurations.Add(new OrganizationConfiguration());
 
             modelBuilder.Configurations.Add(new QueryConfiguration());
             modelBuilder.Configurations.Add(new ReportConfiguration());

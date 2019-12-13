@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.Home.BackupDbModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -38,16 +40,17 @@
 @section BodySubHeader {
 }
 
-@using (Html.BeginForm("BackupDb", "Home", FormMethod.Post, new { id = "frm", @class = "mb-3" }))
+@using (Html.BeginForm("BackupDb", "Home", FormMethod.Post, new {id = "frm", @class = "mb-3"}))
 {
     @Html.AntiForgeryToken()
     @Html.Partial("_ValidationSummary")
 
-    @Html.HiddenFor(x => x.FileName, new { id = "fileName" })
+    @Html.HiddenFor(x => x.FileName, new {id = "fileName"})
 
-    if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+    if (ViewBag.Table.DataTable.Rows.Count > 0)
     {
-        @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+        @Html.Partial("_SortableTable", (SortableTableModel) ViewBag.Table)
+        ;
     }
     else
     {
@@ -66,10 +69,10 @@
         FROM DISK = 'C:\path\to\your\your_backup_file.bak'<br>
         WITH<br>
         MOVE 'btnet' TO 'C:\path\to\where\you\want\your_db_data.mdf',<br>
-        MOVE 'btnet_log'  TO 'C:\path\to\where\you\want\your_db_log.ldf', REPLACE<br>
+        MOVE 'btnet_log' TO 'C:\path\to\where\you\want\your_db_log.ldf', REPLACE<br>
     </div>
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

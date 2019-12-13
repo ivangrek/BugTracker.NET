@@ -33,7 +33,7 @@ namespace BugTracker.Web.Areas.Administration.Models.CustomField
 
         [Display(Name = "Default")]
         public string Default { get; set; }
-        
+
         [Display(Name = "Normal Dropdown Values")]
         public string DropdownValues { get; set; }
     }

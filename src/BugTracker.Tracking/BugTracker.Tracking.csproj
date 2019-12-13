@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{515650F6-0E45-42E3-AE49-6C6533E02730}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BugTracker.Tracking</RootNamespace>
+    <AssemblyName>BugTracker.Tracking</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=4.9.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.9.4\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.8.5.1\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ComponentModel.Annotations.4.4.1\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Changing\Categories\Category.cs" />
+    <Compile Include="Changing\Categories\CommandHandlers\CreateCommandHandler.cs" />
+    <Compile Include="Changing\Categories\CommandHandlers\DeleteCommandHandler.cs" />
+    <Compile Include="Changing\Categories\CommandHandlers\UpdateCommandHandler.cs" />
+    <Compile Include="Changing\Categories\Commands\ICreateCommand.cs" />
+    <Compile Include="Changing\Categories\Commands\IDeleteCommand.cs" />
+    <Compile Include="Changing\Categories\Commands\IUpdateCommand.cs" />
+    <Compile Include="Querying\Categories\ICategoryDeletePreviewResult.cs" />
+    <Compile Include="Querying\Categories\ICategoryStateResult.cs" />
+    <Compile Include="Changing\Categories\ICategoryRepository.cs" />
+    <Compile Include="Querying\Categories\ICategoryListResult.cs" />
+    <Compile Include="Querying\Categories\ICategorySource.cs" />
+    <Compile Include="Changing\Categories\Validators\CreateCommandValidator.cs" />
+    <Compile Include="Changing\Categories\Validators\DeleteCommandValidator.cs" />
+    <Compile Include="Changing\Categories\Validators\UpdateCommandValidator.cs" />
+    <Compile Include="Changing\Organizations\CommandHandlers\DeleteCommandHandler.cs" />
+    <Compile Include="Changing\Organizations\Commands\IDeleteCommand.cs" />
+    <Compile Include="Querying\Organizations\IOrganizationComboBoxResult.cs" />
+    <Compile Include="Querying\Organizations\IOrganizationDeletePreviewResult.cs" />
+    <Compile Include="Querying\Organizations\IOrganizationStateResult.cs" />
+    <Compile Include="Changing\Organizations\IOrganizationRepository.cs" />
+    <Compile Include="Changing\Organizations\Organization.cs" />
+    <Compile Include="Querying\Organizations\IOrganizationListResult.cs" />
+    <Compile Include="Querying\Organizations\IOrganizationSource.cs" />
+    <Compile Include="Changing\Organizations\Validators\DeleteCommandValidator.cs" />
+    <Compile Include="Changing\Priorities\CommandHandlers\UpdateCommandHandler.cs" />
+    <Compile Include="Changing\Priorities\CommandHandlers\CreateCommandHandler.cs" />
+    <Compile Include="Changing\Priorities\CommandHandlers\DeleteCommandHandler.cs" />
+    <Compile Include="Querying\Priorities\IPriorityListResult.cs" />
+    <Compile Include="Querying\Priorities\IPriorityDeletePreviewResult.cs" />
+    <Compile Include="Querying\Priorities\IPriorityStateResult.cs" />
+    <Compile Include="Querying\Priorities\IPrioritySource.cs" />
+    <Compile Include="Changing\Projects\CommandHandlers\CreateCommandHandler.cs" />
+    <Compile Include="Changing\Projects\CommandHandlers\DeleteCommandHandler.cs" />
+    <Compile Include="Changing\Projects\CommandHandlers\UpdateCommandHandler.cs" />
+    <Compile Include="Changing\Projects\Commands\IDeleteCommand.cs" />
+    <Compile Include="Changing\Projects\Commands\ICreateCommand.cs" />
+    <Compile Include="Changing\Projects\Commands\IUpdateCommand.cs" />
+    <Compile Include="Changing\Projects\IProjectRepository.cs" />
+    <Compile Include="Querying\Projects\IProjectListResult.cs" />
+    <Compile Include="Querying\Projects\IProjectDeletePreviewResult.cs" />
+    <Compile Include="Querying\Projects\IProjectStateResult.cs" />
+    <Compile Include="Changing\Projects\Project.cs" />
+    <Compile Include="Querying\Projects\IProjectSource.cs" />
+    <Compile Include="Changing\Projects\Validators\CreateCommandValidator.cs" />
+    <Compile Include="Changing\Projects\Validators\DeleteCommandValidator.cs" />
+    <Compile Include="Changing\Projects\Validators\UpdateCommandValidator.cs" />
+    <Compile Include="Changing\Statuses\CommandHandlers\CreateCommandHandler.cs" />
+    <Compile Include="Changing\Statuses\CommandHandlers\DeleteCommandHandler.cs" />
+    <Compile Include="Changing\Statuses\CommandHandlers\UpdateCommandHandler.cs" />
+    <Compile Include="Changing\Bugs\IBugRepository.cs" />
+    <Compile Include="Changing\Bugs\Bug.cs" />
+    <Compile Include="Changing\Priorities\Commands\IUpdateCommand.cs" />
+    <Compile Include="Changing\Priorities\Commands\ICreateCommand.cs" />
+    <Compile Include="Changing\Priorities\Commands\IDeleteCommand.cs" />
+    <Compile Include="Changing\Priorities\IPriorityRepository.cs" />
+    <Compile Include="Changing\Priorities\Validators\UpdateCommandValidator.cs" />
+    <Compile Include="Changing\Priorities\Validators\CreateCommandValidator.cs" />
+    <Compile Include="Changing\Priorities\Validators\DeleteCommandValidator.cs" />
+    <Compile Include="Changing\Priorities\Priority.cs" />
+    <Compile Include="Changing\Statuses\Commands\ICreateCommand.cs" />
+    <Compile Include="Changing\Statuses\Commands\IDeleteCommand.cs" />
+    <Compile Include="Changing\Statuses\Commands\IUpdateCommand.cs" />
+    <Compile Include="Changing\Statuses\IStatusRepository.cs" />
+    <Compile Include="Querying\Statuses\IStatusListResult.cs" />
+    <Compile Include="Querying\Statuses\IStatusDeletePreviewResult.cs" />
+    <Compile Include="Querying\Statuses\IStatusStateResult.cs" />
+    <Compile Include="Querying\Statuses\IStatusSource.cs" />
+    <Compile Include="Changing\Statuses\Status.cs" />
+    <Compile Include="Changing\Statuses\Validators\CreateCommandValidator.cs" />
+    <Compile Include="Changing\Statuses\Validators\DeleteCommandValidator.cs" />
+    <Compile Include="Changing\Statuses\Validators\UpdateCommandValidator.cs" />
+    <Compile Include="IoCModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\CommandHandlers\CreateCommandHandler.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\CommandHandlers\DeleteCommandHandler.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\CommandHandlers\UpdateCommandHandler.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\Commands\ICreateCommand.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\Commands\IDeleteCommand.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\Commands\IUpdateCommand.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\IUserDefinedAttributeRepository.cs" />
+    <Compile Include="Querying\UserDefinedAttributes\IUserDefinedAttributeStateResult.cs" />
+    <Compile Include="Querying\UserDefinedAttributes\IUserDefinedAttributeDeletePreviewResult.cs" />
+    <Compile Include="Querying\UserDefinedAttributes\IUserDefinedAttributeListResult.cs" />
+    <Compile Include="Querying\UserDefinedAttributes\IUserDefinedAttributeSource.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\UserDefinedAttribute.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\Validators\CreateCommandValidator.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\Validators\DeleteCommandValidator.cs" />
+    <Compile Include="Changing\UserDefinedAttributes\Validators\UpdateCommandValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Querying\Bugs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BugTracker\BugTracker.csproj">
+      <Project>{1e06c8a8-49e7-472c-b8df-bab0158bb531}</Project>
+      <Name>BugTracker</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

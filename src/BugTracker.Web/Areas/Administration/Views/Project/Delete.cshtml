@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.Project.DeleteModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -17,13 +19,6 @@
 }
 
 @section Scripts {
-    <script>
-        function submit_form() {
-            var frm = document.getElementById("frm");
-            frm.submit();
-            return true;
-        }
-    </script>
 }
 
 @section BodyHeader {
@@ -33,16 +28,18 @@
 @section BodySubHeader {
 }
 
-<h5>Confirm deletion of project</h5>
-
 @using (Html.BeginForm("Delete", "Project", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
+    @Html.Partial("_ValidationSummary")
 
     @Html.HiddenFor(x => x.Id)
 
+    <h5>Confirm deletion of project</h5>
+
     <div class="form-group">
         @Html.LabelFor(x => x.Name): @Model.Name
+        @Html.HiddenFor(x => x.Name)
     </div>
 
     <button type="submit" class="btn btn-danger">Delete</button>
@@ -50,5 +47,5 @@
 }
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

@@ -68,7 +68,7 @@ namespace BugTracker.Web.Core
                 {
                     var visibilityValue = " ";
 
-                    if ((query.UserId == null || query.UserId == 0) && (query.OrganisationId == null || query.OrganisationId == 0))
+                    if ((query.UserId == null || query.UserId == 0) && (query.OrganizationId == null || query.OrganizationId == 0))
                     {
                         visibilityValue = "everybody";
                     }
@@ -79,12 +79,12 @@ namespace BugTracker.Web.Core
 
                         visibilityValue = $"user:{user.Name}";
                     }
-                    else if (query.OrganisationId != null && query.OrganisationId != 0)
+                    else if (query.OrganizationId != null && query.OrganizationId != 0)
                     {
-                        var organisation = this.context.Organisations
-                            .First(x => x.Id == query.OrganisationId);
+                        var organization = this.context.Organizations
+                            .First(x => x.Id == query.OrganizationId);
 
-                        visibilityValue = $"org:{organisation.Name}";
+                        visibilityValue = $"org:{organization.Name}";
                     }
 
                     var viewListValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Bug?qu_id={query.Id}")}'>view list</a>";
@@ -153,7 +153,7 @@ namespace BugTracker.Web.Core
                 Sql = parameters["$sq"],
                 Default = 0,
                 UserId = Convert.ToInt32(parameters["$us"]),
-                OrganisationId = Convert.ToInt32(parameters["$rl"])
+                OrganizationId = Convert.ToInt32(parameters["$rl"])
             };
 
             this.context.Queries
@@ -172,7 +172,7 @@ namespace BugTracker.Web.Core
             query.Name = parameters["$de"];
             query.Sql = parameters["$sq"];
             query.UserId = Convert.ToInt32(parameters["$us"]);
-            query.OrganisationId = Convert.ToInt32(parameters["$rl"]);
+            query.OrganizationId = Convert.ToInt32(parameters["$rl"]);
 
             this.context
                 .SaveChanges();

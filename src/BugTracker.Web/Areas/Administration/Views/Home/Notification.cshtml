@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -43,7 +45,7 @@
         var formId = Guid.NewGuid().ToString();
     }
 
-    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new {id = formId, style = "display: inline;"}))
     {
         @Html.AntiForgeryToken()
         @Html.Hidden("Action", "delete")
@@ -57,7 +59,7 @@
         formId = Guid.NewGuid().ToString();
     }
 
-    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new {id = formId, style = "display: inline;"}))
     {
         @Html.AntiForgeryToken()
         @Html.Hidden("Action", "reset")
@@ -72,7 +74,7 @@
         formId = Guid.NewGuid().ToString();
     }
 
-    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    @using (Html.BeginForm("Notification", "Home", FormMethod.Post, new {id = formId, style = "display: inline;"}))
     {
         @Html.AntiForgeryToken()
         @Html.Hidden("Action", "resend")
@@ -83,9 +85,10 @@
     <br>
     <br>
 
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+    @if (Model.DataTable.Rows.Count > 0)
     {
-        @Html.Partial("_SortableTable", Model);
+        @Html.Partial("_SortableTable", Model)
+        ;
     }
     else
     {
@@ -94,5 +97,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

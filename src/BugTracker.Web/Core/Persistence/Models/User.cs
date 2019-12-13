@@ -58,7 +58,7 @@ namespace BugTracker.Web.Core.Persistence.Models
 
         public int CreatedUserId { get; set; }
 
-        public int OrganisationId { get; set; }
+        public int OrganizationId { get; set; }
 
         public DateTime? MostRecentLoginDateTime { get; set; }
     }

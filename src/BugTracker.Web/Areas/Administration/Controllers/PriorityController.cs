@@ -7,32 +7,42 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.Priority;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Administration;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
+    using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Net;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Changing.Results;
+    using Core;
+    using Core.Controls;
+    using Models.Priority;
+    using Querying;
+    using Tracking.Changing.Priorities.Commands;
+    using Tracking.Querying.Priorities;
+    using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class PriorityController : Controller
     {
+        private readonly IApplicationFacade applicationFacade;
         private readonly IApplicationSettings applicationSettings;
+        private readonly IQueryBuilder queryBuilder;
         private readonly ISecurity security;
-        private readonly IPriorityService priorityService;
 
         public PriorityController(
             IApplicationSettings applicationSettings,
             ISecurity security,
-            IPriorityService priorityService)
+            IApplicationFacade applicationFacade,
+            IQueryBuilder queryBuilder)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
-            this.priorityService = priorityService;
+
+            this.applicationFacade = applicationFacade;
+            this.queryBuilder = queryBuilder;
         }
 
         [HttpGet]
@@ -46,9 +56,42 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
+            var query = this.queryBuilder
+                .From<IPrioritySource>()
+                .To<IPriorityListResult>()
+                .Sort()
+                .AscendingBy(x => x.SortSequence)
+                .AscendingBy(x => x.Name)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            var dataTable = new DataTable();
+
+            dataTable.Columns.Add("id");
+            dataTable.Columns.Add("name");
+            dataTable.Columns.Add("sort seq");
+            dataTable.Columns.Add("background<br>color");
+            dataTable.Columns.Add("css<br>class");
+            dataTable.Columns.Add("default");
+            dataTable.Columns.Add("hidden");
+
+            foreach (var priority in result)
+            {
+                var backgroundColorValue =
+                    $"<div style='background:{priority.BackgroundColor};'>{priority.BackgroundColor}</div>";
+                var defaultValue = priority.Default == 1
+                    ? "Y"
+                    : "N";
+
+                dataTable.Rows.Add(priority.Id, priority.Name, priority.SortSequence, backgroundColorValue,
+                    priority.Style, defaultValue, priority.Id);
+            }
+
             var model = new SortableTableModel
             {
-                DataSet = this.priorityService.LoadList(),
+                DataTable = dataTable,
                 EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/"),
                 DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Delete/"),
                 HtmlEncode = false
@@ -68,7 +111,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new EditModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            model = new EditModel
             {
                 BackgroundColor = "#ffffff"
             };
@@ -80,42 +129,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            if (!ModelState.IsValid)
+            this.applicationFacade
+                .Run<ICreateCommand>(model, out var commandResult);
+
+            switch (commandResult)
             {
-                ModelState.AddModelError(string.Empty, "Priority was not created.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
 
-                ViewBag.Page = new PageModel
-                {
-                    ApplicationSettings = this.applicationSettings,
-                    Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - new priority",
-                    SelectedItem = MainMenuSections.Administration
-                };
-
-                return View("Edit", model);
+                    return RedirectToAction(nameof(Create));
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
-                { "$ss", model.SortSequence.ToString() },
-                { "$co", model.BackgroundColor.Replace("'", "''")},
-                { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
-                { "$df", Util.BoolToString(model.Default)},
-            };
-
-            this.priorityService.Create(parameters);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Update(int id)
         {
-            // Get this entry's data from the db and fill in the form
-            var dataRow = this.priorityService.LoadOne(id);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -124,14 +157,30 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new EditModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            var query = this.queryBuilder
+                .From<IPrioritySource>()
+                .To<IPriorityStateResult>()
+                .Filter()
+                .Equal(x => x.Id, id)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            model = new EditModel
             {
-                Id = id,
-                Name = dataRow.Name,
-                SortSequence = dataRow.SortSequence,
-                Style = dataRow.Style,
-                BackgroundColor = dataRow.BackgroundColor,
-                Default = dataRow.Default == 1
+                Id = result.Id,
+                Name = result.Name,
+                SortSequence = result.SortSequence,
+                Style = result.Style,
+                BackgroundColor = result.BackgroundColor,
+                Default = Convert.ToBoolean(result.Default)
             };
 
             return View("Edit", model);
@@ -141,46 +190,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            if (!ModelState.IsValid)
+            this.applicationFacade
+                .Run<IUpdateCommand>(model, out var commandResult);
+
+            switch (commandResult)
             {
-                ModelState.AddModelError(string.Empty, "Priority was not created.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
 
-                ViewBag.Page = new PageModel
-                {
-                    ApplicationSettings = this.applicationSettings,
-                    Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - edit priority",
-                    SelectedItem = MainMenuSections.Administration
-                };
-
-                return View("Edit", model);
+                    return RedirectToAction(nameof(Update));
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "$id", model.Id.ToString() },
-                { "$na", model.Name.Replace("'", "''")},
-                { "$ss", model.SortSequence.ToString() },
-                { "$co", model.BackgroundColor.Replace("'", "''")},
-                { "$st", (model.Style ?? string.Empty).Replace("'", "''")},
-                { "$df", Util.BoolToString(model.Default)},
-            };
-
-            this.priorityService.Update(parameters);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            var (valid, name) = this.priorityService.CheckDeleting(id);
-
-            if (!valid)
-            {
-                return Content($"You can't delete priority \"{name}\" because some bugs still reference it.");
-            }
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -189,10 +218,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new DeleteModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is DeleteModel model) return View(model);
+
+            var query = this.queryBuilder
+                .From<IPrioritySource>()
+                .To<IPriorityDeletePreviewResult>()
+                .Filter()
+                .Equal(x => x.Id, id)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            model = new DeleteModel
             {
-                Id = id,
-                Name = name
+                Id = result.Id,
+                Name = result.Name
             };
 
             return View(model);
@@ -202,16 +247,21 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            var (valid, name) = this.priorityService.CheckDeleting(model.Id);
+            this.applicationFacade
+                .Run<IDeleteCommand>(model, out var commandResult);
 
-            if (!valid)
+            switch (commandResult)
             {
-                return Content($"You can't delete priority \"{name}\" because some bugs still reference it.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
+
+                    return RedirectToAction(nameof(Delete), new {id = model.Id});
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            this.priorityService.Delete(model.Id);
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }

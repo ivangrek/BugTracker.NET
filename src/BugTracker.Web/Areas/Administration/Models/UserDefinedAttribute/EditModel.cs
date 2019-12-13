@@ -7,21 +7,19 @@
 namespace BugTracker.Web.Areas.Administration.Models.UserDefinedAttribute
 {
     using System.ComponentModel.DataAnnotations;
+    using Tracking.Changing.UserDefinedAttributes.Commands;
 
-    public sealed class EditModel
+    public sealed class EditModel : ICreateCommand, IUpdateCommand
     {
-        public int Id { get; set; }
-
         [Display(Name = "Name")]
-        [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; }
 
         [Display(Name = "Sort Sequence")]
-        [Required(ErrorMessage = "Sort Sequence is required.")]
-        [RegularExpression("([0-9]+)", ErrorMessage = "Sort Sequence must be an integer.")]
         public int SortSequence { get; set; }
 
         [Display(Name = "Default Selection")]
         public bool Default { get; set; }
+
+        public int Id { get; set; }
     }
 }

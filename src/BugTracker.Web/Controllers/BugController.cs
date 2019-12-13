@@ -8,10 +8,10 @@
 namespace BugTracker.Web.Controllers
 {
     using anmar.SharpMimeTools;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Bug;
+    using Core;
+    using Core.Controls;
+    using Models;
+    using Models.Bug;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -366,19 +366,21 @@ namespace BugTracker.Web.Controllers
                     if (attachmentFilename == null) attachmentFilename = string.Empty;
 
                     var byteArray = Convert.FromBase64String(attachmentAsBase64);
-                    var stream = new MemoryStream(byteArray);
 
-                    Bug.InsertPostAttachment(
-                        security,
-                        newIds.Bugid,
-                        stream,
-                        byteArray.Length,
-                        attachmentFilename,
-                        attachmentDesc,
-                        attachmentContentType,
-                        -1, // parent
-                        false, // internal_only
-                        false); // don't send notification yet
+                    using (var stream = new MemoryStream(byteArray))
+                    {
+                        Bug.InsertPostAttachment(
+                                security,
+                                newIds.Bugid,
+                                stream,
+                                byteArray.Length,
+                                attachmentFilename,
+                                attachmentDesc,
+                                attachmentContentType,
+                                -1, // parent
+                                false, // internal_only
+                                false); // don't send notification yet
+                    }
                 }
 
                 // your customizations
@@ -1130,7 +1132,7 @@ namespace BugTracker.Web.Controllers
                     }
                 }
 
-                Bug.SendNotifications(Bug.Update, model.FromBugId, security);
+                Bug.SendNotifications(Bug.Update, model.FromBugId, this.security);
 
                 return Redirect($"~/Bugs/Edit.aspx?id={model.IntoBugId}");
             }
@@ -1225,7 +1227,7 @@ namespace BugTracker.Web.Controllers
 
             ViewBag.Table = new SortableTableModel
             {
-                DataSet = DbUtil.GetDataSet(sql),
+                DataTable = DbUtil.GetDataSet(sql).Tables[0],
                 HtmlEncode = false
             };
 
@@ -1595,7 +1597,7 @@ namespace BugTracker.Web.Controllers
 
             ViewBag.SortableTable = new SortableTableModel
             {
-                DataSet = DbUtil.GetDataSet(sql),
+                DataTable = DbUtil.GetDataSet(sql).Tables[0],
                 HtmlEncode = false
             };
 
@@ -1725,7 +1727,7 @@ namespace BugTracker.Web.Controllers
 
                 ViewBag.SortableTable = new SortableTableModel
                 {
-                    DataSet = DbUtil.GetDataSet(sql),
+                    DataTable = DbUtil.GetDataSet(sql).Tables[0],
                     HtmlEncode = false
                 };
 
@@ -1868,7 +1870,7 @@ namespace BugTracker.Web.Controllers
             // replace magic variables
             bugSql = bugSql.Replace("$ME", Convert.ToString(this.security.User.Usid));
 
-            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, security);
+            bugSql = Util.AlterSqlPerProjectPermissions(bugSql, this.security);
 
             if (!this.applicationSettings.UseFullNames)
             {

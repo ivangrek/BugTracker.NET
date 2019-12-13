@@ -1,22 +1,22 @@
 ﻿namespace BugTracker.Web.Areas.Versioning.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
     using System;
     using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using System.Xml;
+    using Core;
+    using Core.Controls;
+    using Models;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class HgController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
-        private readonly ISecurity security;
         private readonly IAuthenticate authenticate;
+        private readonly ISecurity security;
 
         public HgController(
             IApplicationSettings applicationSettings,
@@ -34,9 +34,7 @@
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
             ViewBag.Page = new PageModel
             {
@@ -57,13 +55,15 @@
                     replace(substring(hgrev_msg,1,4000),char(13),'<br>') [msg],
 
                     case when hgap_action not like '%D%' and hgap_action not like 'A%' then
-                        '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Hg/Diff.aspx") + @"?revpathid=' + convert(varchar,hgap_id) + '>diff</a>'
+                        '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Hg/Diff.aspx") +
+                      @"?revpathid=' + convert(varchar,hgap_id) + '>diff</a>'
                         else
                         ''
                     end [view<br>diff],
 
                     case when hgap_action not like '%D%' then
-                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Hg/Log.aspx") + @"?revpathid=' + convert(varchar,hgap_id) + '>history</a>'
+                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Versioning/Hg/Log.aspx") +
+                      @"?revpathid=' + convert(varchar,hgap_id) + '>history</a>'
                         else
                         ''
                     end [view<br>history<br>(hg log)]
@@ -72,11 +72,11 @@
                     inner join hg_affected_paths on hgap_hgrev_id = hgrev_id
                     where hgrev_bug = $bg
                     order by hgrev_hg_date desc, hgap_path"
-                .Replace("$bg", Convert.ToString(id));
+                          .Replace("$bg", Convert.ToString(id));
 
             var model = new SortableTableModel
             {
-                DataSet = DbUtil.GetDataSet(sql),
+                DataTable = DbUtil.GetDataSet(sql).Tables[0],
                 HtmlEncode = false
             };
 
@@ -99,15 +99,13 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["hgrev_bug"], this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["hgrev_bug"], this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
                 return Content("You are not allowed to view this item");
-            }
 
-            var repo = (string)dr["hgrev_repository"];
-            var path = (string)dr["hgap_path"];
+            var repo = (string) dr["hgrev_repository"];
+            var path = (string) dr["hgap_path"];
 
             var text = VersionControl.HgGetFileContents(repo, revision, path);
 
@@ -128,7 +126,7 @@
             var dr = DbUtil.GetDataRow(sql);
 
             // check if user has permission for this bug
-            var permissionLevel = Bug.GetBugPermissionLevel((int)dr["hgrev_bug"], this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel((int) dr["hgrev_bug"], this.security);
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
@@ -136,15 +134,16 @@
                 Response.End();
             }
 
-            var repo = (string)dr["hgrev_repository"];
+            var repo = (string) dr["hgrev_repository"];
 
-            ViewBag.BlameText = VersionControl.HgBlame(repo, (string)dr["hgap_path"], revision);
+            ViewBag.BlameText = VersionControl.HgBlame(repo, (string) dr["hgap_path"], revision);
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = "hg blame " + HttpUtility.HtmlEncode(revision) + " -- " + HttpUtility.HtmlEncode((string)dr["hgap_path"]),
+                Title = "hg blame " + HttpUtility.HtmlEncode(revision) + " -- " +
+                        HttpUtility.HtmlEncode((string) dr["hgap_path"]),
                 SelectedItem = MainMenuSections.Administration
             };
 
@@ -207,7 +206,7 @@
 
             for (var i = 0; i < revisions.Count; i++)
             {
-                var changeset = (XmlElement)revisions[i];
+                var changeset = (XmlElement) revisions[i];
 
                 var desc = changeset.GetElementsByTagName("desc")[0].InnerText;
                 var bug = GetBugidFromDesc(desc);
@@ -268,7 +267,7 @@
 
                     for (var j = 0; j < paths.Count; j++)
                     {
-                        var pathElement = (XmlElement)paths[j];
+                        var pathElement = (XmlElement) paths[j];
 
                         var action = string.Empty; // no action in hg?  path_element.GetAttribute("action");
                         var filePath = pathElement.InnerText;
@@ -305,10 +304,7 @@
             var reInteger = new Regex(regexPattern);
             var m = reInteger.Match(desc);
 
-            if (m.Success)
-            {
-                return m.Groups[1].ToString();
-            }
+            if (m.Success) return m.Groups[1].ToString();
 
             return string.Empty;
         }

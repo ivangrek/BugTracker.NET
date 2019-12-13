@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.Home.EditCustomHtmlModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -34,7 +36,8 @@
 
         function load_custom_file() {
             var sel = document.getElementById("which");
-            window.location =  "@Url.Action("EditCustomHtml", "Home")" + "?which=" + sel.options[sel.selectedIndex].value;
+            window.location =
+                "@Url.Action("EditCustomHtml", "Home")" + "?which=" + sel.options[sel.selectedIndex].value;
         }
     </script>
 }
@@ -84,10 +87,10 @@
                                 Text = "customer_welcome.html",
                                 Value = "welcome"
                             }
-                        }, new { id = "which", onchange = "load_custom_file()" })
+                        }, new {id = "which", onchange = "load_custom_file()"})
                         <p></p>
 
-                        @Html.TextAreaFor(x => x.Text, new { id = "myedit", style = "width: 100%" })
+                        @Html.TextAreaFor(x => x.Text, new {id = "myedit", style = "width: 100%"})
                         <p></p>
 
                         <button type="submit" class="btn btn-primary">Save</button>
@@ -99,5 +102,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

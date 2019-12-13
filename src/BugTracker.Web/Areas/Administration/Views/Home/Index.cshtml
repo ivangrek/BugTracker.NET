@@ -1,4 +1,7 @@
-﻿@*
+﻿@using System.Threading
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
+@*
     Copyright 2002-2011 Corey Trager
     Copyright 2017-2019 Ivan Grek
 
@@ -6,7 +9,7 @@
 *@
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -100,10 +103,10 @@
     </li>
 
     <li>
-        CurrentCulture = @System.Threading.Thread.CurrentThread.CurrentCulture.Name
+        CurrentCulture = @Thread.CurrentThread.CurrentCulture.Name
     </li>
 </ul>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

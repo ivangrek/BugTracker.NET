@@ -30,7 +30,7 @@
 @section BodyHeader {
 }
 
-@if (Model.DataSet.Tables[0].Rows.Count > 0)
+@if (Model.DataTable.Rows.Count > 0)
 {
     @Html.Partial("_SortableTable", Model);
 }

@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1E06C8A8-49E7-472C-B8DF-BAB0158BB531}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BugTracker</RootNamespace>
+    <AssemblyName>BugTracker</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.8.5.1\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ComponentModel.Annotations.4.4.1\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Changing\Results\CommandResult.cs" />
+    <Compile Include="Changing\Results\DoneCommandResult.cs" />
+    <Compile Include="Changing\Results\FailCommandResult.cs" />
+    <Compile Include="Changing\Results\NotAuthorizedCommandResult.cs" />
+    <Compile Include="IApplicationFacade.cs" />
+    <Compile Include="Querying\IQueryBuilder.cs" />
+    <Compile Include="Querying\IQueryFilter.cs" />
+    <Compile Include="Querying\IQueryFilterBuilder.cs" />
+    <Compile Include="Querying\IQueryHandler.cs" />
+    <Compile Include="Changing\ICommandHandler.cs" />
+    <Compile Include="Querying\IQueryPager.cs" />
+    <Compile Include="Querying\IQuerySorter.cs" />
+    <Compile Include="Querying\IQuerySorterBuilder.cs" />
+    <Compile Include="Changing\IUnitOfWork.cs" />
+    <Compile Include="Changing\LoggingCommandHandlerDecorator.cs" />
+    <Compile Include="Querying\IResult.cs" />
+    <Compile Include="Querying\Results\IIdName.cs" />
+    <Compile Include="Changing\ValidationCommandHandlerDecorator.cs" />
+    <Compile Include="Changing\TransactionCommandHandlerDecorator.cs" />
+    <Compile Include="Querying\IQuery.cs" />
+    <Compile Include="Changing\ICommand.cs" />
+    <Compile Include="Changing\IHaveId.cs" />
+    <Compile Include="Changing\IRepository.cs" />
+    <Compile Include="Querying\ISource.cs" />
+    <Compile Include="Querying\IQueryResultBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

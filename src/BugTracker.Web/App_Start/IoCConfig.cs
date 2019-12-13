@@ -6,13 +6,14 @@
 
 namespace BugTracker.Web
 {
-    using Autofac;
-    using Autofac.Integration.Mvc;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Administration;
-    using BugTracker.Web.Core.Persistence;
     using System.Reflection;
     using System.Web.Mvc;
+    using Autofac;
+    using Autofac.Integration.Mvc;
+    using Changing;
+    using Core;
+    using Core.Persistence;
+    using Identification;
 
     internal static class IoCConfig
     {
@@ -21,6 +22,14 @@ namespace BugTracker.Web
             var builder = new ContainerBuilder();
 
             // Modules
+            builder.RegisterModule<IoCModule>();
+            builder.RegisterModule<Tracking.IoCModule>();
+            builder.RegisterModule<Persistence.IoCModule>();
+            builder.RegisterModule<Utilities.IoCModule>();
+
+            builder.RegisterGenericDecorator(typeof(ValidationCommandHandlerDecorator<>), typeof(ICommandHandler<>));
+            builder.RegisterGenericDecorator(typeof(TransactionCommandHandlerDecorator<>), typeof(ICommandHandler<>));
+            builder.RegisterGenericDecorator(typeof(LoggingCommandHandlerDecorator<>), typeof(ICommandHandler<>));
 
             // Services
             builder.RegisterType<ApplicationSettings>()
@@ -35,22 +44,6 @@ namespace BugTracker.Web
                 .InstancePerRequest();
 
             builder.RegisterType<ApplicationContext>()
-                .InstancePerRequest();
-
-            builder.RegisterType<CategoryService>()
-                .As<ICategoryService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<PriorityService>()
-                .As<IPriorityService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<StatusService>()
-                .As<IStatusService>()
-                .InstancePerRequest();
-
-            builder.RegisterType<UserDefinedAttributeService>()
-                .As<IUserDefinedAttributeService>()
                 .InstancePerRequest();
 
             builder.RegisterType<ReportService>()

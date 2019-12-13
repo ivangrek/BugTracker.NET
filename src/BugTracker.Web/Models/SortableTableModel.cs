@@ -10,7 +10,7 @@ namespace BugTracker.Web.Models
 
     public sealed class SortableTableModel
     {
-        public DataSet DataSet { set; get; }
+        public DataTable DataTable { set; get; }
 
         public string EditUrl { set; get; } = string.Empty;
 

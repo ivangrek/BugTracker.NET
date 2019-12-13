@@ -7,9 +7,9 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
+    using Core;
+    using Core.Controls;
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;

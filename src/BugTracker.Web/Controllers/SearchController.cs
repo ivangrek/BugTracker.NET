@@ -7,7 +7,7 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
+    using Core;
     using Lucene.Net.Highlight;
     using Lucene.Net.Search;
     using System;

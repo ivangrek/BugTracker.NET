@@ -34,7 +34,7 @@ namespace BugTracker.Web
 
             Security.CheckSecurity(SecurityLevel.AnyUserOkExceptGuest);
 
-            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
+            this.MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             Page.Title = $"{ApplicationSettings.AppTitle} - send email";
 
@@ -63,7 +63,7 @@ namespace BugTracker.Web
                 {
                     stringBpId = Util.SanitizeInteger(stringBpId);
 
-                    this.Sql = @"select
+                    Sql = @"select
                 bp_parent,
                 bp_file,
                 bp_id,
@@ -89,10 +89,10 @@ namespace BugTracker.Web
                 where bp_id = $id
                 or (bp_parent = $id and bp_type='file')";
 
-                    this.Sql = this.Sql.Replace("$id", stringBpId);
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+                    Sql = Sql.Replace("$id", stringBpId);
+                    Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
 
-                    var dv = DbUtil.GetDataView(this.Sql);
+                    var dv = DbUtil.GetDataView(Sql);
                     dr = null;
                     if (dv.Count > 0)
                     {
@@ -265,7 +265,7 @@ namespace BugTracker.Web
                         Response.End();
                     }
 
-                    this.Sql = @"select
+                    Sql = @"select
                 bg_short_desc,
                 bg_project,
                 isnull(us_signature,'') [us_signature],
@@ -278,10 +278,10 @@ namespace BugTracker.Web
                 left outer join projects on bg_project = pj_id
                 where bg_id = $bg";
 
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
-                    this.Sql = this.Sql.Replace("$bg", stringBgId);
+                    Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+                    Sql = Sql.Replace("$bg", stringBgId);
 
-                    dr = DbUtil.GetDataRow(this.Sql);
+                    dr = DbUtil.GetDataRow(Sql);
 
                     load_from_dropdown(dr, false); // list the user's email first, then the project
 
@@ -292,8 +292,7 @@ namespace BugTracker.Web
 
                     // Work around for a mysterious bug:
                     // http://sourceforge.net/tracker/?func=detail&aid=2815733&group_id=66812&atid=515837
-                    if (ApplicationSettings.StripDisplayNameFromEmailAddress)
-                        this.to.Value = Email.SimplifyEmailAddress(this.to.Value);
+                    if (ApplicationSettings.StripDisplayNameFromEmailAddress) this.to.Value = Email.SimplifyEmailAddress(this.to.Value);
 
                     if (!string.IsNullOrEmpty(dr["us_signature"].ToString()))
                     {
@@ -464,7 +463,7 @@ namespace BugTracker.Web
         {
             if (!validate()) return;
 
-            this.Sql = @"
+            Sql = @"
 insert into bug_posts
     (bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_to, bp_type, bp_content_type, bp_email_cc)
     values($id, $us, getdate(), N'$cm', N'$cs', N'$fr',  N'$to', 'sent', N'$ct', N'$cc');
@@ -474,16 +473,16 @@ update bugs set
     bg_last_updated_date = getdate()
     where bg_id = $id";
 
-            this.Sql = this.Sql.Replace("$id", this.bg_id.Value);
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+            Sql = Sql.Replace("$id", this.bg_id.Value);
+            Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
             if (Security.User.UseFckeditor)
             {
                 var adjustedBody = "Subject: " + this.subject.Value + "<br><br>";
                 adjustedBody += Util.StripDangerousTags(this.body.Value);
 
-                this.Sql = this.Sql.Replace("$cm", adjustedBody.Replace("'", "&#39;"));
-                this.Sql = this.Sql.Replace("$cs", adjustedBody.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$ct", "text/html");
+                Sql = Sql.Replace("$cm", adjustedBody.Replace("'", "&#39;"));
+                Sql = Sql.Replace("$cs", adjustedBody.Replace("'", "''"));
+                Sql = Sql.Replace("$ct", "text/html");
             }
             else
             {
@@ -491,16 +490,16 @@ update bugs set
                 adjustedBody += HttpUtility.HtmlDecode(this.body.Value);
                 adjustedBody = adjustedBody.Replace("'", "''");
 
-                this.Sql = this.Sql.Replace("$cm", adjustedBody);
-                this.Sql = this.Sql.Replace("$cs", adjustedBody);
-                this.Sql = this.Sql.Replace("$ct", "text/plain");
+                Sql = Sql.Replace("$cm", adjustedBody);
+                Sql = Sql.Replace("$cs", adjustedBody);
+                Sql = Sql.Replace("$ct", "text/plain");
             }
 
-            this.Sql = this.Sql.Replace("$fr", this.from.SelectedItem.Value.Replace("'", "''"));
-            this.Sql = this.Sql.Replace("$to", this.to.Value.Replace("'", "''"));
-            this.Sql = this.Sql.Replace("$cc", this.cc.Value.Replace("'", "''"));
+            Sql = Sql.Replace("$fr", this.from.SelectedItem.Value.Replace("'", "''"));
+            Sql = Sql.Replace("$to", this.to.Value.Replace("'", "''"));
+            Sql = Sql.Replace("$cc", this.cc.Value.Replace("'", "''"));
 
-            var commentId = Convert.ToInt32(DbUtil.ExecuteScalar(this.Sql));
+            var commentId = Convert.ToInt32(DbUtil.ExecuteScalar(Sql));
 
             var attachments = handle_attachments(commentId, security);
 
@@ -563,7 +562,7 @@ update bugs set
                 attachments, this.return_receipt.Checked);
 
             Bug.SendNotifications(Bug.Update, Convert.ToInt32(this.bg_id.Value), security);
-            Core.WhatsNew.AddNews(Convert.ToInt32(this.bg_id.Value), this.short_desc.Value, "email sent", security);
+            WhatsNew.AddNews(Convert.ToInt32(this.bg_id.Value), this.short_desc.Value, "email sent", security);
 
             if (string.IsNullOrEmpty(result))
                 Response.Redirect($"~/Bugs/Edit.aspx?id={this.bg_id.Value}");

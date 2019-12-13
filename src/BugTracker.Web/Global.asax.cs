@@ -97,12 +97,12 @@ namespace BugTracker.Web
 
             if (applicationSettings.EnableVotes)
             {
-                Core.Tags.CountVotes(Application); // in tags file for convenience for me....
+                Tags.CountVotes(Application); // in tags file for convenience for me....
             }
 
             if (applicationSettings.EnableTags)
             {
-                Core.Tags.BuildTagIndex(Application);
+                Tags.BuildTagIndex(Application);
             }
 
             if (applicationSettings.EnableLucene)

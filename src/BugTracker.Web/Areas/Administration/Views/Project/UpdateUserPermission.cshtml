@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.Project.UpdateUserPermissionModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -30,7 +32,7 @@
     <div class="col-lg-6">
         <div class="card bg-light">
             <div class="card-body">
-                @using (Html.BeginForm("UpdateUserPermission", "Project", FormMethod.Post, new { @class = "frm" }))
+                @using (Html.BeginForm("UpdateUserPermission", "Project", FormMethod.Post, new {@class = "frm"}))
                 {
                     @Html.AntiForgeryToken()
                     @Html.Partial("_ValidationSummary")
@@ -51,10 +53,10 @@
                             <tr>
                                 <td>@row["us_username"]</td>
                                 <td>
-                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "0", (int)row["pu_permission_level"] == 0)&nbsp;none</label>
-                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "1", (int)row["pu_permission_level"] == 1)&nbsp;view only</label>
-                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "3", (int)row["pu_permission_level"] == 3)&nbsp;report (add and comment only)</label>
-                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "2", (int)row["pu_permission_level"] == 2)&nbsp;all (add and edit)</label>
+                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "0", (int) row["pu_permission_level"] == 0)&nbsp;none</label>
+                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "1", (int) row["pu_permission_level"] == 1)&nbsp;view only</label>
+                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "3", (int) row["pu_permission_level"] == 3)&nbsp;report (add and comment only)</label>
+                                    <label>@Html.RadioButton($"Permission[{row["us_id"]}]", "2", (int) row["pu_permission_level"] == 2)&nbsp;all (add and edit)</label>
                                 </td>
                             </tr>
                         }
@@ -68,8 +70,7 @@
                     }
                     else
                     {
-
-                        <a href="@Url.Action("Update", new { id = Model.Id })" class="btn btn-link">Cancel</a>
+                        <a href="@Url.Action("Update", new {id = Model.Id})" class="btn btn-link">Cancel</a>
                     }
                 }
             </div>
@@ -78,5 +79,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

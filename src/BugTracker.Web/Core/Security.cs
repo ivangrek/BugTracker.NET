@@ -75,7 +75,6 @@ namespace BugTracker.Web.Core
                     throw new AuthenticationException();
                 }
 
-
                 var aspNetContext = HttpContext.Current;
 
                 //var request = aspNetContext.Request;
@@ -205,17 +204,17 @@ namespace BugTracker.Web.Core
 
         public void CheckSecurity(SecurityLevel level)
         {
-            if (level == SecurityLevel.MustBeAdmin && !this.User.IsAdmin)
+            if (level == SecurityLevel.MustBeAdmin && !User.IsAdmin)
             {
                 Util.WriteToLog("must be admin, redirecting");
                 HttpContext.Current.Response.Redirect("~/Account/Login");
             }
-            else if (level == SecurityLevel.AnyUserOkExceptGuest && this.User.IsGuest)
+            else if (level == SecurityLevel.AnyUserOkExceptGuest && User.IsGuest)
             {
                 Util.WriteToLog("cant be guest, redirecting");
                 HttpContext.Current.Response.Redirect("~/Account/Login");
             }
-            else if (level == SecurityLevel.MustBeAdminOrProjectAdmin && !this.User.IsAdmin && !this.User.IsProjectAdmin)
+            else if (level == SecurityLevel.MustBeAdminOrProjectAdmin && !User.IsAdmin && !User.IsProjectAdmin)
             {
                 Util.WriteToLog("must be project admin, redirecting");
                 HttpContext.Current.Response.Redirect("~/Account/Login");

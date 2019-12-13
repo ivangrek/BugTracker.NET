@@ -53,7 +53,7 @@ namespace BugTracker.Web.Bugs
 
             Security.CheckSecurity(SecurityLevel.AnyUserOk);
 
-            MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
+            this.MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             set_msg("");
             set_custom_field_msg("");
@@ -218,14 +218,14 @@ namespace BugTracker.Web.Bugs
             load_dropdowns(security.User, security);
 
             // Get the defaults
-            this.Sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
-            this.Sql += "\nselect top 1 ct_id from categories where ct_default = 1 order by ct_name;"; // 1
-            this.Sql += "\nselect top 1 pr_id from priorities where pr_default = 1 order by pr_name;"; // 2
-            this.Sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
-            this.Sql +=
+            Sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
+            Sql += "\nselect top 1 ct_id from categories where ct_default = 1 order by ct_name;"; // 1
+            Sql += "\nselect top 1 pr_id from priorities where pr_default = 1 order by pr_name;"; // 2
+            Sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
+            Sql +=
                 "\nselect top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;"; // 4
 
-            var dsDefaults = DbUtil.GetDataSet(this.Sql);
+            var dsDefaults = DbUtil.GetDataSet(Sql);
 
             load_project_and_user_dropdown_for_insert(dsDefaults.Tables[0], security);
 
@@ -245,9 +245,9 @@ namespace BugTracker.Web.Bugs
             }
 
             // look at permission level and react accordingly
-            this.PermissionLevel = (SecurityPermissionLevel)(int) this.DrBug["pu_permission_level"];
+            PermissionLevel = (SecurityPermissionLevel)(int) this.DrBug["pu_permission_level"];
 
-            if (this.PermissionLevel == SecurityPermissionLevel.PermissionNone)
+            if (PermissionLevel == SecurityPermissionLevel.PermissionNone)
             {
                 this.mainBlock.Visible = false;
                 this.errorBlock.Visible = false;
@@ -282,7 +282,7 @@ namespace BugTracker.Web.Bugs
             s = "Created by ";
             s += PrintBug.FormatEmailUserName(
                 true,
-                Convert.ToInt32(this.DrBug["id"]), this.PermissionLevel,
+                Convert.ToInt32(this.DrBug["id"]), PermissionLevel,
                 Convert.ToString(this.DrBug["reporter_email"]),
                 Convert.ToString(this.DrBug["reporter"]),
                 Convert.ToString(this.DrBug["reporter_fullname"]));
@@ -314,7 +314,7 @@ namespace BugTracker.Web.Bugs
 
             load_project_and_user_dropdown_for_update(security); // must come before set_controls_field_permission, after assigning to prev_ values
 
-            set_controls_field_permission(this.PermissionLevel, security);
+            set_controls_field_permission(PermissionLevel, security);
 
             this.snapshot_timestamp.Value = Convert.ToDateTime(this.DrBug["snapshot_timestamp"])
                 .ToString("yyyyMMdd HH\\:mm\\:ss\\:fff");
@@ -346,14 +346,14 @@ namespace BugTracker.Web.Bugs
                                       + "</span></a>";
             this.toggle_history.InnerHtml = toggleHistoryLink;
 
-            if (this.PermissionLevel == SecurityPermissionLevel.PermissionAll)
+            if (PermissionLevel == SecurityPermissionLevel.PermissionAll)
             {
                 var cloneLink = "<a class=warn href=\"javascript:clone()\" "
                                  + " title='Create a copy of this item'><img src=" + ResolveUrl("~/Content/images/paste_plain.png") + " border=0 align=top>&nbsp;create copy</a>";
                 this.clone.InnerHtml = cloneLink;
             }
 
-            if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+            if (PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
             {
                 var attachmentLink =
                     "<img src=" + ResolveUrl("~/Content/images/attach.gif") + " align=top>&nbsp;<a href=\"javascript:open_popup_window('" + ResolveUrl("~/Attachment/Create") +@"','add attachment ',"
@@ -368,7 +368,7 @@ namespace BugTracker.Web.Bugs
 
             if (!Security.User.IsGuest)
             {
-                if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                if (PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 {
                     var sendEmailLink = "<a href='javascript:send_email("
                                           + Convert.ToString(this.Id)
@@ -385,7 +385,7 @@ namespace BugTracker.Web.Bugs
                 this.send_email.Visible = false;
             }
 
-            if (this.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+            if (PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
             {
                 var subscribersLink = "<a target=_blank href='" + ResolveUrl($"~/Bug/ViewSubscriber/{this.Id}")
                                        + "' title='View users who have subscribed to email notifications for this item'><img src=" + ResolveUrl("~/Content/images/telephone_edit.png") + " border=0 align=top>&nbsp;subscribers</a>";
@@ -628,8 +628,7 @@ namespace BugTracker.Web.Bugs
             {
                 var columnName = (string) drcc["name"];
 
-                if (Security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
-                    this.HashCustomCols.Add(columnName, Request[columnName]);
+                if (Security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone) this.HashCustomCols.Add(columnName, Request[columnName]);
             }
         }
 
@@ -686,7 +685,7 @@ namespace BugTracker.Web.Bugs
 
         public void do_update(ISecurity security)
         {
-            this.PermissionLevel = fetch_permission_level(this.project.SelectedItem.Value, security);
+            PermissionLevel = fetch_permission_level(this.project.SelectedItem.Value, security);
 
             //if (project.SelectedItem.Value == prev_project.Value)
             //{
@@ -712,14 +711,14 @@ namespace BugTracker.Web.Bugs
                     return;
                 }
 
-                this.PermissionLevel = permissionLevelOnNewProject;
+                PermissionLevel = permissionLevelOnNewProject;
             }
             else
             {
                 newProject = Util.SanitizeInteger(this.prev_project.Value);
             }
 
-            this.Sql = @"declare @now datetime
+            Sql = @"declare @now datetime
         declare @last_updated datetime
         select @last_updated = bg_last_updated_date from bugs where bg_id = $id
         if @last_updated > '$snapshot_datetime'
@@ -750,27 +749,27 @@ namespace BugTracker.Web.Bugs
         end
         select @now";
 
-            this.Sql = this.Sql.Replace("$sd", this.short_desc.Value.Replace("'", "''"));
-            this.Sql = this.Sql.Replace("$tags", this.tags.Value.Replace("'", "''"));
-            this.Sql = this.Sql.Replace("$lu", Convert.ToString(Security.User.Usid));
-            this.Sql = this.Sql.Replace("$id", Convert.ToString(this.Id));
-            this.Sql = this.Sql.Replace("$pj", newProject);
-            this.Sql = this.Sql.Replace("$og", this.org.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$ct", this.category.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$pr", this.priority.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$au", this.assigned_to.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$st", this.status.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$udf", this.udf.SelectedItem.Value);
-            this.Sql = this.Sql.Replace("$snapshot_datetime", this.snapshot_timestamp.Value);
+            Sql = Sql.Replace("$sd", this.short_desc.Value.Replace("'", "''"));
+            Sql = Sql.Replace("$tags", this.tags.Value.Replace("'", "''"));
+            Sql = Sql.Replace("$lu", Convert.ToString(Security.User.Usid));
+            Sql = Sql.Replace("$id", Convert.ToString(this.Id));
+            Sql = Sql.Replace("$pj", newProject);
+            Sql = Sql.Replace("$og", this.org.SelectedItem.Value);
+            Sql = Sql.Replace("$ct", this.category.SelectedItem.Value);
+            Sql = Sql.Replace("$pr", this.priority.SelectedItem.Value);
+            Sql = Sql.Replace("$au", this.assigned_to.SelectedItem.Value);
+            Sql = Sql.Replace("$st", this.status.SelectedItem.Value);
+            Sql = Sql.Replace("$udf", this.udf.SelectedItem.Value);
+            Sql = Sql.Replace("$snapshot_datetime", this.snapshot_timestamp.Value);
 
-            if (this.PermissionLevel == SecurityPermissionLevel.PermissionReadonly
-                || this.PermissionLevel == SecurityPermissionLevel.PermissionReporter)
+            if (PermissionLevel == SecurityPermissionLevel.PermissionReadonly
+                || PermissionLevel == SecurityPermissionLevel.PermissionReporter)
             {
-                this.Sql = this.Sql.Replace("$pcd_placeholder", "");
+                Sql = Sql.Replace("$pcd_placeholder", "");
             }
             else
             {
-                this.Sql = this.Sql.Replace("$pcd_placeholder", @",
+                Sql = Sql.Replace("$pcd_placeholder", @",
 bg_project_custom_dropdown_value1 = N'$pcd1',
 bg_project_custom_dropdown_value2 = N'$pcd2',
 bg_project_custom_dropdown_value3 = N'$pcd3'
@@ -784,14 +783,14 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                 if (pcd2 == null) pcd2 = string.Empty;
                 if (pcd3 == null) pcd3 = string.Empty;
 
-                this.Sql = this.Sql.Replace("$pcd1", pcd1.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$pcd2", pcd2.Replace("'", "''"));
-                this.Sql = this.Sql.Replace("$pcd3", pcd3.Replace("'", "''"));
+                Sql = Sql.Replace("$pcd1", pcd1.Replace("'", "''"));
+                Sql = Sql.Replace("$pcd2", pcd2.Replace("'", "''"));
+                Sql = Sql.Replace("$pcd3", pcd3.Replace("'", "''"));
             }
 
-            if (this.DsCustomCols.Tables[0].Rows.Count == 0 || this.PermissionLevel != SecurityPermissionLevel.PermissionAll)
+            if (this.DsCustomCols.Tables[0].Rows.Count == 0 || PermissionLevel != SecurityPermissionLevel.PermissionAll)
             {
-                this.Sql = this.Sql.Replace("$custom_cols_placeholder", "");
+                Sql = Sql.Replace("$custom_cols_placeholder", "");
             }
             else
             {
@@ -822,10 +821,10 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                     customColsSql += customColVal;
                 }
 
-                this.Sql = this.Sql.Replace("$custom_cols_placeholder", customColsSql);
+                Sql = Sql.Replace("$custom_cols_placeholder", customColsSql);
             }
 
-            var lastUpdateDate = (DateTime) DbUtil.ExecuteScalar(this.Sql);
+            var lastUpdateDate = (DateTime) DbUtil.ExecuteScalar(Sql);
 
             WhatsNew.AddNews(this.Id, this.short_desc.Value, "updated", security);
 
@@ -850,22 +849,20 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
                 return;
             }
 
-            bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, Security.User.Usid, this.CommentFormated,
-                                              this.CommentSearch,
+            bugpostFieldsHaveChanged = Bug.InsertComment(this.Id, Security.User.Usid, this.CommentFormated, this.CommentSearch,
                                               null, // from
                                               null, // cc
                                               this.CommentType, this.internal_only.Checked) != 0;
 
             if (bugFieldsHaveChanged || bugpostFieldsHaveChanged && !this.internal_only.Checked)
-                Bug.SendNotifications(Bug.Update, this.Id, security, 0, this.StatusChanged,
-                    this.AssignedToChanged,
+                Bug.SendNotifications(Bug.Update, this.Id, security, 0, this.StatusChanged, this.AssignedToChanged,
                     Convert.ToInt32(this.assigned_to.SelectedItem.Value));
 
             set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was updated.");
 
             this.comment.Value = string.Empty;
 
-            set_controls_field_permission(this.PermissionLevel, security);
+            set_controls_field_permission(PermissionLevel, security);
 
             if (bugFieldsHaveChanged)
             {
@@ -1011,7 +1008,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
             // Load the user dropdown, which changes per project
             // Only users explicitly allowed will be listed
             if (ApplicationSettings.DefaultPermissionLevel == 0)
-                this.Sql = @"
+                Sql = @"
 /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
 from users
 inner join orgs on us_org = og_id
@@ -1025,7 +1022,7 @@ and us_id in
 order by us_username; ";
             // Only users explictly DISallowed will be omitted
             else
-                this.Sql = @"
+                Sql = @"
 /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
 from users
 inner join orgs on us_org = og_id
@@ -1040,28 +1037,28 @@ order by us_username; ";
 
             if (!ApplicationSettings.UseFullNames)
                 // false condition
-                this.Sql = this.Sql.Replace("$fullnames", "0 = 1");
+                Sql = Sql.Replace("$fullnames", "0 = 1");
             else
                 // true condition
-                this.Sql = this.Sql.Replace("$fullnames", "1 = 1");
+                Sql = Sql.Replace("$fullnames", "1 = 1");
 
             if (this.project.SelectedItem != null)
-                this.Sql = this.Sql.Replace("$pj", this.project.SelectedItem.Value);
+                Sql = Sql.Replace("$pj", this.project.SelectedItem.Value);
             else
-                this.Sql = this.Sql.Replace("$pj", "0");
+                Sql = Sql.Replace("$pj", "0");
 
-            this.Sql = this.Sql.Replace("$og_id", Convert.ToString(Security.User.Org));
-            this.Sql = this.Sql.Replace("$og_other_orgs_permission_level",
+            Sql = Sql.Replace("$og_id", Convert.ToString(Security.User.Org));
+            Sql = Sql.Replace("$og_other_orgs_permission_level",
                 Convert.ToString((int)Security.User.OtherOrgsPermissionLevel));
 
             if (Security.User.CanAssignToInternalUsers)
-                this.Sql = this.Sql.Replace("$og_can_assign_to_internal_users", "1 = 1");
+                Sql = Sql.Replace("$og_can_assign_to_internal_users", "1 = 1");
             else
-                this.Sql = this.Sql.Replace("$og_can_assign_to_internal_users", "0 = 1");
+                Sql = Sql.Replace("$og_can_assign_to_internal_users", "0 = 1");
 
-            this.DtUsers = DbUtil.GetDataSet(this.Sql).Tables[0];
+            DtUsers = DbUtil.GetDataSet(Sql).Tables[0];
 
-            this.assigned_to.DataSource = new DataView(this.DtUsers);
+            this.assigned_to.DataSource = new DataView(DtUsers);
             this.assigned_to.DataTextField = "us_username";
             this.assigned_to.DataValueField = "us_id";
             this.assigned_to.DataBind();
@@ -1149,10 +1146,10 @@ order by us_username; ";
                 {
                     // User might have changed bug to a project where we automatically subscribe
                     // so be prepared to format the link even if this isn't the first time in.
-                    this.Sql = "select count(1) from bug_subscriptions where bs_bug = $bg and bs_user = $us";
-                    this.Sql = this.Sql.Replace("$bg", Convert.ToString(this.Id));
-                    this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
-                    subscribed = (int) DbUtil.ExecuteScalar(this.Sql);
+                    Sql = "select count(1) from bug_subscriptions where bs_bug = $bg and bs_user = $us";
+                    Sql = Sql.Replace("$bg", Convert.ToString(this.Id));
+                    Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+                    subscribed = (int) DbUtil.ExecuteScalar(Sql);
                 }
 
                 if (Security.User.IsGuest) // wouldn't make sense to share an email address
@@ -1396,7 +1393,7 @@ order by us_username; ";
                 || bugPermissionLevel == SecurityPermissionLevel.PermissionReporter)
             {
                 // even turn off commenting updating for read only
-                if (this.PermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                if (PermissionLevel == SecurityPermissionLevel.PermissionReadonly)
                 {
                     this.submit_button.Disabled = true;
                     this.submit_button.Visible = false;
@@ -1516,7 +1513,7 @@ order by us_username; ";
         {
             // only show projects where user has permissions
             // 0
-            this.Sql = @"/* drop downs */ select pj_id, pj_name
+            Sql = @"/* drop downs */ select pj_id, pj_name
         from projects
         left outer join project_user_xref on pj_id = pu_project
         and pu_user = $us
@@ -1524,34 +1521,33 @@ order by us_username; ";
         and isnull(pu_permission_level,$dpl) not in (0, 1)
         order by pj_name;";
 
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
-            this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
+            Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+            Sql = Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
 
             // 1
-            this.Sql += "\nselect og_id, og_name from orgs where og_active = 1 order by og_name;";
+            Sql += "\nselect og_id, og_name from orgs where og_active = 1 order by og_name;";
 
             // 2
-            this.Sql += "\nselect ct_id, ct_name from categories order by ct_sort_seq, ct_name;";
+            Sql += "\nselect ct_id, ct_name from categories order by ct_sort_seq, ct_name;";
 
             // 3
-            this.Sql += "\nselect pr_id, pr_name from priorities order by pr_sort_seq, pr_name;";
+            Sql += "\nselect pr_id, pr_name from priorities order by pr_sort_seq, pr_name;";
 
             // 4
-            this.Sql += "\nselect st_id, st_name from statuses order by st_sort_seq, st_name;";
+            Sql += "\nselect st_id, st_name from statuses order by st_sort_seq, st_name;";
 
             // 5
-            this.Sql += "\nselect udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;";
+            Sql += "\nselect udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;";
 
             // do a batch of sql statements
-            var dsDropdowns = DbUtil.GetDataSet(this.Sql);
+            var dsDropdowns = DbUtil.GetDataSet(Sql);
 
             this.project.DataSource = dsDropdowns.Tables[0];
             this.project.DataTextField = "pj_name";
             this.project.DataValueField = "pj_id";
             this.project.DataBind();
 
-            if (ApplicationSettings.DefaultPermissionLevel == 2)
-                this.project.Items.Insert(0, new ListItem("[no project]", "0"));
+            if (ApplicationSettings.DefaultPermissionLevel == 2) this.project.Items.Insert(0, new ListItem("[no project]", "0"));
 
             this.org.DataSource = dsDropdowns.Tables[1];
             this.org.DataTextField = "og_name";
@@ -1607,8 +1603,7 @@ order by us_username; ";
                 || this.prev_priority.Value != this.priority.SelectedItem.Value
                 || this.prev_assigned_to.Value != this.assigned_to.SelectedItem.Value
                 || this.prev_status.Value != this.status.SelectedItem.Value
-                || ApplicationSettings.ShowUserDefinedBugAttribute &&
-                this.prev_udf.Value != this.udf.SelectedItem.Value)
+                || ApplicationSettings.ShowUserDefinedBugAttribute && this.prev_udf.Value != this.udf.SelectedItem.Value)
             {
                 this.clone_ignore_bugid.Value = "0";
                 somethingChanged = true;
@@ -1651,14 +1646,14 @@ order by us_username; ";
             baseSql = baseSql.Replace("$us", Convert.ToString(Security.User.Usid));
 
             string from;
-            this.Sql = string.Empty;
+            Sql = string.Empty;
 
             var doUpdate = false;
 
             if (this.prev_short_desc.Value != this.short_desc.Value)
             {
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed desc from \""
                     + this.prev_short_desc.Value.Replace("'", "''") + "\" to \""
@@ -1670,7 +1665,7 @@ order by us_username; ";
             if (this.prev_tags.Value != this.tags.Value)
             {
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed tags from \""
                     + this.prev_tags.Value.Replace("'", "''") + "\" to \""
@@ -1690,7 +1685,7 @@ order by us_username; ";
                 //from = get_dropdown_text_from_value(project, prev_project.Value);
 
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed project from \""
                     + this.prev_project_name.Value.Replace("'", "''") + "\" to \""
@@ -1705,7 +1700,7 @@ order by us_username; ";
                 from = get_dropdown_text_from_value(this.org, this.prev_org.Value);
 
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed organization from \""
                     + from.Replace("'", "''") + "\" to \""
@@ -1719,7 +1714,7 @@ order by us_username; ";
                 from = get_dropdown_text_from_value(this.category, this.prev_category.Value);
 
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed category from \""
                     + from.Replace("'", "''") + "\" to \""
@@ -1733,7 +1728,7 @@ order by us_username; ";
                 from = get_dropdown_text_from_value(this.priority, this.prev_priority.Value);
 
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed priority from \""
                     + from.Replace("'", "''") + "\" to \""
@@ -1750,7 +1745,7 @@ order by us_username; ";
                 //from = get_dropdown_text_from_value(assigned_to, prev_assigned_to.Value);
 
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed assigned_to from \""
                     + this.prev_assigned_to_username.Value.Replace("'", "''") + "\" to \""
@@ -1767,7 +1762,7 @@ order by us_username; ";
                 from = get_dropdown_text_from_value(this.status, this.prev_status.Value);
 
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed status from \""
                     + from.Replace("'", "''") + "\" to \""
@@ -1782,7 +1777,7 @@ order by us_username; ";
                     from = get_dropdown_text_from_value(this.udf, this.prev_udf.Value);
 
                     doUpdate = true;
-                    this.Sql += baseSql.Replace(
+                    Sql += baseSql.Replace(
                         "$update_msg",
                         "changed " + ApplicationSettings.UserDefinedBugAttributeName
                                    + " from \""
@@ -1837,7 +1832,7 @@ order by us_username; ";
                     }
 
                     doUpdate = true;
-                    this.Sql += baseSql.Replace(
+                    Sql += baseSql.Replace(
                         "$update_msg",
                         "changed " + columnName + " from \"" + before.Trim().Replace("'", "''") + "\" to \"" +
                         after.Trim().Replace("'", "''") + "\"");
@@ -1848,7 +1843,7 @@ order by us_username; ";
             if (Request["label_pcd1"] != null && Request["pcd1"] != null && this.prev_pcd1.Value != Request["pcd1"])
             {
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed "
                     + Request["label_pcd1"].Replace("'", "''")
@@ -1857,11 +1852,10 @@ order by us_username; ";
                 this.prev_pcd1.Value = Request["pcd1"];
             }
 
-            if (Request["label_pcd2"] != null && Request["pcd2"] != null &&
-                this.prev_pcd2.Value != Request["pcd2"].Replace("'", "''"))
+            if (Request["label_pcd2"] != null && Request["pcd2"] != null && this.prev_pcd2.Value != Request["pcd2"].Replace("'", "''"))
             {
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed "
                     + Request["label_pcd2"].Replace("'", "''")
@@ -1873,7 +1867,7 @@ order by us_username; ";
             if (Request["label_pcd3"] != null && Request["pcd3"] != null && this.prev_pcd3.Value != Request["pcd3"])
             {
                 doUpdate = true;
-                this.Sql += baseSql.Replace(
+                Sql += baseSql.Replace(
                     "$update_msg",
                     "changed "
                     + Request["label_pcd3"].Replace("'", "''")
@@ -1884,11 +1878,11 @@ order by us_username; ";
 
             if (doUpdate && ApplicationSettings.TrackBugHistory) // you might not want the debris to grow
             {
-                DbUtil.ExecuteNonQuery(this.Sql);
+                DbUtil.ExecuteNonQuery(Sql);
             }
 
             if (this.project.SelectedItem.Value != this.prev_project.Value)
-                this.PermissionLevel = fetch_permission_level(this.project.SelectedItem.Value, security);
+                PermissionLevel = fetch_permission_level(this.project.SelectedItem.Value, security);
 
             // return true if something did change
             return doUpdate;
@@ -1897,7 +1891,7 @@ order by us_username; ";
         public SecurityPermissionLevel fetch_permission_level(string projectToCheck, ISecurity security)
         {
             // fetch the revised permission level
-            this.Sql = @"declare @permission_level int
+            Sql = @"declare @permission_level int
         set @permission_level = -1
         select @permission_level = isnull(pu_permission_level,$dpl)
         from project_user_xref
@@ -1906,10 +1900,10 @@ order by us_username; ";
         if @permission_level = -1 set @permission_level = $dpl
         select @permission_level";
 
-            this.Sql = this.Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
-            this.Sql = this.Sql.Replace("$pj", projectToCheck);
-            this.Sql = this.Sql.Replace("$us", Convert.ToString(Security.User.Usid));
-            var pl = (int) DbUtil.ExecuteScalar(this.Sql);
+            Sql = Sql.Replace("$dpl", ApplicationSettings.DefaultPermissionLevel.ToString());
+            Sql = Sql.Replace("$pj", projectToCheck);
+            Sql = Sql.Replace("$us", Convert.ToString(Security.User.Usid));
+            var pl = (int) DbUtil.ExecuteScalar(Sql);
 
             // reduce permissions for guest
             //if (Security.User.is_guest && permission_level == Security.PERMISSION_ALL)
@@ -2090,11 +2084,10 @@ where us_id = @us_id";
                 Response.Write("<td nowrap><span id=\"" + fieldId + "_label\">");
                 Response.Write(columnName);
 
-                var permissionOnOriginal = this.PermissionLevel;
+                var permissionOnOriginal = PermissionLevel;
 
                 if (!string.IsNullOrEmpty(this.prev_project.Value)
-                    && (this.project.SelectedItem == null ||
-                        this.project.SelectedItem.Value != this.prev_project.Value))
+                    && (this.project.SelectedItem == null || this.project.SelectedItem.Value != this.prev_project.Value))
                     permissionOnOriginal = fetch_permission_level(this.prev_project.Value, security);
 
                 if (permissionOnOriginal == SecurityPermissionLevel.PermissionReadonly
@@ -2140,7 +2133,7 @@ where us_id = @us_id";
                             if (!string.IsNullOrEmpty(text))
                             {
                                 var viewOnlyUserId = Convert.ToInt32(text);
-                                var dvUsers = new DataView(this.DtUsers);
+                                var dvUsers = new DataView(DtUsers);
                                 foreach (DataRowView drv in dvUsers)
                                     if (viewOnlyUserId == (int) drv[0])
                                     {
@@ -2207,7 +2200,7 @@ where us_id = @us_id";
                             {
                                 Response.Write("<option value=0>[not selected]</option>");
 
-                                var dvUsers = new DataView(this.DtUsers);
+                                var dvUsers = new DataView(DtUsers);
                                 foreach (DataRowView drv in dvUsers)
                                 {
                                     var userId = Convert.ToString(drv[0]);
@@ -2266,7 +2259,7 @@ where us_id = @us_id";
                 && this.project.SelectedItem.Value != null
                 && this.project.SelectedItem.Value != "0")
             {
-                this.Sql = @"select
+                Sql = @"select
             isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
             isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
             isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
@@ -2278,9 +2271,9 @@ where us_id = @us_id";
             isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
             from projects where pj_id = $pj";
 
-                this.Sql = this.Sql.Replace("$pj", this.project.SelectedItem.Value);
+                Sql = Sql.Replace("$pj", this.project.SelectedItem.Value);
 
-                var projectDr = DbUtil.GetDataRow(this.Sql);
+                var projectDr = DbUtil.GetDataRow(Sql);
 
                 if (projectDr != null)
                     for (var i = 1; i < 4; i++)
@@ -2295,9 +2288,8 @@ where us_id = @us_id";
                             // End GC
                             Response.Write("<td nowrap>");
 
-                            var permissionOnOriginal = this.PermissionLevel;
-                            if (!string.IsNullOrEmpty(this.prev_project.Value) &&
-                                this.project.SelectedItem.Value != this.prev_project.Value)
+                            var permissionOnOriginal = PermissionLevel;
+                            if (!string.IsNullOrEmpty(this.prev_project.Value) && this.project.SelectedItem.Value != this.prev_project.Value)
                                 permissionOnOriginal = fetch_permission_level(this.prev_project.Value, security);
 
                             if (permissionOnOriginal == SecurityPermissionLevel.PermissionReadonly
@@ -2394,13 +2386,13 @@ where us_id = @us_id";
 
         public void display_bug_relationships(ISecurity security)
         {
-            this.DsPosts = PrintBug.GetBugPosts(this.Id, Security.User.ExternalUser, this.HistoryInline);
+            DsPosts = PrintBug.GetBugPosts(this.Id, Security.User.ExternalUser, this.HistoryInline);
             var linkMarker = ApplicationSettings.BugLinkMarker;
             var reLinkMarker = new Regex(linkMarker + "([0-9]+)");
             var dictLinkedBugs = new SortedDictionary<int, int>();
 
             // fish out bug links
-            foreach (DataRow drPost in this.DsPosts.Tables[0].Rows)
+            foreach (DataRow drPost in DsPosts.Tables[0].Rows)
                 if ((string) drPost["bp_type"] == "comment")
                 {
                     var matchCollection = reLinkMarker.Matches((string) drPost["bp_comment"]);

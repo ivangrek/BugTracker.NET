@@ -7,9 +7,9 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Attachment;
+    using Core;
+    using Models;
+    using Models.Attachment;
     using System;
     using System.Data;
     using System.Data.SqlClient;
@@ -261,7 +261,7 @@ namespace BugTracker.Web.Controllers
 
             try
             {
-                Bug.InsertPostAttachment(security, model.BugId, model.File.InputStream,
+                Bug.InsertPostAttachment(this.security, model.BugId, model.File.InputStream,
                     contentLength,
                     filename, model.Description ?? string.Empty, model.File.ContentType,
                     -1, // parent

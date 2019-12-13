@@ -7,10 +7,6 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.Home;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -23,14 +19,18 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
     using System.Xml;
+    using Core;
+    using Core.Controls;
+    using Models.Home;
+    using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class HomeController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
-        private readonly ISecurity security;
         private readonly IReportService reportService;
+        private readonly ISecurity security;
 
         public HomeController(
             IApplicationSettings applicationSettings,
@@ -52,13 +52,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var bugs = Convert.ToInt32(DbUtil.ExecuteScalar("select count(1) from bugs"));
 
             if (bugs > 100)
-            {
                 ViewBag.Nag = true;
-            }
             else
-            {
                 ViewBag.Nag = false;
-            }
 
             ViewBag.Page = new PageModel
             {
@@ -74,47 +70,32 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult DownloadFile(string which, string filename)
         {
-            if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(which))
-            {
-                return Content(string.Empty);
-            }
+            if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(which)) return Content(string.Empty);
 
             string path;
 
             if (which == "backup")
-            {
                 path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", filename);
-            }
             else if (which == "log")
-            {
                 path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs", filename);
-            }
             else
-            {
                 return Content(string.Empty);
-            }
 
             Response.AddHeader("content-disposition", $"attachment; filename=\"{filename}\"");
 
             var contentType = Util.FilenameToContentType(filename);
 
             if (this.applicationSettings.UseTransmitFileInsteadOfWriteFile)
-            {
                 //Response.TransmitFile(path);
                 return File(System.IO.File.ReadAllBytes(path), contentType);
-            }
-            else
-            {
-                //Response.WriteFile(path);
-                return File(path, contentType);
-            }
+            return File(path, contentType);
         }
 
         // TODO to bugs
         [HttpGet]
         public ActionResult GetDbDateTime()
         {
-            var dt = (DateTime)DbUtil.ExecuteScalar("select getdate()");
+            var dt = (DateTime) DbUtil.ExecuteScalar("select getdate()");
 
             return Content(dt.ToString("yyyyMMdd HH\\:mm\\:ss\\:fff"));
         }
@@ -138,9 +119,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 var arr2 = coll.GetValues(arr1[loop1]);
 
                 for (loop2 = 0; loop2 < arr2.Length; loop2++)
-                {
                     stringBuilder.Append("Value " + loop2 + ": " + arr2[loop2] + "<br>");
-                }
             }
 
             return Content(stringBuilder.ToString());
@@ -150,10 +129,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         public ActionResult EditCustomHtml(string which)
         {
             // default to footer
-            if (string.IsNullOrEmpty(which))
-            {
-                which = "footer";
-            }
+            if (string.IsNullOrEmpty(which)) which = "footer";
 
             var fileName = GetFileName(which);
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Content", "custom", fileName);
@@ -186,22 +162,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         public ActionResult EditCustomHtml(EditCustomHtmlModel model)
         {
             // default to footer
-            if (string.IsNullOrEmpty(model.Which))
-            {
-                model.Which = "footer";
-            }
+            if (string.IsNullOrEmpty(model.Which)) model.Which = "footer";
 
-            if (string.IsNullOrEmpty(model.Which))
-            {
-                return Content(string.Empty);
-            }
+            if (string.IsNullOrEmpty(model.Which)) return Content(string.Empty);
 
             var fileName = GetFileName(model.Which);
 
-            if (string.IsNullOrEmpty(fileName))
-            {
-                return Content(string.Empty);
-            }
+            if (string.IsNullOrEmpty(fileName)) return Content(string.Empty);
 
             // save to disk
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Content", "custom", fileName);
@@ -261,13 +228,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             };
 
             foreach (DataRow dr in ds.Tables[0].Rows)
-            {
                 ViewBag.DbTables.Add(new SelectListItem
                 {
-                    Text = (string)dr[0],
-                    Value = (string)dr[0]
+                    Text = (string) dr[0],
+                    Value = (string) dr[0]
                 });
-            }
 
             ViewBag.Page = new PageModel
             {
@@ -294,12 +259,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             }
 
             if (!string.IsNullOrEmpty(model.Text))
-            {
                 try
                 {
                     ViewBag.Table = new SortableTableModel
                     {
-                        DataSet = DbUtil.GetDataSet(Server.HtmlDecode(model.Text))
+                        DataTable = DbUtil.GetDataSet(Server.HtmlDecode(model.Text)).Tables[0]
                     };
                 }
                 catch (Exception e2)
@@ -307,7 +271,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ViewBag.ExceptionMessage = e2.Message;
                     //exception_message = e2.ToString();  // uncomment this if you need more error info.
                 }
-            }
 
             ViewBag.Page = new PageModel
             {
@@ -329,13 +292,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             };
 
             foreach (DataRow dr in ds.Tables[0].Rows)
-            {
                 ViewBag.DbTables.Add(new SelectListItem
                 {
-                    Text = (string)dr[0],
-                    Value = (string)dr[0]
+                    Text = (string) dr[0],
+                    Value = (string) dr[0]
                 });
-            }
 
             return View(model);
         }
@@ -413,7 +374,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             ViewBag.Table = new SortableTableModel
             {
-                DataSet = GetBackupFiles(),
+                DataTable = GetBackupFiles().Tables[0],
                 HtmlEncode = false
             };
 
@@ -427,15 +388,17 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (string.IsNullOrEmpty(model.FileName))
             {
                 var date = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var db = (string)DbUtil.ExecuteScalar("select db_name()");
-                var backupFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", $"db_backup_{date}.bak");
+                var db = (string) DbUtil.ExecuteScalar("select db_name()");
+                var backupFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data",
+                    $"db_backup_{date}.bak");
                 var sql = "backup database " + db + " to disk = '" + backupFile + "'";
 
                 DbUtil.ExecuteNonQuery(sql);
             }
             else
             {
-                var backupFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", model.FileName);
+                var backupFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data",
+                    model.FileName);
 
                 System.IO.File.Delete(backupFile);
             }
@@ -456,7 +419,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             ViewBag.Table = new SortableTableModel
             {
-                DataSet = GetLogFiles(),
+                DataTable = GetLogFiles().Tables[0],
                 HtmlEncode = false
             };
 
@@ -469,7 +432,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         {
             if (!string.IsNullOrEmpty(model.FileName))
             {
-                var logFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs", model.FileName);
+                var logFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs",
+                    model.FileName);
 
                 System.IO.File.Delete(logFile);
             }
@@ -502,7 +466,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             var model = new SortableTableModel
             {
-                DataSet = dataSet
+                DataTable = dataSet.Tables[0]
             };
 
             return View(model);
@@ -540,8 +504,10 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         {
             var dataSet = DbUtil.GetDataSet(
                 @"select
-                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/") + @"' + convert(varchar,pr_id) + '>' + pr_name + '</a>' [priority],
-                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Administration/Status/Update/") + @"' + convert(varchar,st_id) + '>' + st_name + '</a>' [status],
+                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/") +
+                @"' + convert(varchar,pr_id) + '>' + pr_name + '</a>' [priority],
+                '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Administration/Status/Update/") +
+                @"' + convert(varchar,st_id) + '>' + st_name + '</a>' [status],
                 isnull(pr_style,'') [priority CSS class],
                 isnull(st_style,'') [status CSS class],
                 isnull(pr_style + st_style,'datad') [combo CSS class - priority + status ],
@@ -554,13 +520,10 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             var classesList = new ArrayList();
 
-            foreach (DataRow drStyles in dataSet.Tables[1].Rows)
-            {
-                classesList.Add("." + (string)drStyles[0]);
-            }
+            foreach (DataRow drStyles in dataSet.Tables[1].Rows) classesList.Add("." + (string) drStyles[0]);
 
             // create path
-            var path = Path.Combine((string)HttpRuntime.Cache["MapPath"], "Content", "custom", "btnet_custom.css");
+            var path = Path.Combine((string) HttpRuntime.Cache["MapPath"], "Content", "custom", "btnet_custom.css");
             var relevantCssLines = new StringBuilder();
             var lines = new ArrayList();
 
@@ -570,18 +533,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 var stream = System.IO.File.OpenText(path);
 
                 while ((line = stream.ReadLine()) != null)
-                {
                     for (var i = 0; i < classesList.Count; i++)
-                    {
-                        if (line.IndexOf((string)classesList[i]) > -1)
+                        if (line.IndexOf((string) classesList[i]) > -1)
                         {
                             relevantCssLines.Append(line);
                             relevantCssLines.Append("<br>");
                             lines.Add(line);
                             break;
                         }
-                    }
-                }
 
                 stream.Close();
             }
@@ -598,7 +557,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             var model = new SortableTableModel
             {
-                DataSet = dataSet,
+                DataTable = dataSet.Tables[0],
                 HtmlEncode = false
             };
 
@@ -610,25 +569,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var fileName = string.Empty;
 
             if (whichFile == "css")
-            {
                 fileName = "btnet_custom.css";
-            }
             else if (whichFile == "footer")
-            {
                 fileName = "custom_footer.html";
-            }
             else if (whichFile == "header")
-            {
                 fileName = "custom_header.html";
-            }
             else if (whichFile == "logo")
-            {
                 fileName = "custom_logo.html";
-            }
-            else if (whichFile == "welcome")
-            {
-                fileName = "custom_welcome.html";
-            }
+            else if (whichFile == "welcome") fileName = "custom_welcome.html";
 
             return fileName;
         }
@@ -653,10 +601,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             for (var i = 0; i < list.Count; i++)
             {
                 var dataRow = dataTable.NewRow();
-                var justFile = Path.GetFileName((string)list[i]);
+                var justFile = Path.GetFileName((string) list[i]);
 
                 dataRow[0] = justFile;
-                dataRow[1] = $"<a href='" + VirtualPathUtility.ToAbsolute($"~/Administration/Home/DownloadFile?which=backup&filename={justFile}") + "'>Download</a>";
+                dataRow[1] = "<a href='" +
+                             VirtualPathUtility.ToAbsolute(
+                                 $"~/Administration/Home/DownloadFile?which=backup&filename={justFile}") +
+                             "'>Download</a>";
                 dataRow[2] = $"<a href='#' onclick='onDelete(\"{justFile}\")'>Delete</a>";
 
                 dataTable.Rows.Add(dataRow);
@@ -689,10 +640,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             for (var i = list.Count - 1; i != -1; i--)
             {
                 var dataRow = dataTable.NewRow();
-                var justFile = Path.GetFileName((string)list[i]);
+                var justFile = Path.GetFileName((string) list[i]);
 
                 dataRow[0] = justFile;
-                dataRow[1] = $"<a href='" + VirtualPathUtility.ToAbsolute($"~/Administration/Home/DownloadFile?which=log&filename={justFile}") + "'>Download</a>";
+                dataRow[1] = "<a href='" +
+                             VirtualPathUtility.ToAbsolute(
+                                 $"~/Administration/Home/DownloadFile?which=log&filename={justFile}") +
+                             "'>Download</a>";
                 dataRow[2] = $"<a href='#' onclick='onDelete(\"{justFile}\")'>Delete</a>";
 
                 dataTable.Rows.Add(dataRow);

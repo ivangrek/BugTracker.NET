@@ -5,16 +5,18 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
 
 @section Styles {
-    <link href="~/Content/custom/btnet_custom.css" rel="stylesheet" />
+    <link href="~/Content/custom/btnet_custom.css" rel="stylesheet"/>
 }
 
 @section Scripts {
@@ -44,9 +46,10 @@
         a priority or a status.
     </div>
 
-    @if (Model.DataSet.Tables[0].Rows.Count > 0)
+    @if (Model.DataTable.Rows.Count > 0)
     {
-        @Html.Partial("_SortableTable", Model);
+        @Html.Partial("_SortableTable", Model)
+        ;
     }
     else
     {
@@ -60,5 +63,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

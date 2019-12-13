@@ -7,32 +7,41 @@
 
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
-    using BugTracker.Web.Areas.Administration.Models.UserDefinedAttribute;
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Administration;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Net;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Changing.Results;
+    using Core;
+    using Core.Controls;
+    using Models.UserDefinedAttribute;
+    using Querying;
+    using Tracking.Changing.UserDefinedAttributes.Commands;
+    using Tracking.Querying.UserDefinedAttributes;
+    using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None)]
     public class UserDefinedAttributeController : Controller
     {
+        private readonly IApplicationFacade applicationFacade;
         private readonly IApplicationSettings applicationSettings;
+        private readonly IQueryBuilder queryBuilder;
         private readonly ISecurity security;
-        private readonly IUserDefinedAttributeService userDefinedAttributeService;
 
         public UserDefinedAttributeController(
             IApplicationSettings applicationSettings,
             ISecurity security,
-            IUserDefinedAttributeService userDefinedAttributeService)
+            IApplicationFacade applicationFacade,
+            IQueryBuilder queryBuilder)
         {
             this.applicationSettings = applicationSettings;
             this.security = security;
-            this.userDefinedAttributeService = userDefinedAttributeService;
+
+            this.applicationFacade = applicationFacade;
+            this.queryBuilder = queryBuilder;
         }
 
         [HttpGet]
@@ -46,9 +55,38 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
+            var query = this.queryBuilder
+                .From<IUserDefinedAttributeSource>()
+                .To<IUserDefinedAttributeListResult>()
+                .Sort()
+                .AscendingBy(x => x.SortSequence)
+                .AscendingBy(x => x.Name)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            var dataTable = new DataTable();
+
+            dataTable.Columns.Add("id");
+            dataTable.Columns.Add("user defined attribute value");
+            dataTable.Columns.Add("sort seq");
+            dataTable.Columns.Add("default");
+            dataTable.Columns.Add("hidden");
+
+            foreach (var userDefinedAttribute in result)
+            {
+                var defaultValue = userDefinedAttribute.Default == 1
+                    ? "Y"
+                    : "N";
+
+                dataTable.Rows.Add(userDefinedAttribute.Id, userDefinedAttribute.Name,
+                    userDefinedAttribute.SortSequence, defaultValue, userDefinedAttribute.Id);
+            }
+
             var model = new SortableTableModel
             {
-                DataSet = this.userDefinedAttributeService.LoadList(),
+                DataTable = dataTable,
                 EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/UserDefinedAttribute/Update/"),
                 DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/UserDefinedAttribute/Delete/")
             };
@@ -67,9 +105,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new EditModel
-            {
-            };
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            model = new EditModel();
 
             return View("Edit", model);
         }
@@ -78,40 +120,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            if (!ModelState.IsValid)
+            this.applicationFacade
+                .Run<ICreateCommand>(model, out var commandResult);
+
+            switch (commandResult)
             {
-                ModelState.AddModelError(string.Empty, "User defined attribute was not created.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
 
-                ViewBag.Page = new PageModel
-                {
-                    ApplicationSettings = this.applicationSettings,
-                    Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - new user defined attribute",
-                    SelectedItem = MainMenuSections.Administration
-                };
-
-                return View("Edit", model);
+                    return RedirectToAction(nameof(Create));
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "$id", model.Id.ToString() },
-                { "$na", model.Name},
-                { "$ss", model.SortSequence.ToString() },
-                { "$df", Util.BoolToString(model.Default)},
-            };
-
-            this.userDefinedAttributeService.Create(parameters);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Update(int id)
         {
-            // Get this entry's data from the db and fill in the form
-            var dataRow = this.userDefinedAttributeService.LoadOne(id);
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -120,12 +148,28 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new EditModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            var query = this.queryBuilder
+                .From<IUserDefinedAttributeSource>()
+                .To<IUserDefinedAttributeStateResult>()
+                .Filter()
+                .Equal(x => x.Id, id)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            model = new EditModel
             {
                 Id = id,
-                Name = dataRow.Name,
-                SortSequence = dataRow.SortSequence,
-                Default = dataRow.Default == 1
+                Name = result.Name,
+                SortSequence = result.SortSequence,
+                Default = result.Default == 1
             };
 
             return View("Edit", model);
@@ -135,44 +179,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Update(EditModel model)
         {
-            if (!ModelState.IsValid)
+            this.applicationFacade
+                .Run<IUpdateCommand>(model, out var commandResult);
+
+            switch (commandResult)
             {
-                ModelState.AddModelError(string.Empty, "User defined attribute was not updated.");
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
 
-                ViewBag.Page = new PageModel
-                {
-                    ApplicationSettings = this.applicationSettings,
-                    Security = this.security,
-                    Title = $"{this.applicationSettings.AppTitle} - edit user defined attribute",
-                    SelectedItem = MainMenuSections.Administration
-                };
-
-                return View("Edit", model);
+                    return RedirectToAction(nameof(Update));
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
             }
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "$id", model.Id.ToString() },
-                { "$na", model.Name},
-                { "$ss", model.SortSequence.ToString() },
-                { "$df", Util.BoolToString(model.Default)},
-            };
-
-            this.userDefinedAttributeService.Update(parameters);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            var (valid, name) = this.userDefinedAttributeService.CheckDeleting(id);
-
-            if (!valid)
-            {
-                return Content($"You can't delete value \"{name}\" because some bugs still reference it.");
-            }
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
@@ -181,10 +207,26 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new DeleteModel
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is DeleteModel model) return View(model);
+
+            var query = this.queryBuilder
+                .From<IUserDefinedAttributeSource>()
+                .To<IUserDefinedAttributeDeletePreviewResult>()
+                .Filter()
+                .Equal(x => x.Id, id)
+                .Build();
+
+            var result = this.applicationFacade
+                .Run(query);
+
+            model = new DeleteModel
             {
-                Id = id,
-                Name = name
+                Id = result.Id,
+                Name = result.Name
             };
 
             return View(model);
@@ -194,9 +236,21 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(DeleteModel model)
         {
-            this.userDefinedAttributeService.Delete(model.Id);
+            this.applicationFacade
+                .Run<IDeleteCommand>(model, out var commandResult);
 
-            return RedirectToAction(nameof(Index));
+            switch (commandResult)
+            {
+                case IFailCommandResult fail:
+                    TempData["Model"] = model;
+                    TempData["Errors"] = fail.Errors;
+
+                    return RedirectToAction(nameof(Delete), new {id = model.Id});
+                case INotAuthorizedCommandResult _:
+                    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                default:
+                    return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

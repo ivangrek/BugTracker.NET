@@ -143,8 +143,7 @@ where us_username = N'$username'";
                     var cred = new NetworkCredential(dn, password);
 
                     ldap.AuthType = (AuthType) Enum.Parse
-                    (typeof(AuthType),
-                        this.applicationSettings.LdapAuthType);
+                    (typeof(AuthType), this.applicationSettings.LdapAuthType);
 
                     try
                     {

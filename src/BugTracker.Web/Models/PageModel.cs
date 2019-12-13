@@ -6,7 +6,7 @@
 
 namespace BugTracker.Web.Models
 {
-    using BugTracker.Web.Core;
+    using Core;
 
     public sealed class PageModel
     {

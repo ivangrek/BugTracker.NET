@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.Project.EditModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -27,210 +29,210 @@
 }
 
 <div class="row">
-    <div class="col-lg-6">
-        <div class="card bg-light">
-            <div class="card-body">
-                <ul class="nav nav-pills mb-3">
-                    <li class="nav-item">
-                        <a href="#main" class="nav-link active" data-toggle="tab" aria-controls="main" aria-selected="true">Main</a>
-                    </li>
+<div class="col-lg-6">
+<div class="card bg-light">
+    <div class="card-body">
+        <ul class="nav nav-pills mb-3">
+            <li class="nav-item">
+                <a href="#main" class="nav-link active" data-toggle="tab" aria-controls="main" aria-selected="true">Main</a>
+            </li>
 
-                    <li class="nav-item">
-                        <a href="#custom-fields" class="nav-link" data-toggle="tab" aria-controls="custom-fields" aria-selected="false">Custom Fields</a>
-                    </li>
+            <li class="nav-item">
+                <a href="#custom-fields" class="nav-link" data-toggle="tab" aria-controls="custom-fields" aria-selected="false">Custom Fields</a>
+            </li>
 
-                    @if (Model.Id != 0)
-                    {
-                        <li class="nav-item">
-                            <a href="@Url.Action("UpdateUserPermission", "Project", new { id = Model.Id, label = Model.Name })" class="nav-link">Per user permissions</a>
-                        </li>
-                    }
-                </ul>
+            @if (Model.Id != 0)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("UpdateUserPermission", "Project", new {id = Model.Id, label = Model.Name})" class="nav-link">Per user permissions</a>
+                </li>
+            }
+        </ul>
 
-                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Project", FormMethod.Post, new { @class = "frm" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.Partial("_ValidationSummary")
+        @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Project", FormMethod.Post, new {@class = "frm"}))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Partial("_ValidationSummary")
 
-                    @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.Id)
 
-                    <div class="tab-content mt-3">
-                        <div class="tab-pane active" id="main" role="tabpanel" aria-labelledby="main-tab">
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Name):
-                                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "30", size = "30" })
-                                @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.Active, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.Active, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.Active, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.Default, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.Default, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.Default, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.DefaultUserId):
-                                @Html.DropDownListFor(x => x.DefaultUserId, (List<SelectListItem>)ViewBag.DefaultUsers, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(x => x.DefaultUserId, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.AutoAssign, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.AutoAssign, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.AutoAssign, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.AutoSubscribe, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.AutoSubscribe, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.AutoSubscribe, null, new { @class = "text-danger" }, "small")
-
-                                <small class="form-text text-muted">
-                                    For the following, see also user page. Make sure user's email is supplied.<br>
-                                    Also see "NotificationEmailEnabled", "NotificationEmailFrom", "SmtpServer" settings in Web.config.
-                                </small>
-                            </div>
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EnablePop3, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EnablePop3, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EnablePop3, null, new { @class = "text-danger" }, "small")
-
-                                <small class="form-text text-muted">
-                                    The following are used by btnet_pop3.exe and btnet_service_pop3.exe<br>
-                                    Also see the btnet_service.exe.config file.
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Pop3Login):
-                                @Html.TextBoxFor(x => x.Pop3Login, new { autocomplete = "off", @class = "form-control", maxlength = "30", size = "30" })
-                                @Html.ValidationMessageFor(x => x.Pop3Login, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Pop3Password):
-                                @Html.TextBoxFor(x => x.Pop3Password, new { type = "password", @class = "form-control", maxlength = "20", size = "20" })
-                                @Html.ValidationMessageFor(x => x.Pop3Password, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Pop3Email):
-                                @Html.TextBoxFor(x => x.Pop3Email, new { @class = "form-control", maxlength = "30", size = "30" })
-                                @Html.ValidationMessageFor(x => x.Pop3Email, null, new { @class = "text-danger" }, "small")
-                                <small class="form-text text-muted">The following is used as the "From" email address when you respond to bugs generated by emails</small>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.Description):
-                                @Html.TextAreaFor(x => x.Description, new { @class = "form-control", rows = "5", cols = "40" })
-                                @Html.ValidationMessageFor(x => x.Description, null, new { @class = "text-danger" }, "small")
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="custom-fields" role="tabpanel" aria-labelledby="custom-fields-tab">
-                            <div class="alert alert-info" role="alert">
-                                <h6 class="alert-heading">Custom fields for this project only</h6>
-                                Use the following if you want to have a custom field for this project only.
-                                <br>
-                                1. Check the box to enable the field.
-                                <br>
-                                2. Fill in the label.
-                                <br>
-                                3. Create a list of values. One value per line.
-                                <br>
-                                No individiual value should be longer than the length of your custom field.
-                                <br>
-                                Don't use commas, &gt;, &lt;, or quotes in the list of values.
-                                <br>
-                                Line breaks for your readability are ok.
-                                <br>
-                                Here are some examples:
-                                <br>
-                                "1.0|1.1|1.2"
-                                <br>
-                                "red|blue|green"
-                                <br>
-                                It's ok to have one of the values be blank:<br>
-                                "|red|blue|green"
-                            </div>
-
-                            <hr />
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EnableCustomDropdown1, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EnableCustomDropdown1, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EnableCustomDropdown1, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.CustomDropdown1Label):
-                                @Html.TextBoxFor(x => x.CustomDropdown1Label, new { @class = "form-control", maxlength = "30", size = "30" })
-                                @Html.ValidationMessageFor(x => x.CustomDropdown1Label, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.CustomDropdown1Values):
-                                @Html.TextAreaFor(x => x.CustomDropdown1Values, new { @class = "form-control", rows = "2", cols = "40" })
-                                @Html.ValidationMessageFor(x => x.CustomDropdown1Values, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <hr />
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EnableCustomDropdown2, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EnableCustomDropdown2, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EnableCustomDropdown2, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.CustomDropdown2Label):
-                                @Html.TextBoxFor(x => x.CustomDropdown2Label, new { @class = "form-control", maxlength = "30", size = "30" })
-                                @Html.ValidationMessageFor(x => x.CustomDropdown2Label, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.CustomDropdown2Values):
-                                @Html.TextAreaFor(x => x.CustomDropdown2Values, new { @class = "form-control", rows = "2", cols = "40" })
-                                @Html.ValidationMessageFor(x => x.CustomDropdown2Values, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <hr />
-
-                            <div class="form-group form-check">
-                                @Html.CheckBoxFor(x => x.EnableCustomDropdown3, new { @class = "form-check-input" })
-                                @Html.LabelFor(x => x.EnableCustomDropdown3, new { @class = "form-check-label" })
-                                @Html.ValidationMessageFor(x => x.EnableCustomDropdown3, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.CustomDropdown3Label):
-                                @Html.TextBoxFor(x => x.CustomDropdown3Label, new { @class = "form-control", maxlength = "30", size = "30" })
-                                @Html.ValidationMessageFor(x => x.CustomDropdown3Label, null, new { @class = "text-danger" }, "small")
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(x => x.CustomDropdown3Values):
-                                @Html.TextAreaFor(x => x.CustomDropdown3Values, new { @class = "form-control", rows = "2", cols = "40" })
-                                @Html.ValidationMessageFor(x => x.CustomDropdown3Values, null, new { @class = "text-danger" }, "small")
-                            </div>
-                        </div>
+            <div class="tab-content mt-3">
+                <div class="tab-pane active" id="main" role="tabpanel" aria-labelledby="main-tab">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.Name, null, new {@class = "text-danger"}, "small")
                     </div>
 
-                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
-                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
-                }
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.Active, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.Active, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.Active, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.Default, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.Default, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.Default, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.DefaultUserId):
+                        @Html.DropDownListFor(x => x.DefaultUserId, (List<SelectListItem>) ViewBag.DefaultUsers, new {@class = "form-control"})
+                        @Html.ValidationMessageFor(x => x.DefaultUserId, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.AutoAssignDefaultUser, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.AutoAssignDefaultUser, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.AutoAssignDefaultUser, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.AutoSubscribeDefaultUser, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.AutoSubscribeDefaultUser, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.AutoSubscribeDefaultUser, null, new {@class = "text-danger"}, "small")
+
+                        <small class="form-text text-muted">
+                            For the following, see also user page. Make sure user's email is supplied.<br>
+                            Also see "NotificationEmailEnabled", "NotificationEmailFrom", "SmtpServer" settings in Web.config.
+                        </small>
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.EnablePop3, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.EnablePop3, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.EnablePop3, null, new {@class = "text-danger"}, "small")
+
+                        <small class="form-text text-muted">
+                            The following are used by btnet_pop3.exe and btnet_service_pop3.exe<br>
+                            Also see the btnet_service.exe.config file.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Pop3Username):
+                        @Html.TextBoxFor(x => x.Pop3Username, new {autocomplete = "off", @class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.Pop3Username, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Pop3Password):
+                        @Html.TextBoxFor(x => x.Pop3Password, new {type = "password", @class = "form-control", maxlength = "20", size = "20"})
+                        @Html.ValidationMessageFor(x => x.Pop3Password, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Pop3EmailFrom):
+                        @Html.TextBoxFor(x => x.Pop3EmailFrom, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.Pop3EmailFrom, null, new {@class = "text-danger"}, "small")
+                        <small class="form-text text-muted">The following is used as the "From" email address when you respond to bugs generated by emails</small>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Description):
+                        @Html.TextAreaFor(x => x.Description, new {@class = "form-control", rows = "5", cols = "40"})
+                        @Html.ValidationMessageFor(x => x.Description, null, new {@class = "text-danger"}, "small")
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="custom-fields" role="tabpanel" aria-labelledby="custom-fields-tab">
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">Custom fields for this project only</h6>
+                        Use the following if you want to have a custom field for this project only.
+                        <br>
+                        1. Check the box to enable the field.
+                        <br>
+                        2. Fill in the label.
+                        <br>
+                        3. Create a list of values. One value per line.
+                        <br>
+                        No individiual value should be longer than the length of your custom field.
+                        <br>
+                        Don't use commas, &gt;, &lt;, or quotes in the list of values.
+                        <br>
+                        Line breaks for your readability are ok.
+                        <br>
+                        Here are some examples:
+                        <br>
+                        "1.0|1.1|1.2"
+                        <br>
+                        "red|blue|green"
+                        <br>
+                        It's ok to have one of the values be blank:<br>
+                        "|red|blue|green"
+                    </div>
+
+                    <hr/>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.EnableCustomDropdown1, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.EnableCustomDropdown1, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.EnableCustomDropdown1, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CustomDropdown1Label):
+                        @Html.TextBoxFor(x => x.CustomDropdown1Label, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.CustomDropdown1Label, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CustomDropdown1Values):
+                        @Html.TextAreaFor(x => x.CustomDropdown1Values, new {@class = "form-control", rows = "2", cols = "40"})
+                        @Html.ValidationMessageFor(x => x.CustomDropdown1Values, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <hr/>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.EnableCustomDropdown2, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.EnableCustomDropdown2, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.EnableCustomDropdown2, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CustomDropdown2Label):
+                        @Html.TextBoxFor(x => x.CustomDropdown2Label, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.CustomDropdown2Label, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CustomDropdown2Values):
+                        @Html.TextAreaFor(x => x.CustomDropdown2Values, new {@class = "form-control", rows = "2", cols = "40"})
+                        @Html.ValidationMessageFor(x => x.CustomDropdown2Values, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <hr/>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.EnableCustomDropdown3, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.EnableCustomDropdown3, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.EnableCustomDropdown3, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CustomDropdown3Label):
+                        @Html.TextBoxFor(x => x.CustomDropdown3Label, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.CustomDropdown3Label, null, new {@class = "text-danger"}, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CustomDropdown3Values):
+                        @Html.TextAreaFor(x => x.CustomDropdown3Values, new {@class = "form-control", rows = "2", cols = "40"})
+                        @Html.ValidationMessageFor(x => x.CustomDropdown3Values, null, new {@class = "text-danger"}, "small")
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+            <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+        }
     </div>
+</div>
+</div>
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -47,25 +49,26 @@
 }
 
 <div class="row px-3 mb-3">
-    @using (Html.BeginForm("Index", "User", new { area = "Administration" }, FormMethod.Post, new { @class = "form-inline ml-auto" }))
+    @using (Html.BeginForm("Index", "User", new {area = "Administration"}, FormMethod.Post, new {@class = "form-inline ml-auto"}))
     {
         @Html.AntiForgeryToken()
 
-        @Html.Label("Filter", "Show only usernames starting with:", new { @class = "mr-sm-2" })
-        @Html.TextBox("Filter", (string)ViewBag.Filter, new { type = "search", @class = "form-control mb-2 mr-sm-2", onkeyup = "filter_changed()", style = "color: red;" })
+        @Html.Label("Filter", "Show only usernames starting with:", new {@class = "mr-sm-2"})
+        @Html.TextBox("Filter", (string) ViewBag.Filter, new {type = "search", @class = "form-control mb-2 mr-sm-2", onkeyup = "filter_changed()", style = "color: red;"})
 
         <div class="form-check mb-2 mr-sm-2">
-            @Html.CheckBox("HideInactive", (bool)ViewBag.HideInactive, new { @class = "form-check-input" })
-            @Html.Label("HideInactive", "hide inactive users:", new { @class = "form-check-label" })
+            @Html.CheckBox("HideInactive", (bool) ViewBag.HideInactive, new {@class = "form-check-input"})
+            @Html.Label("HideInactive", "hide inactive users:", new {@class = "form-check-label"})
         </div>
 
         <input type="submit" class="btn btn-primary mb-2" value="Apply">
     }
 </div>
 
-@if (Model.DataSet.Tables[0].Rows.Count > 0)
+@if (Model.DataTable.Rows.Count > 0)
 {
-    @Html.Partial("_SortableTable", Model);
+    @Html.Partial("_SortableTable", Model)
+    ;
 }
 else
 {
@@ -73,5 +76,5 @@ else
 }
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

@@ -5,10 +5,12 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.CustomField.CreateModel
 
 @{
-    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+    var page = (PageModel) ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -30,22 +32,22 @@
     <div class="col-lg-6">
         <div class="card bg-light">
             <div class="card-body">
-                @using (Html.BeginForm("Create", "CustomField", FormMethod.Post, new { @class = "frm" }))
+                @using (Html.BeginForm("Create", "CustomField", FormMethod.Post, new {@class = "frm"}))
                 {
                     @Html.AntiForgeryToken()
                     @Html.Partial("_ValidationSummary")
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.Name):
-                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "30", size = "30" })
-                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+                        @Html.TextBoxFor(x => x.Name, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.Name, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">Don't use single quotes, &gt;, or &lt; characters in the Field Name.</small>
                     </div>
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.DropdownType):
-                        @Html.DropDownListFor(x => x.DropdownType, (List<SelectListItem>)ViewBag.DropdownTypes, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.DropdownType, null, new { @class = "text-danger" }, "small")
+                        @Html.DropDownListFor(x => x.DropdownType, (List<SelectListItem>) ViewBag.DropdownTypes, new {@class = "form-control"})
+                        @Html.ValidationMessageFor(x => x.DropdownType, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">
                             A dropdown type of "normal" uses the values specified in "Normal Dropdown Values"
                             below. A dropdown type of "users" is filled with values from the users table. The
@@ -55,15 +57,15 @@
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.DataType):
-                        @Html.DropDownListFor(x => x.DataType, (List<SelectListItem>)ViewBag.DataTypes, new { @class = "form-control" })
+                        @Html.DropDownListFor(x => x.DataType, (List<SelectListItem>) ViewBag.DataTypes, new {@class = "form-control"})
                         <small class="form-text text-muted">For "user" dropdown, select "int"</small>
-                        @Html.ValidationMessageFor(x => x.DataType, null, new { @class = "text-danger" }, "small")
+                        @Html.ValidationMessageFor(x => x.DataType, null, new {@class = "text-danger"}, "small")
                     </div>
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.Length):
-                        @Html.TextBoxFor(x => x.Length, new { @class = "form-control", maxlength = "6", size = "6" })
-                        @Html.ValidationMessageFor(x => x.Length, null, new { @class = "text-danger" }, "small")
+                        @Html.TextBoxFor(x => x.Length, new {@class = "form-control", maxlength = "6", size = "6"})
+                        @Html.ValidationMessageFor(x => x.Length, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">
                             For text type fields like char, varchar, nvarchar, etc, specify max length.<br>
                             <br>
@@ -73,22 +75,22 @@
                     </div>
 
                     <div class="form-group form-check">
-                        @Html.CheckBoxFor(x => x.Required, new { @class = "form-check-input" })
-                        @Html.LabelFor(x => x.Required, new { @class = "form-check-label" })
-                        @Html.ValidationMessageFor(x => x.Required, null, new { @class = "text-danger" }, "small")
+                        @Html.CheckBoxFor(x => x.Required, new {@class = "form-check-input"})
+                        @Html.LabelFor(x => x.Required, new {@class = "form-check-label"})
+                        @Html.ValidationMessageFor(x => x.Required, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">If you specify required, you must supply a default.&nbsp;&nbsp;Don't forget the parenthesis.</small>
                     </div>
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.Default):
-                        @Html.TextBoxFor(x => x.Default, new { @class = "form-control", maxlength = "30", size = "30" })
-                        @Html.ValidationMessageFor(x => x.Default, null, new { @class = "text-danger" }, "small")
+                        @Html.TextBoxFor(x => x.Default, new {@class = "form-control", maxlength = "30", size = "30"})
+                        @Html.ValidationMessageFor(x => x.Default, null, new {@class = "text-danger"}, "small")
                     </div>
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.DropdownValues):
-                        @Html.TextAreaFor(x => x.DropdownValues, new { @class = "form-control", rows = "6", cols = "60" })
-                        @Html.ValidationMessageFor(x => x.DropdownValues, null, new { @class = "text-danger" }, "small")
+                        @Html.TextAreaFor(x => x.DropdownValues, new {@class = "form-control", rows = "6", cols = "60"})
+                        @Html.ValidationMessageFor(x => x.DropdownValues, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">
                             Use the following if you want the custom field to be a "normal" dropdown.
                             <br>
@@ -113,8 +115,8 @@
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.SortSequence):
-                        @Html.TextBoxFor(x => x.SortSequence, new { @class = "form-control", maxlength = "2", size = "2" })
-                        @Html.ValidationMessageFor(x => x.SortSequence, null, new { @class = "text-danger" }, "small")
+                        @Html.TextBoxFor(x => x.SortSequence, new {@class = "form-control", maxlength = "2", size = "2"})
+                        @Html.ValidationMessageFor(x => x.SortSequence, null, new {@class = "text-danger"}, "small")
                         <small class="form-text text-muted">Controls what order the custom fields display on the page.</small>
                     </div>
 
@@ -127,5 +129,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+    @Html.Raw(Util.Context.Application["custom_footer"])
 }

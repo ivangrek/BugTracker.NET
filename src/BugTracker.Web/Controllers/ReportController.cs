@@ -7,10 +7,10 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using BugTracker.Web.Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Report;
+    using Core;
+    using Core.Controls;
+    using Models;
+    using Models.Report;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -61,7 +61,9 @@ namespace BugTracker.Web.Controllers
 
             var model = new SortableTableModel
             {
-                DataSet = this.reportService.LoadList(),
+                DataTable = this.reportService
+                    .LoadList()
+                    .Tables[0],
                 HtmlEncode = false
             };
 
@@ -101,7 +103,7 @@ namespace BugTracker.Web.Controllers
 
                 var model = new SortableTableModel
                 {
-                    DataSet = dataSet
+                    DataTable = dataSet.Tables[0]
                 };
 
                 return View(model);
@@ -194,7 +196,9 @@ namespace BugTracker.Web.Controllers
 
             var model = new SortableTableModel
             {
-                DataSet = this.reportService.LoadSelectList(),
+                DataTable = this.reportService
+                    .LoadSelectList()
+                    .Tables[0],
                 HtmlEncode = false
             };
 
