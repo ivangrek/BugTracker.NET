@@ -12,128 +12,140 @@
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" type="image/png" href="~/Content/favicon.ico">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet" />
     @RenderSection("Styles", false)
 </head>
 <body style="min-height: 100vh;">
-@RenderSection("BodyHeader", false)
+    @RenderSection("BodyHeader", false)
 
-<style>
-    .sidebar { min-width: 240px; }
-
-    .sidebar .nav-link { color: #333; }
-
-    .sidebar .nav-link.active,
-    .sidebar .nav-link:hover { color: #007bff; }
-</style>
-
-<div class="container-fluid d-flex flex-row px-0" style="min-height: calc(100vh - 56px);">
-    <div class="sidebar bg-light border-right">
-        @{
-            var controllerName = ViewContext.RouteData.Values["controller"].ToString();
-            var actionName = ViewContext.RouteData.Values["action"].ToString();
+    <style>
+        .sidebar {
+            min-width: 240px;
         }
 
-        <h6 class="d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
-            <span>Identification</span>
-        </h6>
+            .sidebar .nav-link {
+                color: #333;
+            }
 
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "User" ? "active" : string.Empty)" href="@Url.Action("Index", "User")">Users</a>
-            </li>
-        </ul>
+                .sidebar .nav-link.active,
+                .sidebar .nav-link:hover {
+                    color: #007bff;
+                }
+    </style>
 
-        <h6 class="d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
-            <span>Tracking</span>
-        </h6>
+    <div class="container-fluid d-flex flex-row px-0" style="min-height: calc(100vh - 56px);">
+        <div class="sidebar bg-light border-right">
+            @{
+                var controllerName = ViewContext.RouteData.Values["controller"].ToString();
+                var actionName = ViewContext.RouteData.Values["action"].ToString();
+            }
 
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Organization" ? "active" : string.Empty)" href="@Url.Action("Index", "Organization")">Organizations</a>
-            </li>
+            <h6 class="d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
+                <span>Identification</span>
+            </h6>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Project" ? "active" : string.Empty)" href="@Url.Action("Index", "Project")">Projects</a>
-            </li>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "User" ? "active" : string.Empty)" href="@Url.Action("Index", "User")">Users</a>
+                </li>
+            </ul>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Category" ? "active" : string.Empty)" href="@Url.Action("Index", "Category")">Categories</a>
-            </li>
+            <h6 class="d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
+                <span>Tracking</span>
+            </h6>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Priority" ? "active" : string.Empty)" href="@Url.Action("Index", "Priority")">Priorities</a>
-            </li>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Organization" ? "active" : string.Empty)" href="@Url.Action("Index", "Organization")">Organizations</a>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Status" ? "active" : string.Empty)" href="@Url.Action("Index", "Status")">Statuses</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Project" ? "active" : string.Empty)" href="@Url.Action("Index", "Project")">Projects</a>
+                </li>
 
-            <li class="nav-item position-relative">
-                <span class="position-absolute badge badge-secondary mr-3" data-toggle="popover" data-placement="right" data-content="See 'ShowUserDefinedBugAttribute' and 'UserDefinedBugAttributeName' in Web.config." style="cursor: pointer; right: 0; top: 11px;">?</span>
-                <a class="nav-link @(controllerName == "UserDefinedAttribute" ? "active" : string.Empty)" href="@Url.Action("Index", "UserDefinedAttribute")">User Defined Attributes</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Category" ? "active" : string.Empty)" href="@Url.Action("Index", "Category")">Categories</a>
+                </li>
 
-            <li class="nav-item position-relative">
-                <span class="position-absolute badge badge-secondary mr-3" data-toggle="popover" data-placement="right" data-content="Add custom fields to the bug page." style="cursor: pointer; right: 0; top: 11px;">?</span>
-                <a class="nav-link @(controllerName == "CustomField" ? "active" : string.Empty)" href="@Url.Action("Index", "CustomField")">Custom Fields</a>
-            </li>
-        </ul>
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Priority" ? "active" : string.Empty)" href="@Url.Action("Index", "Priority")">Priorities</a>
+                </li>
 
-        <h6 class="d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
-            <span>System</span>
-        </h6>
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Status" ? "active" : string.Empty)" href="@Url.Action("Index", "Status")">Statuses</a>
+                </li>
 
-        <ul class="nav flex-column">
-            <li class="nav-item position-relative">
-                <span class="position-absolute badge badge-danger mr-3" data-toggle="popover" data-placement="right" data-content="This links to Query. Query is potentially unsafe. Delete it if you are deploying on a public web server." style="cursor: pointer; right: 0; top: 11px;">?</span>
-                <a class="nav-link @(controllerName == "Home" && actionName == "Query" ? "active" : string.Empty)" href="@Url.Action("Query", "Home")">Run Ad-hoc Query</a>
-            </li>
+                <li class="nav-item position-relative">
+                    <span class="position-absolute badge badge-secondary mr-3" data-toggle="popover" data-placement="right" data-content="See 'ShowUserDefinedBugAttribute' and 'UserDefinedBugAttributeName' in Web.config." style="cursor: pointer; right: 0; top: 11px;">?</span>
+                    <a class="nav-link @(controllerName == "UserDefinedAttribute" ? "active" : string.Empty)" href="@Url.Action("Index", "UserDefinedAttribute")">User Defined Attributes</a>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Home" && actionName == "Notification" ? "active" : string.Empty)" href="@Url.Action("Notification", "Home")">Queued Email Notifications</a>
-            </li>
+                <li class="nav-item position-relative">
+                    <span class="position-absolute badge badge-secondary mr-3" data-toggle="popover" data-placement="right" data-content="Add custom fields to the bug page." style="cursor: pointer; right: 0; top: 11px;">?</span>
+                    <a class="nav-link @(controllerName == "CustomField" ? "active" : string.Empty)" href="@Url.Action("Index", "CustomField")">Custom Fields</a>
+                </li>
+            </ul>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Home" && actionName == "EditCustomHtml" ? "active" : string.Empty)" href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
-            </li>
+            <h6 class="d-flex justify-content-between align-items-center px-3 mt-3 mb-1 text-muted">
+                <span>System</span>
+            </h6>
 
-            <li class="nav-item position-relative">
-                <span class="position-absolute badge badge-danger mr-3" data-toggle="popover" data-placement="right" data-content="Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!" style="cursor: pointer; right: 0; top: 11px;">?</span>
-                <a class="nav-link @(controllerName == "Home" && actionName == "EditWebConfig" ? "active" : string.Empty)" href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
-            </li>
+            <ul class="nav flex-column">
+                <li class="nav-item position-relative">
+                    <span class="position-absolute badge badge-danger mr-3" data-toggle="popover" data-placement="right" data-content="This links to Query. Query is potentially unsafe. Delete it if you are deploying on a public web server." style="cursor: pointer; right: 0; top: 11px;">?</span>
+                    <a class="nav-link @(controllerName == "Home" && actionName == "Query" ? "active" : string.Empty)" href="@Url.Action("Query", "Home")">Run Ad-hoc Query</a>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Home" && actionName == "BackupDb" ? "active" : string.Empty)" href="@Url.Action("BackupDb", "Home")">Backup Database</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Home" && actionName == "Notification" ? "active" : string.Empty)" href="@Url.Action("Notification", "Home")">Queued Email Notifications</a>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link @(controllerName == "Home" && actionName == "ManageLogs" ? "active" : string.Empty)" href="@Url.Action("ManageLogs", "Home")">Manage Logs</a>
-            </li>
-        </ul>
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Home" && actionName == "EditCustomHtml" ? "active" : string.Empty)" href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
+                </li>
+
+                <li class="nav-item position-relative">
+                    <span class="position-absolute badge badge-danger mr-3" data-toggle="popover" data-placement="right" data-content="Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!" style="cursor: pointer; right: 0; top: 11px;">?</span>
+                    <a class="nav-link @(controllerName == "Home" && actionName == "EditWebConfig" ? "active" : string.Empty)" href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Home" && actionName == "BackupDb" ? "active" : string.Empty)" href="@Url.Action("BackupDb", "Home")">Backup Database</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link @(controllerName == "Home" && actionName == "ManageLogs" ? "active" : string.Empty)" href="@Url.Action("ManageLogs", "Home")">Manage Logs</a>
+                </li>
+            </ul>
+        </div>
+
+        <main role="main" class="d-flex flex-column px-0" style="width: calc(100vw - 240px);">
+            @RenderSection("BodySubHeader", false)
+
+            <div class="p-3">
+                <h1 class="mb-3">@ViewBag.Title</h1>
+                @RenderBody()
+            </div>
+        </main>
     </div>
 
-    <main role="main" class="d-flex flex-column px-0" style="width: calc(100vw - 240px);">
-        @RenderSection("BodySubHeader", false)
+    @RenderSection("BodyFooter", false)
 
-        <div class="p-3">
-            <h1 class="mb-3">@ViewBag.Title</h1>
-            @RenderBody()
-        </div>
-    </main>
-</div>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+        })
+    </script>
 
-@RenderSection("BodyFooter", false)
+    @RenderSection("Scripts", false)
 
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script>
-    $(function() {
-        $('[data-toggle="popover"]').popover();
-    })
-</script>
-@RenderSection("Scripts", false)
+    <script type="text/javascript" src="~/Scripts/MvcGrid/mvc-grid.js"></script>
+    <script>
+        document.querySelectorAll(".mvc-grid").forEach(element => new MvcGrid(element));
+    </script>
 </body>
 </html>

@@ -11,7 +11,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Collections.Generic;
     using System.Data;
     using System.Net;
-    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using Changing.Results;
@@ -58,99 +57,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var query = this.queryBuilder
                 .From<IOrganizationSource>()
                 .To<IOrganizationListResult>()
-                .Sort()
-                .AscendingBy(x => x.Name)
+                //TODO: uncomment when manual sorting
+                //.Sort()
+                //.AscendingBy(x => x.Name)
                 .Build();
 
             var result = this.applicationFacade
                 .Run(query);
 
-            var dataTable = new DataTable();
-
-            dataTable.Columns.Add("id");
-            dataTable.Columns.Add("$no_sort_edit");
-            dataTable.Columns.Add("$no_sort_delete");
-            dataTable.Columns.Add("desc");
-            dataTable.Columns.Add("active");
-            dataTable.Columns.Add("can<br>search");
-            dataTable.Columns.Add("non-admin<br>can use");
-            dataTable.Columns.Add("can see<br>only own bugs");
-            dataTable.Columns.Add("other orgs<br>permission<br>level");
-            dataTable.Columns.Add("external");
-            dataTable.Columns.Add("can<br>be assigned to");
-            dataTable.Columns.Add("status<br>permission<br>level");
-            dataTable.Columns.Add("assigned to<br>permission<br>level");
-            dataTable.Columns.Add("priority<br>permission<br>level");
-            dataTable.Columns.Add("domain");
-
-            foreach (var row in result)
-            {
-                var editUrl =
-                    $"<a href='{VirtualPathUtility.ToAbsolute($"~/Administration/Organization/Update/{row.Id}")}'>edit</a>";
-                var deleteUrl =
-                    $"<a href='{VirtualPathUtility.ToAbsolute($"~/Administration/Organization/Delete/{row.Id}")}'>delete</a>";
-                var activeValue = row.Active == 1
-                    ? "Y"
-                    : "N";
-
-                var canSearchValue = row.CanSearch == 1
-                    ? "Y"
-                    : "N";
-
-                var nonAdminsCanUseValue = row.NonAdminsCanUse == 1
-                    ? "Y"
-                    : "N";
-
-                var canOnlySeeOwnReportedValue = row.CanOnlySeeOwnReported == 1
-                    ? "Y"
-                    : "N";
-
-                var otherOrgsPermissionLevelValue = row.OtherOrgsPermissionLevel == 0
-                    ? "None"
-                    : row.OtherOrgsPermissionLevel == 1
-                        ? "Read Only"
-                        : "Add/Edit";
-
-                var externalUserValue = row.ExternalUser == 1
-                    ? "Y"
-                    : "N";
-
-                var canBeAssignedToValue = row.CanBeAssignedTo == 1
-                    ? "Y"
-                    : "N";
-
-                var statusFieldPermissionLevelValue = row.StatusFieldPermissionLevel == 0
-                    ? "None"
-                    : row.StatusFieldPermissionLevel == 1
-                        ? "Read Only"
-                        : "Add/Edit";
-
-                var assignedToFieldPermissionLevelValue = row.AssignedToFieldPermissionLevel == 0
-                    ? "None"
-                    : row.AssignedToFieldPermissionLevel == 1
-                        ? "Read Only"
-                        : "Add/Edit";
-
-                var priorityFieldPermissionLevelValue = row.PriorityFieldPermissionLevel == 0
-                    ? "None"
-                    : row.PriorityFieldPermissionLevel == 1
-                        ? "Read Only"
-                        : "Add/Edit";
-
-                dataTable.Rows.Add(row.Id, editUrl, deleteUrl, row.Name, activeValue, canSearchValue,
-                    nonAdminsCanUseValue,
-                    canOnlySeeOwnReportedValue, otherOrgsPermissionLevelValue, externalUserValue, canBeAssignedToValue,
-                    statusFieldPermissionLevelValue, assignedToFieldPermissionLevelValue,
-                    priorityFieldPermissionLevelValue, row.Domain);
-            }
-
-            var model = new SortableTableModel
-            {
-                DataTable = dataTable,
-                HtmlEncode = false
-            };
-
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]
@@ -186,9 +101,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
             {
-                var bgName = (string) drCustom["name"];
+                var bgName = (string)drCustom["name"];
 
-                ViewBag.DictCustomFieldPermissionLevel[bgName] = (int) SecurityPermissionLevel.PermissionAll;
+                ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)SecurityPermissionLevel.PermissionAll;
             }
 
             return View("Edit", model);
@@ -216,9 +131,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
                 foreach (DataRow drCustom in ViewBag.DCustom.Tables[0].Rows)
                 {
-                    var bgName = (string) drCustom["name"];
+                    var bgName = (string)drCustom["name"];
 
-                    ViewBag.DictCustomFieldPermissionLevel[bgName] = (int) SecurityPermissionLevel.PermissionAll;
+                    ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)SecurityPermissionLevel.PermissionAll;
                 }
 
                 return View("Edit", model);
@@ -290,7 +205,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = sql.Replace("$domain", model.Domain);
             sql = sql.Replace("$active", Util.BoolToString(model.Active));
 
-            sql = sql.Replace("$other_orgs", Convert.ToString((int) model.OtherOrgsPermissionLevel));
+            sql = sql.Replace("$other_orgs", Convert.ToString((int)model.OtherOrgsPermissionLevel));
 
             sql = sql.Replace("$can_search", Util.BoolToString(model.CanSearch));
             sql = sql.Replace("$external_user", Util.BoolToString(model.ExternalUser));
@@ -298,14 +213,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = sql.Replace("$can_be_assigned_to", Util.BoolToString(model.CanBeAssignedTo));
             sql = sql.Replace("$non_admins_can_use", Util.BoolToString(model.NonAdminsCanUse));
 
-            sql = sql.Replace("$flp_project", Convert.ToString((int) model.ProjectFieldPermissionLevel));
-            sql = sql.Replace("$flp_org", Convert.ToString((int) model.OrgFieldPermissionLevel));
-            sql = sql.Replace("$flp_category", Convert.ToString((int) model.CategoryFieldPermissionLevel));
-            sql = sql.Replace("$flp_tags", Convert.ToString((int) model.TagsFieldPermissionLevel));
-            sql = sql.Replace("$flp_priority", Convert.ToString((int) model.PriorityFieldPermissionLevel));
-            sql = sql.Replace("$flp_status", Convert.ToString((int) model.StatusFieldPermissionLevel));
-            sql = sql.Replace("$flp_assigned_to", Convert.ToString((int) model.AssignedToFieldPermissionLevel));
-            sql = sql.Replace("$flp_udf", Convert.ToString((int) model.UdfFieldPermissionLevel));
+            sql = sql.Replace("$flp_project", Convert.ToString((int)model.ProjectFieldPermissionLevel));
+            sql = sql.Replace("$flp_org", Convert.ToString((int)model.OrgFieldPermissionLevel));
+            sql = sql.Replace("$flp_category", Convert.ToString((int)model.CategoryFieldPermissionLevel));
+            sql = sql.Replace("$flp_tags", Convert.ToString((int)model.TagsFieldPermissionLevel));
+            sql = sql.Replace("$flp_priority", Convert.ToString((int)model.PriorityFieldPermissionLevel));
+            sql = sql.Replace("$flp_status", Convert.ToString((int)model.StatusFieldPermissionLevel));
+            sql = sql.Replace("$flp_assigned_to", Convert.ToString((int)model.AssignedToFieldPermissionLevel));
+            sql = sql.Replace("$flp_udf", Convert.ToString((int)model.UdfFieldPermissionLevel));
 
             sql = sql.Replace("$can_edit_sql", Util.BoolToString(model.CanEditSql));
             sql = sql.Replace("$can_delete_bug", Util.BoolToString(model.CanDeleteBug));
@@ -323,7 +238,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             foreach (DataRow drCustom in ViewBag.DCustom.Tables[0].Rows)
             {
-                var bgName = (string) drCustom["name"];
+                var bgName = (string)drCustom["name"];
                 var ogColName = $"og_{bgName}_field_permission_level";
 
                 custom1 += ",[" + ogColName + "]";
@@ -366,7 +281,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 Domain = result.Domain,
                 Active = Convert.ToBoolean(result.Active),
 
-                OtherOrgsPermissionLevel = (SecurityPermissionLevel) result.OtherOrgsPermissionLevel,
+                OtherOrgsPermissionLevel = (SecurityPermissionLevel)result.OtherOrgsPermissionLevel,
 
                 CanSearch = Convert.ToBoolean(result.CanSearch),
                 ExternalUser = Convert.ToBoolean(result.ExternalUser),
@@ -374,14 +289,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 CanBeAssignedTo = Convert.ToBoolean(result.CanBeAssignedTo),
                 NonAdminsCanUse = Convert.ToBoolean(result.NonAdminsCanUse),
 
-                ProjectFieldPermissionLevel = (SecurityPermissionLevel) result.ProjectFieldPermissionLevel,
-                OrgFieldPermissionLevel = (SecurityPermissionLevel) result.OrgFieldPermissionLevel,
-                CategoryFieldPermissionLevel = (SecurityPermissionLevel) result.CategoryFieldPermissionLevel,
-                PriorityFieldPermissionLevel = (SecurityPermissionLevel) result.PriorityFieldPermissionLevel,
-                StatusFieldPermissionLevel = (SecurityPermissionLevel) result.StatusFieldPermissionLevel,
-                AssignedToFieldPermissionLevel = (SecurityPermissionLevel) result.AssignedToFieldPermissionLevel,
-                UdfFieldPermissionLevel = (SecurityPermissionLevel) result.UdfFieldPermissionLevel,
-                TagsFieldPermissionLevel = (SecurityPermissionLevel) result.TagsFieldPermissionLevel,
+                ProjectFieldPermissionLevel = (SecurityPermissionLevel)result.ProjectFieldPermissionLevel,
+                OrgFieldPermissionLevel = (SecurityPermissionLevel)result.OrgFieldPermissionLevel,
+                CategoryFieldPermissionLevel = (SecurityPermissionLevel)result.CategoryFieldPermissionLevel,
+                PriorityFieldPermissionLevel = (SecurityPermissionLevel)result.PriorityFieldPermissionLevel,
+                StatusFieldPermissionLevel = (SecurityPermissionLevel)result.StatusFieldPermissionLevel,
+                AssignedToFieldPermissionLevel = (SecurityPermissionLevel)result.AssignedToFieldPermissionLevel,
+                UdfFieldPermissionLevel = (SecurityPermissionLevel)result.UdfFieldPermissionLevel,
+                TagsFieldPermissionLevel = (SecurityPermissionLevel)result.TagsFieldPermissionLevel,
 
                 CanEditSql = Convert.ToBoolean(result.CanEditSql),
                 CanDeleteBug = Convert.ToBoolean(result.CanDeleteBug),
@@ -406,16 +321,16 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
             {
-                var bgName = (string) drCustom["name"];
+                var bgName = (string)drCustom["name"];
                 var obj = dr[$"og_{bgName}_field_permission_level"];
                 SecurityPermissionLevel permission;
 
                 if (Convert.IsDBNull(obj))
                     permission = SecurityPermissionLevel.PermissionAll;
                 else
-                    permission = (SecurityPermissionLevel) (int) obj;
+                    permission = (SecurityPermissionLevel)(int)obj;
 
-                ViewBag.DictCustomFieldPermissionLevel[bgName] = (int) permission;
+                ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)permission;
             }
 
             return View("Edit", model);
@@ -443,9 +358,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
                 foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
                 {
-                    var bgName = (string) drCustom["name"];
+                    var bgName = (string)drCustom["name"];
 
-                    ViewBag.DictCustomFieldPermissionLevel[bgName] = (int) SecurityPermissionLevel.PermissionAll;
+                    ViewBag.DictCustomFieldPermissionLevel[bgName] = (int)SecurityPermissionLevel.PermissionAll;
                 }
 
                 return View("Edit", model);
@@ -489,7 +404,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = sql.Replace("$domain", model.Domain);
             sql = sql.Replace("$active", Util.BoolToString(model.Active));
 
-            sql = sql.Replace("$other_orgs", Convert.ToString((int) model.OtherOrgsPermissionLevel));
+            sql = sql.Replace("$other_orgs", Convert.ToString((int)model.OtherOrgsPermissionLevel));
 
             sql = sql.Replace("$can_search", Util.BoolToString(model.CanSearch));
             sql = sql.Replace("$external_user", Util.BoolToString(model.ExternalUser));
@@ -497,14 +412,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = sql.Replace("$can_be_assigned_to", Util.BoolToString(model.CanBeAssignedTo));
             sql = sql.Replace("$non_admins_can_use", Util.BoolToString(model.NonAdminsCanUse));
 
-            sql = sql.Replace("$flp_project", Convert.ToString((int) model.ProjectFieldPermissionLevel));
-            sql = sql.Replace("$flp_org", Convert.ToString((int) model.OrgFieldPermissionLevel));
-            sql = sql.Replace("$flp_category", Convert.ToString((int) model.CategoryFieldPermissionLevel));
-            sql = sql.Replace("$flp_tags", Convert.ToString((int) model.TagsFieldPermissionLevel));
-            sql = sql.Replace("$flp_priority", Convert.ToString((int) model.PriorityFieldPermissionLevel));
-            sql = sql.Replace("$flp_status", Convert.ToString((int) model.StatusFieldPermissionLevel));
-            sql = sql.Replace("$flp_assigned_to", Convert.ToString((int) model.AssignedToFieldPermissionLevel));
-            sql = sql.Replace("$flp_udf", Convert.ToString((int) model.UdfFieldPermissionLevel));
+            sql = sql.Replace("$flp_project", Convert.ToString((int)model.ProjectFieldPermissionLevel));
+            sql = sql.Replace("$flp_org", Convert.ToString((int)model.OrgFieldPermissionLevel));
+            sql = sql.Replace("$flp_category", Convert.ToString((int)model.CategoryFieldPermissionLevel));
+            sql = sql.Replace("$flp_tags", Convert.ToString((int)model.TagsFieldPermissionLevel));
+            sql = sql.Replace("$flp_priority", Convert.ToString((int)model.PriorityFieldPermissionLevel));
+            sql = sql.Replace("$flp_status", Convert.ToString((int)model.StatusFieldPermissionLevel));
+            sql = sql.Replace("$flp_assigned_to", Convert.ToString((int)model.AssignedToFieldPermissionLevel));
+            sql = sql.Replace("$flp_udf", Convert.ToString((int)model.UdfFieldPermissionLevel));
 
             sql = sql.Replace("$can_edit_sql", Util.BoolToString(model.CanEditSql));
             sql = sql.Replace("$can_delete_bug", Util.BoolToString(model.CanDeleteBug));
@@ -521,7 +436,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
             {
-                var bgName = (string) drCustom["name"];
+                var bgName = (string)drCustom["name"];
                 var ogColName = $"og_{bgName}_field_permission_level";
 
                 custom3 += ",[" + ogColName + "]=" + Util.SanitizeInteger(Request[bgName]);
@@ -583,7 +498,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     TempData["Model"] = model;
                     TempData["Errors"] = fail.Errors;
 
-                    return RedirectToAction(nameof(Delete), new {id = model.Id});
+                    return RedirectToAction(nameof(Delete), new { id = model.Id });
                 case INotAuthorizedCommandResult _:
                     return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
                 default:

@@ -8,9 +8,7 @@
 namespace BugTracker.Web.Areas.Administration.Controllers
 {
     using System.Collections.Generic;
-    using System.Data;
     using System.Net;
-    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using Changing.Results;
@@ -58,40 +56,16 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var query = this.queryBuilder
                 .From<IUserDefinedAttributeSource>()
                 .To<IUserDefinedAttributeListResult>()
-                .Sort()
-                .AscendingBy(x => x.SortSequence)
-                .AscendingBy(x => x.Name)
+                //TODO: uncomment when manual sorting
+                //.Sort()
+                //.AscendingBy(x => x.SortSequence)
+                //.AscendingBy(x => x.Name)
                 .Build();
 
             var result = this.applicationFacade
                 .Run(query);
 
-            var dataTable = new DataTable();
-
-            dataTable.Columns.Add("id");
-            dataTable.Columns.Add("user defined attribute value");
-            dataTable.Columns.Add("sort seq");
-            dataTable.Columns.Add("default");
-            dataTable.Columns.Add("hidden");
-
-            foreach (var userDefinedAttribute in result)
-            {
-                var defaultValue = userDefinedAttribute.Default == 1
-                    ? "Y"
-                    : "N";
-
-                dataTable.Rows.Add(userDefinedAttribute.Id, userDefinedAttribute.Name,
-                    userDefinedAttribute.SortSequence, defaultValue, userDefinedAttribute.Id);
-            }
-
-            var model = new SortableTableModel
-            {
-                DataTable = dataTable,
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/UserDefinedAttribute/Update/"),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/UserDefinedAttribute/Delete/")
-            };
-
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]
@@ -245,7 +219,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     TempData["Model"] = model;
                     TempData["Errors"] = fail.Errors;
 
-                    return RedirectToAction(nameof(Delete), new {id = model.Id});
+                    return RedirectToAction(nameof(Delete), new { id = model.Id });
                 case INotAuthorizedCommandResult _:
                     return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
                 default:

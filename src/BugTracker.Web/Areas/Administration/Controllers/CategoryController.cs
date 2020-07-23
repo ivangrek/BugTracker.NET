@@ -9,9 +9,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Net;
-    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using Changing.Results;
@@ -58,39 +56,16 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var query = this.queryBuilder
                 .From<ICategorySource>()
                 .To<ICategoryListResult>()
-                .Sort()
-                .AscendingBy(x => x.SortSequence)
-                .AscendingBy(x => x.Name)
+                //TODO: uncomment when manual sorting
+                //.Sort()
+                //.AscendingBy(x => x.SortSequence)
+                //.AscendingBy(x => x.Name)
                 .Build();
 
             var result = this.applicationFacade
                 .Run(query);
 
-            var dataTable = new DataTable();
-
-            dataTable.Columns.Add("id");
-            dataTable.Columns.Add("name");
-            dataTable.Columns.Add("sort seq");
-            dataTable.Columns.Add("default");
-            dataTable.Columns.Add("hidden");
-
-            foreach (var category in result)
-            {
-                var defaultValue = category.Default == 1
-                    ? "Y"
-                    : "N";
-
-                dataTable.Rows.Add(category.Id, category.Name, category.SortSequence, defaultValue, category.Id);
-            }
-
-            var model = new SortableTableModel
-            {
-                DataTable = dataTable,
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Category/Update/"),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Category/Delete/")
-            };
-
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]

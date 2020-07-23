@@ -9,9 +9,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Net;
-    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using Changing.Results;
@@ -59,45 +57,16 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var query = this.queryBuilder
                 .From<IPrioritySource>()
                 .To<IPriorityListResult>()
-                .Sort()
-                .AscendingBy(x => x.SortSequence)
-                .AscendingBy(x => x.Name)
+                //TODO: uncomment when manual sorting
+                //.Sort()
+                //.AscendingBy(x => x.SortSequence)
+                //.AscendingBy(x => x.Name)
                 .Build();
 
             var result = this.applicationFacade
                 .Run(query);
 
-            var dataTable = new DataTable();
-
-            dataTable.Columns.Add("id");
-            dataTable.Columns.Add("name");
-            dataTable.Columns.Add("sort seq");
-            dataTable.Columns.Add("background<br>color");
-            dataTable.Columns.Add("css<br>class");
-            dataTable.Columns.Add("default");
-            dataTable.Columns.Add("hidden");
-
-            foreach (var priority in result)
-            {
-                var backgroundColorValue =
-                    $"<div style='background:{priority.BackgroundColor};'>{priority.BackgroundColor}</div>";
-                var defaultValue = priority.Default == 1
-                    ? "Y"
-                    : "N";
-
-                dataTable.Rows.Add(priority.Id, priority.Name, priority.SortSequence, backgroundColorValue,
-                    priority.Style, defaultValue, priority.Id);
-            }
-
-            var model = new SortableTableModel
-            {
-                DataTable = dataTable,
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Update/"),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/Priority/Delete/"),
-                HtmlEncode = false
-            };
-
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]
@@ -256,7 +225,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     TempData["Model"] = model;
                     TempData["Errors"] = fail.Errors;
 
-                    return RedirectToAction(nameof(Delete), new {id = model.Id});
+                    return RedirectToAction(nameof(Delete), new { id = model.Id });
                 case INotAuthorizedCommandResult _:
                     return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
                 default:

@@ -7,10 +7,10 @@
 
 @using BugTracker.Web.Core
 @using BugTracker.Web.Models
-@model BugTracker.Web.Models.SortableTableModel
+@model BugTracker.Tracking.Querying.Projects.IProjectListResult
 
 @{
-    var page = (PageModel) ViewBag.Page;
+    var page = (PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -19,7 +19,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
@@ -34,15 +33,60 @@
     </div>
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model)
-    ;
-}
-else
-{
-    <div>No projects in the database.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Id)
+            .Titled("id");
+
+        columns.Add(model => Html.ActionLink("edit", "Update", new { id = model.Id }))
+            .Titled("edit");
+
+        columns.Add(model => Html.ActionLink("permissions", "Update", new { id = model.Id, projects = true }))
+            .Titled("per user<br>permissions");
+
+        columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model.Id }))
+            .Titled("delete");
+
+        columns.Add(model => model.Name)
+            .Titled("name")
+            .InitialSort(GridSortOrder.Asc);
+
+        columns.Add(model => model.Active)
+            .Titled("active")
+            .RenderedAs(model => model.Active == 1 ? "Y" : "N");
+
+        columns.Add(model => model.DefaultUserName)
+            .Titled("default user");
+
+        columns.Add(model => model.AutoAssignDefaultUser)
+            .Titled("auto assign<br>default user")
+            .RenderedAs(model => model.AutoAssignDefaultUser == 1 ? "Y" : "N");
+
+        columns.Add(model => model.AutoSubscribeDefaultUser)
+            .Formatted("{0:Y;N;N}")
+            .Titled("auto subscribe<br>default user");
+
+        columns.Add(model => model.EnablePop3)
+            .Titled("receive items<br>via pop3")
+            .RenderedAs(model => model.EnablePop3 == 1 ? "Y" : "N");
+
+        columns.Add(model => model.Pop3Username)
+            .Titled("pop3 username");
+
+        columns.Add(model => model.Pop3EmailFrom)
+            .Titled("from email address");
+
+        columns.Add(model => model.Default)
+            .Titled("default")
+            .RenderedAs(model => model.Default == 1 ? "Y" : "N");
+    })
+    .Empty("No projects in the database.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(Util.Context.Application["custom_footer"])

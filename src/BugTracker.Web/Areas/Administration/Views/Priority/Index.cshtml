@@ -7,10 +7,10 @@
 
 @using BugTracker.Web.Core
 @using BugTracker.Web.Models
-@model BugTracker.Web.Models.SortableTableModel
+@model BugTracker.Tracking.Querying.Priorities.IPriorityListResult
 
 @{
-    var page = (PageModel) ViewBag.Page;
+    var page = (PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -19,7 +19,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
@@ -35,15 +34,42 @@
     </div>
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model)
-    ;
-}
-else
-{
-    <div>No priorities in the database.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Id)
+            .Titled("id");
+
+        columns.Add(model => model.Name)
+            .Titled("name");
+
+        columns.Add(model => model.SortSequence)
+            .Titled("sort seq")
+            .InitialSort(GridSortOrder.Asc);
+
+        columns.Add(model => model.BackgroundColor)
+             .Titled("background<br>color")
+             .RenderedAs(model => "<div style='background:" + @model.BackgroundColor + "'>" + @model.BackgroundColor + "</div>").Encoded(false);
+
+        columns.Add(model => model.Style)
+             .Titled("css<br>class");
+
+        columns.Add(model => model.Default)
+            .Titled("default")
+            .RenderedAs(model => model.Default == 1 ? "Y" : "N");
+
+        columns.Add(model => Html.ActionLink("edit", "Update", new { id = model.Id }))
+            .Titled("edit");
+
+        columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model.Id }))
+            .Titled("delete");
+    })
+    .Empty("No priorities in the database.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(Util.Context.Application["custom_footer"])

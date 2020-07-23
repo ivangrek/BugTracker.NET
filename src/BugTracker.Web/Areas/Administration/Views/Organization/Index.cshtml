@@ -7,10 +7,10 @@
 
 @using BugTracker.Web.Core
 @using BugTracker.Web.Models
-@model BugTracker.Web.Models.SortableTableModel
+@model BugTracker.Tracking.Querying.Organizations.IOrganizationListResult
 
 @{
-    var page = (PageModel) ViewBag.Page;
+    var page = (PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -19,7 +19,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
@@ -34,15 +33,71 @@
     </div>
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model)
-    ;
-}
-else
-{
-    <div>No organizations in the database.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Id)
+            .Titled("id");
+
+        columns.Add(model => Html.ActionLink("edit", "Update", new { id = model.Id }))
+            .Titled("edit");
+
+        columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model.Id }))
+            .Titled("delete");
+
+        columns.Add(model => model.Name)
+            .Titled("desc")
+            .InitialSort(GridSortOrder.Asc);
+
+        columns.Add(model => model.Active)
+            .Titled("active")
+            .RenderedAs(model => model.Active == 1 ? "Y" : "N");
+
+        columns.Add(model => model.CanSearch)
+            .Titled("can<br>search")
+            .RenderedAs(model => model.CanSearch == 1 ? "Y" : "N");
+
+        columns.Add(model => model.NonAdminsCanUse)
+            .Titled("non-admin<br>can use")
+            .RenderedAs(model => model.NonAdminsCanUse == 1 ? "Y" : "N");
+
+        columns.Add(model => model.CanOnlySeeOwnReported)
+            .Titled("can see<br>only own bugs")
+            .RenderedAs(model => model.CanOnlySeeOwnReported == 1 ? "Y" : "N");
+
+        columns.Add(model => model.OtherOrgsPermissionLevel)
+            .Titled("other orgs<br>permission<br>level")
+            .RenderedAs(model => model.OtherOrgsPermissionLevel == 0 ? "None" : model.OtherOrgsPermissionLevel == 1 ? "Read Only" : "Add/Edit");
+
+        columns.Add(model => model.ExternalUser)
+            .Titled("external")
+            .RenderedAs(model => model.ExternalUser == 1 ? "Y" : "N");
+
+        columns.Add(model => model.CanBeAssignedTo)
+             .Titled("can<br>be assigned to")
+             .RenderedAs(model => model.CanBeAssignedTo == 1 ? "Y" : "N");
+
+        columns.Add(model => model.StatusFieldPermissionLevel)
+             .Titled("status<br>permission<br>level")
+             .RenderedAs(model => model.StatusFieldPermissionLevel == 0 ? "None" : model.StatusFieldPermissionLevel == 1 ? "Read Only" : "Add/Edit");
+
+        columns.Add(model => model.AssignedToFieldPermissionLevel)
+             .Titled("assigned to<br>permission<br>level")
+             .RenderedAs(model => model.AssignedToFieldPermissionLevel == 0 ? "None" : model.AssignedToFieldPermissionLevel == 1 ? "Read Only" : "Add/Edit");
+
+        columns.Add(model => model.PriorityFieldPermissionLevel)
+             .Titled("priority<br>permission<br>level")
+             .RenderedAs(model => model.PriorityFieldPermissionLevel == 0 ? "None" : model.PriorityFieldPermissionLevel == 1 ? "Read Only" : "Add/Edit");
+
+        columns.Add(model => model.Domain)
+             .Titled("domain");
+    })
+    .Empty("No organizations in the database.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(Util.Context.Application["custom_footer"])

@@ -9,9 +9,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
+    using System.Linq;
     using System.Net;
-    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using Changing.Results;
@@ -59,70 +58,15 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var query = this.queryBuilder
                 .From<IProjectSource>()
                 .To<IProjectListResult>()
-                .Sort()
-                .AscendingBy(x => x.Name)
+                //TODO: uncomment when manual sorting
+                //.Sort()
+                //.AscendingBy(x => x.Name)
                 .Build();
 
             var result = this.applicationFacade
                 .Run(query);
 
-            var dataTable = new DataTable();
-
-            dataTable.Columns.Add("id");
-            dataTable.Columns.Add("$no_sort_edit");
-            dataTable.Columns.Add("$no_sort_per user<br>permissions");
-            dataTable.Columns.Add("$no_sort_delete");
-            dataTable.Columns.Add("name");
-            dataTable.Columns.Add("active");
-            dataTable.Columns.Add("default user");
-            dataTable.Columns.Add("auto assign<br>default user");
-            dataTable.Columns.Add("auto subscribe<br>default user");
-            dataTable.Columns.Add("receive items<br>via pop3");
-            dataTable.Columns.Add("pop3 username");
-            dataTable.Columns.Add("from email address");
-            dataTable.Columns.Add("default");
-
-            foreach (var row in result)
-            {
-                var editUrl =
-                    $"<a href='{VirtualPathUtility.ToAbsolute($"~/Administration/Project/Update/{row.Id}")}'>edit</a>";
-                var permissionsUrl =
-                    $"<a href='{VirtualPathUtility.ToAbsolute($"~/Administration/Project/UpdateUserPermission/{row.Id}?projects=true")}'>permissions</a>";
-                var deleteUrl =
-                    $"<a href='{VirtualPathUtility.ToAbsolute($"~/Administration/Project/Delete/{row.Id}")}'>delete</a>";
-                var activeValue = row.Active == 1
-                    ? "Y"
-                    : "N";
-
-                var autoAssignDefaultUserValue = row.AutoAssignDefaultUser == 1
-                    ? "Y"
-                    : "N";
-
-                var autoSubscribeDefaultUserValue = row.AutoSubscribeDefaultUser == 1
-                    ? "Y"
-                    : "N";
-
-                var enablePop3Value = row.EnablePop3 == 1
-                    ? "Y"
-                    : "N";
-
-                var defaultValue = row.Default == 1
-                    ? "Y"
-                    : "N";
-
-                dataTable.Rows.Add(row.Id, editUrl, permissionsUrl, deleteUrl, row.Name, activeValue,
-                    row.DefaultUserName, autoAssignDefaultUserValue, autoSubscribeDefaultUserValue, enablePop3Value,
-                    row.Pop3Username,
-                    row.Pop3EmailFrom, defaultValue);
-            }
-
-            var model = new SortableTableModel
-            {
-                DataTable = dataTable,
-                HtmlEncode = false
-            };
-
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]
@@ -302,7 +246,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             ViewBag.DataSet = DbUtil.GetDataSet(sql);
 
-            ViewBag.Caption = "Permissions for " + (string) ViewBag.DataSet.Tables[1].Rows[0][0];
+            ViewBag.Caption = "Permissions for " + (string)ViewBag.DataSet.Tables[1].Rows[0][0];
 
             ViewBag.Page = new PageModel
             {
@@ -385,7 +329,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             ViewBag.DataSet = DbUtil.GetDataSet(sql);
 
-            ViewBag.Caption = "Permissions for " + (string) ViewBag.DataSet.Tables[1].Rows[0][0];
+            ViewBag.Caption = "Permissions for " + (string)ViewBag.DataSet.Tables[1].Rows[0][0];
 
             ViewBag.Page = new PageModel
             {
@@ -447,7 +391,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     TempData["Model"] = model;
                     TempData["Errors"] = fail.Errors;
 
-                    return RedirectToAction(nameof(Delete), new {id = model.Id});
+                    return RedirectToAction(nameof(Delete), new { id = model.Id });
                 case INotAuthorizedCommandResult _:
                     return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
                 default:
