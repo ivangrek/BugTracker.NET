@@ -5,7 +5,8 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.Models.SortableTableModel
+@using System.Data
+@model DataTable
 
 @{
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
@@ -17,7 +18,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
@@ -43,7 +43,7 @@
         @using (Html.BeginForm("Index", "Query", FormMethod.Get, new { id = formId, @class = "form-inline ml-auto" }))
         {
             <div class="form-check mb-2 mr-sm-2">
-                @Html.CheckBox("ShowAll", (bool)ViewBag.ShowAll, new { @class = "form-check-input",  onchange = code })
+                @Html.CheckBox("ShowAll", (bool)ViewBag.ShowAll, new { @class = "form-check-input", onchange = code })
                 @Html.Label("ShowAll", "show everybody's private queries:", new { @class = "form-check-label" })
             </div>
         }
@@ -53,14 +53,60 @@ else
 {
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model);
-}
-else
-{
-    <div>No queries in the database.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model.Rows.Cast<DataRow>())
+    .Build(columns =>
+    {
+        columns.Add(model => model["query"] as string)
+            .Named("query")
+            .Titled("query")
+            .Sortable(true);
+
+        columns.Add(model => model["visibility"] as string)
+            .Named("visibility")
+            .Titled("visibility")
+            .Sortable(true);
+
+        columns.Add(model => model["$no_sort_view list"] as string)
+            .Named("view list")
+            .Titled("view list")
+            .Encoded(false);
+
+        columns.Add(model => model["$no_sort_print list"] as string)
+            .Named("print list")
+            .Titled("print list")
+            .Encoded(false);
+
+        columns.Add(model => model["$no_sort_export as excel"] as string)
+             .Named("export as excel")
+             .Titled("export as excel")
+             .Encoded(false);
+
+        columns.Add(model => model["$no_sort_print list<br>with detail"] as string)
+             .Named("print list with detail")
+             .Titled("print list<br>with detail")
+             .Encoded(false);
+
+        columns.Add(model => model["$no_sort_rename"] as string)
+             .Named("rename")
+             .Titled("rename")
+             .Encoded(false);
+
+        columns.Add(model => model["$no_sort_delete"] as string)
+             .Named("delete")
+             .Titled("delete")
+             .Encoded(false);
+
+        columns.Add(model => model["$no_sort_sql"] as string)
+             .Named("sql")
+             .Titled("sql")
+             .Encoded(false);
+    })
+    .Empty("No queries in the database.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+//.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

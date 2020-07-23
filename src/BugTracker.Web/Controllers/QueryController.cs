@@ -68,17 +68,13 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.Queries
             };
 
-            var model = new SortableTableModel
-            {
-                DataTable = this.queryService
-                    .LoadList(showAll ?? false)
-                    .Tables[0],
-                HtmlEncode = false
-            };
+            var result = this.queryService
+                .LoadList(showAll ?? false)
+                .Tables[0];
 
             ViewBag.ShowAll = showAll ?? false;
 
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]
