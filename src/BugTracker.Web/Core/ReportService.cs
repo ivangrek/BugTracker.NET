@@ -52,6 +52,7 @@ namespace BugTracker.Web.Core
 
             var dataTable = new DataTable();
 
+            dataTable.Columns.Add("id");
             dataTable.Columns.Add("report");
             dataTable.Columns.Add("view<br>chart");
             dataTable.Columns.Add("view<br>data");
@@ -85,11 +86,11 @@ namespace BugTracker.Web.Core
                     var editValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Report/Update/{report.Id}")}'>edit</a>";
                     var deleteValue = $"<a href='{VirtualPathUtility.ToAbsolute($"~/Report/Delete/{report.Id}")}'>delete</a>";
 
-                    dataTable.Rows.Add(report.Name, viewChartValue, viewDataValue, editValue, deleteValue);
+                    dataTable.Rows.Add(report.Id, report.Name, viewChartValue, viewDataValue, editValue, deleteValue);
                 }
                 else
                 {
-                    dataTable.Rows.Add(report.Name, viewChartValue, viewDataValue);
+                    dataTable.Rows.Add(report.Id, report.Name, viewChartValue, viewDataValue);
                 }
             }
 

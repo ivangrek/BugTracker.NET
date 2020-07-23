@@ -5,7 +5,8 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@model BugTracker.Web.Models.SortableTableModel
+@using System.Data
+@model DataTable
 
 @{
     var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
@@ -17,7 +18,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
@@ -33,14 +33,39 @@
     </div>
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model);
-}
-else
-{
-    <div>No reports in the database.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model.Rows.Cast<DataRow>())
+    .Build(columns =>
+    {
+        columns.Add(model => model["report"] as string)
+            .Named("report")
+            .Titled("report")
+            .Sortable(true);
+
+        columns.Add(model => model["view<br>chart"] as string)
+            .Named("view chart")
+            .Titled("view chart")
+            .Encoded(false);
+
+        columns.Add(model => model["view<br>data"] as string)
+            .Named("view data")
+            .Titled("view data")
+            .Encoded(false);
+
+        if (page.Security.User.IsAdmin || page.Security.User.CanEditReports)
+        {
+            columns.Add(model => Html.ActionLink("edit", "Update", new { id = model["id"] }))
+                .Titled("edit");
+
+            columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model["id"] }))
+                .Titled("delete");
+        }
+    })
+    .Empty("No reports in the database.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])

@@ -59,15 +59,11 @@ namespace BugTracker.Web.Controllers
                 SelectedItem = MainMenuSections.Reports
             };
 
-            var model = new SortableTableModel
-            {
-                DataTable = this.reportService
-                    .LoadList()
-                    .Tables[0],
-                HtmlEncode = false
-            };
+            var result = this.reportService
+                .LoadList()
+                .Tables[0];
 
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]

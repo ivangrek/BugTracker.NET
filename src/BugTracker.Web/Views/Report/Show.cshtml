@@ -32,5 +32,39 @@ else
     <font size="+1">The database query for this report returned zero rows.</font>
 }
 
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model.Rows.Cast<DataRow>())
+    .Build(columns =>
+    {
+        columns.Add(model => model["report"] as string)
+            .Named("report")
+            .Titled("report")
+            .Sortable(true);
+
+        columns.Add(model => model["view<br>chart"] as string)
+            .Named("view chart")
+            .Titled("view chart")
+            .Encoded(false);
+
+        columns.Add(model => model["view<br>data"] as string)
+            .Named("view data")
+            .Titled("view data")
+            .Encoded(false);
+
+        if (page.Security.User.IsAdmin || page.Security.User.CanEditReports)
+        {
+            columns.Add(model => Html.ActionLink("edit", "Update", new { id = model["id"] }))
+                .Titled("edit");
+
+            columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model["id"] }))
+                .Titled("delete");
+        }
+    })
+    .Empty("No reports in the database.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
+
 @section BodyFooter {
 }
