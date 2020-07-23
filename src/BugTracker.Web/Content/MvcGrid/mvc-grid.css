@@ -35,7 +35,8 @@
 .mvc-grid th,
 .mvc-grid td {
     border: 1px solid #dee2e6;
-    padding: 0.75em;
+    /*padding: 0.75em;*/
+    padding: 0.5em;
 }
 
 .mvc-grid .sortable {

@@ -5,12 +5,13 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using System.Data
 @using BugTracker.Web.Core
 @using BugTracker.Web.Models
-@model BugTracker.Web.Models.SortableTableModel
+@model DataTable
 
 @{
-    var page = (PageModel) ViewBag.Page;
+    var page = (PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -19,7 +20,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
@@ -34,15 +34,76 @@
     </div>
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model)
-    ;
-}
-else
-{
-    <div>No custom fields.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model.Rows.Cast<DataRow>())
+    .Build(columns =>
+    {
+        columns.Add(model => model["name"] as string)
+            .Named("name")
+            .Titled("name")
+            .Sortable(true);
+
+        columns.Add(model => model["datatype"] as string)
+            .Named("datatype")
+            .Titled("datatype")
+            .Sortable(true);
+
+        columns.Add(model => model["length"] as int? ?? 0)
+            .Named("length")
+            .Titled("length")
+            .Sortable(true);
+
+        columns.Add(model => model["xprec"] as int? ?? 0)
+            .Named("xprec")
+            .Titled("xprec")
+            .Sortable(true);
+
+        columns.Add(model => model["xscale"] as int? ?? 0)
+            .Named("xscale")
+            .Titled("xscale")
+            .Sortable(true);
+
+        columns.Add(model => model["isnullable"] as int? ?? 0)
+            .Named("isnullable")
+            .Titled("isnullable")
+            .Sortable(true);
+
+        columns.Add(model => model["default value"] as string)
+            .Named("default value")
+            .Titled("default value")
+            .Sortable(true);
+
+        columns.Add(model => model["default name"] as string)
+            .Named("default name")
+            .Titled("default name")
+            .Sortable(true);
+
+        columns.Add(model => model["dropdown type"] as string)
+            .Named("dropdown type")
+            .Titled("dropdown type")
+            .Sortable(true);
+
+        columns.Add(model => model["vals"] as string)
+            .Named("vals")
+            .Titled("vals")
+            .Sortable(true);
+
+        columns.Add(model => model["column order"] as int? ?? 0)
+            .Named("column order")
+            .Titled("column order")
+            .Sortable(true);
+
+        columns.Add(model => Html.ActionLink("edit", "Update", new { id = model["colorder"] }))
+            .Titled("edit");
+
+        columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model["colorder"] }))
+            .Titled("delete");
+    })
+    .Empty("No custom fields.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(Util.Context.Application["custom_footer"])

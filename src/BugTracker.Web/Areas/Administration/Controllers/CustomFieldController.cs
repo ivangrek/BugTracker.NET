@@ -9,7 +9,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
     using Core;
@@ -43,14 +42,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 SelectedItem = MainMenuSections.Administration
             };
 
-            var model = new SortableTableModel
-            {
-                DataTable = Util.GetCustomColumns().Tables[0],
-                EditUrl = VirtualPathUtility.ToAbsolute("~/Administration/CustomField/Update/"),
-                DeleteUrl = VirtualPathUtility.ToAbsolute("~/Administration/CustomField/Delete/")
-            };
+            var result = Util.GetCustomColumns().Tables[0];
 
-            return View(model);
+            return View(result);
         }
 
         [HttpGet]
@@ -278,12 +272,12 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var model = new UpdateModel
             {
                 Id = id,
-                Name = (string) dr["name"],
+                Name = (string)dr["name"],
                 DropdownType = Convert.ToString(dr["dropdown_type"]),
 
-                DropdownValues = (string) dr["vals"],
+                DropdownValues = (string)dr["vals"],
 
-                SortSequence = (int) dr["column order"],
+                SortSequence = (int)dr["column order"],
                 Default = Convert.ToString(dr["default value"]),
 
                 DefaultName = Convert.ToString(dr["default name"]),
@@ -395,7 +389,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             var model = new DeleteModel
             {
                 Id = id,
-                Name = (string) dr["name"]
+                Name = (string)dr["name"]
             };
 
             return View(model);
@@ -420,7 +414,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (!string.IsNullOrEmpty(dr["default_constraint_name"].ToString()))
             {
                 sql = @"alter table bugs drop constraint [$df]"
-                    .Replace("$df", (string) dr["default_constraint_name"]);
+                    .Replace("$df", (string)dr["default_constraint_name"]);
 
                 DbUtil.ExecuteNonQuery(sql);
             }
@@ -429,7 +423,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = @"
                 alter table orgs drop column [og_$nm_field_permission_level]
                 alter table bugs drop column [$nm]"
-                .Replace("$nm", (string) dr["column_name"]);
+                .Replace("$nm", (string)dr["column_name"]);
 
             DbUtil.ExecuteNonQuery(sql);
 
