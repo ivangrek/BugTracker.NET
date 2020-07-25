@@ -96,10 +96,9 @@
     </div>
 </div>
 
-@if (ViewBag.Table != null && ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+@if (ViewBag.Table != null && ViewBag.Table.DataTable.Rows.Count > 0)
 {
-    @Html.Partial("_SortableTable", (SortableTableModel) ViewBag.Table)
-    ;
+    @Html.Partial("_SortableTable", (SortableTableModel) ViewBag.Table);
 }
 else
 {
