@@ -48,7 +48,7 @@
         <nav class="nav nav-underline">
             @if (!page.Security.User.AddsNotAllowed)
             {
-                <a href="~/Bugs/Edit.aspx" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+                <a href="@Url.Action("Create", "Bug")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
             }
 
             <div class="nav-item dropdown">

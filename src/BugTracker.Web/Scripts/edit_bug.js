@@ -299,6 +299,7 @@ function get_text(el) {
 
 
 function set_text(el, text) {
+    el.textContent = text;
     return el.firstChild.nodeValue = text;
 }
 

@@ -49,10 +49,11 @@ namespace BugTracker.Web.Bugs
 
         public void Page_Load(object sender, EventArgs e)
         {
+            // Ok
             Util.DoNotCache(Response);
-
+            // Ok
             Security.CheckSecurity(SecurityLevel.AnyUserOk);
-
+            // Ok
             this.MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 
             set_msg("");
@@ -86,7 +87,7 @@ namespace BugTracker.Web.Bugs
             }
 
             // Get list of custom fields
-
+            // Ok
             this.DsCustomCols = Util.GetCustomColumns();
 
             if (!IsPostBack)
@@ -95,6 +96,7 @@ namespace BugTracker.Web.Bugs
 
                 if (this.Id == 0)
                 {
+                    // Ok
                     prepare_for_insert(Security);
                 }
                 else
@@ -174,6 +176,7 @@ namespace BugTracker.Web.Bugs
 
         public void prepare_for_insert(ISecurity security)
         {
+            // Ok
             if (Security.User.AddsNotAllowed)
             {
                 // TODO wrong message
@@ -183,16 +186,19 @@ namespace BugTracker.Web.Bugs
                 return;
             }
 
+            // Ok
             Page.Title = $"{ApplicationSettings.AppTitle} - Create ";
+            // Ok
             Page.Title += Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel);
-
+            // Ok
             this.submit_button.Value = "Create";
-
+            // Ok
             if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
             {
                 this.submit_button2.Value = "Create";
             }
 
+            // Ok
             load_dropdowns_for_insert(security);
 
             // Prepare for custom columns
@@ -213,8 +219,10 @@ namespace BugTracker.Web.Bugs
             Workflow.CustomAdjustControls(null, security.User, this);
         }
 
+        // Ok
         public void load_dropdowns_for_insert(ISecurity security)
         {
+            // Ok
             load_dropdowns(security.User, security);
 
             // Get the defaults
@@ -224,11 +232,11 @@ namespace BugTracker.Web.Bugs
             Sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
             Sql +=
                 "\nselect top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;"; // 4
-
+            // Ok
             var dsDefaults = DbUtil.GetDataSet(Sql);
-
+            // Ok
             load_project_and_user_dropdown_for_insert(dsDefaults.Tables[0], security);
-
+            // Ok
             load_other_dropdowns_and_select_defaults(dsDefaults, security);
         }
 
@@ -480,11 +488,13 @@ namespace BugTracker.Web.Bugs
 
             format_subcribe_cancel_link(security);
 
+            //Ok
             this.print.InnerHtml = "<a target=_blank href=" + ResolveUrl("~/Bug/PrintDetail?id=")
                                    + Convert.ToString(this.Id)
                                    + " title='Display this item in a printer-friendly format'><img src=" + ResolveUrl("~/Content/images/printer.png") + " border=0 align=top>&nbsp;print</a>";
 
             // merge
+            //OK
             if (!Security.User.IsGuest)
             {
                 if (Security.User.IsAdmin
@@ -506,7 +516,8 @@ namespace BugTracker.Web.Bugs
                 this.merge_bug.Visible = false;
             }
 
-            // delete 
+            // delete
+            //OK
             if (!Security.User.IsGuest)
             {
                 if (Security.User.IsAdmin
@@ -528,6 +539,7 @@ namespace BugTracker.Web.Bugs
             }
 
             // custom bug link
+            //Ok
             if (!string.IsNullOrEmpty(ApplicationSettings.CustomBugLinkLabel))
             {
                 var customBugLink = "<a href="
@@ -546,6 +558,7 @@ namespace BugTracker.Web.Bugs
             }
         }
 
+        //Ok
         public void load_dropdowns_for_update(ISecurity security)
         {
             load_dropdowns(security.User, security);
@@ -604,6 +617,7 @@ namespace BugTracker.Web.Bugs
             }
         }
 
+        //Ok
         public void get_comment_text_from_control(ISecurity security)
         {
             if (Security.User.UseFckeditor)
@@ -632,6 +646,7 @@ namespace BugTracker.Web.Bugs
             }
         }
 
+        //Ok
         public void do_insert(ISecurity security)
         {
             get_comment_text_from_control(security);
@@ -1441,6 +1456,7 @@ order by us_username; ";
             }
         }
 
+        //Ok
         public void format_prev_next_bug()
         {
             // for next/prev bug links

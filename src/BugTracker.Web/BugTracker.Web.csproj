@@ -583,6 +583,7 @@
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
+    <Compile Include="Models\Bug\EditModel.cs" />
     <Compile Include="Models\Bug\MassEditModel.cs" />
     <Compile Include="Models\Bug\RelationshipModel.cs" />
     <Compile Include="Models\Task\DeleteModel.cs" />
@@ -873,6 +874,7 @@
     <Content Include="Views\Shared\MvcGrid\_GridBootstrap4.cshtml" />
     <Content Include="Views\Shared\MvcGrid\_Pager.cshtml" />
     <Content Include="Views\Shared\MvcGrid\_Grid.cshtml" />
+    <Content Include="Views\Bug\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

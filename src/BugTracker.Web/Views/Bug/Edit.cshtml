@@ -1,0 +1,214 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@using System.Data
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
+@model BugTracker.Web.Models.Bug.EditModel
+
+@{
+    var page = (PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/edit_bug.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            @if (Model.Id != 0)
+            {
+                if (!page.Security.User.AddsNotAllowed)
+                {
+                    <a href="@Url.Action("Create", "Bug")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+                }
+
+                <a href="@Url.Action("PrintDetail", "Bug", new { id = Model.Id })" class="nav-link" title='Display this item in a printer-friendly format'><img src="~/Content/images/printer.png" align="top">&nbsp;Print</a>
+
+                if (!page.Security.User.IsGuest)
+                {
+                    if (page.Security.User.IsAdmin
+                        || page.Security.User.CanMergeBugs)
+                    {
+                        <a href="@Url.Action("Merge", "Bug", new { id = Model.Id })" class="nav-link" title='Merge this item and another item together'><img src="~/Content/images/database_refresh.png" align="top">&nbsp;Merge</a>
+                    }
+                }
+
+                if (!page.Security.User.IsGuest)
+                {
+                    if (page.Security.User.IsAdmin
+                    || page.Security.User.CanDeleteBug)
+                    {
+                        <a href="@Url.Action("Delete", "Bug", new { id = Model.Id })" class="nav-link" title='Delete this item'><img src="~/Content/images/delete.png" align="top">&nbsp;Delete</a>
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(page.ApplicationSettings.CustomBugLinkLabel))
+                {
+                    <a href="@page.ApplicationSettings.CustomBugLinkUrl?bugid=@Model.Id" class="nav-link" title='Delete this item'><img src="~/Content/images/brick.png" align="top">&nbsp;@page.ApplicationSettings.CustomBugLinkLabel</a>
+                }
+            }
+        </nav>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light">
+            <div class="card-body">
+                @using (Html.BeginForm(Model.Id == 0 ? "Create" : "Update", "Bug", FormMethod.Post, new { @class = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.Id)
+
+                    if (Model.Id != 0)
+                    {
+                        <div class="form-group">
+                            <div class="form-control-static">@Html.Raw(ViewBag.ReportedBy)</div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.Id): @Model.Id
+
+                            <div class="float-right">
+                                @Html.Raw(ViewBag.PrevNext)
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Name):
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "200", onkeydown = "count_chars('" + @Html.IdFor(x => x.Name) + "', 200)", onkeyup = "count_chars('" + @Html.IdFor(x => x.Name) + "', 200)" })
+                        @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
+
+                        <small id="@Html.IdFor(x => x.Name)_cnt" class="form-text text-muted"></small>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.ProjectId):
+                        @Html.DropDownListFor(x => x.ProjectId, (List<SelectListItem>)ViewBag.Projects, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.ProjectId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.OrganizationId):
+                        @Html.DropDownListFor(x => x.OrganizationId, (List<SelectListItem>)ViewBag.Organizations, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.OrganizationId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CategoryId):
+                        @Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.Categories, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.CategoryId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.PriorityId):
+                        @Html.DropDownListFor(x => x.PriorityId, (List<SelectListItem>)ViewBag.Priorities, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.PriorityId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.UserId):
+                        @Html.DropDownListFor(x => x.UserId, (List<SelectListItem>)ViewBag.Users, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.UserId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.StatusId):
+                        @Html.DropDownListFor(x => x.StatusId, (List<SelectListItem>)ViewBag.Statuses, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.StatusId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.UserDefinedAttributeId):
+                        @Html.DropDownListFor(x => x.UserDefinedAttributeId, (List<SelectListItem>)ViewBag.UserDefinedAttributes, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.UserDefinedAttributeId, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
+                    {
+                        var fieldId = (string)drCustom["name"];
+                        var fieldPermissionLevel = page.Security.User.DictCustomFieldPermissionLevel[fieldId];
+
+                        if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
+                        {
+                            continue;
+                        }
+
+                        <div class="form-group">
+                            @Html.Label(fieldId, $"{fieldId}"):
+                            @Html.TextBox(fieldId, string.Empty, new { @class = "form-control", rows = "5", cols = "100", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
+                            @Html.ValidationMessage(fieldId, null, new { @class = "text-danger" }, "small")
+
+                            @*@Html.ValidationMessageFor(x => x.TagsFieldPermissionLevel, null, new { @class = "text-danger" }, "small")*@
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Comment):
+                        @Html.TextAreaFor(x => x.Comment, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.Comment, null, new { @class = "text-danger" }, "small")
+
+                        @if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                        {
+                            <small class="form-text text-muted">Entering @page.ApplicationSettings.BugLinkMarker"999" in comment creates link to id 999</small>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-success">@(Model.Id == 0 ? "Create" : "Update")</button>
+                    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Id != 0)
+    {
+        <div class="col-lg-6">
+            <a class="btn btn-link" href='javascript:toggle_images2(@Model.Id)'>
+                <span id="hideshow_images">@(ViewBag.ImagesInline ? "hide" : "show") inline images</span>
+            </a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="btn btn-link" href='javascript:toggle_history2(@Model.Id)'>
+                <span id="hideshow_history">@(ViewBag.HistoryInline ? "hide" : "show") change history</span>
+            </a>
+
+            <div id="posts">
+                @{
+                    var dsPosts = PrintBug.GetBugPosts(Model.Id, page.Security.User.ExternalUser, ViewBag.HistoryInline);
+                    (int _, string html) result = PrintBug.WritePostsNew(
+                        dsPosts, Model.Id,
+                        ViewBag.PermissionLevel,
+                        true, // write links
+                        ViewBag.ImagesInline, ViewBag.HistoryInline,
+                        true, // internal_posts
+                        page.Security.User);
+                }
+
+                @Html.Raw(result.html)
+            </div>
+        </div>
+    }
+
+</div>
+
+@section BodyFooter {
+    @Html.Raw(Util.Context.Application["custom_footer"])
+}

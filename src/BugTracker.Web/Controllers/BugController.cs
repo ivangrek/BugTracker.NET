@@ -8,6 +8,7 @@
 namespace BugTracker.Web.Controllers
 {
     using anmar.SharpMimeTools;
+    using BugTracker.Changing.Results;
     using Core;
     using Core.Controls;
     using Models;
@@ -17,6 +18,8 @@ namespace BugTracker.Web.Controllers
     using System.Data;
     using System.Data.SqlClient;
     using System.IO;
+    using System.Linq;
+    using System.Net;
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
@@ -26,11 +29,13 @@ namespace BugTracker.Web.Controllers
     [OutputCache(Location = OutputCacheLocation.None)]
     public class BugController : Controller
     {
+        private readonly IApplicationFacade applicationFacade;
         private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
         private readonly IAuthenticate authenticate;
 
         public BugController(
+            IApplicationFacade applicationFacade,
             IApplicationSettings applicationSettings,
             ISecurity security,
             IAuthenticate authenticate)
@@ -136,6 +141,667 @@ namespace BugTracker.Web.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            if (this.security.User.AddsNotAllowed)
+            {
+                // TODO No access
+                throw new InvalidOperationException();
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - new bug",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            LoadDropdowns();
+            LoadUserDropdown();
+
+            ViewBag.CustomColumns = Util.GetCustomColumns();
+            ViewBag.PermissionLevel = SecurityPermissionLevel.PermissionNone;
+
+            // Prepare for custom columns
+            var hashCustomColumns = new SortedDictionary<string, string>();
+
+            foreach (DataRow drcc in ViewBag.CustomColumns.Tables[0].Rows)
+            {
+                var columnName = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
+                {
+                    var defaultval = GetCustomColDefaultValue(drcc["default value"]);
+
+                    hashCustomColumns.Add(columnName, defaultval);
+                }
+            }
+
+            // We don't know the project yet, so all permissions
+            //set_controls_field_permission(SecurityPermissionLevel.PermissionAll, security);
+
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Errors2"] is Dictionary<string, ModelErrorCollection> failErrors2)
+                foreach (var failError in failErrors2)
+                    foreach (var err in failError.Value)
+                        ModelState.AddModelError(failError.Key, err.ErrorMessage);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            var defaultProjectId = GetDefaultProject();
+
+            model = new EditModel
+            {
+                ProjectId = defaultProjectId,
+                OrganizationId = GetDefaultOrganization(),
+                CategoryId = GetDefaultCategory(),
+                PriorityId = GetDefaultPriority(),
+                StatusId = GetDefaultStatus(),
+                UserDefinedAttributeId = GetDefaultUserDefinedAttribute(),
+                UserId = Util.GetDefaultUser(defaultProjectId/*Convert.ToInt32(this.project.SelectedItem.Value)*/)
+            };
+
+            return View("Edit", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(EditModel model)
+        {
+            GetCookieValuesForShowHideToggles();
+
+            //var drBug = Bug.GetBugDataRow(this.Id, Security, this.DsCustomCols);
+
+            //load_incoming_custom_col_vals_into_hash(Security);
+
+            // Fetch the values of the custom columns from the Request and stash them in a hash table.
+
+            var dsCustomColumns = Util.GetCustomColumns();
+            var hashCustomColumns = new SortedDictionary<string, string>();
+
+            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
+            {
+                var columnName = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
+                {
+                    hashCustomColumns.Add(columnName, Request[columnName]);
+                }
+            }
+
+            //if (did_user_hit_submit_button()) // or is this a project dropdown autopostback?
+            //{
+            //    //this.Good = validate(Security);
+
+            //    if (this.Good)
+            //    {
+            //        // Actually do the update
+            //        if (this.Id == 0)
+            //            do_insert(Security);
+            //        else
+            //            do_update(Security);
+            //    }
+            //    else // bad, invalid
+            //    {
+            //        // Say we didn't do anything.
+            //        if (this.Id == 0)
+            //            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not created.");
+            //        else
+            //            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not updated.");
+            //        load_user_dropdown(Security);
+            //    }
+            //}
+
+            //Validate
+
+            //TODO
+            //if (!did_something_change()) return false;
+
+            // validate custom columns
+            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
+            {
+                var name = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[name] != SecurityPermissionLevel.PermissionAll) continue;
+
+                var val = Request[name];
+
+                if (val == null) continue;
+
+                val = val.Replace("'", "''");
+
+                // if a date was entered, convert to db format
+                if (val.Length > 0)
+                {
+                    var datatype = drcc["datatype"].ToString();
+
+                    if (datatype == "datetime")
+                    {
+                        try
+                        {
+                            DateTime.Parse(val, Util.GetCultureInfo());
+                        }
+                        catch (FormatException)
+                        {
+                            ModelState.AddModelError(name, "\"" + name + "\" not in a valid date format.");
+                        }
+                    }
+                    else if (datatype == "int")
+                    {
+                        if (!Util.IsInt(val))
+                        {
+                            ModelState.AddModelError(name, "\"" + name + "\" must be an integer.<br>");
+                        }
+                    }
+                    else if (datatype == "decimal")
+                    {
+                        var xprec = Convert.ToInt32(drcc["xprec"]);
+                        var xscale = Convert.ToInt32(drcc["xscale"]);
+                        var decimalError = Util.IsValidDecimal(name, val, xprec - xscale, xscale);
+
+                        if (!string.IsNullOrEmpty(decimalError))
+                        {
+                            ModelState.AddModelError(name, decimalError);
+                        }
+                    }
+                }
+                else
+                {
+                    var nullable = (int)drcc["isnullable"];
+
+                    if (nullable == 0)
+                    {
+                        ModelState.AddModelError(name, "\"" + name + "\" is required.");
+                    }
+                }
+            }
+
+            // validate assigned to user versus 
+            if (!DoesAssignedToHavePermissionForOrg(model.UserId, model.OrganizationId))
+            {
+                ModelState.AddModelError(nameof(EditModel.UserId), "User does not have permission for the Organization");
+            }
+
+            // custom validations go here
+            //if (!Workflow.CustomValidations(this.DrBug, security.User,
+            //    this, this.custom_validation_err_msg))
+            //good = false;
+
+            //Validate
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel) + " was not created.");
+
+                TempData["Model"] = model;
+                TempData["Errors2"] = ModelState.Where(x => x.Value.Errors.Any())
+                    .Select(x => new { x.Key, x.Value.Errors })
+                    .ToDictionary(x => x.Key, x => x.Errors);
+
+                return RedirectToAction(nameof(Create));
+            }
+
+            // Do insert
+            //get_comment_text_from_control(security);
+            var commentFormated = string.Empty;
+            var commentSearch = string.Empty;
+            var commentType = string.Empty;
+
+            if (this.security.User.UseFckeditor)
+            {
+                commentFormated = Util.StripDangerousTags(model.Comment);
+                commentSearch = Util.StripHtml(model.Comment);
+                commentType = "text/html";
+            }
+            else
+            {
+                commentFormated = HttpUtility.HtmlDecode(model.Comment);
+                commentSearch = commentFormated;
+                commentType = "text/plain";
+            }
+
+            // Project specific
+            var pcd1 = Request["pcd1"];
+            var pcd2 = Request["pcd2"];
+            var pcd3 = Request["pcd3"];
+
+            if (pcd1 == null) pcd1 = string.Empty;
+            if (pcd2 == null) pcd2 = string.Empty;
+            if (pcd3 == null) pcd3 = string.Empty;
+
+            pcd1 = pcd1.Replace("'", "''");
+            pcd2 = pcd2.Replace("'", "''");
+            pcd3 = pcd3.Replace("'", "''");
+
+            var newIds = Bug.InsertBug(model.Name, this.security, /*this.tags.Value*/string.Empty, // TODO Tags
+                model.ProjectId,
+                model.OrganizationId,
+                model.CategoryId,
+                model.PriorityId,
+                model.StatusId,
+                model.UserId,
+                model.UserDefinedAttributeId,
+                pcd1,
+                pcd2,
+                pcd3, commentFormated, commentSearch,
+                null, // from
+                null, // cc
+                commentType, /*this.internal_only.Checked*/false /*TODO*/ , hashCustomColumns,
+                true); // send notifications
+
+            // TODO Tags
+            //if (!string.IsNullOrEmpty(this.tags.Value) && this.applicationSettings.EnableTags)
+            //{
+            //    Tags.BuildTagIndex(HttpContext.ApplicationInstance.Application);
+            //}
+
+            //this.Id = newIds.Bugid;
+
+            WhatsNew.AddNews(newIds.Bugid, model.Name, "added", security);
+
+            //this.new_id.Value = Convert.ToString(this.Id);
+            //TODO
+            //set_msg(Util.CapitalizeFirstLetter(thie.applicationSettings.SingularBugLabel) + " was created.");
+
+            // save for next bug
+            Session["project"] = model.ProjectId;
+
+            //Response.Redirect($"~/Bugs/Edit.aspx?id={this.Id}");
+
+            return RedirectToAction(nameof(Update), new { id = newIds.Bugid });
+        }
+
+        [HttpGet]
+        public ActionResult Update(int id)
+        {
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - edit bug",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            LoadDropdowns();
+            LoadUserDropdown();
+
+            ViewBag.CustomColumns = Util.GetCustomColumns();
+            //ViewBag.PermissionLevel = SecurityPermissionLevel.PermissionNone;
+
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Model"] is EditModel model) return View("Edit", model);
+
+            GetCookieValuesForShowHideToggles();
+
+            // Get this entry's data from the db and fill in the form
+            var drBug = Bug.GetBugDataRow(id, this.security, ViewBag.CustomColumns);
+
+            //prepare_for_update(Security);
+            //if (this.DrBug == null)
+            //{
+            //    this.mainBlock.Visible = false;
+            //    this.errorBlock.Visible = true;
+            //    this.errorBlockPermissions.Visible = false;
+            //    this.errorBlockIntegerId.Visible = false;
+
+            //    return;
+            //}
+
+            // look at permission level and react accordingly
+            ViewBag.PermissionLevel = (SecurityPermissionLevel)(int)drBug["pu_permission_level"];
+
+            //if (PermissionLevel == SecurityPermissionLevel.PermissionNone)
+            //{
+            //    this.mainBlock.Visible = false;
+            //    this.errorBlock.Visible = false;
+            //    this.errorBlockPermissions.Visible = true;
+            //    this.errorBlockIntegerId.Visible = false;
+
+            //    return;
+            //}
+
+            var hashCustomColumns = new SortedDictionary<string, string>();
+
+            foreach (DataRow drcc in ViewBag.CustomColumns.Tables[0].Rows)
+            {
+                var columnName = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
+                {
+                    var val = Util.FormatDbValue(drBug[columnName]);
+
+                    hashCustomColumns.Add(columnName, val);
+                }
+            }
+
+            // move stuff to the page
+
+            //this.bugid.InnerText = Convert.ToString((int)this.DrBug["id"]);
+
+            // Fill in this form
+            //this.short_desc.Value = (string)this.DrBug["short_desc"];
+            //this.tags.Value = (string)this.DrBug["bg_tags"];
+            //Page.Title = Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
+            //             + " ID " + Convert.ToString(this.DrBug["id"]) + " " + (string)this.DrBug["short_desc"];
+            ViewBag.Page.Title = Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel)
+                         + " ID " + Convert.ToString(drBug["id"]) + " " + (string)drBug["short_desc"];
+
+            // reported by
+            string s;
+            s = "Created by ";
+            s += PrintBug.FormatEmailUserName(
+                true,
+                Convert.ToInt32(drBug["id"]), ViewBag.PermissionLevel,
+                Convert.ToString(drBug["reporter_email"]),
+                Convert.ToString(drBug["reporter"]),
+                Convert.ToString(drBug["reporter_fullname"]));
+            s += " on ";
+            s += Util.FormatDbDateTime(drBug["reported_date"]);
+            s += ", ";
+            s += Util.HowLongAgo((int)drBug["seconds_ago"]);
+
+            ViewBag.ReportedBy = s;
+
+            // save current values in previous, so that later we can write the audit trail when things change
+            //this.prev_short_desc.Value = (string)this.DrBug["short_desc"];
+            //this.prev_tags.Value = (string)this.DrBug["bg_tags"];
+            //this.prev_project.Value = Convert.ToString((int)this.DrBug["project"]);
+            //this.prev_project_name.Value = Convert.ToString(this.DrBug["current_project"]);
+            //this.prev_org.Value = Convert.ToString((int)this.DrBug["organization"]);
+            //this.prev_org_name.Value = Convert.ToString(this.DrBug["og_name"]);
+            //this.prev_category.Value = Convert.ToString((int)this.DrBug["category"]);
+            //this.prev_priority.Value = Convert.ToString((int)this.DrBug["priority"]);
+            //this.prev_assigned_to.Value = Convert.ToString((int)this.DrBug["assigned_to_user"]);
+            //this.prev_assigned_to_username.Value = Convert.ToString(this.DrBug["assigned_to_username"]);
+            //this.prev_status.Value = Convert.ToString((int)this.DrBug["status"]);
+            //this.prev_udf.Value = Convert.ToString((int)this.DrBug["udf"]);
+            //this.prev_pcd1.Value = (string)this.DrBug["bg_project_custom_dropdown_value1"];
+            //this.prev_pcd2.Value = (string)this.DrBug["bg_project_custom_dropdown_value2"];
+            //this.prev_pcd3.Value = (string)this.DrBug["bg_project_custom_dropdown_value3"];
+
+            //TODO for dropdowns
+            // special logic for org
+            //if (this.Id != 0)
+            //{
+            //    // Org
+            //    if (this.prev_org.Value != "0")
+            //    {
+            //        var alreadyInDropdown = false;
+            //        foreach (ListItem li in this.org.Items)
+            //            if (li.Value == this.prev_org.Value)
+            //            {
+            //                alreadyInDropdown = true;
+            //                break;
+            //            }
+
+            //        // Add to the list, even if permissions don't allow it now, because, in the past, they did allow it.
+            //        if (!alreadyInDropdown)
+            //            this.org.Items.Add(
+            //                new ListItem(this.prev_org_name.Value, this.prev_org.Value));
+            //    }
+
+            //    foreach (ListItem li in this.org.Items)
+            //        if (li.Value == this.prev_org.Value)
+            //            li.Selected = true;
+            //        else
+            //            li.Selected = false;
+            //}
+
+            //load_project_and_user_dropdown_for_update(security); // must come before set_controls_field_permission, after assigning to prev_ values
+
+            //set_controls_field_permission(PermissionLevel, security);
+
+            //this.snapshot_timestamp.Value = Convert.ToDateTime(this.DrBug["snapshot_timestamp"])
+            //    .ToString("yyyyMMdd HH\\:mm\\:ss\\:fff");
+
+            //prepare_a_bunch_of_links_for_update(security);
+
+            FormatPrevNextBug(id);
+
+            // save for next bug
+            if (/*this.project.SelectedItem != null*/ (int)drBug["project"] != 0)
+            {
+                Session["project"] = (int)drBug["project"];/*this.project.SelectedItem.Value*/;
+            }
+
+            //// Execute code not written by me
+            //Workflow.CustomAdjustControls(this.DrBug, security.User, this);
+
+            model = new EditModel
+            {
+                Id = drBug["id"],
+                Name = drBug["short_desc"],
+                ProjectId = (int)drBug["project"],
+                OrganizationId = (int)drBug["organization"],
+                CategoryId = (int)drBug["category"],
+                PriorityId = (int)drBug["priority"],
+                StatusId = (int)drBug["status"],
+                UserDefinedAttributeId = (int)drBug["udf"],
+                //UserId = Util.GetDefaultUser(defaultProjectId/*Convert.ToInt32(this.project.SelectedItem.Value)*/)
+            };
+
+            return View("Edit", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Update(EditModel model)
+        {
+            GetCookieValuesForShowHideToggles();
+
+            //var drBug = Bug.GetBugDataRow(this.Id, Security, this.DsCustomCols);
+
+            //load_incoming_custom_col_vals_into_hash(Security);
+
+            // Fetch the values of the custom columns from the Request and stash them in a hash table.
+
+            var dsCustomColumns = Util.GetCustomColumns();
+            var hashCustomColumns = new SortedDictionary<string, string>();
+
+            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
+            {
+                var columnName = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
+                {
+                    hashCustomColumns.Add(columnName, Request[columnName]);
+                }
+            }
+
+            //if (did_user_hit_submit_button()) // or is this a project dropdown autopostback?
+            //{
+            //    //this.Good = validate(Security);
+
+            //    if (this.Good)
+            //    {
+            //        // Actually do the update
+            //        if (this.Id == 0)
+            //            do_insert(Security);
+            //        else
+            //            do_update(Security);
+            //    }
+            //    else // bad, invalid
+            //    {
+            //        // Say we didn't do anything.
+            //        if (this.Id == 0)
+            //            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not created.");
+            //        else
+            //            set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel) + " was not updated.");
+            //        load_user_dropdown(Security);
+            //    }
+            //}
+
+            //Validate
+
+            //TODO
+            //if (!did_something_change()) return false;
+
+            // validate custom columns
+            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
+            {
+                var name = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[name] != SecurityPermissionLevel.PermissionAll) continue;
+
+                var val = Request[name];
+
+                if (val == null) continue;
+
+                val = val.Replace("'", "''");
+
+                // if a date was entered, convert to db format
+                if (val.Length > 0)
+                {
+                    var datatype = drcc["datatype"].ToString();
+
+                    if (datatype == "datetime")
+                    {
+                        try
+                        {
+                            DateTime.Parse(val, Util.GetCultureInfo());
+                        }
+                        catch (FormatException)
+                        {
+                            ModelState.AddModelError(name, "\"" + name + "\" not in a valid date format.");
+                        }
+                    }
+                    else if (datatype == "int")
+                    {
+                        if (!Util.IsInt(val))
+                        {
+                            ModelState.AddModelError(name, "\"" + name + "\" must be an integer.<br>");
+                        }
+                    }
+                    else if (datatype == "decimal")
+                    {
+                        var xprec = Convert.ToInt32(drcc["xprec"]);
+                        var xscale = Convert.ToInt32(drcc["xscale"]);
+                        var decimalError = Util.IsValidDecimal(name, val, xprec - xscale, xscale);
+
+                        if (!string.IsNullOrEmpty(decimalError))
+                        {
+                            ModelState.AddModelError(name, decimalError);
+                        }
+                    }
+                }
+                else
+                {
+                    var nullable = (int)drcc["isnullable"];
+
+                    if (nullable == 0)
+                    {
+                        ModelState.AddModelError(name, "\"" + name + "\" is required.");
+                    }
+                }
+            }
+
+            // validate assigned to user versus 
+            if (!DoesAssignedToHavePermissionForOrg(model.UserId, model.OrganizationId))
+            {
+                ModelState.AddModelError(nameof(EditModel.UserId), "User does not have permission for the Organization");
+            }
+
+            // custom validations go here
+            //if (!Workflow.CustomValidations(this.DrBug, security.User,
+            //    this, this.custom_validation_err_msg))
+            //good = false;
+
+            //Validate
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel) + " was not updated.");
+
+                TempData["Model"] = model;
+                TempData["Errors2"] = ModelState.Where(x => x.Value.Errors.Any())
+                    .Select(x => new { x.Key, x.Value.Errors })
+                    .ToDictionary(x => x.Key, x => x.Errors);
+
+                return RedirectToAction(nameof(Create));
+            }
+
+            // Do update
+            //TODO
+            //do_update(Security);
+
+
+            ////get_comment_text_from_control(security);
+            //var commentFormated = string.Empty;
+            //var commentSearch = string.Empty;
+            //var commentType = string.Empty;
+
+            //if (this.security.User.UseFckeditor)
+            //{
+            //    commentFormated = Util.StripDangerousTags(model.Comment);
+            //    commentSearch = Util.StripHtml(model.Comment);
+            //    commentType = "text/html";
+            //}
+            //else
+            //{
+            //    commentFormated = HttpUtility.HtmlDecode(model.Comment);
+            //    commentSearch = commentFormated;
+            //    commentType = "text/plain";
+            //}
+
+            //// Project specific
+            //var pcd1 = Request["pcd1"];
+            //var pcd2 = Request["pcd2"];
+            //var pcd3 = Request["pcd3"];
+
+            //if (pcd1 == null) pcd1 = string.Empty;
+            //if (pcd2 == null) pcd2 = string.Empty;
+            //if (pcd3 == null) pcd3 = string.Empty;
+
+            //pcd1 = pcd1.Replace("'", "''");
+            //pcd2 = pcd2.Replace("'", "''");
+            //pcd3 = pcd3.Replace("'", "''");
+
+            //var newIds = Bug.InsertBug(model.Name, this.security, /*this.tags.Value*/string.Empty, // TODO Tags
+            //    model.ProjectId,
+            //    model.OrganizationId,
+            //    model.CategoryId,
+            //    model.PriorityId,
+            //    model.StatusId,
+            //    model.UserId,
+            //    model.UserDefinedAttributeId,
+            //    pcd1,
+            //    pcd2,
+            //    pcd3, commentFormated, commentSearch,
+            //    null, // from
+            //    null, // cc
+            //    commentType, /*this.internal_only.Checked*/false /*TODO*/ , hashCustomColumns,
+            //    true); // send notifications
+
+            //// TODO Tags
+            ////if (!string.IsNullOrEmpty(this.tags.Value) && this.applicationSettings.EnableTags)
+            ////{
+            ////    Tags.BuildTagIndex(HttpContext.ApplicationInstance.Application);
+            ////}
+
+            ////this.Id = newIds.Bugid;
+
+            //WhatsNew.AddNews(newIds.Bugid, model.Name, "added", security);
+
+            ////this.new_id.Value = Convert.ToString(this.Id);
+            ////TODO
+            ////set_msg(Util.CapitalizeFirstLetter(thie.applicationSettings.SingularBugLabel) + " was created.");
+
+            //// save for next bug
+            //Session["project"] = model.ProjectId;
+
+            ////Response.Redirect($"~/Bugs/Edit.aspx?id={this.Id}");
+
+            return RedirectToAction(nameof(Update), new { id = model.Id });
         }
 
         [HttpGet]
@@ -919,7 +1585,7 @@ namespace BugTracker.Web.Controllers
             }
 
             var dsPosts = PrintBug.GetBugPosts(id, this.security.User.ExternalUser, historyInline);
-            var (_, html) = PrintBug.WritePosts(
+            var (_, html) = PrintBug.WritePostsNew(
                 dsPosts,
                 id,
                 permissionLevel,
@@ -2119,6 +2785,516 @@ namespace BugTracker.Web.Controllers
                     return 1;
                 }
                 return 0;
+            }
+        }
+
+        //public void LoadDropdownsForInsert()
+        //{
+        //    //LoadDropdowns();
+
+        //    // Get the defaults
+        //    var sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
+        //    sql += "\nselect top 1 ct_id from categories where ct_default = 1 order by ct_name;"; // 1
+        //    sql += "\nselect top 1 pr_id from priorities where pr_default = 1 order by pr_name;"; // 2
+        //    sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
+        //    sql += "\nselect top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;"; // 4
+
+        //    var dsDefaults = DbUtil.GetDataSet(sql);
+
+        //    //LoadProjectForInsert(dsDefaults.Tables[0]); /*AndUserDropdown*/
+        //    //LoadUserDropdown();
+
+        //    //LoadOtherDropdownsAndSelectDefaults(dsDefaults);
+        //}
+
+        public void LoadDropdowns()
+        {
+            // only show projects where user has permissions
+            // 0
+            var sql = @"/* drop downs */ select pj_id, pj_name
+                from projects
+                left outer join project_user_xref on pj_id = pu_project
+                and pu_user = $us
+                where pj_active = 1
+                and isnull(pu_permission_level,$dpl) not in (0, 1)
+                order by pj_name;";
+
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql = sql.Replace("$dpl", this.applicationSettings.DefaultPermissionLevel.ToString());
+
+            // 1
+            sql += "\nselect og_id, og_name from orgs where og_active = 1 order by og_name;";
+
+            // 2
+            sql += "\nselect ct_id, ct_name from categories order by ct_sort_seq, ct_name;";
+
+            // 3
+            sql += "\nselect pr_id, pr_name from priorities order by pr_sort_seq, pr_name;";
+
+            // 4
+            sql += "\nselect st_id, st_name from statuses order by st_sort_seq, st_name;";
+
+            // 5
+            sql += "\nselect udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;";
+
+            // do a batch of sql statements
+            var dsDropdowns = DbUtil.GetDataSet(sql);
+
+            ViewBag.Projects = new List<SelectListItem>();
+
+            if (this.applicationSettings.DefaultPermissionLevel == 2)
+            {
+                ViewBag.Projects.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "[no project]"
+                });
+            }
+
+            foreach (DataRow row in dsDropdowns.Tables[0].Rows)
+            {
+                ViewBag.Projects.Add(new SelectListItem
+                {
+                    Value = row["pj_id"].ToString(),
+                    Text = row["pj_name"].ToString()
+                });
+            }
+
+            ViewBag.Organizations = new List<SelectListItem>();
+            ViewBag.Organizations.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[no organization]"
+            });
+
+            foreach (DataRow row in dsDropdowns.Tables[1].Rows)
+            {
+                ViewBag.Organizations.Add(new SelectListItem
+                {
+                    Value = row["og_id"].ToString(),
+                    Text = row["og_name"].ToString()
+                });
+            }
+
+            ViewBag.Categories = new List<SelectListItem>();
+            ViewBag.Categories.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[no category]"
+            });
+
+            foreach (DataRow row in dsDropdowns.Tables[2].Rows)
+            {
+                ViewBag.Categories.Add(new SelectListItem
+                {
+                    Value = row["ct_id"].ToString(),
+                    Text = row["ct_name"].ToString()
+                });
+            }
+
+            ViewBag.Priorities = new List<SelectListItem>();
+            ViewBag.Priorities.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[no priority]"
+            });
+
+            foreach (DataRow row in dsDropdowns.Tables[3].Rows)
+            {
+                ViewBag.Priorities.Add(new SelectListItem
+                {
+                    Value = row["pr_id"].ToString(),
+                    Text = row["pr_name"].ToString()
+                });
+            }
+
+            ViewBag.Statuses = new List<SelectListItem>();
+            ViewBag.Statuses.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[no status]"
+            });
+
+            foreach (DataRow row in dsDropdowns.Tables[4].Rows)
+            {
+                ViewBag.Statuses.Add(new SelectListItem
+                {
+                    Value = row["st_id"].ToString(),
+                    Text = row["st_name"].ToString()
+                });
+            }
+
+            ViewBag.UserDefinedAttributes = new List<SelectListItem>();
+            ViewBag.UserDefinedAttributes.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[none]"
+            });
+
+            foreach (DataRow row in dsDropdowns.Tables[5].Rows)
+            {
+                ViewBag.UserDefinedAttributes.Add(new SelectListItem
+                {
+                    Value = row["udf_id"].ToString(),
+                    Text = row["udf_name"].ToString()
+                });
+            }
+        }
+
+        public int GetDefaultProject()
+        {
+            var sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
+            var projectDefault = DbUtil.GetDataSet(sql);
+
+            // get default values
+            var initialProject = (int?)Session["project"];
+
+            // project
+            if (this.security.User.ForcedProject != 0)
+            {
+                initialProject = this.security.User.ForcedProject;
+            }
+
+            if (initialProject != null && initialProject != 0)
+            {
+                return initialProject.Value;
+            }
+            else
+            {
+                int defaultValue;
+                if (projectDefault.Tables[0].Rows.Count > 0)
+                    defaultValue = (int)projectDefault.Tables[0].Rows[0][0];
+                else
+                    defaultValue = 0;
+
+                return defaultValue;
+            }
+        }
+
+        public int GetDefaultOrganization()
+        {
+            return this.security.User.Org;
+        }
+
+        public int GetDefaultCategory()
+        {
+            var sql = "\nselect top 1 ct_id from categories where ct_default = 1 order by ct_name;"; // 1
+            var dsDefaults = DbUtil.GetDataSet(sql);
+
+            // category
+            int defaultValue;
+            if (dsDefaults.Tables[0].Rows.Count > 0)
+                defaultValue = (int)dsDefaults.Tables[0].Rows[0][0];
+            else
+                defaultValue = 0;
+
+            return defaultValue;
+        }
+
+        public int GetDefaultPriority()
+        {
+            var sql = "\nselect top 1 pr_id from priorities where pr_default = 1 order by pr_name;"; // 2
+            var dsDefaults = DbUtil.GetDataSet(sql);
+
+            // priority
+            int defaultValue;
+            if (dsDefaults.Tables[0].Rows.Count > 0)
+                defaultValue = (int)dsDefaults.Tables[0].Rows[0][0];
+            else
+                defaultValue = 0;
+
+            return defaultValue;
+        }
+
+        public int GetDefaultStatus()
+        {
+            var sql = "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
+            var dsDefaults = DbUtil.GetDataSet(sql);
+
+            // priority
+            int defaultValue;
+            if (dsDefaults.Tables[0].Rows.Count > 0)
+                defaultValue = (int)dsDefaults.Tables[0].Rows[0][0];
+            else
+                defaultValue = 0;
+
+            return defaultValue;
+        }
+
+        public int GetDefaultUserDefinedAttribute()
+        {
+            var sql = "\nselect top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;"; // 4
+            var dsDefaults = DbUtil.GetDataSet(sql);
+
+            // priority
+            int defaultValue;
+            if (dsDefaults.Tables[0].Rows.Count > 0)
+                defaultValue = (int)dsDefaults.Tables[0].Rows[0][0];
+            else
+                defaultValue = 0;
+
+            return defaultValue;
+        }
+
+        public void LoadUserDropdown()
+        {
+            // What's selected now?   Save it before we refresh the dropdown.
+            var currentValue = string.Empty;
+
+            //if (IsPostBack)
+            //{
+            //    currentValue = this.assigned_to.SelectedItem.Value;
+            //}
+
+            var sql = string.Empty;
+            // Load the user dropdown, which changes per project
+            // Only users explicitly allowed will be listed
+            if (this.applicationSettings.DefaultPermissionLevel == 0)
+                sql = @"
+            /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
+            from users
+            inner join orgs on us_org = og_id
+            where us_active = 1
+            and og_can_be_assigned_to = 1
+            and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or (og_external_user = 0 and $og_can_assign_to_internal_users))
+            and us_id in
+                (select pu_user from project_user_xref
+                    where pu_project = $pj
+                    and pu_permission_level <> 0)
+            order by us_username; ";
+            // Only users explictly DISallowed will be omitted
+            else
+                sql = @"
+            /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
+            from users
+            inner join orgs on us_org = og_id
+            where us_active = 1
+            and og_can_be_assigned_to = 1
+            and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or (og_external_user = 0 and $og_can_assign_to_internal_users))
+            and us_id not in
+                (select pu_user from project_user_xref
+                    where pu_project = $pj
+                    and pu_permission_level = 0)
+            order by us_username; ";
+
+            if (!this.applicationSettings.UseFullNames)
+                // false condition
+                sql = sql.Replace("$fullnames", "0 = 1");
+            else
+                // true condition
+                sql = sql.Replace("$fullnames", "1 = 1");
+
+            var defaultProjectId = GetDefaultProject();
+
+            //if (this.project.SelectedItem != null)
+            sql = sql.Replace("$pj", defaultProjectId.ToString()/*this.project.SelectedItem.Value*/);
+            //else
+            //    sql = sql.Replace("$pj", "0");
+
+            sql = sql.Replace("$og_id", Convert.ToString(this.security.User.Org));
+            sql = sql.Replace("$og_other_orgs_permission_level",
+                Convert.ToString((int)this.security.User.OtherOrgsPermissionLevel));
+
+            if (this.security.User.CanAssignToInternalUsers)
+                sql = sql.Replace("$og_can_assign_to_internal_users", "1 = 1");
+            else
+                sql = sql.Replace("$og_can_assign_to_internal_users", "0 = 1");
+
+            var dtUsers = DbUtil.GetDataSet(sql).Tables[0];
+
+            ViewBag.Users = new List<SelectListItem>();
+            ViewBag.Users.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[not assigned]"
+            });
+
+            foreach (DataRow row in dtUsers.Rows)
+            {
+                ViewBag.Users.Add(new SelectListItem
+                {
+                    Value = row["us_id"].ToString(),
+                    Text = row["us_username"].ToString()
+                });
+            }
+
+            //this.assigned_to.DataSource = new DataView(DtUsers);
+            //this.assigned_to.DataTextField = "us_username";
+            //this.assigned_to.DataValueField = "us_id";
+            //this.assigned_to.DataBind();
+            //this.assigned_to.Items.Insert(0, new ListItem("[not assigned]", "0"));
+
+            // It can happen that the user in the db is not listed in the dropdown, because of a subsequent change in permissions.
+            // Since that user IS the user associated with the bug, let's force it into the dropdown.
+            //if (this.Id != 0) // if existing bug
+            //    if (this.prev_assigned_to.Value != "0")
+            //    {
+            //        // see if already in the dropdown.
+            //        var userInDropdown = false;
+            //        foreach (ListItem li in this.assigned_to.Items)
+            //            if (li.Value == this.prev_assigned_to.Value)
+            //            {
+            //                userInDropdown = true;
+            //                break;
+            //            }
+
+            //        // Add to the list, even if permissions don't allow it now, because, in the past, they did allow it.
+            //        if (!userInDropdown)
+            //            this.assigned_to.Items.Insert(1,
+            //                new ListItem(this.prev_assigned_to_username.Value, this.prev_assigned_to.Value));
+            //    }
+
+            //// At this point, all the users we need are in the dropdown.
+            //// Now selected the selected.
+            //if (string.IsNullOrEmpty(currentValue)) currentValue = this.prev_assigned_to.Value;
+
+            //// Select the user.  We are either restoring the previous selection
+            //// or selecting what was in the database.
+            //if (currentValue != "0")
+            //    foreach (ListItem li in this.assigned_to.Items)
+            //        if (li.Value == currentValue)
+            //            li.Selected = true;
+            //        else
+            //            li.Selected = false;
+
+            //// if nothing else is selected. select the default user for the project
+            //if (this.assigned_to.SelectedItem.Value == "0")
+            //{
+            //    var projectDefaultUser = 0;
+            //    if (this.project.SelectedItem != null)
+            //    {
+            //        // get the default user of the project
+            //        projectDefaultUser = Util.GetDefaultUser(Convert.ToInt32(this.project.SelectedItem.Value));
+
+            //        if (projectDefaultUser != 0)
+            //            foreach (ListItem li in this.assigned_to.Items)
+            //                if (Convert.ToInt32(li.Value) == projectDefaultUser)
+            //                    li.Selected = true;
+            //                else
+            //                    li.Selected = false;
+            //    }
+            //}
+        }
+
+        public static string GetCustomColDefaultValue(object o)
+        {
+            var defaultval = Convert.ToString(o);
+
+            // populate the sql default value of a custom field
+            if (defaultval.Length > 2)
+                if (defaultval[0] == '('
+                    && defaultval[defaultval.Length - 1] == ')')
+                {
+                    var defaultvalSql = "select " + defaultval.Substring(1, defaultval.Length - 2);
+                    defaultval = Convert.ToString(DbUtil.ExecuteScalar(defaultvalSql));
+                }
+
+            return defaultval;
+        }
+
+        public static bool DoesAssignedToHavePermissionForOrg(int assignedTo, int org)
+        {
+            if (assignedTo < 1) return true;
+
+            var sql = @"
+                /* validate org versus assigned_to */
+                select case when og_other_orgs_permission_level <> 0
+                or $bg_org = og_id then 1
+                else 0 end as [answer]
+                from users
+                inner join orgs on us_org = og_id
+                where us_id = @us_id";
+
+            sql = sql.Replace("@us_id", Convert.ToString(assignedTo));
+            sql = sql.Replace("$bg_org", Convert.ToString(org));
+
+            var allowed = DbUtil.ExecuteScalar(sql);
+
+            if (allowed != null && Convert.ToInt32(allowed) == 1)
+                return true;
+            return false;
+        }
+
+        public void GetCookieValuesForShowHideToggles()
+        {
+            var cookie = Request.Cookies["images_inline"];
+            if (cookie == null || cookie.Value == "0")
+                ViewBag.ImagesInline = false;
+            else
+                ViewBag.ImagesInline = true;
+
+            cookie = Request.Cookies["history_inline"];
+            if (cookie == null || cookie.Value == "0")
+                ViewBag.HistoryInline = false;
+            else
+                ViewBag.HistoryInline = true;
+        }
+
+        public void FormatPrevNextBug(int id)
+        {
+            // for next/prev bug links
+            var dvBugs = (DataView)Session["bugs"];
+
+            if (dvBugs != null)
+            {
+                var prevBug = 0;
+                var nextBug = 0;
+                var thisBugFound = false;
+
+                // read through the list of bugs looking for the one that matches this one
+                var positionInList = 0;
+                var savePositionInList = 0;
+                foreach (DataRowView drv in dvBugs)
+                {
+                    positionInList++;
+                    if (thisBugFound)
+                    {
+                        // step 3 - get the next bug - we're done
+                        nextBug = (int)drv[1];
+                        break;
+                    }
+
+                    if (id == (int)drv[1])
+                    {
+                        // step 2 - we found this - set switch
+                        savePositionInList = positionInList;
+                        thisBugFound = true;
+                    }
+                    else
+                    {
+                        // step 1 - save the previous just in case the next one IS this bug
+                        prevBug = (int)drv[1];
+                    }
+                }
+
+                var prevNextLink = string.Empty;
+
+                if (thisBugFound)
+                {
+                    if (prevBug != 0)
+                        prevNextLink =
+                            "&nbsp;&nbsp;&nbsp;&nbsp;<a class=warn href=" + VirtualPathUtility.ToAbsolute("~/Bug/Update/")
+                            + Convert.ToString(prevBug)
+                            + "><img src=" + VirtualPathUtility.ToAbsolute("~/Content/images/arrow_up.png") + " border=0 align=top>prev</a>";
+                    else
+                        prevNextLink = "&nbsp;&nbsp;&nbsp;&nbsp;<span class=gray_link>prev</span>";
+
+                    if (nextBug != 0)
+                        prevNextLink +=
+                            "&nbsp;&nbsp;&nbsp;&nbsp;<a class=warn href=" + VirtualPathUtility.ToAbsolute("~/Bug/Update/")
+                            + Convert.ToString(nextBug)
+                            + ">next<img src=" + VirtualPathUtility.ToAbsolute("~/Content/images/arrow_down.png") + " border=0 align=top></a>";
+                    else
+                        prevNextLink += "&nbsp;&nbsp;&nbsp;&nbsp;<span class=gray_link>next</span>";
+
+                    prevNextLink += "&nbsp;&nbsp;&nbsp;<span class=smallnote>"
+                                      + Convert.ToString(savePositionInList)
+                                      + " of "
+                                      + Convert.ToString(dvBugs.Count)
+                                      + "</span>";
+
+                    ViewBag.PrevNext = prevNextLink;
+                }
             }
         }
     }

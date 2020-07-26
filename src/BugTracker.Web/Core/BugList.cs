@@ -900,7 +900,7 @@ namespace BugTracker.Web.Core
                                     {
                                         // write description as a link
                                         response.Write(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bug/Update/{stringBugid}") + ">");
                                         response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
                                         response.Write("</a>");
                                     }
@@ -908,7 +908,7 @@ namespace BugTracker.Web.Core
                                     {
                                         // write description as a link
                                         response.Write(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bug/Update/{stringBugid}") + ">");
                                         response.Write(dr[i].ToString()); // already encoded
                                         response.Write("</a>");
                                     }
@@ -929,7 +929,7 @@ namespace BugTracker.Web.Core
                                             }
                                             else
                                             {
-                                                response.Write("<a href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id="));
+                                                response.Write("<a href=" + VirtualPathUtility.ToAbsolute("~/Bug/Update/"));
                                                 response.Write(stringBugid); // bg_id
                                                 response.Write("#");
                                                 response.Write(parts[1]); // bp_id, the post id
@@ -1310,7 +1310,7 @@ namespace BugTracker.Web.Core
                                     {
                                         // write description as a link
                                         stringBuilder.Append(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bug/Update/{stringBugid}") + ">");
                                         stringBuilder.Append(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
                                         stringBuilder.Append("</a>");
                                     }
@@ -1318,7 +1318,7 @@ namespace BugTracker.Web.Core
                                     {
                                         // write description as a link
                                         stringBuilder.Append(
-                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bugs/Edit.aspx?id={stringBugid}") + ">");
+                                            "<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=" + VirtualPathUtility.ToAbsolute($"~/Bug/Update/{stringBugid}") + ">");
                                         stringBuilder.Append(dr[i].ToString()); // already encoded
                                         stringBuilder.Append("</a>");
                                     }
@@ -1339,7 +1339,7 @@ namespace BugTracker.Web.Core
                                             }
                                             else
                                             {
-                                                stringBuilder.Append("<a href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id="));
+                                                stringBuilder.Append("<a href=" + VirtualPathUtility.ToAbsolute("~/Bug/Update/"));
                                                 stringBuilder.Append(stringBugid); // bg_id
                                                 stringBuilder.Append("#");
                                                 stringBuilder.Append(parts[1]); // bp_id, the post id

@@ -413,6 +413,141 @@ namespace BugTracker.Web.Core
             return (postCnt, stringBuilder.ToString());
         }
 
+        public static (int, string) WritePostsNew(
+            DataSet dsPosts,
+            int bugid,
+            SecurityPermissionLevel permissionLevel,
+            bool writeLinks,
+            bool imagesInline,
+            bool historyInline,
+            bool internalPosts,
+            User user)
+        {
+            var stringBuilder = new StringBuilder();
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            //if (applicationSettings.ForceBordersInEmails)
+            //{
+            //    stringBuilder.Append("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
+            //}
+            //else
+            //{
+            //    stringBuilder.Append("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
+            //}
+
+            stringBuilder.Append("<div id='posts_table'>");
+
+            var postCnt = dsPosts.Tables[0].Rows.Count;
+
+            int bpId;
+            var prevBpId = -1;
+
+            foreach (DataRow dr in dsPosts.Tables[0].Rows)
+            {
+                stringBuilder.Append("<div class='card bg-white mb-3'>");
+                stringBuilder.Append("<div class='card-body'>");
+
+                if (!internalPosts)
+                    if ((int)dr["bp_hidden_from_external_users"] == 1)
+                        continue;
+
+                bpId = (int)dr["bp_id"];
+
+                if ((string)dr["bp_type"] == "update")
+                {
+                    var comment = (string)dr["bp_comment"];
+
+                    if (user.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed tags from"))
+                        continue;
+
+                    if (user.ProjectFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed project from"))
+                        continue;
+
+                    if (user.OrgFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed organization from"))
+                        continue;
+
+                    if (user.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed category from"))
+                        continue;
+
+                    if (user.PriorityFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed priority from"))
+                        continue;
+
+                    if (user.AssignedToFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed assigned_to from"))
+                        continue;
+
+                    if (user.StatusFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed status from"))
+                        continue;
+
+                    if (user.UdfFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                        && comment.StartsWith("changed " +
+                                              applicationSettings.UserDefinedBugAttributeName +
+                                              " from"))
+                        continue;
+
+                    var bSkip = false;
+                    foreach (var key in user.DictCustomFieldPermissionLevel.Keys)
+                    {
+                        var fieldPermissionLevel = user.DictCustomFieldPermissionLevel[key];
+                        if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
+                            if (comment.StartsWith("changed " + key + " from"))
+                                bSkip = true;
+                    }
+
+                    if (bSkip) continue;
+                }
+
+                if (bpId == prevBpId)
+                {
+                    // show another attachment
+                    var html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
+
+                    stringBuilder.Append(html);
+                }
+                else
+                {
+                    // show the comment and maybe an attachment
+                    if (prevBpId != -1) stringBuilder.Append("\n</table>"); // end the previous table
+
+                    var html = WritePost(bugid, permissionLevel, dr, bpId, writeLinks, imagesInline,
+                        user.IsAdmin,
+                        user.CanEditAndDeletePosts,
+                        user.ExternalUser);
+
+                    stringBuilder.Append(html);
+
+                    if (!string.IsNullOrEmpty(Convert.ToString(dr["ba_file"]))) // intentially "ba"
+                    {
+                        html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
+
+                        stringBuilder.Append(html);
+                    }
+
+                    prevBpId = bpId;
+
+                    stringBuilder.Append("</table>");
+                }
+
+                stringBuilder.Append("</div>");
+                stringBuilder.Append("</div>");
+            }
+
+            if (prevBpId != -1)
+            {
+                stringBuilder.Append("\n</table>"); // end the previous table
+            }
+
+            stringBuilder.Append("</div>");
+
+            return (postCnt, stringBuilder.ToString());
+        }
+
         private static string WriteTasks(int bugid)
         {
             var stringBuilder = new StringBuilder();
@@ -478,6 +613,301 @@ namespace BugTracker.Web.Core
         }
 
         private static string WritePost(
+            int bugid,
+            SecurityPermissionLevel permissionLevel,
+            DataRow dr,
+            int postId,
+            bool writeLinks,
+            bool imagesInline,
+            bool thisIsAdmin,
+            bool thisCanEditAndDeletePosts,
+            bool thisExternalUser)
+        {
+            var stringBuilder = new StringBuilder();
+            var type = (string)dr["bp_type"];
+
+            var stringPostId = Convert.ToString(postId);
+            var stringBugId = Convert.ToString(bugid);
+
+            if ((int)dr["seconds_ago"] < 2 && writeLinks)
+                // for the animation effect
+                stringBuilder.Append("\n\n<tr><td class=cmt name=new_post>\n<table width=100%>\n<tr><td align=left>");
+            else
+                stringBuilder.Append("\n\n<tr><td class=cmt>\n<table width=100%>\n<tr><td align=left>");
+
+            /*
+                Format one of the following:
+
+                changed by
+                email sent to
+                email received from
+                file attached by
+                comment posted by
+
+            */
+
+            if (type == "update")
+            {
+                if (writeLinks) stringBuilder.Append("<img src='/Content/images/database.png' align=top>&nbsp;");
+
+                // posted by
+                stringBuilder.Append("<span class=pst>changed by ");
+                stringBuilder.Append(FormatEmailUserName(
+                    writeLinks,
+                    bugid,
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
+            }
+            else if (type == "sent")
+            {
+                if (writeLinks) stringBuilder.Append("<img src='/Content/images/email_edit.png' align=top>&nbsp;");
+
+                stringBuilder.Append("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " sent to ");
+
+                if (writeLinks)
+                    stringBuilder.Append(FormatEmailTo(
+                        bugid,
+                        HttpUtility.HtmlEncode((string)dr["bp_email_to"])));
+                else
+                    stringBuilder.Append(HttpUtility.HtmlEncode((string)dr["bp_email_to"]));
+
+                if (!string.IsNullOrEmpty((string)dr["bp_email_cc"]))
+                {
+                    stringBuilder.Append(", cc: ");
+
+                    if (writeLinks)
+                        stringBuilder.Append(FormatEmailTo(
+                            bugid,
+                            HttpUtility.HtmlEncode((string)dr["bp_email_cc"])));
+                    else
+                        stringBuilder.Append(HttpUtility.HtmlEncode((string)dr["bp_email_cc"]));
+
+                    stringBuilder.Append(", ");
+                }
+
+                stringBuilder.Append(" by ");
+
+                stringBuilder.Append(FormatEmailUserName(
+                    writeLinks,
+                    bugid,
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
+            }
+            else if (type == "received")
+            {
+                if (writeLinks) stringBuilder.Append("<img src='/Content/images/email_open.png' align=top>&nbsp;");
+                stringBuilder.Append("<span class=pst>email <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " received from ");
+                if (writeLinks)
+                    stringBuilder.Append(FormatEmailFrom(
+                        postId,
+                        (string)dr["bp_email_from"]));
+                else
+                    stringBuilder.Append((string)dr["bp_email_from"]);
+            }
+            else if (type == "file")
+            {
+                if ((int)dr["bp_hidden_from_external_users"] == 1)
+                    stringBuilder.Append("<div class=private>Internal Only!</div>");
+                stringBuilder.Append("<span class=pst>file <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " attached by ");
+                stringBuilder.Append(FormatEmailUserName(
+                    writeLinks,
+                    bugid,
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
+            }
+            else if (type == "comment")
+            {
+                if ((int)dr["bp_hidden_from_external_users"] == 1)
+                    stringBuilder.Append("<div class=private>Internal Only!</div>");
+
+                if (writeLinks) stringBuilder.Append("<img src=" + VirtualPathUtility.ToAbsolute("~/Content/images/comment.png") + " align=top>&nbsp;");
+
+                stringBuilder.Append("<span class=pst>comment <a name=" + Convert.ToString(postId) + "></a>" +
+                               Convert.ToString(postId) + " posted by ");
+                stringBuilder.Append(FormatEmailUserName(
+                    writeLinks,
+                    bugid,
+                    permissionLevel,
+                    (string)dr["us_email"],
+                    (string)dr["us_username"],
+                    (string)dr["us_fullname"]));
+            }
+            else
+            {
+                Debug.Assert(false);
+            }
+
+            // Format the date
+            stringBuilder.Append(" on ");
+            stringBuilder.Append(Util.FormatDbDateTime(dr["bp_date"]));
+            stringBuilder.Append(", ");
+            stringBuilder.Append(Util.HowLongAgo((int)dr["seconds_ago"]));
+            stringBuilder.Append("</span>");
+
+            // Write the links
+            IApplicationSettings applicationSettings = new ApplicationSettings();
+
+            if (writeLinks)
+            {
+                stringBuilder.Append("<td align=right>&nbsp;");
+
+                if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                    if (type == "comment" || type == "sent" || type == "received")
+                    {
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
+                        stringBuilder.Append(">forward</a>");
+                    }
+
+                // format links for responding to email
+                if (type == "received")
+                {
+                    if (thisIsAdmin
+                        || thisCanEditAndDeletePosts
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        // This doesn't just work.  Need to make changes in edit/delete pages.
+                        //	Response.Write ("&nbsp;&nbsp;&nbsp;<a style='font-size: 8pt;'");
+                        //	Response.Write (" href=EditComment.aspx?id="
+                        //		+ string_post_id + "&bug_id=" + string_bug_id);
+                        //	Response.Write (">edit</a>");
+
+                        // This delete leaves debris around, but it's better than nothing
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>delete</a>");
+                    }
+
+                    if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId);
+                        stringBuilder.Append(">reply</a>");
+
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
+                        stringBuilder.Append(">reply all</a>");
+                    }
+                }
+                else if (type == "file")
+                {
+                    if (thisIsAdmin
+                        || thisCanEditAndDeletePosts
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Update?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>edit</a>");
+
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>delete</a>");
+                    }
+                }
+                else if (type == "comment")
+                {
+                    if (thisIsAdmin
+                        || thisCanEditAndDeletePosts
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Update?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>edit</a>");
+
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Comment/Delete?id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>delete</a>");
+                    }
+                }
+
+                // custom bug link
+                if (!string.IsNullOrEmpty(applicationSettings.CustomPostLinkLabel))
+                {
+                    var customPostLink = "&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;' href="
+                                           + applicationSettings.CustomPostLinkUrl
+                                           + "?postid="
+                                           + stringPostId
+                                           + ">"
+                                           + applicationSettings.CustomPostLinkLabel
+                                           + "</a>";
+
+                    stringBuilder.Append(customPostLink);
+                }
+            }
+
+            stringBuilder.Append("\n</table>\n<table border=0>\n<tr><td>");
+            // the text itself
+            var comment = (string)dr["bp_comment"];
+            var commentType = (string)dr["bp_content_type"];
+
+            if (writeLinks)
+                comment = FormatComment(postId, comment, commentType);
+            else
+                comment = FormatComment(0, comment, commentType);
+
+            if (type == "file")
+            {
+                if (comment.Length > 0)
+                {
+                    stringBuilder.Append(comment);
+                    stringBuilder.Append("<p>");
+                }
+
+                stringBuilder.Append("<span class=pst>");
+                if (writeLinks) stringBuilder.Append("<img src='" + VirtualPathUtility.ToAbsolute("~/Content/images/attach.gif") + "'>");
+                stringBuilder.Append("attachment:&nbsp;</span><span class=cmt_text>");
+                stringBuilder.Append(dr["bp_file"]);
+                stringBuilder.Append("</span>");
+
+                if (writeLinks)
+                {
+                    if ((string)dr["bp_content_type"] != "text/html" ||
+                        applicationSettings.ShowPotentiallyDangerousHtml)
+                    {
+                        stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
+                        stringBuilder.Append(" href='" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=false&id={stringPostId}&bugId={stringBugId}"));
+                        stringBuilder.Append("'>view</a>");
+                    }
+
+                    stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a target=_blank style='font-size: 8pt;'");
+                    stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute($"~/Attachment/Show?download=true&id={stringPostId}&bugId={stringBugId}"));
+                    stringBuilder.Append(">save</a>");
+                }
+
+                stringBuilder.Append("<p><span class=pst>size: ");
+                stringBuilder.Append(dr["bp_size"]);
+                stringBuilder.Append("&nbsp;&nbsp;&nbsp;content-type: ");
+                stringBuilder.Append(dr["bp_content_type"]);
+                stringBuilder.Append("</span>");
+            }
+            else
+            {
+                stringBuilder.Append(comment);
+            }
+
+            // maybe show inline images
+            if (type == "file")
+                if (imagesInline)
+                {
+                    var file = Convert.ToString(dr["bp_file"]);
+                    var html = WriteFileInline(file, stringPostId, stringBugId, (string)dr["bp_content_type"]);
+
+                    stringBuilder.Append(html);
+                }
+
+            return stringBuilder.ToString();
+        }
+
+        private static string WritePostNew(
             int bugid,
             SecurityPermissionLevel permissionLevel,
             DataRow dr,
