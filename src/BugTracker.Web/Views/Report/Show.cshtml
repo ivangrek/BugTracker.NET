@@ -5,6 +5,7 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using System.Data
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
@@ -17,50 +18,24 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
 }
 
 @section BodyHeader {
 }
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model);
-}
-else
-{
-    <font size="+1">The database query for this report returned zero rows.</font>
-}
-
 @(Html
-    .Grid("MvcGrid/_GridBootstrap4", Model.Rows.Cast<DataRow>())
+    .Grid("MvcGrid/_GridBootstrap4", Model.DataTable.Rows.Cast<DataRow>())
     .Build(columns =>
     {
-        columns.Add(model => model["report"] as string)
-            .Named("report")
-            .Titled("report")
-            .Sortable(true);
-
-        columns.Add(model => model["view<br>chart"] as string)
-            .Named("view chart")
-            .Titled("view chart")
-            .Encoded(false);
-
-        columns.Add(model => model["view<br>data"] as string)
-            .Named("view data")
-            .Titled("view data")
-            .Encoded(false);
-
-        if (page.Security.User.IsAdmin || page.Security.User.CanEditReports)
+        foreach (DataColumn column in Model.DataTable.Columns)
         {
-            columns.Add(model => Html.ActionLink("edit", "Update", new { id = model["id"] }))
-                .Titled("edit");
-
-            columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model["id"] }))
-                .Titled("delete");
+            columns.Add(model => model[column.ColumnName])
+                .Named(column.ColumnName)
+                .Titled(column.ColumnName)
+                .Sortable(true);
         }
     })
-    .Empty("No reports in the database.")
+    .Empty("The database query for this report returned zero rows.")
     //.UsingProcessingMode(GridProcessingMode.Manual)
     .Sortable()
     //.Pageable()
