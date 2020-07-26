@@ -517,8 +517,6 @@
     <Content Include="Global.asax" />
     <Content Include="Content\images\hg.png" />
     <Content Include="Scripts\MvcGrid\mvc-grid.js" />
-    <Content Include="Versioning\Hg\Diff.aspx" />
-    <Content Include="Versioning\Hg\Log.aspx" />
     <Content Include="Scripts\jquery\grippie.png" />
     <Content Include="Scripts\jquery\images\ajax-loader.gif" />
     <Content Include="Scripts\jquery\images\icons-18-black.png" />
@@ -558,9 +556,6 @@
     <Content Include="Scripts\sortable.js" />
     <Content Include="Scripts\suggest.js" />
     <Content Include="Content\images\svn.png" />
-    <Content Include="Versioning\Svn\Blame.aspx" />
-    <Content Include="Versioning\Svn\Diff.aspx" />
-    <Content Include="Versioning\Svn\Log.aspx" />
     <Content Include="Content\images\telephone.png" />
     <Content Include="Content\images\telephone_edit.png" />
     <Content Include="Scripts\version_control_sel_rev.js" />
@@ -689,20 +684,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Task\EditModel.cs" />
-    <Compile Include="Versioning\Hg\Diff.aspx.cs">
-      <DependentUpon>Diff.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Hg\Diff.aspx.designer.cs">
-      <DependentUpon>Diff.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Hg\Log.aspx.cs">
-      <DependentUpon>Log.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Hg\Log.aspx.designer.cs">
-      <DependentUpon>Log.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyInfoExt.cs" />
     <Compile Include="Search.aspx.cs">
@@ -725,27 +706,6 @@
     </Compile>
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Svn\Blame.aspx.cs">
-      <DependentUpon>Blame.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Svn\Blame.aspx.designer.cs">
-      <DependentUpon>Blame.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Svn\Diff.aspx.cs">
-      <DependentUpon>Diff.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Svn\Diff.aspx.designer.cs">
-      <DependentUpon>Diff.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Versioning\Svn\Log.aspx.cs">
-      <DependentUpon>Log.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Versioning\Svn\Log.aspx.designer.cs">
-      <DependentUpon>Log.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Account\ChangePasswordModel.cs" />
     <Compile Include="Models\Account\RegisterModel.cs" />
@@ -826,6 +786,11 @@
     <Content Include="Areas\Administration\Views\User\Edit.cshtml" />
     <Content Include="Areas\Versioning\Views\Hg\Blame.cshtml" />
     <Content Include="Content\MvcGrid\Fonts\GridGlyphs.woff" />
+    <Content Include="Areas\Versioning\Views\Svn\Blame.cshtml" />
+    <Content Include="Areas\Versioning\Views\Svn\Log.cshtml" />
+    <Content Include="Areas\Versioning\Views\Svn\Diff.cshtml" />
+    <Content Include="Areas\Versioning\Views\Hg\Log.cshtml" />
+    <Content Include="Areas\Versioning\Views\Hg\Diff.cshtml" />
     <None Include="packages.config" />
     <Content Include="Site.Master" />
     <Content Include="Views\_ViewStart.cshtml" />

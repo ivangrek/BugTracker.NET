@@ -7,6 +7,7 @@
 
 @using BugTracker.Web.Core
 @using BugTracker.Web.Models
+@model BugTracker.Web.Models.SortableTableModel
 
 @{
     var page = (PageModel)ViewBag.Page;
@@ -24,9 +25,20 @@
     @Html.Partial("_MainMenu", page)
 }
 
-<pre>
-    @Html.Raw(HttpUtility.HtmlEncode(ViewBag.BlameText))
-</pre>
+<div class="main">
+    <pre>
+        <table border="0" class="datat" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="datah">revision</td>
+                <td class="datah">author</td>
+                <td class="datah">text</td>
+                <td class="datah">date</td>
+            </tr>
+            
+            @Html.Raw(ViewBag.BlameHtml)
+        </table>
+    </pre>
+</div>
 
 @section BodyFooter {
     @Html.Raw(Util.Context.Application["custom_footer"])

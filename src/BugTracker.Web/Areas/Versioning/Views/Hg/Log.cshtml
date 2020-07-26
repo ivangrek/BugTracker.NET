@@ -1,0 +1,86 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
+
+@{
+    var page = (PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/version_control_sel_rev.js"></script>
+}
+
+@section BodyHeader {
+    @Html.Partial("_MainMenu", page)
+}
+
+<div class="main">
+    <p></p>
+    @using (Html.BeginForm("Diff", "Hg", FormMethod.Get))
+    {
+        <input type="hidden" name="rev_0" id="rev_0" value="0" />
+        <input type="hidden" name="rev_1" id="rev_1" value="0" />
+        <input type="hidden" name="revpathid" id="revpathid" value="@ViewBag.RevPathId" />
+    }
+
+    <p></p>
+
+    <table border="1" class="datat">
+        <tr>
+            <td class="datah">
+                revision
+            </td>
+            <td class="datah">
+                author
+            </td>
+            <td class="datah">
+                date
+            </td>
+            <td class="datah">
+                path
+            </td>
+            <td class="datah">action</td>
+            <td class="datah">
+                msg
+            </td>
+            <td class="datah">
+                view
+            </td>
+            <td class="datah">
+                view<br>
+                annotated<br>
+                (hg blame)
+            </td>
+            <td class="datah">
+                <a style="background: yellow; border-bottom: 2px black solid; border-left: 1px silver solid; border-right: 2px black solid; border-top: 1px silver solid; display: none;"
+                   id="do_diff_enabled" href="javascript:on_do_diff()">
+                    click<br>
+                    to<br>
+                    diff
+                </a>
+                <a style="color: red;" id="do_diff_disabled" href="javascript:on_do_diff()">
+                    select<br>
+                    two<br>
+                    commits
+                </a>
+            </td>
+        </tr>
+
+        @Html.Raw(ViewBag.HistoryHtml)
+    </table>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(Util.Context.Application["custom_footer"])
+}
