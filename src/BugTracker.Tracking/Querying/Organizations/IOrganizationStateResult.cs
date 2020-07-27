@@ -65,7 +65,5 @@ namespace BugTracker.Tracking.Querying.Organizations
         int UdfFieldPermissionLevel { get; }
 
         int TagsFieldPermissionLevel { get; }
-
-        int? FieldPermissionLevel { get; }
     }
 }

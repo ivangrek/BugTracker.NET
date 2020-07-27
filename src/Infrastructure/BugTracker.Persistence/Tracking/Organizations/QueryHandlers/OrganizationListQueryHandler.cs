@@ -63,8 +63,7 @@ namespace BugTracker.Persistence.Tracking.Organizations.QueryHandlers
                     ProjectFieldPermissionLevel = x.ProjectFieldPermissionLevel,
                     OrgFieldPermissionLevel = x.OrgFieldPermissionLevel,
                     UdfFieldPermissionLevel = x.UdfFieldPermissionLevel,
-                    TagsFieldPermissionLevel = x.TagsFieldPermissionLevel,
-                    FieldPermissionLevel = x.FieldPermissionLevel
+                    TagsFieldPermissionLevel = x.TagsFieldPermissionLevel
                 })
                 .ToArray();
 
@@ -138,8 +137,6 @@ namespace BugTracker.Persistence.Tracking.Organizations.QueryHandlers
             public int UdfFieldPermissionLevel { get; set; }
 
             public int TagsFieldPermissionLevel { get; set; }
-
-            public int? FieldPermissionLevel { get; set; }
         }
     }
 }

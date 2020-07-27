@@ -63,7 +63,5 @@ namespace BugTracker.Web.Core.Persistence.Models
         public int UdfFieldPermissionLevel { get; set; }
 
         public int TagsFieldPermissionLevel { get; set; }
-
-        public int? FieldPermissionLevel { get; set; }
     }
 }

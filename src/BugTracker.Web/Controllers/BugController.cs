@@ -571,7 +571,7 @@ namespace BugTracker.Web.Controllers
             // save for next bug
             if (/*this.project.SelectedItem != null*/ (int)drBug["project"] != 0)
             {
-                Session["project"] = (int)drBug["project"];/*this.project.SelectedItem.Value*/;
+                Session["project"] = (int)drBug["project"];/*this.project.SelectedItem.Value*/
             }
 
             //// Execute code not written by me

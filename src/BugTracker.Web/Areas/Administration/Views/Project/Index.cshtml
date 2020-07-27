@@ -44,7 +44,7 @@
             .Titled("edit");
 
         columns.Add(model => Html.ActionLink("permissions", "Update", new { id = model.Id, projects = true }))
-            .Titled("per user<br>permissions");
+            .Titled("per user permissions");
 
         columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model.Id }))
             .Titled("delete");
@@ -61,15 +61,15 @@
             .Titled("default user");
 
         columns.Add(model => model.AutoAssignDefaultUser)
-            .Titled("auto assign<br>default user")
+            .Titled("auto assign default user")
             .RenderedAs(model => model.AutoAssignDefaultUser == 1 ? "Y" : "N");
 
         columns.Add(model => model.AutoSubscribeDefaultUser)
             .Formatted("{0:Y;N;N}")
-            .Titled("auto subscribe<br>default user");
+            .Titled("auto subscribe default user");
 
         columns.Add(model => model.EnablePop3)
-            .Titled("receive items<br>via pop3")
+            .Titled("receive items via pop3")
             .RenderedAs(model => model.EnablePop3 == 1 ? "Y" : "N");
 
         columns.Add(model => model.Pop3Username)

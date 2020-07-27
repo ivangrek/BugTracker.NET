@@ -101,9 +101,6 @@ namespace BugTracker.Web.Core.Persistence.Configurations
 
             Property(x => x.TagsFieldPermissionLevel)
                 .HasColumnName("og_tags_field_permission_level");
-
-            Property(x => x.FieldPermissionLevel)
-                .HasColumnName("og_a_field_permission_level");
         }
     }
 }

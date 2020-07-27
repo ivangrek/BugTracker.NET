@@ -45,16 +45,21 @@ namespace BugTracker.Persistence.Tracking.Projects.QueryHandlers
                 .Select(x => x.DefaultUserId.Value)
                 .ToArray();
 
-            var userQuery = this.queryBuilder
-                .From<IUserSource>()
-                .To<IUserComboBoxResult>()
-                .Filter()
-                    .Equal(x => x.Id, userIds[0]) // TODO
-                .Build();
+            var userResult = new Dictionary<int, string>();
 
-            var userResult = this.applicationFacade
-                .Run(userQuery)
-                .ToDictionary(x => x.Id, x => x.Name);
+            if (userIds.Length > 0)
+            {
+                var userQuery = this.queryBuilder
+                    .From<IUserSource>()
+                    .To<IUserComboBoxResult>()
+                    .Filter()
+                        .Equal(x => x.Id, userIds[0]) // TODO
+                    .Build();
+
+                userResult = this.applicationFacade
+                    .Run(userQuery)
+                    .ToDictionary(x => x.Id, x => x.Name);
+            }
 
             var rows = dbQuery
                 .ToArray()

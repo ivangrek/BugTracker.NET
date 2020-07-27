@@ -49,11 +49,11 @@
             .InitialSort(GridSortOrder.Asc);
 
         columns.Add(model => model.BackgroundColor)
-             .Titled("background<br>color")
+             .Titled("background color")
              .RenderedAs(model => "<div style='background:" + @model.BackgroundColor + "'>" + @model.BackgroundColor + "</div>").Encoded(false);
 
         columns.Add(model => model.Style)
-             .Titled("css<br>class");
+             .Titled("css class");
 
         columns.Add(model => model.Default)
             .Titled("default")

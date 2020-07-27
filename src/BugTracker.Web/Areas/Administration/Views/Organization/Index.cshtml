@@ -55,19 +55,19 @@
             .RenderedAs(model => model.Active == 1 ? "Y" : "N");
 
         columns.Add(model => model.CanSearch)
-            .Titled("can<br>search")
+            .Titled("can search")
             .RenderedAs(model => model.CanSearch == 1 ? "Y" : "N");
 
         columns.Add(model => model.NonAdminsCanUse)
-            .Titled("non-admin<br>can use")
+            .Titled("non-admin can use")
             .RenderedAs(model => model.NonAdminsCanUse == 1 ? "Y" : "N");
 
         columns.Add(model => model.CanOnlySeeOwnReported)
-            .Titled("can see<br>only own bugs")
+            .Titled("can see only own bugs")
             .RenderedAs(model => model.CanOnlySeeOwnReported == 1 ? "Y" : "N");
 
         columns.Add(model => model.OtherOrgsPermissionLevel)
-            .Titled("other orgs<br>permission<br>level")
+            .Titled("other orgs permission level")
             .RenderedAs(model => model.OtherOrgsPermissionLevel == 0 ? "None" : model.OtherOrgsPermissionLevel == 1 ? "Read Only" : "Add/Edit");
 
         columns.Add(model => model.ExternalUser)
@@ -75,19 +75,19 @@
             .RenderedAs(model => model.ExternalUser == 1 ? "Y" : "N");
 
         columns.Add(model => model.CanBeAssignedTo)
-             .Titled("can<br>be assigned to")
+             .Titled("can be assigned to")
              .RenderedAs(model => model.CanBeAssignedTo == 1 ? "Y" : "N");
 
         columns.Add(model => model.StatusFieldPermissionLevel)
-             .Titled("status<br>permission<br>level")
+             .Titled("status permission level")
              .RenderedAs(model => model.StatusFieldPermissionLevel == 0 ? "None" : model.StatusFieldPermissionLevel == 1 ? "Read Only" : "Add/Edit");
 
         columns.Add(model => model.AssignedToFieldPermissionLevel)
-             .Titled("assigned to<br>permission<br>level")
+             .Titled("assigned to permission level")
              .RenderedAs(model => model.AssignedToFieldPermissionLevel == 0 ? "None" : model.AssignedToFieldPermissionLevel == 1 ? "Read Only" : "Add/Edit");
 
         columns.Add(model => model.PriorityFieldPermissionLevel)
-             .Titled("priority<br>permission<br>level")
+             .Titled("priority permission level")
              .RenderedAs(model => model.PriorityFieldPermissionLevel == 0 ? "None" : model.PriorityFieldPermissionLevel == 1 ? "Read Only" : "Add/Edit");
 
         columns.Add(model => model.Domain)
