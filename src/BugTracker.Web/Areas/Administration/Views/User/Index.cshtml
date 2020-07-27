@@ -5,12 +5,13 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using System.Data
 @using BugTracker.Web.Core
 @using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
 @{
-    var page = (PageModel) ViewBag.Page;
+    var page = (PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -19,8 +20,6 @@
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/sortable.js"></script>
-
     <script>
         function filter_changed() {
             el = document.getElementById("Filter");
@@ -49,31 +48,40 @@
 }
 
 <div class="row px-3 mb-3">
-    @using (Html.BeginForm("Index", "User", new {area = "Administration"}, FormMethod.Post, new {@class = "form-inline ml-auto"}))
+    @using (Html.BeginForm("Index", "User", new { area = "Administration" }, FormMethod.Post, new { @class = "form-inline ml-auto" }))
     {
         @Html.AntiForgeryToken()
 
-        @Html.Label("Filter", "Show only usernames starting with:", new {@class = "mr-sm-2"})
-        @Html.TextBox("Filter", (string) ViewBag.Filter, new {type = "search", @class = "form-control mb-2 mr-sm-2", onkeyup = "filter_changed()", style = "color: red;"})
+        @Html.Label("Filter", "Show only usernames starting with:", new { @class = "mr-sm-2" })
+        @Html.TextBox("Filter", (string)ViewBag.Filter, new { type = "search", @class = "form-control mb-2 mr-sm-2", onkeyup = "filter_changed()", style = "color: red;" })
 
         <div class="form-check mb-2 mr-sm-2">
-            @Html.CheckBox("HideInactive", (bool) ViewBag.HideInactive, new {@class = "form-check-input"})
-            @Html.Label("HideInactive", "hide inactive users:", new {@class = "form-check-label"})
+            @Html.CheckBox("HideInactive", (bool)ViewBag.HideInactive, new { @class = "form-check-input" })
+            @Html.Label("HideInactive", "hide inactive users:", new { @class = "form-check-label" })
         </div>
 
         <input type="submit" class="btn btn-primary mb-2" value="Apply">
     }
 </div>
 
-@if (Model.DataTable.Rows.Count > 0)
-{
-    @Html.Partial("_SortableTable", Model)
-    ;
-}
-else
-{
-    <div>No users to display.</div>
-}
+@(Html
+    .Grid("MvcGrid/_GridBootstrap4", Model.DataTable.Rows.Cast<DataRow>())
+    .Build(columns =>
+    {
+        foreach (DataColumn column in Model.DataTable.Columns)
+        {
+            columns.Add(model => model[column.ColumnName])
+                .Named(column.ColumnName)
+                .Titled(column.ColumnName.Replace("<br>", " ").Replace("$no_sort_", string.Empty))
+                .Encoded(false)
+                .Sortable(true);
+        }
+    })
+    .Empty("No users to display.")
+    //.UsingProcessingMode(GridProcessingMode.Manual)
+    .Sortable()
+    //.Pageable()
+)
 
 @section BodyFooter {
     @Html.Raw(Util.Context.Application["custom_footer"])
