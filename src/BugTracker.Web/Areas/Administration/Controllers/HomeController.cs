@@ -304,6 +304,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult EditWebConfig()
         {
+            if (!this.applicationSettings.EnableEditWebConfigPage)
+            {
+                return HttpNotFound();
+            }
+
             var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
             var model = new EditWebConfigModel();
 

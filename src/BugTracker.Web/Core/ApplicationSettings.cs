@@ -288,6 +288,8 @@
         int WhatsNewPageIntervalInSeconds { get; }
 
         string DatepickerDateFormat { get; }
+
+        bool EnableEditWebConfigPage { get; }
     }
 
     internal sealed class ApplicationSettings : IApplicationSettings
@@ -433,6 +435,7 @@
         public const int SearchSuggestMinCharsDefault = 3;
         public const int WhatsNewPageIntervalInSecondsDefault = 20;
         public const string DatepickerDateFormatDefault = "yy-mm-dd";
+        public const bool EnableEditWebConfigPageDefault = false;
 
         public string this[string index] => ReadSetting(index, string.Empty);
 
@@ -717,6 +720,8 @@
         public int WhatsNewPageIntervalInSeconds => ReadSetting(nameof(WhatsNewPageIntervalInSeconds), WhatsNewPageIntervalInSecondsDefault);
 
         public string DatepickerDateFormat => ReadSetting(nameof(DatepickerDateFormat), DatepickerDateFormatDefault);
+
+        public bool EnableEditWebConfigPage => ReadSetting(nameof(EnableEditWebConfigPage), EnableEditWebConfigPageDefault);
 
         private TValue ReadSetting<TValue>(string name, TValue defaultValue)
             where TValue : IConvertible

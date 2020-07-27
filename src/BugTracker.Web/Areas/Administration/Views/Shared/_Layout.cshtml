@@ -4,6 +4,10 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@{
+    var applicationSettings = DependencyResolver.Current.GetService<BugTracker.Web.Core.IApplicationSettings>();
+}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -105,10 +109,13 @@
                     <a class="nav-link @(controllerName == "Home" && actionName == "EditCustomHtml" ? "active" : string.Empty)" href="@Url.Action("EditCustomHtml", "Home")">Edit Custom Html</a>
                 </li>
 
-                <li class="nav-item position-relative">
-                    <span class="position-absolute badge badge-danger mr-3" data-toggle="popover" data-placement="right" data-content="Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!" style="cursor: pointer; right: 0; top: 11px;">?</span>
-                    <a class="nav-link @(controllerName == "Home" && actionName == "EditWebConfig" ? "active" : string.Empty)" href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
-                </li>
+                @if (applicationSettings.EnableEditWebConfigPage)
+                {
+                    <li class="nav-item position-relative">
+                        <span class="position-absolute badge badge-danger mr-3" data-toggle="popover" data-placement="right" data-content="Many BugTracker.NET features are configurable by editing Web.config, but please be careful! Web.config is easy to break!" style="cursor: pointer; right: 0; top: 11px;">?</span>
+                        <a class="nav-link @(controllerName == "Home" && actionName == "EditWebConfig" ? "active" : string.Empty)" href="@Url.Action("EditWebConfig", "Home")">Edit Web.Config</a>
+                    </li>
+                }
 
                 <li class="nav-item">
                     <a class="nav-link @(controllerName == "Home" && actionName == "BackupDb" ? "active" : string.Empty)" href="@Url.Action("BackupDb", "Home")">Backup Database</a>
