@@ -14,13 +14,16 @@ namespace BugTracker.Web.Controllers
     using Models;
     using Models.Bug;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Mail;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
@@ -2210,64 +2213,486 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Relationship(int bugId)
+        public ActionResult SendEmail()
         {
-            var permissionLevel = Bug.GetBugPermissionLevel(bugId, this.security);
-
-            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
-            {
-                return Content("You are not allowed to view this item");
-            }
-
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - relationships",
-                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+                Title = $"{this.applicationSettings.AppTitle} - send email",
+                SelectedItem = this.applicationSettings.PluralBugLabel
             };
 
-            var model = new RelationshipModel
+            var stringBpId = Request["bp_id"];
+            var stringBgId = Request["bg_id"];
+            var requestTo = Request["to"];
+            var reply = Request["reply"];
+
+            ViewBag.EnableInternalPosts = this.applicationSettings.EnableInternalOnlyPosts;
+            ViewBag.Project = -1;
+
+            Session["email_addresses"] = null;
+
+            string sql;
+            DataRow dr = null;
+
+            var model = new SendEmailModel();
+
+            if (stringBpId != null)
             {
-                BugId = bugId,
-                Action = "add"
-            };
+                stringBpId = Util.SanitizeInteger(stringBpId);
 
-            var sql = @"
-                select bg_id [id],
-                    bg_short_desc [desc],
-                    re_type [comment],
-                    st_name [status],
-                    case
-                        when re_direction = 0 then ''
-                        when re_direction = 2 then 'child of $bg'
-                        else                       'parent of $bg' 
-                    end as [parent or child],
-                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
+                sql = @"select
+                    bp_parent,
+                    bp_file,
+                    bp_id,
+                    bg_id,
+                    bg_short_desc,
+                    bp_email_from,
+                    bp_comment,
+                    bp_email_from,
+                    bp_date,
+                    bp_type,
+                    bp_content_type,
+                    bg_project,
+                    bp_hidden_from_external_users,
+                    isnull(us_signature,'') [us_signature],
+                    isnull(pj_pop3_email_from,'') [pj_pop3_email_from],
+                    isnull(us_email,'') [us_email],
+                    isnull(us_firstname,'') [us_firstname],
+                    isnull(us_lastname,'') [us_lastname]				
+                    from bug_posts
+                    inner join bugs on bp_bug = bg_id
+                    inner join users on us_id = $us
+                    left outer join projects on bg_project = pj_id
+                    where bp_id = $id
+                    or (bp_parent = $id and bp_type='file')";
 
-            if (!this.security.User.IsGuest && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                sql = sql.Replace("$id", stringBpId);
+                sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+
+                var dv = DbUtil.GetDataView(sql);
+
+                dr = null;
+
+                if (dv.Count > 0)
+                {
+                    dv.RowFilter = "bp_id = " + stringBpId;
+                    if (dv.Count > 0)
+                    {
+                        dr = dv[0].Row;
+                    }
+                }
+
+                var intBgId = (int)dr["bg_id"];
+                var permissionLevel = Bug.GetBugPermissionLevel(intBgId, this.security);
+
+                if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+                {
+                    Response.Write("You are not allowed to view this item");
+                    Response.End();
+                }
+
+                if ((int)dr["bp_hidden_from_external_users"] == 1)
+                    if (this.security.User.ExternalUser)
+                    {
+                        Response.Write("You are not allowed to view this post");
+                        Response.End();
+                    }
+
+                stringBgId = Convert.ToString(dr["bg_id"]);
+
+                model.BugId = int.Parse(stringBgId);
+                model.To = dr["bp_email_from"].ToString();
+
+                // Work around for a mysterious bug:
+                // http://sourceforge.net/tracker/?func=detail&aid=2815733&group_id=66812&atid=515837
+                if (this.applicationSettings.StripDisplayNameFromEmailAddress)
+                {
+                    model.To = Email.SimplifyEmailAddress(model.To);
+                }
+
+                LoadFromDropdown(dr, true); // list the project's email address first
+
+                if (reply != null && reply == "all")
+                {
+                    var regex = new Regex("\n");
+                    var lines = regex.Split((string)dr["bp_comment"]);
+                    var ccAddrs = string.Empty;
+
+                    var max = lines.Length < 5 ? lines.Length : 5;
+
+                    // gather cc addresses, which might include the current user
+                    for (var i = 0; i < max; i++)
+                        if (lines[i].StartsWith("To:") || lines[i].StartsWith("Cc:"))
+                        {
+                            var ccAddr = lines[i].Substring(3, lines[i].Length - 3).Trim();
+
+                            // don't cc yourself
+
+                            if (ccAddr.IndexOf(ViewBag.Froms[0]) == -1)
+                            {
+                                if (!string.IsNullOrEmpty(ccAddrs)) ccAddrs += ",";
+
+                                ccAddrs += ccAddr;
+                            }
+                        }
+
+                    model.CC = ccAddrs;
+                }
+
+                if (!string.IsNullOrEmpty(dr["us_signature"].ToString()))
+                {
+                    if (this.security.User.UseFckeditor)
+                    {
+                        model.Body += "<br><br><br>";
+                        model.Body += dr["us_signature"].ToString().Replace("\r\n", "<br>");
+                        model.Body += "<br><br><br>";
+                    }
+                    else
+                    {
+                        model.Body += "\n\n\n";
+                        model.Body += dr["us_signature"].ToString();
+                        model.Body += "\n\n\n";
+                    }
+                }
+
+                if (Request["quote"] != null)
+                {
+                    var regex = new Regex("\n");
+                    var lines = regex.Split((string)dr["bp_comment"]);
+
+                    if (dr["bp_type"].ToString() == "received")
+                    {
+                        if (this.security.User.UseFckeditor)
+                        {
+                            model.Body += "<br><br><br>";
+                            model.Body += "&#62;From: " +
+                                               dr["bp_email_from"].ToString().Replace("<", "&#60;")
+                                                   .Replace(">", "&#62;") + "<br>";
+                        }
+                        else
+                        {
+                            model.Body += "\n\n\n";
+                            model.Body += ">From: " + dr["bp_email_from"] + "\n";
+                        }
+                    }
+
+                    var nextLineIsDate = false;
+                    for (var i = 0; i < lines.Length; i++)
+                        if (i < 4 && (lines[i].IndexOf("To:") == 0 || lines[i].IndexOf("Cc:") == 0))
+                        {
+                            nextLineIsDate = true;
+                            if (this.security.User.UseFckeditor)
+                                model.Body +=
+                                    "&#62;" + lines[i].Replace("<", "&#60;").Replace(">", "&#62;") + "<br>";
+                            else
+                                model.Body += ">" + lines[i] + "\n";
+                        }
+                        else if (nextLineIsDate)
+                        {
+                            nextLineIsDate = false;
+                            if (this.security.User.UseFckeditor)
+                                model.Body +=
+                                    "&#62;Date: " + Convert.ToString(dr["bp_date"]) + "<br>&#62;<br>";
+                            else
+                                model.Body += ">Date: " + Convert.ToString(dr["bp_date"]) + "\n>\n";
+                        }
+                        else
+                        {
+                            if (this.security.User.UseFckeditor)
+                            {
+                                if (Convert.ToString(dr["bp_content_type"]) != "text/html")
+                                {
+                                    model.Body +=
+                                        "&#62;" + lines[i].Replace("<", "&#60;").Replace(">", "&#62;") +
+                                        "<br>";
+                                }
+                                else
+                                {
+                                    if (i == 0) model.Body += "<hr>";
+
+                                    model.Body += lines[i];
+                                }
+                            }
+                            else
+                            {
+                                model.Body += ">" + lines[i] + "\n";
+                            }
+                        }
+                }
+
+                ViewBag.Attachments = new List<SelectListItem>();
+
+                if (reply == "forward")
+                {
+                    model.To = string.Empty;
+                    //original attachments
+                    //dv.RowFilter = "bp_parent = " + string_bp_id;
+                    dv.RowFilter = "bp_type = 'file'";
+                    foreach (DataRowView drv in dv)
+                    {
+                        ViewBag.Attachments.Add(new SelectListItem
+                        {
+                            Value = drv["bp_id"].ToString(),
+                            Text = drv["bp_file"].ToString()
+                        });
+                    }
+                }
+            }
+            else if (stringBgId != null)
             {
-                sql += @"
-                    ,'<a href=''javascript:remove(' + convert(varchar,re_bug2) + ')''>detach</a>' [$no_sort_detach]";
+                stringBgId = Util.SanitizeInteger(stringBgId);
 
-                sql += @"
+                var permissionLevel = Bug.GetBugPermissionLevel(Convert.ToInt32(stringBgId), this.security);
+                if (permissionLevel == SecurityPermissionLevel.PermissionNone
+                    || permissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                {
+                    Response.Write("You are not allowed to edit this item");
+                    Response.End();
+                }
+
+                sql = @"select
+                    bg_short_desc,
+                    bg_project,
+                    isnull(us_signature,'') [us_signature],
+                    isnull(us_email,'') [us_email],
+                    isnull(us_firstname,'') [us_firstname],
+                    isnull(us_lastname,'') [us_lastname],
+                    isnull(pj_pop3_email_from,'') [pj_pop3_email_from]
                     from bugs
-                    inner join bug_relationships on bg_id = re_bug2
-                    left outer join statuses on st_id = bg_status
-                    where re_bug1 = $bg
-                    order by bg_id desc";
+                    inner join users on us_id = $us
+                    left outer join projects on bg_project = pj_id
+                    where bg_id = $bg";
+
+                sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+                sql = sql.Replace("$bg", stringBgId);
+
+                dr = DbUtil.GetDataRow(sql);
+
+                LoadFromDropdown(dr, false); // list the user's email first, then the project
+
+                model.BugId = int.Parse(stringBgId);
+
+                if (requestTo != null) model.To = requestTo;
+
+                // Work around for a mysterious bug:
+                // http://sourceforge.net/tracker/?func=detail&aid=2815733&group_id=66812&atid=515837
+                if (this.applicationSettings.StripDisplayNameFromEmailAddress) model.To = Email.SimplifyEmailAddress(model.To);
+
+                if (!string.IsNullOrEmpty(dr["us_signature"].ToString()))
+                {
+                    if (this.security.User.UseFckeditor)
+                    {
+                        model.Body += "<br><br><br>";
+                        model.Body += dr["us_signature"].ToString().Replace("\r\n", "<br>");
+                    }
+                    else
+                    {
+                        model.Body += "\n\n\n";
+                        model.Body += dr["us_signature"].ToString();
+                    }
+                }
             }
 
-            sql = sql.Replace("$bg", Convert.ToString(bugId));
-            sql = Util.AlterSqlPerProjectPermissions(sql, this.security);
+            model.BugDescription = (string)dr["bg_short_desc"];
 
-            ViewBag.SortableTable = new SortableTableModel
+            if (stringBpId != null || stringBgId != null)
             {
-                DataTable = DbUtil.GetDataSet(sql).Tables[0],
-                HtmlEncode = false
-            };
+                model.Subject = (string)dr["bg_short_desc"]
+                                     + "  (" + this.applicationSettings.TrackingIdString
+                                     + model.BugId.ToString()
+                                     + ")";
+
+                // for determining which users to show in "address book"
+                ViewBag.Project = (int)dr["bg_project"];
+            }
+
+            ViewBag.Priorities = new List<SelectListItem>();
+
+            ViewBag.Priorities.Add(new SelectListItem
+            {
+                Value = "High",
+                Text = "High"
+            });
+
+            ViewBag.Priorities.Add(new SelectListItem
+            {
+                Value = "Normal",
+                Text = "Normal",
+                Selected = true
+            });
+
+            ViewBag.Priorities.Add(new SelectListItem
+            {
+                Value = "Low",
+                Text = "Low"
+            });
+
+            PutAddresses();
+
+            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+                foreach (var failError in failErrors)
+                    ModelState.AddModelError(failError.Property, failError.Message);
+
+            if (TempData["Errors2"] is Dictionary<string, ModelErrorCollection> failErrors2)
+                foreach (var failError in failErrors2)
+                    foreach (var err in failError.Value)
+                        ModelState.AddModelError(failError.Key, err.ErrorMessage);
+
+            if (TempData["Model"] is SendEmailModel model2)
+                return View(model2);
 
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SendEmail(SendEmailModel model)
+        {
+            ValidateSendEmail(model);
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, "Email was not sent.");
+
+                TempData["Model"] = model;
+                TempData["Errors2"] = ModelState.Where(x => x.Value.Errors.Any())
+                    .Select(x => new { x.Key, x.Value.Errors })
+                    .ToDictionary(x => x.Key, x => x.Errors);
+
+                return RedirectToAction(nameof(SendEmail), new { bg_id = model.BugId });
+            }
+
+            var sql = @"
+                insert into bug_posts
+                    (bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_to, bp_type, bp_content_type, bp_email_cc)
+                    values($id, $us, getdate(), N'$cm', N'$cs', N'$fr',  N'$to', 'sent', N'$ct', N'$cc');
+                select scope_identity()
+                update bugs set
+                    bg_last_updated_user = $us,
+                    bg_last_updated_date = getdate()
+                    where bg_id = $id";
+
+            sql = sql.Replace("$id", model.BugId.ToString());
+            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+
+            if (this.security.User.UseFckeditor)
+            {
+                var adjustedBody = "Subject: " + model.Subject + "<br><br>";
+                adjustedBody += Util.StripDangerousTags(model.Body);
+
+                sql = sql.Replace("$cm", adjustedBody.Replace("'", "&#39;"));
+                sql = sql.Replace("$cs", adjustedBody.Replace("'", "''"));
+                sql = sql.Replace("$ct", "text/html");
+            }
+            else
+            {
+                var adjustedBody = "Subject: " + model.Subject + "\n\n";
+                adjustedBody += HttpUtility.HtmlDecode(model.Body);
+                adjustedBody = adjustedBody.Replace("'", "''");
+
+                sql = sql.Replace("$cm", adjustedBody);
+                sql = sql.Replace("$cs", adjustedBody);
+                sql = sql.Replace("$ct", "text/plain");
+            }
+
+            sql = sql.Replace("$fr", model.From?.Replace("'", "''") ?? string.Empty);
+            sql = sql.Replace("$to", model.To?.Replace("'", "''") ?? string.Empty);
+            sql = sql.Replace("$cc", model.CC?.Replace("'", "''") ?? string.Empty);
+
+            var commentId = Convert.ToInt32(DbUtil.ExecuteScalar(sql));
+            var attachments = HandleAttachments(commentId, security, model);
+
+            string bodyText;
+            BtnetMailFormat format;
+            BtnetMailPriority priority;
+
+            switch (model.Priority)
+            {
+                case "High":
+                    priority = BtnetMailPriority.High;
+                    break;
+                case "Low":
+                    priority = BtnetMailPriority.Low;
+                    break;
+                default:
+                    priority = BtnetMailPriority.Normal;
+                    break;
+            }
+
+            if (model.IncludePrintOfBug)
+            {
+                // white space isn't handled well, I guess.
+                if (this.security.User.UseFckeditor)
+                {
+                    bodyText = model.Body;
+                    bodyText += "<br><br>";
+                }
+                else
+                {
+                    bodyText = model.Body.Replace("\n", "<br>");
+                    bodyText = bodyText.Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+                    bodyText = bodyText.Replace("  ", "&nbsp; ");
+                }
+
+                // Get bug html
+                var bugDr = Bug.GetBugDataRow(model.BugId, security);
+
+                // Create a fake response and let the code
+                // write the html to that response
+                var writer = new StringWriter();
+                var myResponse = new HttpResponse(writer);
+                var html = PrintBug.PrintBugNew(bugDr, security,
+                    true, // include style
+                    false, // images_inline
+                    true, // history_inline
+                    model.IncludeCommentsVisibleToInternalUsersOnly); // internal_posts
+
+                myResponse.Write(html);
+
+                bodyText += "<hr>" + writer.ToString();
+
+                format = BtnetMailFormat.Html;
+            }
+            else
+            {
+                if (this.security.User.UseFckeditor)
+                {
+                    bodyText = model.Body;
+                    format = BtnetMailFormat.Html;
+                }
+                else
+                {
+                    bodyText = HttpUtility.HtmlDecode(model.Body);
+                    //body_text = body_text.Replace("\n","\r\n");
+                    format = BtnetMailFormat.Text;
+                }
+            }
+
+            var result = Email.SendEmail( // 9 args
+                model.To, model.From, model.CC ?? string.Empty, model.Subject,
+                bodyText,
+                format,
+                priority,
+                attachments, model.ReturnReceipt);
+
+            Bug.SendNotifications(Bug.Update, model.BugId, security);
+            WhatsNew.AddNews(model.BugId, model.BugDescription, "email sent", security);
+
+            if (string.IsNullOrEmpty(result))
+            {
+                return RedirectToAction("Update", new { id = model.BugId });
+            }
+
+            ModelState.AddModelError(string.Empty, result);
+
+            TempData["Model"] = model;
+            TempData["Errors2"] = ModelState.Where(x => x.Value.Errors.Any())
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToDictionary(x => x.Key, x => x.Errors);
+
+            return RedirectToAction(nameof(SendEmail), new { bg_id = model.BugId });
         }
 
         [HttpPost]
@@ -2432,6 +2857,67 @@ namespace BugTracker.Web.Controllers
             DbUtil.ExecuteNonQuery(sql);
 
             return RedirectToAction(nameof(Relationship), new { bugId = model.BugId });
+        }
+
+        [HttpGet]
+        public ActionResult Relationship(int bugId)
+        {
+            var permissionLevel = Bug.GetBugPermissionLevel(bugId, this.security);
+
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
+            {
+                return Content("You are not allowed to view this item");
+            }
+
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - relationships",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
+
+            var model = new RelationshipModel
+            {
+                BugId = bugId,
+                Action = "add"
+            };
+
+            var sql = @"
+                select bg_id [id],
+                    bg_short_desc [desc],
+                    re_type [comment],
+                    st_name [status],
+                    case
+                        when re_direction = 0 then ''
+                        when re_direction = 2 then 'child of $bg'
+                        else                       'parent of $bg' 
+                    end as [parent or child],
+                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
+
+            if (!this.security.User.IsGuest && permissionLevel == SecurityPermissionLevel.PermissionAll)
+            {
+                sql += @"
+                    ,'<a href=''javascript:remove(' + convert(varchar,re_bug2) + ')''>detach</a>' [$no_sort_detach]";
+
+                sql += @"
+                    from bugs
+                    inner join bug_relationships on bg_id = re_bug2
+                    left outer join statuses on st_id = bg_status
+                    where re_bug1 = $bg
+                    order by bg_id desc";
+            }
+
+            sql = sql.Replace("$bg", Convert.ToString(bugId));
+            sql = Util.AlterSqlPerProjectPermissions(sql, this.security);
+
+            ViewBag.SortableTable = new SortableTableModel
+            {
+                DataTable = DbUtil.GetDataSet(sql).Tables[0],
+                HtmlEncode = false
+            };
+
+            return View(model);
         }
 
         private void LoadQueryDropdown()
@@ -3296,6 +3782,277 @@ namespace BugTracker.Web.Controllers
                     ViewBag.PrevNext = prevNextLink;
                 }
             }
+        }
+
+        public void LoadFromDropdown(DataRow dr, bool projectFirst)
+        {
+            // format from dropdown
+            var projectEmail = dr["pj_pop3_email_from"].ToString();
+            var usEmail = dr["us_email"].ToString();
+            var usFirstname = dr["us_firstname"].ToString();
+            var usLastname = dr["us_lastname"].ToString();
+
+            ViewBag.Froms = new List<SelectListItem>();
+            ViewBag.Froms.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "[not assigned]"
+            });
+
+            if (projectFirst)
+            {
+                if (!string.IsNullOrEmpty(projectEmail))
+                {
+                    ViewBag.Froms.Add(new SelectListItem
+                    {
+                        Value = projectEmail,
+                        Text = projectEmail
+                    });
+
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
+                        ViewBag.Froms.Add(new SelectListItem
+                        {
+                            Value = "\"" + usFirstname + " " + usLastname + "\" <" + projectEmail + ">",
+                            Text = "\"" + usFirstname + " " + usLastname + "\" <" + projectEmail + ">"
+                        });
+                }
+
+                if (!string.IsNullOrEmpty(usEmail))
+                {
+                    ViewBag.Froms.Add(new SelectListItem
+                    {
+                        Value = usEmail,
+                        Text = usEmail
+                    });
+
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
+                        ViewBag.Froms.Add(new SelectListItem
+                        {
+                            Value = "\"" + usFirstname + " " + usLastname + "\" <" + usEmail + ">",
+                            Text = "\"" + usFirstname + " " + usLastname + "\" <" + usEmail + ">"
+                        });
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(usEmail))
+                {
+                    ViewBag.Froms.Add(new SelectListItem
+                    {
+                        Value = usEmail,
+                        Text = usEmail
+                    });
+
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
+                        ViewBag.Froms.Add(new SelectListItem
+                        {
+                            Value = "\"" + usFirstname + " " + usLastname + "\" <" + usEmail + ">",
+                            Text = "\"" + usFirstname + " " + usLastname + "\" <" + usEmail + ">"
+                        });
+                }
+
+                if (!string.IsNullOrEmpty(projectEmail))
+                {
+                    ViewBag.Froms.Add(new SelectListItem
+                    {
+                        Value = projectEmail,
+                        Text = projectEmail
+                    });
+
+                    if (!string.IsNullOrEmpty(usFirstname) && !string.IsNullOrEmpty(usLastname))
+                        ViewBag.Froms.Add(new SelectListItem
+                        {
+                            Value = "\"" + usFirstname + " " + usLastname + "\" <" + projectEmail + ">",
+                            Text = "\"" + usFirstname + " " + usLastname + "\" <" + projectEmail + ">"
+                        });
+                }
+            }
+
+            if (ViewBag.Froms.Count == 0)
+            {
+                ViewBag.Froms.Add(new SelectListItem
+                {
+                    Value = "[none]",
+                    Text = "[none]"
+                });
+            }
+        }
+
+        public void ValidateSendEmail(SendEmailModel model)
+        {
+            if (string.IsNullOrEmpty(model.To))
+            {
+                ModelState.AddModelError(nameof(SendEmailModel.To), "\"To\" is required.");
+            }
+            else
+            {
+                try
+                {
+                    var dummyMsg = new MailMessage();
+                    Email.AddAddressesToEmail(dummyMsg, model.To, Email.AddrType.To);
+                }
+                catch
+                {
+                    ModelState.AddModelError(nameof(SendEmailModel.To), "\"To\" is not in a valid format. Separate multiple addresses with commas.");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(model.CC))
+                try
+                {
+                    var dummyMsg = new MailMessage();
+                    Email.AddAddressesToEmail(dummyMsg, model.CC, Email.AddrType.Cc);
+                }
+                catch
+                {
+                    ModelState.AddModelError(nameof(SendEmailModel.CC), "\"CC\" is not in a valid format. Separate multiple addresses with commas.");
+                }
+
+            if (model.From == "[none]")
+            {
+                ModelState.AddModelError(nameof(SendEmailModel.From), "\"From\" is required.  Use \"settings\" to fix.");
+            }
+
+            if (string.IsNullOrEmpty(model.Subject))
+            {
+                ModelState.AddModelError(nameof(SendEmailModel.Subject), "\"Subject\" is required.");
+            }
+        }
+
+        public int[] HandleAttachments(int commentId, ISecurity security, SendEmailModel model)
+        {
+            var attachments = new ArrayList();
+
+            var filename = Path.GetFileName(model.Attachment.FileName);
+            if (!string.IsNullOrEmpty(filename))
+            {
+                //add attachment
+                var maxUploadSize = this.applicationSettings.MaxUploadSize;
+                var contentLength = model.Attachment.ContentLength;
+                if (contentLength > maxUploadSize)
+                {
+                    ModelState.AddModelError(nameof(SendEmailModel.Attachment), $"File exceeds maximum allowed length of {maxUploadSize}.");
+                    return null;
+                }
+
+                if (contentLength == 0)
+                {
+                    ModelState.AddModelError(nameof(SendEmailModel.Attachment), "No data was uploaded.");
+                    return null;
+                }
+
+                var bpId = Bug.InsertPostAttachment(security,
+                    Convert.ToInt32(model.BugId), model.Attachment.InputStream,
+                    contentLength,
+                    filename,
+                    "email attachment", model.Attachment.ContentType,
+                    commentId,
+                    false, false);
+
+                attachments.Add(bpId);
+            }
+
+            //attachments to forward
+
+            foreach (var attachment in model.Attachments)
+            //if (itemAttachment.Selected)
+            {
+                var bpId = Convert.ToInt32(attachment);
+
+                Bug.InsertPostAttachmentCopy(security, model.BugId, bpId, "email attachment", commentId, false, false);
+
+                attachments.Add(bpId);
+            }
+
+            return (int[])attachments.ToArray(typeof(int));
+        }
+
+        public void PutAddresses()
+        {
+            var dictUsersForThisProject = new Dictionary<int, int>();
+            string sql;
+
+            // list of email addresses to use.
+            if (Session["email_addresses"] == null)
+            {
+                if (ViewBag.Project > -1)
+                {
+                    if (ViewBag.Project == 0)
+                    {
+                        sql = @"select us_id
+                            from users
+                            where us_active = 1
+                            and len(us_email) > 0
+                            order by us_email";
+                    }
+                    else
+                    {
+                        // Only users explicitly allowed will be listed
+                        if (this.applicationSettings.DefaultPermissionLevel == 0)
+                            sql = @"select us_id
+                                from users
+                                where us_active = 1
+                                and len(us_email) > 0
+                                and us_id in
+                                    (select pu_user from project_user_xref
+                                    where pu_project = $pr
+                                    and pu_permission_level <> 0)
+                                order by us_email";
+                        // Only users explictly DISallowed will be omitted
+                        else
+                            sql = @"select us_id
+                                from users
+                                where us_active = 1
+                                and len(us_email) > 0
+                                and us_id not in
+                                    (select pu_user from project_user_xref
+                                    where pu_project = $pr
+                                    and pu_permission_level = 0)
+                                order by us_email";
+                    }
+
+                    sql = sql.Replace("$pr", Convert.ToString(ViewBag.Project));
+                    var dsUsersForThisProject = DbUtil.GetDataSet(sql);
+
+                    // remember the users for this this project
+                    foreach (DataRow dr in dsUsersForThisProject.Tables[0].Rows)
+                        dictUsersForThisProject[(int)dr[0]] = 1;
+                }
+
+                var dtRelatedUsers = Util.GetRelatedUsers(this.security, true); // force full names
+                                                                                // let's sort by email
+                var dvRelatedUsers = new DataView(dtRelatedUsers);
+                dvRelatedUsers.Sort = "us_email";
+
+                var sb = new StringBuilder();
+
+                foreach (DataRowView drvEmail in dvRelatedUsers)
+                    if (dictUsersForThisProject.ContainsKey((int)drvEmail["us_id"]))
+                    {
+                        var email = (string)drvEmail["us_email"];
+                        var username = (string)drvEmail["us_username"];
+
+                        sb.Append("<option style='padding: 3px;'>");
+
+                        if (username != "" && username != email)
+                        {
+                            sb.Append("\"");
+                            sb.Append(username);
+                            sb.Append("\"&lt;");
+                            sb.Append(email);
+                            sb.Append("&gt;");
+                        }
+                        else
+                        {
+                            sb.Append(email);
+                        }
+                        sb.Append("</option>");
+                    }
+
+                Session["email_addresses"] = sb.ToString();
+            }
+
+            ViewBag.EmailAddresses = Session["email_addresses"];
         }
     }
 }

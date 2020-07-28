@@ -60,11 +60,11 @@ function send_email(id) {
     if (dirty) {
         var result = my_confirm();
         if (result) {
-            window.document.location = "/SendEmail.aspx?bg_id=" + id;
+            window.document.location = "/Bug/SendEmail?bg_id=" + id;
         }
     }
     else {
-        window.document.location = "/SendEmail.aspx?bg_id=" + id;
+        window.document.location = "/Bug/SendEmail?bg_id=" + id;
     }
 }
 

@@ -1,0 +1,240 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@using BugTracker.Web.Core
+@using BugTracker.Web.Models
+@model BugTracker.Web.Models.Bug.SendEmailModel
+
+@{
+    var page = (PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+}
+
+@section Scripts {
+    @*TODO <body onload="my_on_load()">*@
+
+    @if (page.Security.User.UseFckeditor)
+    {
+        <script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+    }
+
+    <script>
+        var hidden_button;
+        var addr_target;
+
+        function show_addrs(button, targ) {
+            addr_target = document.getElementById(targ);
+            var addrs = document.getElementById("addrs");
+            addrs.style.left = findPosX(button);
+            addrs.style.top = findPosY(button);
+            // hide the button
+            hidden_button = button;
+            hidden_button.style.display = "none";
+            addrs.style.display = "block";
+        }
+
+        function hide_addrs() {
+            var addrs = document.getElementById("addrs");
+            addrs.style.display = "none";
+            hidden_button.style.display = "";
+        }
+
+        function select_addrs(sel) {
+            if (addr_target.value != "") {
+                addr_target.value += ", ";
+            }
+            addr_target.value += sel.options[sel.selectedIndex].text;
+        }
+
+        function findPosX(obj) {
+            var curleft = 0;
+            if (obj.offsetParent) {
+                while (obj.offsetParent) {
+                    curleft += obj.offsetLeft;
+                    obj = obj.offsetParent;
+                }
+            } else if (obj.x)
+                curleft += obj.x;
+            return curleft;
+        }
+
+        function findPosY(obj) {
+            var curtop = 0;
+            if (obj.offsetParent) {
+                while (obj.offsetParent) {
+                    curtop += obj.offsetTop;
+                    obj = obj.offsetParent;
+                }
+            } else if (obj.y)
+                curtop += obj.y;
+            return curtop;
+        }
+
+        function include_bug_click() {
+            if (document.getElementById('@Html.IdFor(x => x.IncludePrintOfBug)').checked) {
+                document.getElementById('@Html.IdFor(x => x.IncludeCommentsVisibleToInternalUsersOnly)').disabled = false;
+                document.getElementById('include_internal_posts_label').style.color = 'black';
+            } else {
+                document.getElementById('@Html.IdFor(x => x.IncludeCommentsVisibleToInternalUsersOnly)').disabled = true;
+                document.getElementById('include_internal_posts_label').style.color = 'gray';
+            }
+        }
+
+        function my_on_load() {
+            @if (page.Security.User.UseFckeditor)
+            {
+                @:CKEDITOR.replace('body');
+            }
+                @if (ViewBag.EnableInternalPosts)
+                {
+                    @:document.getElementById('@Html.IdFor(x => x.IncludePrintOfBug)').onclick = include_bug_click;
+                    @:include_bug_click();
+                }
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light">
+            <div class="card-body">
+                @using (Html.BeginForm("SendEmail", "Bug", FormMethod.Post, new { @class = "frm", enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @Html.HiddenFor(x => x.BugId)
+                    @Html.HiddenFor(x => x.BugDescription)
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.To):
+
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.To, new { @class = "form-control", cols = "80", rows = "2", id = "to" })
+
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" onclick="show_addrs(this, 'to')">Addresses</button>
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.To, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.From):
+                        @Html.DropDownListFor(x => x.From, (List<SelectListItem>)ViewBag.Froms, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.From, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CC):
+
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.CC, new { @class = "form-control", cols = "80", rows = "2", id = "cc" })
+
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" onclick="show_addrs(this, 'cc')">Addresses</button>
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.CC, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Subject):
+                        @Html.TextBoxFor(x => x.Subject, new { @class = "form-control", maxlength = "200", size = "100" })
+                        @Html.ValidationMessageFor(x => x.Subject, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Attachment):
+
+                        <div class="custom-file">
+                            <label class="custom-file-label">Choose file</label>
+                            @Html.TextBoxFor(x => x.Attachment, new { @class = "custom-file-input", type = "file", maxlength = "255", size = "100" })
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.Attachment, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    if (ViewBag.Attachments != null)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.Attachments):
+                            @Html.ListBoxFor(x => x.Attachments, (List<SelectListItem>)ViewBag.Attachments, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.Attachments, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Priority):
+                        @Html.DropDownListFor(x => x.Priority, (List<SelectListItem>)ViewBag.Priorities, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.Priority, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.ReturnReceipt, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.ReturnReceipt, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.ReturnReceipt, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group form-check">
+                        @Html.CheckBoxFor(x => x.IncludePrintOfBug, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.IncludePrintOfBug, new { @class = "form-check-label" })
+                        @Html.ValidationMessageFor(x => x.IncludePrintOfBug, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    if (ViewBag.EnableInternalPosts)
+                    {
+                        <div class="form-group form-check">
+                            @Html.CheckBoxFor(x => x.IncludeCommentsVisibleToInternalUsersOnly, new { @class = "form-check-input", id = "include_internal_posts_label" })
+                            @Html.LabelFor(x => x.IncludeCommentsVisibleToInternalUsersOnly, new { @class = "form-check-label" })
+                            @Html.ValidationMessageFor(x => x.IncludeCommentsVisibleToInternalUsersOnly, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Body):
+                        @Html.TextAreaFor(x => x.Body, new { @class = "form-control", rows = "15", cols = "72" })
+                        @Html.ValidationMessageFor(x => x.Body, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Send</button>
+                    <a href="@Url.Action("Update", "Bug", new { id = Model.BugId })" class="btn btn-link">Cancel</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div id="addrs" class="card bg-light" style="display: none;">
+        <div class="card-header">
+            <span style="padding-right: 50px;">Click to select address:</span>
+            <a style="float: right; margin-right: 5px;" href="javascript:hide_addrs()">close</a>
+        </div>
+
+        <div class="card-body">
+            <select id="addrs_select" size="20" onchange="select_addrs(this)" style="margin-bottom: 5px;">
+                @Html.Raw(ViewBag.EmailAddresses)
+            </select>
+        </div>
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(Util.Context.Application["custom_footer"])
+}

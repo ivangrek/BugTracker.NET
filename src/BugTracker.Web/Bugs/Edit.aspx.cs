@@ -374,6 +374,7 @@ namespace BugTracker.Web.Bugs
                 this.attachment.Visible = false;
             }
 
+            //Ok
             if (!Security.User.IsGuest)
             {
                 if (PermissionLevel != SecurityPermissionLevel.PermissionReadonly)

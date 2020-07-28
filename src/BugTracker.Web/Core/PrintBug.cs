@@ -764,7 +764,7 @@ namespace BugTracker.Web.Core
                     if (type == "comment" || type == "sent" || type == "received")
                     {
                         stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
                         stringBuilder.Append(">forward</a>");
                     }
 
@@ -790,11 +790,11 @@ namespace BugTracker.Web.Core
                     if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     {
                         stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId);
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?quote=1&bp_id=" + stringPostId);
                         stringBuilder.Append(">reply</a>");
 
                         stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
                         stringBuilder.Append(">reply all</a>");
                     }
                 }
@@ -1059,7 +1059,7 @@ namespace BugTracker.Web.Core
                     if (type == "comment" || type == "sent" || type == "received")
                     {
                         stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?quote=1&bp_id=" + stringPostId + "&reply=forward");
                         stringBuilder.Append(">forward</a>");
                     }
 
@@ -1085,11 +1085,11 @@ namespace BugTracker.Web.Core
                     if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     {
                         stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId);
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?quote=1&bp_id=" + stringPostId);
                         stringBuilder.Append(">reply</a>");
 
                         stringBuilder.Append("&nbsp;&nbsp;&nbsp;<a class=warn style='font-size: 8pt;'");
-                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
+                        stringBuilder.Append(" href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?quote=1&bp_id=" + stringPostId + "&reply=all");
                         stringBuilder.Append(">reply all</a>");
                     }
                 }
@@ -1305,7 +1305,7 @@ namespace BugTracker.Web.Core
             if (email != null && !string.IsNullOrEmpty(email) && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 return "<a href="
                        + applicationSettings.AbsoluteUrlPrefix
-                       + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bg_id="
+                       + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?bg_id="
                        + Convert.ToString(bugid)
                        + "&to="
                        + email
@@ -1321,7 +1321,7 @@ namespace BugTracker.Web.Core
 
             return "<a href="
                    + applicationSettings.AbsoluteUrlPrefix
-                   + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bg_id=" + Convert.ToString(bugid)
+                   + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?bg_id=" + Convert.ToString(bugid)
                    + "&to=" + HttpUtility.UrlEncode(HttpUtility.HtmlDecode(email)) + ">"
                    + email
                    + "</a>";
@@ -1348,7 +1348,7 @@ namespace BugTracker.Web.Core
             return displayPart
                    + " <a href="
                    + applicationSettings.AbsoluteUrlPrefix
-                   + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bp_id="
+                   + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?bp_id="
                    + Convert.ToString(commentId)
                    + ">"
                    + emailPart
@@ -1379,7 +1379,7 @@ namespace BugTracker.Web.Core
                         delegate (Match m)
                         {
                             return
-                                "<a href=" + VirtualPathUtility.ToAbsolute("~/SendEmail.aspx") + @"?bp_id="
+                                "<a href=" + VirtualPathUtility.ToAbsolute("~/Bug/SendEmail") + @"?bp_id="
                                 + Convert.ToString(postId)
                                 + "&to="
                                 + m

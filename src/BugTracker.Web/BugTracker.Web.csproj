@@ -551,7 +551,6 @@
     <Content Include="Content\images\paste_plain.png" />
     <Content Include="Content\images\printer.png" />
     <Content Include="Search.aspx" />
-    <Content Include="SendEmail.aspx" />
     <Content Include="setup.sql" />
     <Content Include="Scripts\sortable.js" />
     <Content Include="Scripts\suggest.js" />
@@ -578,6 +577,7 @@
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
+    <Compile Include="Models\Bug\SendEmailModel.cs" />
     <Compile Include="Models\Bug\EditModel.cs" />
     <Compile Include="Models\Bug\MassEditModel.cs" />
     <Compile Include="Models\Bug\RelationshipModel.cs" />
@@ -692,13 +692,6 @@
     </Compile>
     <Compile Include="Search.aspx.designer.cs">
       <DependentUpon>Search.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="SendEmail.aspx.cs">
-      <DependentUpon>SendEmail.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="SendEmail.aspx.designer.cs">
-      <DependentUpon>SendEmail.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
@@ -840,6 +833,7 @@
     <Content Include="Views\Shared\MvcGrid\_Pager.cshtml" />
     <Content Include="Views\Shared\MvcGrid\_Grid.cshtml" />
     <Content Include="Views\Bug\Edit.cshtml" />
+    <Content Include="Views\Bug\SendEmail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

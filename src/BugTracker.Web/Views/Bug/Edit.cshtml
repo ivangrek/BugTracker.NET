@@ -57,6 +57,14 @@
                     }
                 }
 
+                if (!page.Security.User.IsGuest)
+                {
+                    if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <a href="@Url.Action("SendEmail", "Bug", new { bg_id = Model.Id })" class="nav-link" title='Send an email about this item'><img src="~/Content/images/email_edit.png" align="top">&nbsp;Email</a>
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(page.ApplicationSettings.CustomBugLinkLabel))
                 {
                     <a href="@page.ApplicationSettings.CustomBugLinkUrl?bugid=@Model.Id" class="nav-link" title='Delete this item'><img src="~/Content/images/brick.png" align="top">&nbsp;@page.ApplicationSettings.CustomBugLinkLabel</a>
