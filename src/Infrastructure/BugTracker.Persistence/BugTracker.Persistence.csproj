@@ -1,131 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props" Condition="Exists('..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9373CE0B-5E3E-42AD-9F6E-10178652D5D9}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BugTracker.Persistence</RootNamespace>
-    <AssemblyName>BugTracker.Persistence</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyTitle>BugTracker.Persistence</AssemblyTitle>
+    <Product>BugTracker.Persistence</Product>
+    <Copyright>Copyright ©  2019</Copyright>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.9.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Autofac.4.9.4\lib\net45\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
+    <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="EntityFramework" Version="6.3.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Identification\QueryHandlers\UserComboBoxQueryHandler.cs" />
-    <Compile Include="Identification\UserConfiguration.cs" />
-    <Compile Include="Identification\UserRepository.cs" />
-    <Compile Include="ApplicationDbContext.cs" />
-    <Compile Include="IoCModule.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository.cs" />
-    <Compile Include="Tracking\Categories\QueryHandlers\CategoryListQueryHandler.cs" />
-    <Compile Include="Tracking\Categories\QueryHandlers\CategoryDeletePreviewQueryHandler.cs" />
-    <Compile Include="Tracking\Organizations\OrganizationConfiguration.cs" />
-    <Compile Include="Tracking\Organizations\QueryHandlers\OrganizationComboBoxQueryHandler.cs" />
-    <Compile Include="Tracking\Organizations\QueryHandlers\OrganizationListQueryHandler.cs" />
-    <Compile Include="Tracking\Organizations\QueryHandlers\OrganizationStateQueryHandler.cs" />
-    <Compile Include="Tracking\Priorities\QueryHandlers\PriorityDeletePreviewQueryHandler.cs" />
-    <Compile Include="Tracking\Projects\ProjectConfiguration.cs" />
-    <Compile Include="Tracking\Bugs\BugConfiguration.cs" />
-    <Compile Include="Tracking\Projects\ProjectRepository.cs" />
-    <Compile Include="Tracking\Categories\CategoryConfiguration.cs" />
-    <Compile Include="Tracking\Priorities\PriorityConfiguration.cs" />
-    <Compile Include="Tracking\Bugs\BugRepository.cs" />
-    <Compile Include="Tracking\Categories\CategoryRepository.cs" />
-    <Compile Include="Tracking\Priorities\QueryHandlers\PriorityStateQueryHandler.cs" />
-    <Compile Include="Tracking\Organizations\QueryHandlers\OrganizationDeletePreviewQueryHandler.cs" />
-    <Compile Include="Tracking\Projects\QueryHandlers\ProjectListQueryHandler.cs" />
-    <Compile Include="Tracking\Priorities\QueryHandlers\PriorityListQueryHandler.cs" />
-    <Compile Include="Tracking\Projects\QueryHandlers\ProjectDeletePreviewQueryHandler.cs" />
-    <Compile Include="Tracking\Statuses\QueryHandlers\StatusDeletePreviewQueryHandler.cs" />
-    <Compile Include="Tracking\Statuses\QueryHandlers\StatusStateQueryHandler.cs" />
-    <Compile Include="Tracking\Projects\QueryHandlers\ProjectStateQueryHandler.cs" />
-    <Compile Include="Tracking\Categories\QueryHandlers\CategoryStateQueryHandler.cs" />
-    <Compile Include="Tracking\Organizations\OrganizationRepository.cs" />
-    <Compile Include="Tracking\Statuses\QueryHandlers\StatusListQueryHandler.cs" />
-    <Compile Include="Tracking\Statuses\StatusRepository.cs" />
-    <Compile Include="Tracking\Priorities\PriorityRepository.cs" />
-    <Compile Include="Tracking\Statuses\StatusConfiguration.cs" />
-    <Compile Include="Tracking\UserDefinedAttributes\QueryHandlers\UserDefinedAttributeDeletePreviewQueryHandler.cs" />
-    <Compile Include="Tracking\UserDefinedAttributes\QueryHandlers\UserDefinedAttributeStateQueryHandler.cs" />
-    <Compile Include="Tracking\UserDefinedAttributes\QueryHandlers\UserDefinedAttributeListQueryHandler.cs" />
-    <Compile Include="Tracking\UserDefinedAttributes\UserDefinedAttributeRepository.cs" />
-    <Compile Include="Tracking\UserDefinedAttributes\UserDefinedAttributeConfiguration.cs" />
-    <Compile Include="UnitOfWork.cs" />
+    <ProjectReference Include="..\..\BugTracker.Identification\BugTracker.Identification.csproj" />
+    <ProjectReference Include="..\..\BugTracker.Tracking\BugTracker.Tracking.csproj" />
+    <ProjectReference Include="..\..\BugTracker\BugTracker.csproj" />
+    <ProjectReference Include="..\BugTracker.Utilities\BugTracker.Utilities.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\BugTracker.Identification\BugTracker.Identification.csproj">
-      <Project>{225A07CA-61DB-4ECC-8FB6-A1C7D49530E8}</Project>
-      <Name>BugTracker.Identification</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\BugTracker.Tracking\BugTracker.Tracking.csproj">
-      <Project>{515650f6-0e45-42e3-ae49-6c6533e02730}</Project>
-      <Name>BugTracker.Tracking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\BugTracker\BugTracker.csproj">
-      <Project>{1e06c8a8-49e7-472c-b8df-bab0158bb531}</Project>
-      <Name>BugTracker</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BugTracker.Utilities\BugTracker.Utilities.csproj">
-      <Project>{D1D5CDF6-C6FE-4298-BFEE-50181CBAACA2}</Project>
-      <Name>BugTracker.Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.props'))" />
-    <Error Condition="!Exists('..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets'))" />
-  </Target>
-  <Import Project="..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets" Condition="Exists('..\..\..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" />
 </Project>
