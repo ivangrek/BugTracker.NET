@@ -5,7 +5,6 @@
     Distributed under the terms of the GNU General Public License
 *@
 
-@using BugTracker.Web.Core
 @using BugTracker.Web.Models
 @model BugTracker.Web.Areas.Administration.Models.User.EditModel
 
@@ -270,5 +269,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(Util.Context.Application["custom_footer"])
+    @Html.Raw(BugTracker.Web.Core.Util.CustomFooterHtml)
 }

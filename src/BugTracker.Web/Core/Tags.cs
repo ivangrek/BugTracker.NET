@@ -95,7 +95,7 @@ group by bu_bug";
                     }
                 }
 
-                app["tags"] = tags;
+                Util.MemoryTags = tags;
             }
             catch (Exception ex)
             {
@@ -118,8 +118,7 @@ group by bu_bug";
         public static string BuildFilterClause(HttpApplicationState app, string selectedLabels)
         {
             var labels = Util.SplitStringUsingCommas(selectedLabels);
-
-            var tags = (SortedDictionary<string, List<int>>)app["tags"];
+            var tags = Util.MemoryTags ?? new SortedDictionary<string, List<int>>();
 
             var sb = new StringBuilder();
             sb.Append(" and id in (");

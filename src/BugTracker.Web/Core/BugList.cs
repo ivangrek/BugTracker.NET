@@ -10,6 +10,7 @@ namespace BugTracker.Web.Core
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Runtime.Caching;
     using System.Text;
     using System.Web;
 
@@ -857,7 +858,7 @@ namespace BugTracker.Web.Core
                             var val = (int)dr[i];
                             thisUsersVote = val % magicNumber;
 
-                            var objVoteCount = HttpContext.Current.Application[stringBugid];
+                            var objVoteCount = MemoryCache.Default.Get(Convert.ToString(stringBugid));
                             if (objVoteCount != null) voteCount = (int)objVoteCount;
 
                             dr[i] = voteCount * magicNumber + thisUsersVote;
@@ -1267,7 +1268,7 @@ namespace BugTracker.Web.Core
                             var val = (int)dr[i];
                             thisUsersVote = val % magicNumber;
 
-                            var objVoteCount = HttpContext.Current.Application[stringBugid];
+                            var objVoteCount = MemoryCache.Default.Get(Convert.ToString(stringBugid));
                             if (objVoteCount != null) voteCount = (int)objVoteCount;
 
                             dr[i] = voteCount * magicNumber + thisUsersVote;

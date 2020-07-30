@@ -2,7 +2,7 @@
 <%@ Import Namespace="BugTracker.Web.Core" %>
 
 <%--// topmost visible HTML--%>
-<%= Util.Context.Application["custom_header"] %>
+<%= BugTracker.Web.Core.Util.CustomHeaderHtml %>
 
 <span id="debug" style="position: absolute; top: 0; left: 0;"></span>
 <script>
@@ -27,7 +27,7 @@
 
 <table border="0" width="100%" cellpadding="0" cellspacing="0" class="menubar">
     <tr>
-        <%= Util.Context.Application["custom_logo"] %>
+        <%= BugTracker.Web.Core.Util.CustomLogoHtml %>
         <td width="20">&nbsp;</td>
 
         <td class="menu_td">

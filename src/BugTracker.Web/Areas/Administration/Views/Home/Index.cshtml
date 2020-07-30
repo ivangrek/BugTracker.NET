@@ -1,15 +1,14 @@
-﻿@using System.Threading
-@using BugTracker.Web.Core
-@using BugTracker.Web.Models
-@*
+﻿@*
     Copyright 2002-2011 Corey Trager
     Copyright 2017-2019 Ivan Grek
 
     Distributed under the terms of the GNU General Public License
 *@
 
+@using BugTracker.Web.Models
+
 @{
-    var page = (PageModel) ViewBag.Page;
+    var page = (PageModel)ViewBag.Page;
 
     ViewBag.Title = page.Title;
 }
@@ -87,11 +86,11 @@
 
 <ul class="pl-4">
     <li>
-        Path = @HttpContext.Current.Server.MapPath(null)
+        Path = @BugTracker.Web.Core.Util.ServerRootForlder
     </li>
 
     <li>
-        MachineName = @HttpContext.Current.Server.MachineName
+        MachineName = @Environment.MachineName
     </li>
 
     <li>
@@ -99,14 +98,14 @@
     </li>
 
     <li>
-        .NET Version = @Environment.Version.ToString()
+        .NET Version = @Environment.Version
     </li>
 
     <li>
-        CurrentCulture = @Thread.CurrentThread.CurrentCulture.Name
+        CurrentCulture = @System.Globalization.CultureInfo.CurrentCulture.Name
     </li>
 </ul>
 
 @section BodyFooter {
-    @Html.Raw(Util.Context.Application["custom_footer"])
+    @Html.Raw(BugTracker.Web.Core.Util.CustomFooterHtml)
 }

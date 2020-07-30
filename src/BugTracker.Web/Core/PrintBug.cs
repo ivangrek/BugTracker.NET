@@ -52,8 +52,7 @@ namespace BugTracker.Web.Core
 
                 // If this file exists, use it.
 
-                var mapPath = (string)HttpRuntime.Cache["MapPath"];
-
+                var mapPath = Util.ServerRootForlder;
                 var cssForEmailFile = mapPath + "\\Content\\custom\\btnet_css_for_email.css";
 
                 try

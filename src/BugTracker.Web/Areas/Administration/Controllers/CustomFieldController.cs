@@ -234,7 +234,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = sql.Replace("$dt", model.DropdownType);
 
             DbUtil.ExecuteNonQuery(sql);
-            System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
+            Util.CustomColumnsDataSet = null;
 
             return RedirectToAction(nameof(Index));
         }
@@ -339,7 +339,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             sql = sql.Replace("$ss", model.SortSequence.ToString());
 
             DbUtil.ExecuteNonQuery(sql);
-            System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
+            Util.CustomColumnsDataSet = null;
 
             if (model.Default != model.DefaultValue)
             {
@@ -349,7 +349,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                           model.DefaultValue + "]";
 
                     DbUtil.ExecuteNonQuery(sql);
-                    System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
+                    Util.CustomColumnsDataSet = null;
                 }
 
                 if (!string.IsNullOrEmpty(model.Default))
@@ -358,7 +358,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                           model.Default + " for [" + model.Name + "]";
 
                     DbUtil.ExecuteNonQuery(sql);
-                    System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
+                    Util.CustomColumnsDataSet = null;
                 }
             }
 
@@ -432,7 +432,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     where ccm_colorder = $num"
                 .Replace("$num", model.Id.ToString());
 
-            System.Web.HttpContext.Current.Application["custom_columns_dataset"] = null;
+            Util.CustomColumnsDataSet = null;
 
             DbUtil.ExecuteNonQuery(sql);
 

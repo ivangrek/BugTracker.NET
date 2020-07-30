@@ -20,8 +20,8 @@ namespace BugTracker.Web.Controllers
     using System.Data.SqlClient;
     using System.IO;
     using System.Linq;
-    using System.Net;
     using System.Net.Mail;
+    using System.Runtime.Caching;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Web;
@@ -2084,7 +2084,7 @@ namespace BugTracker.Web.Controllers
                 if ((int)dv[i][1] == bugid)
                 {
                     // treat it like a delta and update the cached vote count.
-                    var objVoteCount = HttpContext.ApplicationInstance.Application[Convert.ToString(bugid)];
+                    var objVoteCount = MemoryCache.Default.Get(Convert.ToString(bugid));
                     var voteCount = 0;
 
                     if (objVoteCount != null)
@@ -2094,7 +2094,7 @@ namespace BugTracker.Web.Controllers
 
                     voteCount += vote;
 
-                    HttpContext.ApplicationInstance.Application[Convert.ToString(bugid)] = voteCount;
+                    MemoryCache.Default.Set(Convert.ToString(bugid), voteCount, new CacheItemPolicy { Priority = CacheItemPriority.NotRemovable });
 
                     // now treat it more like a boolean
                     if (vote == -1)
@@ -3187,7 +3187,7 @@ namespace BugTracker.Web.Controllers
         private static string PrintTags()
         {
             var stringBuilder = new StringBuilder();
-            var tags = (SortedDictionary<string, List<int>>)System.Web.HttpContext.Current.Application["tags"];
+            var tags = Util.MemoryTags ?? new SortedDictionary<string, List<int>>();
             var tagsByCount = new List<TagLabel>();
             var fonts = new Dictionary<string, string>();
 

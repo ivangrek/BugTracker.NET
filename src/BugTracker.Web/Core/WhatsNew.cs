@@ -9,7 +9,6 @@ namespace BugTracker.Web.Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
 
     public static class WhatsNew
     {
@@ -38,14 +37,13 @@ namespace BugTracker.Web.Core
 
                 lock (Mylock)
                 {
-                    var app = (HttpApplicationState)HttpRuntime.Cache["Application"];
-                    var list = (List<BugNews>)app["whatsnew"];
+                    var list = Util.BugNews;
 
                     // create the list if necessary
                     if (list == null)
                     {
                         list = new List<BugNews>();
-                        app["whatsnew"] = list;
+                        Util.BugNews = list;
                     }
 
                     // Add the newest item

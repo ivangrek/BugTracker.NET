@@ -8,10 +8,12 @@
 namespace BugTracker.Web.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
     using System.IO;
     using System.Net.Mime;
+    using System.Runtime.Caching;
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -22,9 +24,22 @@ namespace BugTracker.Web.Core
     {
         private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
-        public static HttpContext Context => HttpContext.Current;
-
         private static readonly object Dummy = new object();
+
+        private static readonly CacheItemPolicy CacheItemPolicy = new CacheItemPolicy() { Priority = CacheItemPriority.NotRemovable };
+
+        public const string CustomHeaderHtmlCacheKey = "custom_header";
+        public const string CustomFooterHtmlCacheKey = "custom_footer";
+        public const string CustomLogoHtmlCacheKey = "custom_logo";
+        public const string CustomWelcomeHtmlCacheKey = "custom_welcome";
+        public const string BugNewsCacheKey = "whatsnew";
+        public const string ServerRootForlderCacheKey = "ServerRootForlder";
+        public const string CustomColumnsDataSetCacheKey = "custom_columns_dataset";
+        public const string DbsCacheKey = "dbs";
+        public const string MemoryLogCacheKey = "log";
+        public const string MemoryTagsCacheKey = "tags";
+
+        public static HttpContext Context => HttpContext.Current;
 
         public static Regex ReCommas = new Regex(",");
         public static Regex RePipes = new Regex("\\|");
@@ -35,6 +50,66 @@ namespace BugTracker.Web.Core
         public static bool ValidateEmail(string s)
         {
             return ReEmail.IsMatch(s);
+        }
+
+        public static string CustomHeaderHtml
+        {
+            get => (string)MemoryCache.Default.Get(CustomHeaderHtmlCacheKey);
+            set => MemoryCache.Default.Set(CustomHeaderHtmlCacheKey, value, CacheItemPolicy);
+        }
+
+        public static string CustomFooterHtml
+        {
+            get => (string)MemoryCache.Default.Get(CustomFooterHtmlCacheKey);
+            set => MemoryCache.Default.Set(CustomFooterHtmlCacheKey, value, CacheItemPolicy);
+        }
+
+        public static string CustomLogoHtml
+        {
+            get => (string)MemoryCache.Default.Get(CustomLogoHtmlCacheKey);
+            set => MemoryCache.Default.Set(CustomLogoHtmlCacheKey, value, CacheItemPolicy);
+        }
+
+        public static string CustomWelcomeHtml
+        {
+            get => (string)MemoryCache.Default.Get(CustomWelcomeHtmlCacheKey);
+            set => MemoryCache.Default.Set(CustomWelcomeHtmlCacheKey, value, CacheItemPolicy);
+        }
+
+        public static List<BugNews> BugNews
+        {
+            get => (List<BugNews>)MemoryCache.Default.Get(BugNewsCacheKey);
+            set => MemoryCache.Default.Set(BugNewsCacheKey, value, CacheItemPolicy);
+        }
+
+        public static string ServerRootForlder
+        {
+            get => (string)MemoryCache.Default.Get(ServerRootForlderCacheKey);
+            set => MemoryCache.Default.Set(ServerRootForlderCacheKey, value, CacheItemPolicy);
+        }
+
+        public static DataSet CustomColumnsDataSet
+        {
+            get => (DataSet)MemoryCache.Default.Get(CustomColumnsDataSetCacheKey);
+            set => MemoryCache.Default.Set(CustomColumnsDataSetCacheKey, value, CacheItemPolicy);
+        }
+
+        public static int? Dbs
+        {
+            get => (int?)MemoryCache.Default.Get(DbsCacheKey);
+            set => MemoryCache.Default.Set(DbsCacheKey, value, CacheItemPolicy);
+        }
+
+        public static List<string> MemoryLog
+        {
+            get => (List<string>)MemoryCache.Default.Get(MemoryLogCacheKey);
+            set => MemoryCache.Default.Set(MemoryLogCacheKey, value, CacheItemPolicy);
+        }
+
+        public static SortedDictionary<string, List<int>> MemoryTags
+        {
+            get => (SortedDictionary<string, List<int>>)MemoryCache.Default.Get(MemoryTagsCacheKey);
+            set => MemoryCache.Default.Set(MemoryTagsCacheKey, value, CacheItemPolicy);
         }
 
         public static string GetLogFilePath()
@@ -115,12 +190,12 @@ namespace BugTracker.Web.Core
         //               + " "
         //               + s;
 
-        //    var list = (List<string>)HttpContext.Current.Application["log"];
+        //    var list = Util.MemoryLog;
 
         //    if (list == null)
         //    {
         //        list = new List<string>();
-        //        HttpContext.Current.Application["log"] = list;
+        //        Util.MemoryLog = list;
         //    }
 
         //    list.Add(line);
@@ -495,7 +570,7 @@ namespace BugTracker.Web.Core
                 // leave as is
                 return folder;
 
-            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            var mapPath = Util.ServerRootForlder;
             return mapPath + "\\" + folder;
         }
 
@@ -516,19 +591,19 @@ namespace BugTracker.Web.Core
 
         public static string GetLuceneIndexFolder()
         {
-            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            var mapPath = Util.ServerRootForlder;
             return GetFolder("LuceneIndexFolder", mapPath + "\\App_Data\\lucene_index");
         }
 
         public static string GetUploadFolder()
         {
-            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            var mapPath = Util.ServerRootForlder;
             return GetFolder("UploadFolder", mapPath + "\\App_Data\\uploads");
         }
 
         public static string GetLogFolder()
         {
-            var mapPath = (string)HttpRuntime.Cache["MapPath"];
+            var mapPath = Util.ServerRootForlder;
             return GetFolder("LogFileFolder", mapPath + "\\App_Data\\logs");
         }
 
@@ -756,7 +831,7 @@ drop table #temp2";
 
         public static DataSet GetCustomColumns()
         {
-            var ds = (DataSet)Context.Application["custom_columns_dataset"];
+            var ds = CustomColumnsDataSet;
 
             if (ds != null) return ds;
 
@@ -798,7 +873,7 @@ and sc.name not in ('rowguid',
 'bg_tags')
 order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
 
-            Context.Application["custom_columns_dataset"] = ds;
+            CustomColumnsDataSet = ds;
             return ds;
         }
 

@@ -11,7 +11,7 @@ namespace BugTracker.Web
     using System.IO;
     using System.Text;
     using System.Web;
-    using System.Web.Caching;
+    using System.Web.Hosting;
     using System.Web.Mvc;
     using System.Web.Optimization;
     using System.Web.Routing;
@@ -42,10 +42,9 @@ namespace BugTracker.Web
 
             _containerProvider = new ContainerProvider(container);
 
-            var path = HttpContext.Current.Server.MapPath("~/");
+            var path = HostingEnvironment.ApplicationPhysicalPath;
 
-            HttpRuntime.Cache.Add("MapPath", path, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
-            HttpRuntime.Cache.Add("Application", Application, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
+            Util.ServerRootForlder = path;
 
             var dir = path + "\\App_Data";
 
@@ -75,22 +74,26 @@ namespace BugTracker.Web
                 Directory.CreateDirectory(dir);
             }
 
-            var sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_header.html"));
+            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_header.html")))
+            {
+                Util.CustomHeaderHtml = streamReader.ReadToEnd();
+            }
 
-            Application["custom_header"] = sr.ReadToEnd();
-            sr.Close();
+            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_footer.html")))
+            {
+                Util.CustomFooterHtml = streamReader.ReadToEnd();
+            }
 
-            sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_footer.html"));
-            Application["custom_footer"] = sr.ReadToEnd();
-            sr.Close();
+            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_logo.html")))
+            {
 
-            sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_logo.html"));
-            Application["custom_logo"] = sr.ReadToEnd();
-            sr.Close();
+                Util.CustomLogoHtml = streamReader.ReadToEnd();
+            }
 
-            sr = File.OpenText(Path.Combine(path, @"Content\custom\custom_welcome.html"));
-            Application["custom_welcome"] = sr.ReadToEnd();
-            sr.Close();
+            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_welcome.html")))
+            {
+                Util.CustomWelcomeHtml = streamReader.ReadToEnd();
+            }
 
             var applicationSettings = container
                 .Resolve<IApplicationSettings>();

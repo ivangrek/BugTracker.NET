@@ -6,7 +6,6 @@
 *@
 
 @using System.Data
-@using BugTracker.Web.Core
 @using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
@@ -84,5 +83,5 @@
 )
 
 @section BodyFooter {
-    @Html.Raw(Util.Context.Application["custom_footer"])
+    @Html.Raw(BugTracker.Web.Core.Util.CustomFooterHtml)
 }

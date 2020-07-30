@@ -155,19 +155,19 @@ namespace BugTracker.Web.Controllers
                 try
                 {
                     // don't allow lots of dbs to be created by somebody malicious
-                    if (HttpContext.ApplicationInstance.Application["dbs"] == null)
+                    if (Util.Dbs == null)
                     {
-                        HttpContext.ApplicationInstance.Application["dbs"] = 0;
+                        Util.Dbs = 0;
                     }
 
-                    var dbs = (int)HttpContext.ApplicationInstance.Application["dbs"];
+                    var dbs = (int)Util.Dbs;
 
                     if (dbs > 10)
                     {
                         return Content(string.Empty);
                     }
 
-                    HttpContext.ApplicationInstance.Application["dbs"] = ++dbs;
+                    Util.Dbs = ++dbs;
 
                     using (DbUtil.GetSqlConnection())
                     { }
@@ -228,7 +228,7 @@ namespace BugTracker.Web.Controllers
             Response.ContentType = "text/plain";
             Response.AddHeader("content-disposition", "inline; filename=\"memory_log.txt\"");
 
-            var list = (List<string>)System.Web.HttpContext.Current.Application["log"];
+            var list = Util.MemoryLog;
 
             if (list == null)
             {

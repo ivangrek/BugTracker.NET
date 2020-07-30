@@ -75,9 +75,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             string path;
 
             if (which == "backup")
-                path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", filename);
+                path = Path.Combine(Util.ServerRootForlder, "App_Data", filename);
             else if (which == "log")
-                path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs", filename);
+                path = Path.Combine(Util.ServerRootForlder, "App_Data", "logs", filename);
             else
                 return Content(string.Empty);
 
@@ -95,7 +95,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult GetDbDateTime()
         {
-            var dt = (DateTime) DbUtil.ExecuteScalar("select getdate()");
+            var dt = (DateTime)DbUtil.ExecuteScalar("select getdate()");
 
             return Content(dt.ToString("yyyyMMdd HH\\:mm\\:ss\\:fff"));
         }
@@ -132,7 +132,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (string.IsNullOrEmpty(which)) which = "footer";
 
             var fileName = GetFileName(which);
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Content", "custom", fileName);
+            var path = Path.Combine(Util.ServerRootForlder, "Content", "custom", fileName);
             var text = string.Empty;
 
             using (var sr = System.IO.File.OpenText(path))
@@ -171,15 +171,31 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (string.IsNullOrEmpty(fileName)) return Content(string.Empty);
 
             // save to disk
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Content", "custom", fileName);
+            var path = Path.Combine(Util.ServerRootForlder, "Content", "custom", fileName);
 
             using (var sw = System.IO.File.CreateText(path))
             {
                 sw.Write(model.Text);
             }
 
-            // save in Application (memory)
-            System.Web.HttpContext.Current.Application[Path.GetFileNameWithoutExtension(fileName)] = model.Text;
+            // save in memory
+            var cacheKey = Path.GetFileNameWithoutExtension(fileName);
+
+            switch (cacheKey)
+            {
+                case Util.CustomHeaderHtmlCacheKey:
+                    Util.CustomHeaderHtml = model.Text;
+                    break;
+                case Util.CustomFooterHtmlCacheKey:
+                    Util.CustomFooterHtml = model.Text;
+                    break;
+                case Util.CustomLogoHtmlCacheKey:
+                    Util.CustomLogoHtml = model.Text;
+                    break;
+                case Util.CustomWelcomeHtmlCacheKey:
+                    Util.CustomWelcomeHtml = model.Text;
+                    break;
+            }
 
             ModelState.AddModelError(string.Empty, fileName + " was saved.");
 
@@ -199,7 +215,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         public ActionResult ViewWebConfig()
         {
             // create path
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
+            var path = Path.Combine(Util.ServerRootForlder, "Web.config");
 
             return File(path, "application/xml");
         }
@@ -230,8 +246,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             foreach (DataRow dr in ds.Tables[0].Rows)
                 ViewBag.DbTables.Add(new SelectListItem
                 {
-                    Text = (string) dr[0],
-                    Value = (string) dr[0]
+                    Text = (string)dr[0],
+                    Value = (string)dr[0]
                 });
 
             ViewBag.Page = new PageModel
@@ -294,8 +310,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             foreach (DataRow dr in ds.Tables[0].Rows)
                 ViewBag.DbTables.Add(new SelectListItem
                 {
-                    Text = (string) dr[0],
-                    Value = (string) dr[0]
+                    Text = (string)dr[0],
+                    Value = (string)dr[0]
                 });
 
             return View(model);
@@ -309,7 +325,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 return HttpNotFound();
             }
 
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
+            var path = Path.Combine(Util.ServerRootForlder, "Web.config");
             var model = new EditWebConfigModel();
 
             using (var sr = System.IO.File.OpenText(path))
@@ -332,7 +348,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditWebConfig(EditWebConfigModel model)
         {
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "Web.config");
+            var path = Path.Combine(Util.ServerRootForlder, "Web.config");
 
             try
             {
@@ -393,8 +409,8 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (string.IsNullOrEmpty(model.FileName))
             {
                 var date = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var db = (string) DbUtil.ExecuteScalar("select db_name()");
-                var backupFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data",
+                var db = (string)DbUtil.ExecuteScalar("select db_name()");
+                var backupFile = Path.Combine(Util.ServerRootForlder, "App_Data",
                     $"db_backup_{date}.bak");
                 var sql = "backup database " + db + " to disk = '" + backupFile + "'";
 
@@ -402,7 +418,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             }
             else
             {
-                var backupFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data",
+                var backupFile = Path.Combine(Util.ServerRootForlder, "App_Data",
                     model.FileName);
 
                 System.IO.File.Delete(backupFile);
@@ -437,7 +453,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         {
             if (!string.IsNullOrEmpty(model.FileName))
             {
-                var logFile = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs",
+                var logFile = Path.Combine(Util.ServerRootForlder, "App_Data", "logs",
                     model.FileName);
 
                 System.IO.File.Delete(logFile);
@@ -525,10 +541,10 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
             var classesList = new ArrayList();
 
-            foreach (DataRow drStyles in dataSet.Tables[1].Rows) classesList.Add("." + (string) drStyles[0]);
+            foreach (DataRow drStyles in dataSet.Tables[1].Rows) classesList.Add("." + (string)drStyles[0]);
 
             // create path
-            var path = Path.Combine((string) HttpRuntime.Cache["MapPath"], "Content", "custom", "btnet_custom.css");
+            var path = Path.Combine(Util.ServerRootForlder, "Content", "custom", "btnet_custom.css");
             var relevantCssLines = new StringBuilder();
             var lines = new ArrayList();
 
@@ -539,7 +555,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
                 while ((line = stream.ReadLine()) != null)
                     for (var i = 0; i < classesList.Count; i++)
-                        if (line.IndexOf((string) classesList[i]) > -1)
+                        if (line.IndexOf((string)classesList[i]) > -1)
                         {
                             relevantCssLines.Append(line);
                             relevantCssLines.Append("<br>");
@@ -588,7 +604,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
         private static DataSet GetBackupFiles()
         {
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data");
+            var path = Path.Combine(Util.ServerRootForlder, "App_Data");
             var backupFiles = Directory.GetFiles(path, "*.bak");
 
             // sort the files
@@ -606,7 +622,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             for (var i = 0; i < list.Count; i++)
             {
                 var dataRow = dataTable.NewRow();
-                var justFile = Path.GetFileName((string) list[i]);
+                var justFile = Path.GetFileName((string)list[i]);
 
                 dataRow[0] = justFile;
                 dataRow[1] = "<a href='" +
@@ -627,7 +643,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
 
         private static DataSet GetLogFiles()
         {
-            var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "App_Data", "logs");
+            var path = Path.Combine(Util.ServerRootForlder, "App_Data", "logs");
             var logFiles = Directory.GetFiles(path, "*.txt");
 
             // sort the files
@@ -645,7 +661,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             for (var i = list.Count - 1; i != -1; i--)
             {
                 var dataRow = dataTable.NewRow();
-                var justFile = Path.GetFileName((string) list[i]);
+                var justFile = Path.GetFileName((string)list[i]);
 
                 dataRow[0] = justFile;
                 dataRow[1] = "<a href='" +

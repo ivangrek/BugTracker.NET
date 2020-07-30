@@ -59,7 +59,7 @@ namespace BugTracker.Web.Controllers
                 return Content("Sorry, Web.config EnableWhatsNewPage is set to 0");
             }
 
-            var list = (List<BugNews>)HttpContext.ApplicationInstance.Application["whatsnew"] ?? new List<BugNews>();
+            var list = Util.BugNews ?? new List<BugNews>();
             var result = new
             {
                 // The web server's time.  The client javascript will use this a a reference point.

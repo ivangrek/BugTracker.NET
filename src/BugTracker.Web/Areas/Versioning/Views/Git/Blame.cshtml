@@ -6,7 +6,6 @@
 *@
 
 @using System.Text.RegularExpressions
-@using BugTracker.Web.Core
 @using BugTracker.Web.Models
 
 @{
@@ -73,5 +72,5 @@
 </div>
 
 @section BodyFooter {
-    @Html.Raw(Util.Context.Application["custom_footer"])
+    @Html.Raw(BugTracker.Web.Core.Util.CustomFooterHtml)
 }

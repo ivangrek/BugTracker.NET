@@ -363,5 +363,5 @@
 </asp:Content>
 
 <asp:Content ContentPlaceHolderID="BodyFooter" runat="server">
-    <% Response.Write(Application["custom_footer"]); %>
+    <% Response.Write(BugTracker.Web.Core.Util.CustomFooterHtml); %>
 </asp:Content>
