@@ -722,6 +722,10 @@
     <Folder Include="Areas\Versioning\Svn\" />
     <Folder Include="Areas\Versioning\Views\Shared\" />
     <Folder Include="Models\News\" />
+    <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\lib\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Administration\Views\Web.config" />
