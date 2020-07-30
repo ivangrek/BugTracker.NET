@@ -37,7 +37,7 @@
         <% if (Security.User.CanSearch)
            { %>
             <td class="menu_td">
-                <a href="<%= ResolveUrl("~/Search.aspx") %>"><span class="<%= SelectedItem == "search" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">search</span></a>
+                <a href="<%= ResolveUrl("~/Search") %>"><span class="<%= SelectedItem == "search" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">search</span></a>
             </td>
             
         <% } %>

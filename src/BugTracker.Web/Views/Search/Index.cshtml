@@ -1,0 +1,1191 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@using BugTracker.Web.Core
+@using System.Data
+@model BugTracker.Web.Models.Search.IndexModel
+
+@{
+    var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    ViewBag.Title = page.Title;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css">
+    <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on Search.aspx  -->
+    <link rel="stylesheet" href="~/Content/custom/btnet_search.css" type="text/css">
+
+    <style>
+        .ui-datepicker {
+            z-index: 2 !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="~/Scripts/bug_list.js"></script>
+    <script type="text/javascript" src="~/Scripts/suggest.js"></script>
+    <script type="text/javascript" src="~/Scripts/datejs/date.js"></script>
+
+    <script>
+        var enable_popups = @(page.Security.User.EnablePopups ? "1" : "0");
+        var asp_form_id = 'frm';
+        var search_suggest_min_chars = @page.ApplicationSettings.SearchSuggestMinChars;
+
+        // start of mass edit javascript
+        @if (page.Security.User.IsAdmin || page.Security.User.CanMassEditBugs)
+        {
+            @:function select_all(sel) {
+                @:var frm = document.getElementById("massform");
+                @:for (var i = 0; i < frm.elements.length; i++) {
+                    @:var varname = frm.elements[i].name;
+                    @:if (!isNaN(parseInt(varname))) {
+                        @:frm.elements[i].checked = sel;
+                    @:}
+                @:}
+            @:};
+
+            @:function validate_mass() {
+                @:var at_least_one_selected = false;
+
+                 @:// make sure at least one item is selected
+                 @:var frm = document.getElementById("massform");
+                 @:for (var i = 0; i < frm.elements.length; i++) {
+                     @:var varname = frm.elements[i].name;
+                     @:if (!isNaN(parseInt(varname))) {
+                         @:var checkbox = frm.elements[i];
+                         @:if (checkbox.checked == true) {
+                             @:at_least_one_selected = true;
+                             @:break;
+                         @:}
+                     @:}
+                 @:}
+
+                 @:if (!at_least_one_selected) {
+                     @:alert("No items selected for mass update/delete.");
+                     @:return false;
+                 @:}
+
+                 @:if (frm.mass_project.selectedIndex == 0 &&
+                     @:frm.mass_org.selectedIndex == 0 &&
+                     @:frm.mass_category.selectedIndex == 0 &&
+                     @:frm.mass_priority.selectedIndex == 0 &&
+                     @:frm.mass_assigned_to.selectedIndex == 0 &&
+                     @:frm.mass_status.selectedIndex == 0 &&
+                     @:frm.mass_reported_by.selectedIndex == 0) {
+                     @:if (!frm.mass_delete.checked) {
+                         @:alert("No updates were specified and delete wasn't checked.  Please specify updates or delete.");
+                         @:return false;
+                     @:}
+                 @:} else {
+                     @:if (frm.mass_delete.checked) {
+                        @:alert("Both updates and delete were specified.   Please select one or the other.");
+                         @:return false;
+                     @:}
+                 @:}
+
+                 @:return true;
+             @:}
+
+             @:function load_one_massedit_select(from_id, to_id) {
+                 @:var from;
+                 @:var to;
+                 @:var option;
+
+                 @:from = document.getElementById(from_id);
+                 @:to = document.getElementById(to_id);
+
+                 @:option = document.createElement('option');
+                 @:option.value = -1;
+                 @:option.text = "[do not update]";
+                 @:try {
+                     @:to.add(option, null); // standards compliant; doesn't work in IE
+                 @:} catch (ex) {
+                     @:to.add(option); // IE only
+                 @:}
+
+                 @:for (var i = 0; i < from.options.length; i++) {
+                     @:option = document.createElement('option');
+                     @:option.value = from.options[i].value;
+                     @:option.text = from.options[i].text;
+                     @:try {
+                         @:to.add(option, null); // standards compliant; doesn't work in IE
+                     @:} catch (ex) {
+                         @:to.add(option); // IE only
+                     @:}
+                 @:}
+             @:}
+
+             @:function load_massedit_selects() {
+                 @:load_one_massedit_select("@Html.IdFor(x => x.ProjectIds)", "mass_project");
+                 @:load_one_massedit_select("@Html.IdFor(x => x.OrganizationIds)", "mass_org");
+                 @:load_one_massedit_select("@Html.IdFor(x => x.CategoryIds)", "mass_category");
+                 @:load_one_massedit_select("@Html.IdFor(x => x.PriorityIds)", "mass_priority");
+                 @:load_one_massedit_select("@Html.IdFor(x => x.AssignedToUserIds)", "mass_assigned_to");
+                 @:load_one_massedit_select("@Html.IdFor(x => x.StatusIds)", "mass_status");
+                 @:load_one_massedit_select("@Html.IdFor(x => x.ReportedByUserIds)", "mass_reported_by");
+             @:}
+         } // end of mass edit javascript
+
+        function build_where(where, clause) {
+            if (clause == "") return where;
+
+            var sql = "";
+
+            if (where == "") {
+                sql = "where ";
+                sql += clause;
+            } else {
+                sql = where;
+                and_or = document.getElementById("and").checked ? "and " : "or ";
+                sql += and_or;
+                sql += clause;
+            }
+
+            return sql;
+        }
+
+        function build_clause_from_options(options, column_name) {
+            var clause = "";
+            for (i = 0; i < options.length; i++) {
+                if (options[i].selected) {
+                    if (clause == "") {
+                        clause = " " + column_name + " in (";
+                    } else {
+                        clause += ",";
+                    }
+
+                    clause += options[i].value;
+                }
+            }
+            if (clause != "") clause += ")\n";
+
+            return clause;
+        }
+
+        function in_not_in_vals(el) {
+            var vals = "";
+
+            if (el.tagName == "INPUT") {
+                if (el.value == "") {
+                    return vals;
+                }
+                vals = "(";
+
+                var opts = "";
+                val_array = el.value.split(",");
+                for (i = 0; i < val_array.length; i++) {
+                    if (opts != "") {
+                        opts += ",";
+                    }
+
+                    opts += "N'";
+                    opts += val_array[i].replace(/'/ig, "''");
+                    opts += "'"; // "
+                }
+                vals += opts;
+                vals += ")\n";
+
+            } else if (el.tagName == "SELECT") {
+                if (el.selectedIndex == -1) {
+                    return vals;
+                }
+                vals = "(";
+
+                var opts = "";
+                for (i = 0; i < el.options.length; i++) {
+                    if (el.options[i].selected) {
+                        if (opts != "") {
+                            opts += ",";
+                        }
+
+                        var one_opt = "N'";
+                        one_opt += el.options[i].text.replace(/'/ig, "''");
+                        one_opt += "'";
+
+                        opts += one_opt;
+                    }
+                }
+                vals += opts;
+                vals += ")\n";
+            }
+
+            //alert(vals)
+            return vals;
+        }
+
+        function format_to_date_for_db(s) {
+            // convert the date for sql
+            // Uses date.js,
+            try {
+                return Date.parse(s).toString("yyyyMMdd 23:59:59");
+            } catch (err) {
+                return "";
+            }
+
+        }
+
+        function format_from_date_for_db(s) {
+            // convert the date for sql
+            // Uses date.js,
+            try {
+                return Date.parse(s).toString("yyyyMMdd");
+            } catch (err) {
+                return "";
+            }
+
+        }
+
+        function set_hit_submit_button() {
+            document.getElementById(asp_form_id).hit_submit_button.value = "1";
+        }
+
+        var shown = true;
+
+        function showhide_form() {
+            var frm = document.getElementById("form-panel");
+
+            if (shown) {
+                frm.style.display = "none";
+                shown = false;
+                showhide.firstChild.nodeValue = "Show form";
+            } else {
+                frm.style.display = "block";
+                shown = true;
+                showhide.firstChild.nodeValue = "Hide form";
+            }
+        }
+
+        function set_project_changed() {
+            on_change();
+
+            @if (ViewBag.ProjectAutoPostBack)
+            {
+                @:document.getElementById(asp_form_id).project_changed.value = "1";
+
+                @:var frm = document.getElementById(asp_form_id);
+                @:frm.submit();
+            }
+        }
+
+        $(document).ready(do_doc_ready);
+
+        function show_calendar(el) {
+            $("#" + el).datepicker("show");
+        }
+
+        function do_doc_ready() {
+            date_format = '@page.ApplicationSettings.DatepickerDateFormat';
+
+            $('.date').datepicker({ dateFormat: date_format, duration: 'fast' });
+            $('.date').change(on_change);
+            $('.filter').click(on_invert_filter);
+            $('.filter_selected').click(on_invert_filter);
+
+            $("#frm").on("mouseover", hide_suggest);
+
+            on_change();
+        }
+
+        function on_change() {
+            var frm = document.getElementById(asp_form_id);
+
+            // Build "WHERE" clause
+
+            var where = "";
+
+            var reported_by_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.ReportedByUserIds)).options, "bg_reported_user");
+            var assigned_to_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.AssignedToUserIds)).options, "bg_assigned_to_user");
+            var project_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.ProjectIds)).options, "bg_project");
+
+            var project_custom_dropdown1_clause = build_clause_from_options(
+                frm.@(Html.IdFor(x => x.ProjectCustomValues1)).options,
+                "bg_project_custom_dropdown_value1");
+            var project_custom_dropdown2_clause = build_clause_from_options(
+                frm.@(Html.IdFor(x => x.ProjectCustomValues2)).options,
+                "bg_project_custom_dropdown_value2");
+            var project_custom_dropdown3_clause = build_clause_from_options(
+                frm.@(Html.IdFor(x => x.ProjectCustomValues3)).options,
+                "bg_project_custom_dropdown_value3");
+
+            @if (page.Security.User.OtherOrgsPermissionLevel != 0)
+            {
+                @:var org_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.OrganizationIds)).options, "bg_org");
+            }
+            else
+            {
+                @:var org_clause = "";
+            }
+
+            var category_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.CategoryIds)).options, "bg_category");
+            var priority_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.PriorityIds)).options, "bg_priority");
+            var status_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.StatusIds)).options, "bg_status");
+            var udf_clause = "";
+
+            @if (page.ApplicationSettings.ShowUserDefinedBugAttribute)
+            {
+                @:udf_clause = build_clause_from_options(frm.@(Html.IdFor(x => x.UdfIds)).options, "bg_user_defined_attribute");
+            }
+
+            // SQL "LIKE" uses [, %, and _ in a special way
+
+            like_string = frm.@(Html.IdFor(x => x.DescriptionContains)).value.replace(/'/gi, "''");
+            like_string = like_string.replace(/\[/gi, "[[]");
+            like_string = like_string.replace(/%/gi, "[%]");
+            like_string = like_string.replace(/_/gi, "[_]");
+
+            like2_string = frm.@(Html.IdFor(x => x.CommentContains)).value.replace(/'/gi, "''");
+            like2_string = like2_string.replace(/\[/gi, "[[]");
+            like2_string = like2_string.replace(/%/gi, "[%]");
+            like2_string = like2_string.replace(/_/gi, "[_]");
+
+            // "    this line is only here to help unconfuse the syntax coloring in my editor
+
+            var desc_clause = "";
+            if (frm.@(Html.IdFor(x => x.DescriptionContains)).value != "") {
+                desc_clause = " bg_short_desc like";
+                desc_clause += " N'%" + like_string + "%'\n";
+            }
+
+            var comments_clause = "";
+            if (frm.@(Html.IdFor(x => x.CommentContains)).value != "") {
+                comments_clause =
+                    " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and isnull(bp_comment_search,bp_comment) like";
+                comments_clause += " N'%" + like2_string + "%'";
+
+                @if (page.Security.User.ExternalUser)
+                {
+                    @:comments_clause += " and bp_hidden_from_external_users = 0";
+                }
+
+                comments_clause += ")\n";
+            }
+
+            var comments_since_clause = "";
+            if (frm.@(Html.IdFor(x => x.CommentSince)).value != "") {
+                comments_since_clause =
+                    " bg_id in (select bp_bug from bug_posts where bp_type in ('comment','received','sent') and bp_date > '";
+                comments_since_clause += frm.@(Html.IdFor(x => x.CommentSince)).value + "')\n";
+            }
+
+            var from_clause = "";
+            if (frm.@(Html.IdFor(x => x.ReportedOnFrom)).value != "") {
+                from_clause = " bg_reported_date >= '" + frm.@(Html.IdFor(x => x.ReportedOnFrom)).value + "'\n";
+            }
+
+            var to_clause = "";
+            if (frm.@(Html.IdFor(x => x.ReportedOnTo)).value != "") {
+                to_clause = " bg_reported_date <= '" + frm.@(Html.IdFor(x => x.ReportedOnTo)).value + " 23:59:59'\n";
+            }
+
+            var lu_from_clause = "";
+            if (frm.@(Html.IdFor(x => x.LastupdatedOnFrom)).value != "") {
+                lu_from_clause = " bg_last_updated_date >= '" + frm.@(Html.IdFor(x => x.LastupdatedOnFrom)).value + "'\n";
+            }
+
+            var lu_to_clause = "";
+            if (frm.@(Html.IdFor(x => x.LastupdatedOnTo)).value != "") {
+                lu_to_clause = " bg_last_updated_date <= '" + frm.@(Html.IdFor(x => x.LastupdatedOnTo)).value + " 23:59:59'\n";
+            }
+
+            @{
+                // echo the custom input columns as the user types them
+                var customCount = 1;
+                foreach (DataRow drcc in ViewBag.DsCustomCols.Tables[0].Rows)
+                {
+                    var columnName = (string)drcc["name"];
+                    if (page.Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
+                    {
+                        continue;
+                    }
+
+                    var clause = "custom_clause_" + Convert.ToString(customCount++);
+                    var customColId = columnName.Replace(" ", "");
+                    var datatype = (string)drcc["datatype"];
+
+                    @:var @clause = "";
+                    @:el = document.getElementById('@customColId');
+
+                    if ((datatype == "varchar" || datatype == "nvarchar" || datatype == "char" || datatype == "nchar")
+                        && (string)drcc["dropdown type"] == "")
+                    {
+                        // my_text_field like '%val%'
+                        @:if (el.value != "") {
+                            @:@clause = " [@columnName] like '%" + el.value.replace(/'/gi, "''") + "%'";
+                            @:where = build_where(where, @clause);
+                        @:}
+                    }
+                    else if (datatype == "datetime")
+                    {
+                        @:if (el.value != "") {
+                            @:@clause = " [@columnName] >= '" + format_from_date_for_db(el.value) + "'";
+                            @:where = build_where(where, @clause);
+                        @:}
+
+                        @:el = document.getElementById('to__@customColId');
+
+                        @:if (el.value != "") {
+                            @:@clause = " [@columnName] <= '" + format_to_date_for_db(el.value) + "'";
+                            @:where = build_where(where, @clause);
+                        @:}
+                    }
+                    else
+                    {
+                        // my_field in (val1, val2, val3)
+                        @:vals = in_not_in_vals(el);
+
+                        @:if (vals != "") {
+                            @:@clause = " [@columnName] in " + vals;
+                            @:where = build_where(where, @clause);
+                        @:}
+                    }
+                }
+            }
+
+            where = build_where(where, reported_by_clause);
+            where = build_where(where, assigned_to_clause);
+            where = build_where(where, project_clause);
+            where = build_where(where, project_custom_dropdown1_clause);
+            where = build_where(where, project_custom_dropdown2_clause);
+            where = build_where(where, project_custom_dropdown3_clause);
+            where = build_where(where, org_clause);
+            where = build_where(where, category_clause);
+            where = build_where(where, priority_clause);
+            where = build_where(where, status_clause);
+            where = build_where(where, desc_clause);
+            where = build_where(where, comments_clause);
+            where = build_where(where, comments_since_clause);
+            where = build_where(where, from_clause);
+            where = build_where(where, to_clause);
+            where = build_where(where, lu_from_clause);
+            where = build_where(where, lu_to_clause);
+            where = build_where(where, udf_clause);
+
+            @if (page.ApplicationSettings.SearchSQL == string.Empty)
+            {
+                @:var select = "select isnull(pr_background_color,'#ffffff') [color], bg_id [id]";
+                    @:select += ",\nbg_short_desc [desc]";
+
+                if (page.ApplicationSettings.UseFullNames)
+                {
+                    @:select += ",\nisnull(rpt.us_lastname + ', ' + rpt.us_firstname,'') [reported by]";
+                }
+                else
+                {
+                    @:select += ",\nisnull(rpt.us_username,'') [reported by]";
+                }
+
+                @:select += ",\nbg_reported_date [reported on]";
+
+                if (page.ApplicationSettings.UseFullNames)
+                {
+                    @:select += ",\nisnull(lu.us_lastname + ', ' + lu.us_firstname,'') [last updated by]";
+                }
+                else
+                {
+                    @:select += ",\nisnull(lu.us_username,'') [last updated by]";
+                }
+
+                @:select += ",\nbg_last_updated_date [last updated on]";
+
+                if (page.Security.User.TagsFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    @:select += ",\nisnull(bg_tags,'') [tags]";
+                }
+
+                if (page.Security.User.ProjectFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    @:select += ",\nisnull(pj_name,'') [project]";
+                }
+
+                if (page.Security.User.OrgFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    @:select += ",\nisnull(og_name,'') [organization]";
+                }
+
+                if (page.Security.User.CategoryFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    @:select += ",\nisnull(ct_name,'') [category]";
+                }
+
+                if (page.Security.User.PriorityFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    @:select += ",\nisnull(pr_name,'') [priority]";
+                }
+
+                if (page.Security.User.AssignedToFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    if (page.ApplicationSettings.UseFullNames)
+                    {
+                        @:select += ",\nisnull(asg.us_lastname + ', ' + asg.us_firstname,'') [assigned to]";
+                    }
+                    else
+                    {
+                        @:select += ",\nisnull(asg.us_username,'') [assigned to]";
+                    }
+                }
+
+                if (page.Security.User.StatusFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    @:select += ",\nisnull(st_name,'') [status]";
+                }
+
+                if (page.Security.User.UdfFieldPermissionLevel != SecurityPermissionLevel.PermissionNone)
+                {
+                    if (page.ApplicationSettings.ShowUserDefinedBugAttribute)
+                    {
+                        var udfName = page.ApplicationSettings.UserDefinedBugAttributeName;
+
+                            @:select += ",\\nisnull(udf_name,'') [@udfName]";
+                        }
+                }
+
+                // add the custom fields to the columns
+                var userDropdownCnt = 1;
+
+                foreach (DataRow drcc in ViewBag.DsCustomCols.Tables[0].Rows)
+                {
+                    var columnName = (string)drcc["name"];
+
+                    if (page.Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone) {
+                        continue;
+                    }
+
+                    if (Convert.ToString(drcc["dropdown type"]) == "users")
+                    {
+                        @:select += ", isnull(users@(userDropdownCnt).us_username, '') [@columnName]";
+                        userDropdownCnt++;
+                    }
+                    else
+                    {
+                        if (Convert.ToString(drcc["datatype"]) == "decimal")
+                        {
+                            @:select += ", isnull[@columnName], 0) [@columnName]";
+                        }
+                        else
+                        {
+                            @:select += ", isnull[@columnName], '') [@columnName]";
+                        }
+                    }
+                }
+
+                @:select += "@ViewBag.ProjectDropdownSelectCols";
+
+                @:select += "\nfrom bugs\n";
+                @:select += "left outer join users rpt on rpt.us_id = bg_reported_user\n";
+                @:select += "left outer join users lu on lu.us_id = bg_last_updated_user\n";
+                @:select += "left outer join users asg on asg.us_id = bg_assigned_to_user\n";
+                @:select += "left outer join projects on pj_id = bg_project\n";
+                @:select += "left outer join orgs on og_id = bg_org\n";
+                @:select += "left outer join categories on ct_id = bg_category\n";
+                @:select += "left outer join priorities on pr_id = bg_priority\n";
+                @:select += "left outer join statuses on st_id = bg_status\n";
+
+                // do the joins related to "user" dropdowns
+                userDropdownCnt = 1;
+
+                foreach(DataRow drcc in ViewBag.DsCustomCols.Tables[0].Rows)
+                {
+                    var columnName = (string)drcc["name"];
+
+                    if (page.Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
+                    {
+                        continue;
+                    }
+
+                    if (Convert.ToString(drcc["dropdown type"]) == "users")
+                    {
+                        @:select += "left outer join users users@(userDropdownCnt) on users@(userDropdownCnt).us_id = bugs.[@columnName]";
+
+                        userDropdownCnt++;
+                    }
+                }
+
+                if (page.ApplicationSettings.ShowUserDefinedBugAttribute)
+                {
+                    @:select += "left outer join user_defined_attribute on udf_id = bg_user_defined_attribute\n";
+                }
+
+                @:frm.query.value = select + where + 'order by bg_id desc';
+
+            } // else use sql from web config
+            else
+            {
+
+                @:var search_sql = "@page.ApplicationSettings.SearchSQL.Replace("\r\n", "")";
+                    @:search_sql = search_sql.replace(/\[br\]/g, "\n");
+                    @:frm.query.value = search_sql.replace(/\$WHERE\$/, where);
+
+            }
+                // I don't understand why this doesn't work in IE.   Did it used to work?
+                document.getElementById("visible_sql_text").firstChild.nodeValue = frm.query.value;
+                //document.getElementById("visible_sql_text").innerHTML = frm.query.value;
+        }
+
+        function on_save_query() {
+            var frm2 = document.getElementById("save_query_form");
+
+            frm2.sql_text.value = document.getElementById("visible_sql_text").innerHTML;
+            frm2.submit();
+        }
+
+        @if (ViewBag.DataView != null && ViewBag.DataView.Table.Rows.Count > 0)
+        {
+            if (!page.Security.User.IsGuest && (page.Security.User.IsAdmin || page.Security.User.CanMassEditBugs))
+            {
+                @:$(document).ready(load_massedit_selects);
+            }
+        }
+    </script>
+}
+
+@section BodyHeader {
+    @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
+}
+
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            @if (!page.Security.User.AddsNotAllowed)
+            {
+                <a href="@Url.Action("Create", "Bug")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New Bug</a>
+            }
+
+            <a href="javascript:showhide_form()" id="showhide" class="nav-link">Hide form</a>
+
+            @if (ViewBag.DataView != null && ViewBag.DataView.Table.Rows.Count > 0)
+            {
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="~/Content/images/printer.png" align="top">&nbsp;Print</a>
+
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a href="@Url.Action("Print", "Bug")" target="_blank" class="dropdown-item" title="Print list">List</a>
+                        <a href="@Url.Action("PrintDetail", "Bug")" target="_blank" class="dropdown-item" title="Print detail">Detail</a>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("Print", "Bug", new { format = "excel" })" class="nav-link" title="Export to excel"><img src="~/Content/images/database.png" align="top">&nbsp;Export</a>
+            }
+        </nav>
+    </div>
+}
+
+<div id="suggest_popup" style="display: none; position: absolute; z-index: 1000;"></div>
+<div id="popup" class="buglist_popup" style="display: none; position: absolute; z-index: 1000;"></div>
+
+<div class="row">
+    <div class="col-lg-6" id="form-panel">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                @using (Html.BeginForm("Index", "Search", FormMethod.Post, new { id = "frm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
+                    @*@Html.HiddenFor(x => x.Id)*@
+
+                    @Html.HiddenFor(x => x.Action, new { id = "actn" })
+                    @Html.HiddenFor(x => x.NewPage, new { id = "new_page" })
+
+                    @Html.HiddenFor(x => x.Filter, new { id = "filter" })
+                    @Html.HiddenFor(x => x.Sort, new { id = "sort" })
+                    @Html.HiddenFor(x => x.PrevSort, new { id = "prev_sort" })
+                    @Html.HiddenFor(x => x.PrevDir, new { id = "prev_dir" })
+                    @Html.HiddenFor(x => x.Tags, new { id = "tags" })
+                    @Html.HiddenFor(x => x.SqlQuery, new { id = "query" })
+
+                    <input type="hidden" id="project_changed" name="project_changed" value="0" />
+                    <input type="hidden" id="hit_submit_button" name="hit_submit_button" value="0" />
+                    <input type="hidden" id="hit_save_query_button" name="hit_save_query_button" value="0" />
+
+                    <small class="form-text text-muted">Hold down Ctrl key to select multiple items.</small>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(x => x.ReportedByUserIds):
+                            @Html.ListBoxFor(x => x.ReportedByUserIds, (List<SelectListItem>)ViewBag.ReportedByUsers, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.ReportedByUserIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.CategoryDisplay;">
+                            @Html.LabelFor(x => x.CategoryIds):
+                            @Html.ListBoxFor(x => x.CategoryIds, (List<SelectListItem>)ViewBag.Categories, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.CategoryIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.PriorityDisplay;">
+                            @Html.LabelFor(x => x.PriorityIds):
+                            @Html.ListBoxFor(x => x.PriorityIds, (List<SelectListItem>)ViewBag.Priorities, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.PriorityIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.AssignedToDisplay;">
+                            @Html.LabelFor(x => x.AssignedToUserIds):
+                            @Html.ListBoxFor(x => x.AssignedToUserIds, (List<SelectListItem>)ViewBag.AssignedToUsers, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.AssignedToUserIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3" style="display: @ViewBag.StatusDisplay;">
+                            @Html.LabelFor(x => x.StatusIds):
+                            @Html.ListBoxFor(x => x.StatusIds, (List<SelectListItem>)ViewBag.Statuses, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.StatusIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.OrganizationDisplay;">
+                            @Html.LabelFor(x => x.OrganizationIds):
+                            @Html.ListBoxFor(x => x.OrganizationIds, (List<SelectListItem>)ViewBag.Organizations, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.OrganizationIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.ProjectDisplay;">
+                            @Html.LabelFor(x => x.ProjectIds):
+                            @Html.ListBoxFor(x => x.ProjectIds, (List<SelectListItem>)ViewBag.Projects, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "set_project_changed()" })
+                            @Html.ValidationMessageFor(x => x.ProjectIds, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        @if (page.ApplicationSettings.ShowUserDefinedBugAttribute)
+                        {
+                            <div class="form-group col-md-3" style="display: @ViewBag.UdfDisplay;">
+                                @Html.LabelFor(x => x.UdfIds, page.ApplicationSettings.UserDefinedBugAttributeName):
+                                @Html.ListBoxFor(x => x.UdfIds, (List<SelectListItem>)ViewBag.Udfs, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                                @Html.ValidationMessageFor(x => x.UdfIds, null, new { @class = "text-danger" }, "small")
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3" style="display: @ViewBag.ProjectCustomDropdown1Display;">
+                            @Html.LabelFor(x => x.ProjectCustomValues1, (string)ViewBag.ProjectCustomDropdown1Label):
+                            @Html.ListBoxFor(x => x.ProjectCustomValues1, (List<SelectListItem>)ViewBag.ProjectCustomValues1, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.ProjectCustomValues1, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.ProjectCustomDropdown2Display;">
+                            @Html.LabelFor(x => x.ProjectCustomValues2, (string)ViewBag.ProjectCustomDropdown2Label):
+                            @Html.ListBoxFor(x => x.ProjectCustomValues2, (List<SelectListItem>)ViewBag.ProjectCustomValues2, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.ProjectCustomValues2, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col-md-3" style="display: @ViewBag.ProjectCustomDropdown3Display;">
+                            @Html.LabelFor(x => x.ProjectCustomValues3, (string)ViewBag.ProjectCustomDropdown3Label):
+                            @Html.ListBoxFor(x => x.ProjectCustomValues3, (List<SelectListItem>)ViewBag.ProjectCustomValues3, new { @class = "form-control", multiple = "multiple", size = "6", onchange = "on_change()" })
+                            @Html.ValidationMessageFor(x => x.ProjectCustomValues3, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.DescriptionContains):
+                        @Html.TextBoxFor(x => x.DescriptionContains, new { @class = "form-control like", onkeydown = "search_criteria_onkeydown(this, event)", onkeyup = "search_criteria_onkeyup(this, event)", autocomplete = "off" })
+                        @Html.ValidationMessageFor(x => x.DescriptionContains, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CommentContains):
+                        @Html.TextBoxFor(x => x.CommentContains, new { @class = "form-control like2", onkeyup = "on_change()", size = "50", autocomplete = "off" })
+                        @Html.ValidationMessageFor(x => x.CommentContains, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.CommentSince):
+
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.CommentSince, new { @class = "form-control date", onchange = "on_change()", size = "10" })
+
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@Html.IdFor(x => x.CommentSince)')">[select]</button>
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.CommentSince, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            @Html.LabelFor(x => x.ReportedOnFrom):
+
+                            <div class="input-group">
+                                @Html.TextBoxFor(x => x.ReportedOnFrom, new { @class = "form-control date", onchange = "on_change()", maxlength = "10" })
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@Html.IdFor(x => x.ReportedOnFrom)')">[select]</button>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(x => x.ReportedOnFrom, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col">
+                            @Html.LabelFor(x => x.ReportedOnTo):
+
+                            <div class="input-group">
+                                @Html.TextBoxFor(x => x.ReportedOnTo, new { @class = "form-control date", onchange = "on_change()", maxlength = "10" })
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@Html.IdFor(x => x.ReportedOnTo)')">[select]</button>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(x => x.ReportedOnTo, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            @Html.LabelFor(x => x.LastupdatedOnFrom):
+
+                            <div class="input-group">
+                                @Html.TextBoxFor(x => x.LastupdatedOnFrom, new { @class = "form-control date", onchange = "on_change()", maxlength = "10" })
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@Html.IdFor(x => x.LastupdatedOnFrom)')">[select]</button>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(x => x.LastupdatedOnFrom, null, new { @class = "text-danger" }, "small")
+                        </div>
+
+                        <div class="form-group col">
+                            @Html.LabelFor(x => x.LastupdatedOnTo):
+
+                            <div class="input-group">
+                                @Html.TextBoxFor(x => x.LastupdatedOnTo, new { @class = "form-control date", onchange = "on_change()", maxlength = "10" })
+
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@Html.IdFor(x => x.LastupdatedOnTo)')">[select]</button>
+                                </div>
+                            </div>
+
+                            @Html.ValidationMessageFor(x => x.LastupdatedOnTo, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    </div>
+
+                    var minTextAreaSize = page.ApplicationSettings.TextAreaThreshold;
+                    var maxTextAreaRows = page.ApplicationSettings.MaxTextAreaRows;
+
+                    // Create the custom column INPUT elements
+                    foreach (DataRow drcc in ViewBag.DsCustomCols.Tables[0].Rows)
+                    {
+                        var columnName = (string)drcc["name"];
+
+                        if (page.Security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
+                        {
+                            continue;
+                        }
+
+                        var fieldId = columnName.Replace(" ", "");
+                        var datatype = drcc["datatype"].ToString();
+                        var dropdownType = Convert.ToString(drcc["dropdown type"]);
+                        var fieldLength = int.Parse(drcc["length"].ToString());
+                        var dropdownOptions = Convert.ToString(drcc["vals"]);
+
+                        if (datatype == "datetime")
+                        {
+                            var value = string.Empty;
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    @Html.Label(fieldId, $"\"{columnName}\" from"):
+
+                                    <div class="input-group">
+                                        @if (Request[columnName] != string.Empty)
+                                        {
+                                            value = HttpUtility.HtmlEncode(Request[columnName]);
+                                        }
+
+                                        @Html.TextBoxFor(x => x.LastupdatedOnFrom, new { id = fieldId, @class = "form-control date", onchange = "on_change()" })
+
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@fieldId')">[select]</button>
+                                        </div>
+                                    </div>
+
+                                    @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+                                </div>
+
+                                <div class="form-group col">
+                                    @Html.Label($"to__{fieldId}", "to"):
+
+                                    <div class="input-group">
+                                        @if (Request[$"to__{columnName}"] != string.Empty)
+                                        {
+                                            value = HttpUtility.HtmlEncode(Request[$"to__{columnName}"]);
+                                        }
+
+                                        @Html.TextBox($"to__{columnName}", value, new { id = $"to__{fieldId}", @class = "form-control date", onchange = "on_change()" })
+
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@fieldId')">[select]</button>
+                                        </div>
+                                    </div>
+
+                                    @Html.ValidationMessage($"to__{columnName}", null, new { @class = "text-danger" }, "small")
+                                </div>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            @if ((datatype == "nvarchar" || datatype == "varchar" || datatype == "char" || datatype == "nchar")
+                                    && dropdownType == string.Empty)
+                            {
+                                @Html.Label(fieldId, $"{columnName} contains:")
+                            }
+
+                            @if (dropdownType != string.Empty || dropdownOptions != string.Empty)
+                            {
+                                // create dropdown here
+                                @Html.Label(fieldId, $"{columnName}:")
+
+                                var selectedVals = Request[columnName];
+
+                                if (selectedVals == null)
+                                {
+                                    selectedVals = "$Q6Q6Q6$"; // the point here is, don't select anything in the dropdowns
+                                }
+
+                                var values = new List<SelectListItem>();
+                                var selectedValsArray = Util.SplitStringUsingCommas(selectedVals);
+
+                                if (dropdownType != "users")
+                                {
+                                    var options = Util.SplitDropdownVals(dropdownOptions);
+
+                                    for (var j = 0; j < options.Length; j++)
+                                    {
+                                        values.Add(new SelectListItem
+                                        {
+                                            Text = options[j],
+                                            Value = options[j],
+                                            Selected = selectedValsArray.Contains(options[j])
+                                        });
+                                    }
+                                }
+                                else
+                                {
+                                    var dvUsers = new DataView(ViewBag.DtUsers);
+
+                                    foreach (DataRowView drv in dvUsers)
+                                    {
+                                        var userId = Convert.ToString(drv[0]);
+                                        var userName = Convert.ToString(drv[1]);
+
+                                        Response.Write("<option value=");
+                                        Response.Write(userId);
+
+                                        // reselect vals
+                                        for (var k = 0; k < selectedValsArray.Length; k++)
+                                        {
+                                            if (userId == selectedValsArray[k])
+                                            {
+                                                Response.Write(" selected ");
+                                                break;
+                                            }
+                                        }
+
+                                        Response.Write(">");
+                                        Response.Write(userName);
+                                        Response.Write("</option>");
+                                    }
+                                }
+
+                                @Html.ListBox(columnName, (List<SelectListItem>)values, new { id = fieldId, @class = "form-control", multiple = "multiple", size = "3", onchange = "on_change()" })
+                            }
+                            else
+                            {
+                                // match the size of the text field to the size of the database field
+                                var size = Convert.ToInt32(drcc["length"]);
+
+                                // adjust the size
+                                if (size > 60)
+                                {
+                                    size = 60;
+                                }
+                                else if (datatype == "int" || datatype == "decimal")
+                                {
+                                    size = 30;
+                                }
+
+                                var sizeString = Convert.ToString(size);
+                                var value = string.Empty;
+
+                                if (Request[columnName] != "")
+                                {
+                                    value = HttpUtility.HtmlEncode(Request[columnName]);
+                                }
+
+                                @Html.TextBox(columnName, value, new { id = @fieldId, @class = "form-control", onchange = "on_change()", size = @sizeString, maxlength = @sizeString })
+
+                                if ((datatype == "nvarchar" || datatype == "varchar" || datatype == "char" || datatype == "nchar")
+                                    && dropdownType == string.Empty)
+                                {
+                                    //
+                                }
+                                else
+                                {
+                                    <small class="form-text text-muted">Enter multiple values using commas, no spaces: 1,2,3</small>
+                                }
+
+                                @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+                            }
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.UseOrLogic):
+
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(x => x.UseOrLogic, false, new { id = "and", @class = "form-check-input", onchange = "on_change()" })
+                                @Html.LabelFor(x => x.UseOrLogic, "and", new { @for = "and", @class = "form-check-label" })
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(x => x.UseOrLogic, true, new { id = "or", @class = "form-check-input", onchange = "on_change()" })
+                                @Html.LabelFor(x => x.UseOrLogic, "or", new { @for = "or", @class = "form-check-label" })
+                            </div>
+                        </div>
+
+                        @Html.ValidationMessageFor(x => x.UseOrLogic, null, new { @class = "text-danger" }, "small")
+                    </div>
+
+                    <button type="submit" class="btn btn-success" onclick="set_hit_submit_button()">Search</button>
+
+                    if (page.Security.User.IsGuest) /* can't save search */
+                    {
+                        <span class="btn btn-link disabled float-right">Save Search not available to "guest" user</span>
+                    }
+                    else
+                    {
+                        <a href="javascript:on_save_query()" class="btn btn-link float-right">Save search criteria as query</a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.DataView != null && ViewBag.DataView.Table.Rows.Count > 0)
+{
+    if (page.ApplicationSettings.EnableTags)
+    {
+        var tagList = BugList.DisplayBugListTagsLineInline(page.Security);
+
+        @Html.Raw(tagList)
+    }
+
+    if (!page.Security.User.IsGuest && (page.Security.User.IsAdmin || page.Security.User.CanMassEditBugs))
+    {
+        var bugList = BugList.DisplayBugsInline(true, ViewBag.DataView, page.Security, Model.NewPage.ToString(), /*IsPostBack*/true, ViewBag.DsCustomCols, Model.Filter ?? string.Empty);
+
+        <div class="row">
+            <div class="col">
+                @using (Html.BeginForm("MassEdit", "Bug", FormMethod.Get, new { id = "massform", target = "_blank", onsubmit = "return validate_mass()" }))
+                {
+                    @Html.Raw(bugList)
+
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <p class="form-text">Update or delete all checked items</p>
+
+                            <div class="form-group">
+                                <a href="javascript:select_all(true)" class="btn btn-outline-secondary">select all</a>
+                                <a href="javascript:select_all(false)" class="btn btn-outline-secondary">deselect all</a>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="mass_project">Project:</label>
+                                    <select name="mass_project" id="mass_project" class="form-control"></select>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="mass_org">Organization:</label>
+                                    <select name="mass_org" id="mass_org" class="form-control"></select>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="mass_category">Category:</label>
+                                    <select name="mass_category" id="mass_category" class="form-control"></select>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="mass_priority">Priority:</label>
+                                    <select name="mass_priority" id="mass_priority" class="form-control"></select>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="mass_assigned_to">Assigned to:</label>
+                                    <select name="mass_assigned_to" id="mass_assigned_to" class="form-control"></select>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="mass_status">Status:</label>
+                                    <select name="mass_status" id="mass_status" class="form-control"></select>
+                                </div>
+
+                                <div class="form-group col">
+                                    <label for="mass_reported_by">Reported by:</label>
+                                    <select name="mass_reported_by" id="mass_reported_by" class="form-control"></select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-check ">
+                                    <input type="checkbox" class="form-check-input" name="mass_delete">
+                                    <label for="mass_delete" class="form-check-label">OR DELETE:</label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger" onclick="set_hit_submit_button()">Update/Delete All</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        // no checkboxes
+        var bugList = BugList.DisplayBugsInline(false, ViewBag.DataView, page.Security, Model.NewPage.ToString(), /*IsPostBack*/true, ViewBag.DsCustomCols, Model.Filter ?? string.Empty);
+
+        <div class="row">
+            @Html.Raw(bugList)
+        </div>
+    }
+}
+else
+{
+    <div class="row">
+        <p>No @page.ApplicationSettings.PluralBugLabel</p>
+    </div>
+}
+
+@if (page.Security.User.IsAdmin || page.Security.User.CanEditSql)
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <p>SQL:</p>
+
+            <pre style="font-family: courier new;" id="visible_sql_text">&nbsp;</pre>
+        </div>
+    </div>
+}
+
+<!-- form 3 -->
+@using (Html.BeginForm("Create", "Query", FormMethod.Get, new { id = "save_query_form", target = "_blank" }))
+{
+    <input type="hidden" name="sql_text">
+}
+
+@section BodyFooter {
+    @Html.Raw(BugTracker.Web.Core.Util.Context.Application["custom_footer"])
+}

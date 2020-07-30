@@ -38,7 +38,7 @@
     @Html.HiddenFor(x => x.Sql)
 
     <button type="submit" class="btn btn-success">@Model.ButtonText</button>
-    <a href="~/Search.aspx" class="btn btn-link">Cancel</a>
+    <a href="@Url.Action("Index", "Search")" class="btn btn-link">Cancel</a>
 }
 
 <div class="card bg-light mt-3">

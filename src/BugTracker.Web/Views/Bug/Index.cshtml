@@ -55,12 +55,12 @@
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="~/Content/images/printer.png" align="top">&nbsp;Print</a>
 
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a href="~/Bug/Print" target="_blank" class="dropdown-item" title="Print list">List</a>
-                    <a href="~/Bug/PrintDetail" target="_blank" class="dropdown-item" title="Print detail">Detail</a>
+                    <a href="@Url.Action("Print", "Bug")" target="_blank" class="dropdown-item" title="Print list">List</a>
+                    <a href="@Url.Action("PrintDetail", "Bug")" target="_blank" class="dropdown-item" title="Print detail">Detail</a>
                 </div>
             </div>
 
-            <a href="~/Bug/Print?format=excel" class="nav-link" title="Export to excel"><img src="~/Content/images/database.png" align="top">&nbsp;Export</a>
+            <a href="@Url.Action("Print", "Bug", new { format = "excel" })" class="nav-link" title="Export to excel"><img src="~/Content/images/database.png" align="top">&nbsp;Export</a>
             <a href="~/Content/btnet_screen_capture.exe" class="nav-link ml-auto" title="Download screen capture utility"><img src="~/Content/images/camera.png" align="top">&nbsp;Screen</a>
         </nav>
     </div>
@@ -103,7 +103,7 @@
         <div class=err>Error in query SQL: @ViewBag.SqlError</div>
     }
 
-    <div id="popup" class="buglist_popup"></div>
+    <div id="popup" class="buglist_popup" style="display: none; position: absolute; z-index: 100;"></div>
 }
 
 @section BodyFooter {

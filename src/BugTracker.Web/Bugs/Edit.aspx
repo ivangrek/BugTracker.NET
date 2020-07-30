@@ -14,7 +14,7 @@
     <%--TODO <body onload="on_body_load()" onunload="on_body_unload()">--%>
 
     <link rel="StyleSheet" href="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.css") %>" type="text/css">
-    <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on Search.aspx  -->
+    <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on /Search -->
     <link rel="StyleSheet" href="<%= ResolveUrl("~/Content/custom/btnet_edit_bug.css") %>" type="text/css">
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery.textarearesizer.compressed.js") %>"></script>

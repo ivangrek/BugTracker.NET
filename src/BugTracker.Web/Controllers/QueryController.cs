@@ -147,7 +147,7 @@ namespace BugTracker.Web.Controllers
             var model = new EditModel
             {
                 Visibility = 0, // these guys can do everything
-                SqlText = HttpUtility.HtmlDecode(Request["sql_text"]) // if coming from Search.aspx
+                SqlText = HttpUtility.HtmlDecode(Request["sql_text"]) // if coming from /Search
             };
 
             return View("Edit", model);

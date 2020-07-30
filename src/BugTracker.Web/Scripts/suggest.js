@@ -6,7 +6,7 @@ function handle_suggestion(data, status) {
 
 
         // position and show the popup
-        var mylike = document.getElementById("like");
+        var mylike = document.getElementsByClassName("like")[0];
         sel.style.width = mylike.offsetWidth;
         mypopup.style.left = $(mylike).offset().left + "px";
         mypopup.style.top = $(mylike).offset().top + (mylike.offsetHeight - 3) + "px";
@@ -20,7 +20,7 @@ function handle_suggestion(data, status) {
 var prev_desc = "";
 
 function get_suggestion() {
-    mylike = document.getElementById("like");
+    mylike = document.getElementsByClassName("like")[0];
     s = mylike.value;
 
     if (s.length >= search_suggest_min_chars) {
@@ -39,7 +39,7 @@ var suppress_suggest = false;
 
 function select_suggestion(el) {
     sel = document.getElementById("suggest_select");
-    mylike = document.getElementById("like");
+    mylike = document.getElementsByClassName("like")[0];
 
     mylike.value = sel.options[sel.selectedIndex].text;
     on_change();

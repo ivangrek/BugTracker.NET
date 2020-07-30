@@ -165,7 +165,7 @@ function maybe_get_bug_comment(bug) {
 function on_mouse_over(el) {
     if (enable_popups) {
         current_element = el;
-        pos = el.href.indexOf("=");
+        pos = el.href.lastIndexOf("/");
         pos++; // start with char after the =
         current_bug = el.href.substr(pos);
         // get comment if the user keeps hovering over this

@@ -224,7 +224,7 @@ namespace BugTracker.Web.Controllers
             var model = new EditModel
             {
                 ChartType = "Table",
-                SqlText = Request.Form["sql_text"] // if coming from Search.aspx
+                SqlText = Request.Form["sql_text"] // if coming from /Search
             };
 
             return View("Edit", model);

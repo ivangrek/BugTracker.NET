@@ -56,7 +56,7 @@ namespace BugTracker.Web.Controllers
 
                 using (var dsPosts = PrintBug.GetBugPosts(bugid, this.security.User.ExternalUser, false))
                 {
-                    var (postCnt, html) = PrintBug.WritePosts(
+                    var (postCnt, html) = PrintBug.WritePostsNew(
                         dsPosts,
                         bugid,
                         permissionLevel,

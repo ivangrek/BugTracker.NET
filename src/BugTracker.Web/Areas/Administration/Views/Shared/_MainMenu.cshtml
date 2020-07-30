@@ -44,7 +44,7 @@
             @if (Model.Security.User.CanSearch)
             {
                 <li class="nav-item">
-                    <a href="~/Search.aspx" class="nav-item nav-link @(Model.SelectedItem == "search" ? "active" : string.Empty)">Search</a>
+                    <a href="@Url.Action("Index", "Search", new {area = string.Empty})" class="nav-item nav-link @(Model.SelectedItem == "search" ? "active" : string.Empty)">Search</a>
                 </li>
             }
 
@@ -90,7 +90,7 @@
             }
 
             <li class="nav-item">
-                <form action="~/Bugs/Edit.aspx?id=" method="get" class="form-inline flex-nowrap m mt-1">
+                <form action="@Url.Action("Update", "Bug", new { id = "", area = string.Empty})" method="get" class="form-inline flex-nowrap m mt-1">
                     <input class="form-control form-control-sm mr-sm-2" type="search" placeholder="ID" aria-label="Go to ID" size="4" name="id" accesskey="g">
                     <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Go to ID</button>
                 </form>

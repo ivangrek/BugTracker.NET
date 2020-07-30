@@ -1353,7 +1353,7 @@ namespace BugTracker.Web.Controllers
 
             DbUtil.ExecuteNonQuery(model.Sql);
 
-            return Redirect("~/Search.aspx");
+            return RedirectToAction("Index", "Search");
         }
 
         [HttpGet]
@@ -1457,6 +1457,7 @@ namespace BugTracker.Web.Controllers
             if (dataView == null)
             {
                 Response.Write("Please recreate the list before trying to print...");
+                return;
             }
 
             if (format != null && format == "excel")
