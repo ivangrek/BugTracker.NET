@@ -1158,14 +1158,18 @@
         var bugList = BugList.DisplayBugsInline(false, ViewBag.DataView, page.Security, Model.NewPage.ToString(), /*IsPostBack*/true, ViewBag.DsCustomCols, Model.Filter ?? string.Empty);
 
         <div class="row">
-            @Html.Raw(bugList)
+            <div class="col">
+                @Html.Raw(bugList)
+            </div>
         </div>
     }
 }
 else
 {
     <div class="row">
-        <p>No @page.ApplicationSettings.PluralBugLabel</p>
+        <div class="col">
+            <p>No @page.ApplicationSettings.PluralBugLabel</p>
+        </div>
     </div>
 }
 
