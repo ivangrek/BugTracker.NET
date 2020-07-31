@@ -18,11 +18,9 @@
 }
 
 @section Scripts {
-    @*TODO <body onload="my_on_load()">*@
-
     @if (page.Security.User.UseFckeditor)
     {
-        <script type="text/javascript" src="~/Scripts/ckeditor/ckeditor.js"></script>
+        <script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
     }
 
     <script>
@@ -90,7 +88,7 @@
         function my_on_load() {
             @if (page.Security.User.UseFckeditor)
             {
-                @:CKEDITOR.replace('body');
+                @:CKEDITOR.replace('@Html.IdFor(x => x.Body)');
             }
                 @if (ViewBag.EnableInternalPosts)
                 {
@@ -98,6 +96,8 @@
                     @:include_bug_click();
                 }
         }
+
+        $(my_on_load);
     </script>
 }
 

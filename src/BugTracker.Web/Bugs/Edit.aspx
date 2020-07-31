@@ -21,7 +21,7 @@
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_bug.js") %>"></script>
     <% if (Security.User.UseFckeditor)
         { %>
-    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/ckeditor/ckeditor.js") %>"></script>
+        <script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
     <% } %>
     <script>
         var this_bugid = <% Response.Write(Convert.ToString(this.Id)); %>
@@ -47,6 +47,8 @@
         }
             %>	
         }
+
+        $(my_on_load);
     </script>
 </asp:Content>
 
