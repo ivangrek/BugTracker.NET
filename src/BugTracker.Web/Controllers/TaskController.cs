@@ -404,7 +404,6 @@ namespace BugTracker.Web.Controllers
                 SortSequence = (int)dr["tsk_sort_sequence"]
             };
 
-
             //load_date_hour_min(this.planned_start_date, this.planned_start_hour, this.planned_start_min, dr["tsk_planned_start_date"]);
             var result = LoadDateHourMin(dr["tsk_planned_start_date"]);
 
@@ -745,7 +744,6 @@ namespace BugTracker.Web.Controllers
             //this.status.DataValueField = "st_id";
             //this.status.DataBind();
             //this.status.Items.Insert(0, new ListItem("[no status]", "0"));
-
 
             //TODO
             // by default, assign the entry to the same user to whom the bug is assigned to?

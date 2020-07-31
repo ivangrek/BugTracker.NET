@@ -1,34 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Collections.Specialized;
-using System.Configuration;
-
-namespace btnet
+﻿namespace btnet
 {
+    using System;
+    using System.Configuration;
+    using System.Windows.Forms;
+
     public partial class ConfigForm : Form
     {
         public ConfigForm()
         {
             InitializeComponent();
 
-            textBoxUrl.Text = Program.url;
-            textBoxUsername.Text = Program.username;
-            textBoxPassword.Text = Program.password;
-            textBoxDomain.Text = Program.domain;
-            checkBoxSavePassword.Checked = (Program.save_password == "1");
-            textBoxProjectNumber.Text = Convert.ToString(Program.project_id);
+            this.textBoxUrl.Text = Program.url;
+            this.textBoxUsername.Text = Program.username;
+            this.textBoxPassword.Text = Program.password;
+            this.textBoxDomain.Text = Program.domain;
+            this.checkBoxSavePassword.Checked = Program.save_password == "1";
+            this.textBoxProjectNumber.Text = Convert.ToString(Program.project_id);
         }
 
         public static void WriteConfig()
         {
-
-            System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             config.AppSettings.Settings.Clear();
 
@@ -52,29 +44,27 @@ namespace btnet
 
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
-
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-
-            Program.url = textBoxUrl.Text;
-            Program.username = textBoxUsername.Text;
-            Program.password = textBoxPassword.Text;
-            Program.domain = textBoxDomain.Text;
-            Program.save_password = checkBoxSavePassword.Checked ? "1" : "0";
+            Program.url = this.textBoxUrl.Text;
+            Program.username = this.textBoxUsername.Text;
+            Program.password = this.textBoxPassword.Text;
+            Program.domain = this.textBoxDomain.Text;
+            Program.save_password = this.checkBoxSavePassword.Checked ? "1" : "0";
             try
             {
-                Program.project_id = Convert.ToInt32(textBoxProjectNumber.Text);
+                Program.project_id = Convert.ToInt32(this.textBoxProjectNumber.Text);
             }
             catch (Exception)
             {
                 Program.project_id = 0;
             }
 
-            ConfigForm.WriteConfig();
+            WriteConfig();
 
-            this.Close();
+            Close();
         }
     }
 }

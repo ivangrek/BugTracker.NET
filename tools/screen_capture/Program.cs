@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Diagnostics;
-
-namespace btnet
+﻿namespace btnet
 {
-    static class Program
+    using System;
+    using System.Configuration;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+    using System.Threading;
+    using System.Windows.Forms;
+
+    internal static class Program
     {
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool SetForegroundWindow(IntPtr hWnd);
-
         public static string url;
         public static string username;
         public static string password;
@@ -26,11 +18,15 @@ namespace btnet
         public static int main_window_height;
         public static int project_id;
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            bool createdNew = true;
-            using (Mutex mutex = new Mutex(true, "MyApplicationName", out createdNew))
+            var createdNew = true;
+            using (var mutex = new Mutex(true, "MyApplicationName", out createdNew))
             {
                 if (createdNew)
                 {
@@ -43,32 +39,29 @@ namespace btnet
                     password = ConfigurationManager.AppSettings["password"];
                     domain = ConfigurationManager.AppSettings["domain"];
                     save_password = ConfigurationManager.AppSettings["save_password"];
-                    string tmp = ConfigurationManager.AppSettings["main_window_width"];
-                    if (!String.IsNullOrEmpty(tmp))
+                    var tmp = ConfigurationManager.AppSettings["main_window_width"];
+                    if (!string.IsNullOrEmpty(tmp))
                         main_window_width = Convert.ToInt32(tmp);
                     tmp = ConfigurationManager.AppSettings["main_window_height"];
-                    if (!String.IsNullOrEmpty(tmp))
+                    if (!string.IsNullOrEmpty(tmp))
                         main_window_height = Convert.ToInt32(tmp);
                     tmp = ConfigurationManager.AppSettings["project_id"];
-                    if (!String.IsNullOrEmpty(tmp))
+                    if (!string.IsNullOrEmpty(tmp))
                         project_id = Convert.ToInt32(tmp);
                     else
                         project_id = 0;
-
 
                     Application.Run(new MainForm());
                 }
                 else
                 {
-                    Process current = Process.GetCurrentProcess();
-                    foreach (Process process in Process.GetProcessesByName(current.ProcessName))
-                    {
+                    var current = Process.GetCurrentProcess();
+                    foreach (var process in Process.GetProcessesByName(current.ProcessName))
                         if (process.Id != current.Id)
                         {
                             SetForegroundWindow(process.MainWindowHandle);
                             break;
                         }
-                    }
                 }
             }
         }

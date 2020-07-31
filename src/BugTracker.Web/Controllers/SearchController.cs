@@ -914,7 +914,6 @@ namespace BugTracker.Web.Controllers
                 string alias2 = null;
                 string alias3 = null;
 
-
                 foreach (var projectId in model.ProjectIds)
                 {
                     if (projectId == 0)

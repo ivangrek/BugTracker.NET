@@ -86,7 +86,6 @@ namespace BugTracker.Web
 
             using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_logo.html")))
             {
-
                 Util.CustomLogoHtml = streamReader.ReadToEnd();
             }
 
