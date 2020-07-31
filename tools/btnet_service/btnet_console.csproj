@@ -2,10 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{E3EBEDF4-15D9-46D0-AFC9-36E92831F8AD}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <NoStandardLibraries>false</NoStandardLibraries>
-    <FileUpgradeFlags />
     <TargetFramework>net472</TargetFramework>
-    <UpgradeBackupLocation />
     <OutputPath>.\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -14,10 +11,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
-  <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Remove="btnet_service.cs" />
   </ItemGroup>

@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Timers;
-using System.Web;
+using System.Net;
 using System.Xml;
 using POP3Client;
 using Timer = System.Timers.Timer;
@@ -699,13 +699,12 @@ public class POP3Main
                 }
             }
 
-
-            var post_data = "username=" + HttpUtility.UrlEncode(this.ServiceUsername)
-                                        + "&password=" + HttpUtility.UrlEncode(this.ServicePassword)
+            var post_data = "username=" + WebUtility.UrlEncode(this.ServiceUsername)
+                                        + "&password=" + WebUtility.UrlEncode(this.ServicePassword)
                                         + "&projectid=" + Convert.ToString(projectid)
-                                        + "&from=" + HttpUtility.UrlEncode(from)
-                                        + "&short_desc=" + HttpUtility.UrlEncode(subject)
-                                        + "&message=" + HttpUtility.UrlEncode(message);
+                                        + "&from=" + WebUtility.UrlEncode(from)
+                                        + "&short_desc=" + WebUtility.UrlEncode(subject)
+                                        + "&message=" + WebUtility.UrlEncode(message);
 
             var bytes = Encoding.UTF8.GetBytes(post_data);
 
