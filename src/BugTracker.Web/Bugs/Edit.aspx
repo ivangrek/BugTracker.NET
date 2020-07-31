@@ -13,10 +13,12 @@
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="on_body_load()" onunload="on_body_unload()">--%>
 
-    <link rel="StyleSheet" href="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.css") %>" type="text/css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css">
     <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on /Search -->
     <link rel="StyleSheet" href="<%= ResolveUrl("~/Content/custom/btnet_edit_bug.css") %>" type="text/css">
-    <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery-ui-1.7.2.custom.min.js") %>"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            <%--integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="--%>
+            <%--crossorigin="anonymous"--%>></script>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/jquery/jquery.textarearesizer.compressed.js") %>"></script>
     <script type="text/javascript" src="<%= ResolveUrl("~/Scripts/edit_bug.js") %>"></script>
     <% if (Security.User.UseFckeditor)
