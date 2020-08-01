@@ -534,6 +534,10 @@
     <Content Include="Views\Shared\MvcGrid\_Grid.cshtml" />
     <Content Include="Views\Bug\Edit.cshtml" />
     <Content Include="Views\Bug\SendEmail.cshtml" />
+    <Content Include="Views\Shared\Bug\_Posts.cshtml" />
+    <Content Include="Views\Shared\Bug\_PostAttachment.cshtml" />
+    <Content Include="Views\Shared\Bug\_Post.cshtml" />
+    <Content Include="Views\Shared\Bug\_PostComment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />

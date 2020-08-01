@@ -35,52 +35,37 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        public void Ajax(int bugid)
+        public ActionResult Ajax(int bugid)
         {
             // check permission
-            var permissionLevel = Bug.GetBugPermissionLevel(/*Convert.ToInt32(*/bugid/*)*/, this.security);
+            var permissionLevel = Bug.GetBugPermissionLevel(bugid, this.security);
 
-            if (permissionLevel != SecurityPermissionLevel.PermissionNone)
+            if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
-                Response.Write(@"
-                    <style>
-                        .cmt_text {
-                            font-family: courier new;
-                            font-size: 8pt;
-                        }
-                        
-                        .pst {
-                            font-size: 7pt;
-                        }
-                    </style>");
-
-                using (var dsPosts = PrintBug.GetBugPosts(bugid, this.security.User.ExternalUser, false))
-                {
-                    var (postCnt, html) = PrintBug.WritePostsNew(
-                        dsPosts,
-                        bugid,
-                        permissionLevel,
-                        false, // write links
-                        false, // images inline
-                        false, // history inline
-                        true, // internal posts
-                        this.security.User);
-
-                    // We can't unwrite what we wrote, but let's tell javascript to ignore it.
-                    if (postCnt == 0)
-                    {
-                        Response.Write("<!--zeroposts-->");
-                    }
-                    else
-                    {
-                        System.Web.HttpContext.Current.Response.Write(html);
-                    }
-                }
+                //TODO: research
+                return Content(string.Empty);
             }
-            else
+
+            var dsPosts = PrintBug.GetBugPosts(bugid, this.security.User.ExternalUser, false);
+            var postCount = dsPosts.Tables[0].Rows.Count;
+
+            // We can't unwrite what we wrote, but let's tell javascript to ignore it.
+            if (postCount == 0)
             {
-                Response.Write(string.Empty);
+                //TODO: research
+                return Content("<!--zeroposts-->");
             }
+
+            ViewBag.Posts = dsPosts;
+            ViewBag.BugId = bugid;
+            ViewBag.PermissionLevel = permissionLevel;
+            ViewBag.WriteLinks = false;
+            ViewBag.ImagesInline = false;
+            ViewBag.InternalPosts = false;
+            ViewBag.User = this.security.User;
+            ViewBag.ApplicationSettings = this.applicationSettings;
+
+            return PartialView("Bug/_Posts");
         }
 
         [HttpGet]

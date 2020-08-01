@@ -176,7 +176,7 @@
 
                         @if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                         {
-                            <small class="form-text text-muted">Entering @page.ApplicationSettings.BugLinkMarker"999" in comment creates link to id 999</small>
+                            <small class="form-text text-muted">Entering @(page.ApplicationSettings.BugLinkMarker)999 in comment creates link to id 999</small>
                         }
                     </div>
 
@@ -201,16 +201,18 @@
             <div id="posts">
                 @{
                     var dsPosts = PrintBug.GetBugPosts(Model.Id, page.Security.User.ExternalUser, ViewBag.HistoryInline);
-                    (int _, string html) result = PrintBug.WritePostsNew(
-                        dsPosts, Model.Id,
-                        ViewBag.PermissionLevel,
-                        true, // write links
-                        ViewBag.ImagesInline, ViewBag.HistoryInline,
-                        true, // internal_posts
-                        page.Security.User);
                 }
 
-                @Html.Raw(result.html)
+                @Html.Partial("Bug/_Posts", new ViewDataDictionary {
+                    { "Posts", dsPosts },
+                    { "BugId", Model.Id },
+                    { "PermissionLevel", ViewBag.PermissionLevel },
+                    { "WriteLinks", true },
+                    { "ImagesInline", ViewBag.ImagesInline },
+                    { "InternalPosts", true },
+                    { "User", page.Security.User },
+                    { "ApplicationSettings", page.ApplicationSettings }
+                })
             </div>
         </div>
     }

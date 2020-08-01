@@ -17,7 +17,7 @@ namespace BugTracker.Web.Core
 
     public static class PrintBug
     {
-        private static readonly Regex ReEmail = new Regex(
+        public static readonly Regex ReEmail = new Regex(
             @"([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\."
             + @")|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})",
             RegexOptions.IgnoreCase
@@ -26,7 +26,7 @@ namespace BugTracker.Web.Core
             | RegexOptions.Compiled);
 
         // convert URL's to hyperlinks
-        private static readonly Regex ReHyperlinks = new Regex(
+        public static readonly Regex ReHyperlinks = new Regex(
             //@"(?<Protocol>\w+):\/\/(?<Domain>[\w.]+\/?)\S*",
             @"https?://[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]",
             RegexOptions.IgnoreCase
@@ -264,7 +264,7 @@ namespace BugTracker.Web.Core
             // Tasks
             if (applicationSettings.EnableTasks)
             {
-                var html2 =  WriteTasks(bugid);
+                var html2 = WriteTasks(bugid);
 
                 stringBuilder.Append(html2);
             }
@@ -408,141 +408,6 @@ namespace BugTracker.Web.Core
             }
 
             stringBuilder.Append("\n</table>");
-
-            return (postCnt, stringBuilder.ToString());
-        }
-
-        public static (int, string) WritePostsNew(
-            DataSet dsPosts,
-            int bugid,
-            SecurityPermissionLevel permissionLevel,
-            bool writeLinks,
-            bool imagesInline,
-            bool historyInline,
-            bool internalPosts,
-            User user)
-        {
-            var stringBuilder = new StringBuilder();
-            IApplicationSettings applicationSettings = new ApplicationSettings();
-
-            //if (applicationSettings.ForceBordersInEmails)
-            //{
-            //    stringBuilder.Append("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
-            //}
-            //else
-            //{
-            //    stringBuilder.Append("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
-            //}
-
-            stringBuilder.Append("<div id='posts_table'>");
-
-            var postCnt = dsPosts.Tables[0].Rows.Count;
-
-            int bpId;
-            var prevBpId = -1;
-
-            foreach (DataRow dr in dsPosts.Tables[0].Rows)
-            {
-                stringBuilder.Append("<div class='card bg-white mb-3'>");
-                stringBuilder.Append("<div class='card-body'>");
-
-                if (!internalPosts)
-                    if ((int)dr["bp_hidden_from_external_users"] == 1)
-                        continue;
-
-                bpId = (int)dr["bp_id"];
-
-                if ((string)dr["bp_type"] == "update")
-                {
-                    var comment = (string)dr["bp_comment"];
-
-                    if (user.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed tags from"))
-                        continue;
-
-                    if (user.ProjectFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed project from"))
-                        continue;
-
-                    if (user.OrgFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed organization from"))
-                        continue;
-
-                    if (user.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed category from"))
-                        continue;
-
-                    if (user.PriorityFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed priority from"))
-                        continue;
-
-                    if (user.AssignedToFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed assigned_to from"))
-                        continue;
-
-                    if (user.StatusFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed status from"))
-                        continue;
-
-                    if (user.UdfFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
-                        && comment.StartsWith("changed " +
-                                              applicationSettings.UserDefinedBugAttributeName +
-                                              " from"))
-                        continue;
-
-                    var bSkip = false;
-                    foreach (var key in user.DictCustomFieldPermissionLevel.Keys)
-                    {
-                        var fieldPermissionLevel = user.DictCustomFieldPermissionLevel[key];
-                        if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
-                            if (comment.StartsWith("changed " + key + " from"))
-                                bSkip = true;
-                    }
-
-                    if (bSkip) continue;
-                }
-
-                if (bpId == prevBpId)
-                {
-                    // show another attachment
-                    var html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
-
-                    stringBuilder.Append(html);
-                }
-                else
-                {
-                    // show the comment and maybe an attachment
-                    if (prevBpId != -1) stringBuilder.Append("\n</table>"); // end the previous table
-
-                    var html = WritePost(bugid, permissionLevel, dr, bpId, writeLinks, imagesInline,
-                        user.IsAdmin,
-                        user.CanEditAndDeletePosts,
-                        user.ExternalUser);
-
-                    stringBuilder.Append(html);
-
-                    if (!string.IsNullOrEmpty(Convert.ToString(dr["ba_file"]))) // intentially "ba"
-                    {
-                        html = WriteEmailAttachment(bugid, dr, writeLinks, imagesInline);
-
-                        stringBuilder.Append(html);
-                    }
-
-                    prevBpId = bpId;
-
-                    stringBuilder.Append("</table>");
-                }
-
-                stringBuilder.Append("</div>");
-                stringBuilder.Append("</div>");
-            }
-
-            if (prevBpId != -1)
-            {
-                stringBuilder.Append("\n</table>"); // end the previous table
-            }
-
-            stringBuilder.Append("</div>");
 
             return (postCnt, stringBuilder.ToString());
         }

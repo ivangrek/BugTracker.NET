@@ -1585,21 +1585,22 @@ namespace BugTracker.Web.Controllers
 
             if (permissionLevel == SecurityPermissionLevel.PermissionNone)
             {
+                //TODO: research
                 return Content("You are not allowed to view this item");
             }
 
             var dsPosts = PrintBug.GetBugPosts(id, this.security.User.ExternalUser, historyInline);
-            var (_, html) = PrintBug.WritePostsNew(
-                dsPosts,
-                id,
-                permissionLevel,
-                true, // write links
-                imagesInline,
-                historyInline,
-                true, // internal_posts
-                this.security.User);
 
-            return Content(html);
+            ViewBag.Posts = dsPosts;
+            ViewBag.BugId = id;
+            ViewBag.PermissionLevel = permissionLevel;
+            ViewBag.WriteLinks = true; //TODO: research
+            ViewBag.ImagesInline = imagesInline;
+            ViewBag.InternalPosts = true; //TODO: research
+            ViewBag.User = this.security.User;
+            ViewBag.ApplicationSettings = this.applicationSettings;
+
+            return PartialView("Bug/_Posts");
         }
 
         [HttpGet]

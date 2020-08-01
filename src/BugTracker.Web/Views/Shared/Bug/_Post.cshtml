@@ -1,0 +1,283 @@
+﻿@using System.Data
+@using BugTracker.Web.Core
+
+@{
+    var post = (DataRow)ViewBag.Post;
+    var bugId = (int)ViewBag.BugId;
+    var postId = (int)ViewBag.PostId;
+    var permissionLevel = (SecurityPermissionLevel)ViewBag.PermissionLevel;
+    var writeLinks = (bool)ViewBag.WriteLinks;
+    var imagesInline = (bool)ViewBag.ImagesInline;
+    var user = (User)ViewBag.User;
+    var applicationSettings = (IApplicationSettings)ViewBag.ApplicationSettings;
+    var isNew = (int)post["seconds_ago"] < 2;
+}
+
+<div class="card bg-white mb-3" @(isNew && writeLinks ? "name='new_post'" : string.Empty)>
+    <div class="card-header">
+        @{
+            var type = (string)post["bp_type"];
+
+            var userName = string.Empty;
+
+            if (!applicationSettings.UseFullNames)
+            {
+                userName = (string)post["us_username"];
+            }
+            else
+            {
+                userName = (string)post["us_fullname"];
+            }
+        }
+
+        @if (type == "update")
+        {
+            if (writeLinks)
+            {
+                <img src="@Url.Content("~/Content/images/database.png")" alt="update">
+            }
+
+            // posted by
+            if ((string)post["us_email"] != null && !string.IsNullOrEmpty((string)post["us_email"]) && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+            {
+                <span>
+                    changed by
+                    @Html.ActionLink(userName, "SendEmail", "Bug", new { bg_id = bugId, to = (string)post["us_email"] }, null)
+                </span>
+            }
+            else
+            {
+                <span>changed by @userName</span>
+            }
+        }
+        else if (type == "sent")
+        {
+            if (writeLinks)
+            {
+                <img src="@Url.Content("~/Content/images/email_edit.png")" alt="sent">
+            }
+
+            if (writeLinks)
+            {
+                <span>
+                    <a name="@postId"></a>
+                    email @postId sent to
+                    @Html.ActionLink((string)post["bp_email_to"], "SendEmail", "Bug", new { bg_id = bugId, to = (string)post["bp_email_to"] }, null)
+
+                    @if (!string.IsNullOrEmpty((string)post["bp_email_cc"]))
+                    {
+                        @:, cc: @Html.ActionLink((string)post["bp_email_cc"], "SendEmail", "Bug", new { bg_id = bugId, to = (string)post["bp_email_cc"] }, null)
+                        @:by @Html.ActionLink(userName, "SendEmail", "Bug", new { bg_id = bugId, to = (string)post["us_email"] }, null)
+                    }
+                </span>
+            }
+            else
+            {
+                <span>
+                    <a name="@postId"></a>
+                    email @postId sent to @((string)post["bp_email_to"]))
+
+                    @if (!string.IsNullOrEmpty((string)post["bp_email_cc"]))
+                    {
+                        @:, cc: @((string)post["bp_email_cc"]) by @userName
+                    }
+                </span>
+            }
+        }
+        else if (type == "received")
+        {
+            if (writeLinks)
+            {
+                <img src="@Url.Content("~/Content/images/email_open.png")" alt="received">
+            }
+
+            var displayPart = string.Empty;
+            var emailPart = string.Empty;
+            var pos = ((string)post["bp_email_from"]).IndexOf("<");
+
+            if (pos > 0)
+            {
+                displayPart = ((string)post["bp_email_from"]).Substring(0, pos);
+                emailPart = ((string)post["bp_email_from"]).Substring(pos + 1, ((string)post["bp_email_from"]).Length - pos - 2);
+            }
+            else
+            {
+                emailPart = (string)post["bp_email_from"];
+            }
+
+            if (writeLinks)
+            {
+                <span>
+                    <a name="@postId"></a>
+                    email @postId received from @displayPart
+                    @Html.ActionLink(emailPart, "SendEmail", "Bug", new { bg_id = bugId }, null)
+                </span>
+            }
+            else
+            {
+                <span>
+                    <a name="@postId"></a>
+                    email @postId received from @((string)post["bp_email_from"])
+                </span>
+            }
+        }
+        else if (type == "file")
+        {
+            if ((int)post["bp_hidden_from_external_users"] == 1)
+            {
+                <div class="private">Internal Only!</div>
+            }
+
+            if (writeLinks)
+            {
+                <img src="@Url.Content("~/Content/images/attach.gif")" alt="file">
+            }
+
+            if ((string)post["us_email"] != null && !string.IsNullOrEmpty((string)post["us_email"]) && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+            {
+                <span>
+                    <a name="@postId"></a>
+                    file @postId attached by
+                    @Html.ActionLink(userName, "SendEmail", "Bug", new { bg_id = bugId, to = (string)post["us_email"] }, null)
+                </span>
+            }
+            else
+            {
+                <span>
+                    <a name="@postId"></a>
+                    posted by @userName
+                </span>
+            }
+        }
+        else if (type == "comment")
+        {
+            if ((int)post["bp_hidden_from_external_users"] == 1)
+            {
+                <div class="private">Internal Only!</div>
+            }
+
+            if (writeLinks)
+            {
+                <img src="@Url.Content("~/Content/images/comment.png")" alt="comment">
+            }
+
+            if ((string)post["us_email"] != null && !string.IsNullOrEmpty((string)post["us_email"]) && writeLinks && permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+            {
+                <span>
+                    <a name="@postId"></a>
+                    posted by
+                    @Html.ActionLink(userName, "SendEmail", "Bug", new { bg_id = bugId, to = (string)post["us_email"] }, null)
+                </span>
+            }
+            else
+            {
+                <span>
+                    <a name="@postId"></a>
+                    posted by @userName
+                </span>
+            }
+        }
+
+        @*Format the date*@
+        on @Util.FormatDbDateTime(post["bp_date"]), @Util.HowLongAgo((int)post["seconds_ago"])
+
+        @*Write the links*@
+        @if (writeLinks)
+        {
+            <div class="float-right">
+                @if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                {
+                    if (type == "comment" || type == "sent" || type == "received")
+                    {
+                        @Html.ActionLink("forward", "SendEmail", "Bug", new { bp_id = postId, quote = 1 }, new { @class = "btn btn-link btn-sm" })
+                    }
+                }
+
+                @*format links for responding to email*@
+                @if (type == "received")
+                {
+                    if (user.IsAdmin || user.CanEditAndDeletePosts
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        // This doesn't just work.  Need to make changes in edit/delete pages.
+                        // Response.Write ("&nbsp;&nbsp;&nbsp;<a style='font-size: 8pt;' ");
+                        // Response.Write (" href=EditComment.aspx?id ="
+                        // + string_post_id + " &bug_id=" + string_bug_id);
+                        // Response.Write (">edit</a>");
+
+                        @Html.ActionLink("delete", "Delete", "Comment", new { id = postId, bugId }, new { @class = "btn btn-link btn-sm" })
+                    }
+
+                    if (permissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        @Html.ActionLink("reply", "SendEmail", "Bug", new { bp_id = postId, quote = 1 }, new { @class = "btn btn-link btn-sm" })
+                        @Html.ActionLink("reply all", "SendEmail", "Bug", new { id = postId, quote = 1, reply = "all" }, new { @class = "btn btn-link btn-sm" })
+                    }
+                }
+                else if (type == "file")
+                {
+                    if (user.IsAdmin || user.CanEditAndDeletePosts
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        @Html.ActionLink("edit", "Update", "Attachment", new { id = postId, bugId }, new { @class = "btn btn-link btn-sm" })
+                        @Html.ActionLink("delete", "Delete", "Attachment", new { id = postId, bugId }, new { @class = "btn btn-link btn-sm" })
+                    }
+                }
+                else if (type == "comment")
+                {
+                    if (user.IsAdmin || user.CanEditAndDeletePosts
+                        && permissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        @Html.ActionLink("edit", "Update", "Comment", new { id = postId, bugId }, new { @class = "btn btn-link btn-sm" })
+                        @Html.ActionLink("delete", "Delete", "Comment", new { id = postId, bugId }, new { @class = "btn btn-link btn-sm" })
+                    }
+                }
+
+                @*custom bug link*@
+                @if (!string.IsNullOrEmpty(applicationSettings.CustomPostLinkLabel))
+                {
+                    <a href="@applicationSettings.CustomPostLinkUrl?postid=@postId" class="btn btn-link btn-sm">@applicationSettings.CustomPostLinkLabel</a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="card-body">
+        @Html.Partial("Bug/_PostComment", new ViewDataDictionary {
+            { "Post", post },
+            { "PostId", postId },
+            { "WriteLinks", writeLinks },
+            { "ApplicationSettings", applicationSettings}
+        })
+
+        @if (type == "file")
+        {
+            //show attachment
+            @Html.Partial("Bug/_PostAttachment", new ViewDataDictionary {
+                { "BugId", bugId },
+                { "PostId", postId },
+                { "FileName", (string)post["bp_file"] },
+                { "FileContentType", (string)post["bp_content_type"] },
+                { "FileSize", (int)post["bp_size"] },
+                { "WriteLinks", writeLinks },
+                { "ImagesInline", imagesInline },
+                { "ApplicationSettings", applicationSettings }
+            })
+        }
+
+        @if (!string.IsNullOrEmpty((string)post["ba_file"]))
+        {
+            //show email attachment
+            @Html.Partial("Bug/_PostAttachment", new ViewDataDictionary {
+                { "BugId", bugId },
+                { "PostId", (int)post["ba_id"] },
+                { "FileName", (string)post["ba_file"] },
+                { "FileContentType", (string)post["ba_content_type"] },
+                { "FileSize", (int)post["ba_size"] },
+                { "WriteLinks", writeLinks },
+                { "ImagesInline", imagesInline },
+                { "ApplicationSettings", applicationSettings }
+            })
+        }
+    </div>
+</div>

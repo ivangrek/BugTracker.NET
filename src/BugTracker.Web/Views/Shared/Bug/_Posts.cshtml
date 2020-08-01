@@ -1,0 +1,136 @@
+﻿@using System.Data
+@using BugTracker.Web.Core
+
+@{
+    var posts = (DataSet)ViewBag.Posts;
+    var bugId = (int)ViewBag.BugId;
+    var writeLinks = (bool)ViewBag.WriteLinks;
+    var imagesInline = (bool)ViewBag.ImagesInline;
+    var internalPosts = (bool)ViewBag.InternalPosts;
+    var user = (User)ViewBag.User;
+    var applicationSettings = (IApplicationSettings)ViewBag.ApplicationSettings;
+}
+
+<div id="posts_table">
+    @{
+        int postId;
+        var prevBpId = -1;
+    }
+
+    @foreach (DataRow dr in posts.Tables[0].Rows)
+    {
+        if (!internalPosts)
+        {
+            if ((int)dr["bp_hidden_from_external_users"] == 1)
+            {
+                continue;
+            }
+        }
+
+        postId = (int)dr["bp_id"];
+
+        if ((string)dr["bp_type"] == "update")
+        {
+            var comment = (string)dr["bp_comment"];
+
+            if (user.TagsFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed tags from"))
+            {
+                continue;
+            }
+
+            if (user.ProjectFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed project from"))
+            {
+                continue;
+            }
+
+            if (user.OrgFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed organization from"))
+            {
+                continue;
+            }
+
+            if (user.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed category from"))
+            {
+                continue;
+            }
+
+            if (user.PriorityFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed priority from"))
+            {
+                continue;
+            }
+
+            if (user.AssignedToFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed assigned_to from"))
+            {
+                continue;
+            }
+
+            if (user.StatusFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith("changed status from"))
+            {
+                continue;
+            }
+
+            if (user.UdfFieldPermissionLevel == SecurityPermissionLevel.PermissionNone
+                && comment.StartsWith($"changed {applicationSettings.UserDefinedBugAttributeName} from"))
+            {
+                continue;
+            }
+
+            var bSkip = false;
+
+            foreach (var key in user.DictCustomFieldPermissionLevel.Keys)
+            {
+                var fieldPermissionLevel = user.DictCustomFieldPermissionLevel[key];
+
+                if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
+                {
+                    if (comment.StartsWith("changed " + key + " from"))
+                    {
+                        bSkip = true;
+                    }
+                }
+            }
+
+            if (bSkip)
+            {
+                continue;
+            }
+        }
+
+        if (postId == prevBpId)
+        {
+            // show another email attachment
+            @Html.Partial("Bug/_PostAttachment", new ViewDataDictionary {
+                { "BugId", bugId },
+                { "PostId", (int)dr["ba_id"] },
+                { "FileName", (string)dr["ba_file"] },
+                { "FileContentType", (string)dr["ba_content_type"] },
+                { "FileSize", (int)dr["ba_size"] },
+                { "WriteLinks", writeLinks },
+                { "ImagesInline", imagesInline },
+                { "ApplicationSettings", applicationSettings }
+            })
+        }
+        else
+        {
+            // show the comment and maybe an attachment
+            @Html.Partial("Bug/_Post", new ViewDataDictionary {
+                { "Post", dr },
+                { "BugId", bugId },
+                { "PostId", postId },
+                { "PermissionLevel", ViewBag.PermissionLevel },
+                { "WriteLinks", ViewBag.WriteLinks },
+                { "ImagesInline", ViewBag.ImagesInline },
+                { "User", ViewBag.User },
+                { "ApplicationSettings", ViewBag.ApplicationSettings }
+            })
+
+            prevBpId = postId;
+        }
+    }
+</div>

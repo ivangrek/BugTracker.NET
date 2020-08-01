@@ -1,0 +1,56 @@
+﻿@using System.Data
+@using System.Net.Mime
+@using System.Text.RegularExpressions
+@using BugTracker.Web.Core
+
+@{
+    var post = (DataRow)ViewBag.Post;
+    var postId = (int)ViewData["PostId"];
+    var writeLinks = (bool)ViewData["WriteLinks"];
+    var applicationSettings = (IApplicationSettings)ViewData["ApplicationSettings"];
+    var comment = (string)post["bp_comment"];
+    var commentType = (string)post["bp_content_type"];
+}
+
+@if (writeLinks)
+{
+    if (commentType != MediaTypeNames.Text.Html)
+    {
+        comment = HttpUtility.HtmlEncode(comment);
+
+        if (postId != 0)
+        {
+            // convert urls to links
+            comment = PrintBug.ReHyperlinks.Replace(comment, x => $"<a target=_blank href='{x}'>{x}</a>");
+
+            // This code doesn't perform well if comment is one big string, no spaces, line breaks
+
+            // convert email addresses to send_email links
+            comment = PrintBug.ReEmail.Replace(comment, x => $"<a href='{Url.Action("SendEmail", "Bug", new { bp_id = postId, to = x })}'>{x}</a>");
+        }
+
+        comment = comment.Replace("\n", "<br>");
+        comment = comment.Replace("  ", " &nbsp;");
+        comment = comment.Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+    }
+
+    // convert references to other bugs to links
+    var reLinkMarker = new Regex(applicationSettings.BugLinkMarker + "([0-9]+)");
+
+    comment = reLinkMarker.Replace(comment, x => $"<a href='{Url.Action("Update", "Bug", new { id = x.Groups[1] })}'>{x}</a>");
+}
+else
+{
+    if (commentType != MediaTypeNames.Text.Html)
+    {
+        comment = HttpUtility.HtmlEncode(comment);
+        comment = comment.Replace("\n", "<br>");
+        comment = comment.Replace("  ", " &nbsp;");
+        comment = comment.Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+    }
+}
+
+@if (comment.Length > 0)
+{
+    <div>@Html.Raw(comment)</div>
+}

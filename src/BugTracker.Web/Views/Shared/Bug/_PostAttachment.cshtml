@@ -1,0 +1,73 @@
+﻿@using System.Net.Mime
+@using BugTracker.Web.Core
+
+@{
+    var bugId = (int)ViewData["BugId"];
+    var postId = (int)ViewData["PostId"];
+    var fileName = (string)ViewData["FileName"];
+    var fileContentType = (string)ViewData["FileContentType"];
+    var fileSize = (int)ViewData["FileSize"];
+    var writeLinks = (bool)ViewData["WriteLinks"];
+    var imagesInline = (bool)ViewData["ImagesInline"];
+    var applicationSettings = (IApplicationSettings)ViewData["ApplicationSettings"];
+}
+
+<div class="mt-3">
+    @if (writeLinks)
+    {
+        <span>
+            <img src="@Url.Content("~/Content/images/attach.gif")" alt="file">
+            attachment: @fileName
+        </span>
+
+        if (fileContentType != MediaTypeNames.Text.Html || applicationSettings.ShowPotentiallyDangerousHtml)
+        {
+            @Html.ActionLink("view", "Show", "Attachment", new { id = postId, bugId, download = false }, new { @class = "btn btn-link btn-sm", target = "_blank" })
+        }
+
+        @Html.ActionLink("save", "Show", "Attachment", new { id = postId, bugId, download = true }, new { @class = "btn btn-link btn-sm" })
+    }
+    else
+    {
+        <span>attachment: @fileName</span>
+    }
+
+    <div>size: @fileSize content-type: @fileContentType</div>
+</div>
+
+@if (imagesInline)
+{
+    if (fileContentType == MediaTypeNames.Image.Gif
+        || fileContentType == "image/jpg"
+        || fileContentType == MediaTypeNames.Image.Jpeg
+        || fileContentType == "image/pjpeg"
+        || fileContentType == "image/png"
+        || fileContentType == "image/x-png"
+        || fileContentType == "image/bmp"
+        || fileContentType == MediaTypeNames.Image.Tiff)
+    {
+        <div class="mt-3">
+            <a href="javascript:resize_image('im@(postId)', 1.5)">[+]</a>
+            <a href="javascript:resize_image('im@(postId)', 0.6)">[-]</a>
+        </div>
+
+        <div class="mt-1">
+            <img id="im@(postId)" src="@Url.Content($"~/Attachment/Show?id={postId}&bugId={bugId}&download=false")" alt="file">
+        </div>
+    }
+    else if (fileContentType == MediaTypeNames.Text.Plain
+             || fileContentType == MediaTypeNames.Text.Xml
+             || fileContentType == "text/css"
+             || fileContentType == "text/js"
+             || fileContentType == MediaTypeNames.Text.Html && applicationSettings.ShowPotentiallyDangerousHtml)
+    {
+        <div class="mt-3">
+            <a href="javascript:resize_iframe('im@(postId)', 200)">[+]</a>
+            <a href="javascript:resize_iframe('im@(postId)', -200)">[-]</a>
+        </div>
+
+        <div class="mt-1">
+            <iframe id="if@(postId)" width=780 height=200 src="@Url.Content($"~/Attachment/Show?id={postId}&bugId={bugId}&download=false")"></iframe>
+        </div>
+    }
+}
