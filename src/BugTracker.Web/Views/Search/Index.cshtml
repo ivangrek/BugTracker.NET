@@ -978,26 +978,16 @@
                                         var userId = Convert.ToString(drv[0]);
                                         var userName = Convert.ToString(drv[1]);
 
-                                        Response.Write("<option value=");
-                                        Response.Write(userId);
-
-                                        // reselect vals
-                                        for (var k = 0; k < selectedValsArray.Length; k++)
+                                        values.Add(new SelectListItem
                                         {
-                                            if (userId == selectedValsArray[k])
-                                            {
-                                                Response.Write(" selected ");
-                                                break;
-                                            }
-                                        }
-
-                                        Response.Write(">");
-                                        Response.Write(userName);
-                                        Response.Write("</option>");
+                                            Text = userName,
+                                            Value = userId,
+                                            Selected = selectedValsArray.Contains(userId)
+                                        });
                                     }
                                 }
 
-                                @Html.ListBox(columnName, (List<SelectListItem>)values, new { id = fieldId, @class = "form-control", multiple = "multiple", size = "3", onchange = "on_change()" })
+                                @Html.ListBox(columnName, values, new { id = fieldId, @class = "form-control", multiple = "multiple", size = "3", onchange = "on_change()" })
                             }
                             else
                             {
