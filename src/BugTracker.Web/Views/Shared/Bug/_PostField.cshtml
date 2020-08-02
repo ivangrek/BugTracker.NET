@@ -1,0 +1,110 @@
+﻿@using System.Data
+@using BugTracker.Web.Core
+
+@{
+    var columnName = (string)ViewData["ColumnName"];
+    var dropdownType = (string)ViewData["DropdownType"];
+    var dropdownValues = (string)ViewData["DropdownValues"];
+    var dataType = (string)ViewData["DataType"];
+    var fieldLength = (int)ViewData["FieldLength"];
+    var selectedValue = (string)ViewData["SelectedValue"];
+    var dataTableUsers = (DataTable)ViewData["DataTableUsers"];
+    var applicationSettings = (IApplicationSettings)ViewBag.ApplicationSettings;
+
+    var fieldId = columnName.Replace(" ", string.Empty);
+    var minTextAreaSize = applicationSettings.TextAreaThreshold;
+    var maxTextAreaRows = applicationSettings.MaxTextAreaRows;
+}
+
+@if (dropdownType == "normal")
+{
+    var options = Util.SplitDropdownVals(dropdownValues);
+    var decodedSelectedValue = HttpUtility.HtmlDecode(selectedValue);
+    var list = new List<SelectListItem>();
+
+    foreach (var option in options)
+    {
+        var decodedOption = WebUtility.HtmlDecode(option);
+
+        list.Add(new SelectListItem
+        {
+            Value = decodedOption,
+            Text = decodedOption,
+            Selected = decodedOption == decodedSelectedValue
+        });
+    }
+
+    <div class="form-group" id="@(fieldId)_row">
+        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
+        @Html.DropDownList(columnName, list, new { id = fieldId, @class = "form-control" })
+        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+    </div>
+}
+else if (dropdownType == "users")
+{
+    var dataViewUsers = new DataView(dataTableUsers);
+    var list = new List<SelectListItem>();
+
+    foreach (DataRowView row in dataViewUsers)
+    {
+        var userId = Convert.ToString(row[0]);
+        var userName = Convert.ToString(row[1]);
+
+        list.Add(new SelectListItem
+        {
+            Value = userId,
+            Text = userName,
+            Selected = userId == selectedValue
+        });
+    }
+
+    <div class="form-group" id="@(fieldId)_row">
+        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
+        @Html.DropDownList(columnName, list, new { id = fieldId, @class = "form-control" })
+        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+    </div>
+}
+else if (dataType == "datetime")
+{
+    <div class="form-group" id="@(fieldId)_row">
+        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
+
+        <div class="input-group">
+            @Html.TextBox(columnName, selectedValue, new { id = fieldId, @class = "form-control date", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
+
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@fieldId')">[select]</button>
+            </div>
+        </div>
+
+        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+    </div>
+}
+else if (fieldLength > minTextAreaSize)
+{
+    <div class="form-group" id="@(fieldId)_row">
+        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
+        @Html.TextArea(columnName, WebUtility.HtmlEncode(selectedValue), new
+        {
+            id = fieldId,
+            @class = "form-control resizable",
+            onkeydown = $"count_chars('{fieldId}', {fieldLength})",
+            onkeyup = $"count_chars('{fieldId}', {fieldLength})",
+            cols = minTextAreaSize,
+            rows = fieldLength / minTextAreaSize > maxTextAreaRows
+                ? maxTextAreaRows
+                : fieldLength / minTextAreaSize
+        })
+
+        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+        <small id="@(fieldId)_cnt" class="form-text text-muted"></small>
+    </div>
+}
+else
+{
+    <div class="form-group" id="@(fieldId)_row">
+        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
+        @Html.TextBox(columnName, selectedValue, new { id = fieldId, @class = "form-control", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
+        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
+    </div>
+}

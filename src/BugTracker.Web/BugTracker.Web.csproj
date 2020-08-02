@@ -538,6 +538,7 @@
     <Content Include="Views\Shared\Bug\_PostAttachment.cshtml" />
     <Content Include="Views\Shared\Bug\_Post.cshtml" />
     <Content Include="Views\Shared\Bug\_PostComment.cshtml" />
+    <Content Include="Views\Shared\Bug\_PostField.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.3\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
