@@ -8,9 +8,9 @@
 namespace BugTracker.Web.Controllers
 {
     using Core;
-    using BugTracker.Web.Core.Controls;
-    using BugTracker.Web.Models;
-    using BugTracker.Web.Models.Search;
+    using Core.Controls;
+    using Models;
+    using Models.Search;
     using Lucene.Net.Highlight;
     using Lucene.Net.Search;
     using System;

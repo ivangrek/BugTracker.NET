@@ -29,7 +29,7 @@ namespace BugTracker.Web.Core
         public static QueryParser Parser = new QueryParser("text", Anal);
 
         public static Formatter Formatter = new SimpleHTMLFormatter(
-            "<span class='highlighted'>",
+            "<span class='mark'>",
             "</span>");
 
         public static SimpleFragmenter Fragmenter = new SimpleFragmenter(400);
