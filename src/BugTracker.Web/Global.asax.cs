@@ -109,7 +109,7 @@ namespace BugTracker.Web
 
             if (applicationSettings.EnableLucene)
             {
-                MyLucene.BuildLuceneIndex(Application);
+                MyLucene.BuildLuceneIndex();
             }
 
             if (applicationSettings.EnablePop3)

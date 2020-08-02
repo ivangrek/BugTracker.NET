@@ -16,19 +16,23 @@ namespace BugTracker.Web.Core
     using System.Web;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
-    using Lucene.Net.Highlight;
+    using Lucene.Net.Search.Highlight;
     using Lucene.Net.Index;
     using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
+    using Lucene.Net.Store;
 
     public static class MyLucene
     {
+        private const int TotalHits = 10;
+        private const Lucene.Net.Util.Version LuceneVersion = Lucene.Net.Util.Version.LUCENE_30;
+
         public static string IndexPath = Util.GetLuceneIndexFolder();
 
-        public static StandardAnalyzer Anal = new StandardAnalyzer();
-        public static QueryParser Parser = new QueryParser("text", Anal);
+        public static StandardAnalyzer Anal = new StandardAnalyzer(LuceneVersion);
+        public static QueryParser Parser = new QueryParser(LuceneVersion, "text", Anal);
 
-        public static Formatter Formatter = new SimpleHTMLFormatter(
+        public static IFormatter Formatter = new SimpleHTMLFormatter(
             "<span class='mark'>",
             "</span>");
 
@@ -49,26 +53,26 @@ namespace BugTracker.Web.Core
                 "bg_id",
                 Convert.ToString(bugId),
                 Field.Store.YES,
-                Field.Index.UN_TOKENIZED));
+                Field.Index.NOT_ANALYZED));
 
             doc.Add(new Field(
                 "bp_id",
                 Convert.ToString(postId),
                 Field.Store.YES,
-                Field.Index.UN_TOKENIZED));
+                Field.Index.NOT_ANALYZED));
 
             doc.Add(new Field(
                 "src",
                 source,
                 Field.Store.YES,
-                Field.Index.UN_TOKENIZED));
+                Field.Index.NOT_ANALYZED));
 
             // For the highlighter, store the raw text
             doc.Add(new Field(
                 "raw_text",
                 text,
                 Field.Store.YES,
-                Field.Index.UN_TOKENIZED));
+                Field.Index.NOT_ANALYZED));
 
             doc.Add(new Field(
                 "text",
@@ -80,33 +84,33 @@ namespace BugTracker.Web.Core
         private static DataSet GetTextCustomCols()
         {
             var dsCustomFields = DbUtil.GetDataSet(@"
-/* get searchable cols */					
-select sc.name
-from syscolumns sc
-inner join systypes st on st.xusertype = sc.xusertype
-inner join sysobjects so on sc.id = so.id
-where so.name = 'bugs'
-and st.[name] <> 'sysname'
-and sc.name not in ('rowguid',
-'bg_id',
-'bg_short_desc',
-'bg_reported_user',
-'bg_reported_date',
-'bg_project',
-'bg_org',
-'bg_category',
-'bg_priority',
-'bg_status',
-'bg_assigned_to_user',
-'bg_last_updated_user',
-'bg_last_updated_date',
-'bg_user_defined_attribute',
-'bg_project_custom_dropdown_value1',
-'bg_project_custom_dropdown_value2',
-'bg_project_custom_dropdown_value3',
-'bg_tags')
-and st.[name] in ('nvarchar','varchar')
-and sc.length > 30");
+                /* get searchable cols */
+                select sc.name
+                from syscolumns sc
+                inner join systypes st on st.xusertype = sc.xusertype
+                inner join sysobjects so on sc.id = so.id
+                where so.name = 'bugs'
+                and st.[name] <> 'sysname'
+                and sc.name not in ('rowguid',
+                'bg_id',
+                'bg_short_desc',
+                'bg_reported_user',
+                'bg_reported_date',
+                'bg_project',
+                'bg_org',
+                'bg_category',
+                'bg_priority',
+                'bg_status',
+                'bg_assigned_to_user',
+                'bg_last_updated_user',
+                'bg_last_updated_date',
+                'bg_user_defined_attribute',
+                'bg_project_custom_dropdown_value1',
+                'bg_project_custom_dropdown_value2',
+                'bg_project_custom_dropdown_value3',
+                'bg_tags')
+                and st.[name] in ('nvarchar','varchar')
+                and sc.length > 30");
 
             return dsCustomFields;
         }
@@ -119,23 +123,23 @@ and sc.length > 30");
         }
 
         // create a new index
-        private static void ThreadProcBuild(object obj)
+        private static void ThreadProcBuild()
         {
             lock (MyLock)
             {
                 try
                 {
-                    var app = (HttpApplicationState)obj;
-
                     Util.WriteToLog("started creating Lucene index using folder " + IndexPath);
-                    var writer = new IndexWriter(IndexPath, Anal, true);
+
+                    var directory = FSDirectory.Open(IndexPath);
+                    var writer = new IndexWriter(directory, Anal, true, IndexWriter.MaxFieldLength.UNLIMITED);
 
                     var sql = @"
-select bg_id, 	
-$custom_cols
-isnull(bg_tags,'') bg_tags,
-bg_short_desc
-from bugs";
+                        select bg_id,
+                        $custom_cols
+                        isnull(bg_tags,'') bg_tags,
+                        bg_short_desc
+                        from bugs";
                     var dsTextCustomCols = GetTextCustomCols();
 
                     sql = sql.Replace("$custom_cols", GetTextCustomColsNames(dsTextCustomCols));
@@ -177,11 +181,11 @@ from bugs";
 
                     // index the bug posts
                     ds = DbUtil.GetDataSet(@"
-select bp_bug, bp_id, 
-isnull(bp_comment_search,bp_comment) [text] 
-from bug_posts 
-where bp_type <> 'update'
-and bp_hidden_from_external_users = 0");
+                        select bp_bug, bp_id, 
+                        isnull(bp_comment_search,bp_comment) [text] 
+                        from bug_posts 
+                        where bp_type <> 'update'
+                        and bp_hidden_from_external_users = 0");
 
                     foreach (DataRow dr in ds.Tables[0].Rows)
                         writer.AddDocument(CreateDoc(
@@ -202,13 +206,20 @@ and bp_hidden_from_external_users = 0");
             }
         }
 
-        public static Hits Search(Query query)
+        public static ScoreDoc[] Search(Query query)
         {
-            Hits hits = null;
+            var hits = Array.Empty<ScoreDoc>();
+
             lock (MyLock) // prevent contention between searches and writing?
             {
-                if (Searcher == null) Searcher = new IndexSearcher(IndexPath);
-                hits = Searcher.Search(query);
+                if (Searcher == null)
+                {
+                    var directory = FSDirectory.Open(MyLucene.IndexPath);
+
+                    Searcher = new IndexSearcher(directory);
+                }
+
+                hits = Searcher.Search(query, TotalHits).ScoreDocs;
             }
 
             return hits;
@@ -239,7 +250,8 @@ and bp_hidden_from_external_users = 0");
                         Searcher = null;
                     }
 
-                    var modifier = new IndexModifier(IndexPath, Anal, false);
+                    var directory = FSDirectory.Open(IndexPath);
+                    var writer = new IndexWriter(directory, Anal, false, IndexWriter.MaxFieldLength.UNLIMITED);
 
                     // same as buid, but uses "modifier" instead of write.
                     // uses additional "where" clause for bugid
@@ -248,14 +260,14 @@ and bp_hidden_from_external_users = 0");
 
                     Util.WriteToLog("started updating Lucene index using folder " + IndexPath);
 
-                    modifier.DeleteDocuments(new Term("bg_id", Convert.ToString(bugId)));
+                    writer.DeleteDocuments(new Term("bg_id", Convert.ToString(bugId)));
 
                     var sql = @"
-select bg_id, 
-$custom_cols
-isnull(bg_tags,'') bg_tags,
-bg_short_desc    
-from bugs where bg_id = $bugid";
+                        select bg_id, 
+                        $custom_cols
+                        isnull(bg_tags,'') bg_tags,
+                        bg_short_desc    
+                        from bugs where bg_id = $bugid";
 
                     sql = sql.Replace("$bugid", Convert.ToString(bugId));
 
@@ -266,7 +278,7 @@ from bugs where bg_id = $bugid";
                     // index the bugs
                     var dr = DbUtil.GetDataRow(sql);
 
-                    modifier.AddDocument(CreateDoc(
+                    writer.AddDocument(CreateDoc(
                         (int)dr["bg_id"],
                         0,
                         "desc",
@@ -275,7 +287,7 @@ from bugs where bg_id = $bugid";
                     // tags
                     var tags = (string)dr["bg_tags"];
                     if (!string.IsNullOrEmpty(tags))
-                        modifier.AddDocument(CreateDoc(
+                        writer.AddDocument(CreateDoc(
                             (int)dr["bg_id"],
                             0,
                             "tags",
@@ -287,7 +299,7 @@ from bugs where bg_id = $bugid";
                         var name = (string)drCustomCol["name"];
                         var val = Convert.ToString(dr[name]);
                         if (!string.IsNullOrEmpty(val))
-                            modifier.AddDocument(CreateDoc(
+                            writer.AddDocument(CreateDoc(
                                 (int)dr["bg_id"],
                                 0,
                                 name.Replace("'", "''"),
@@ -296,22 +308,22 @@ from bugs where bg_id = $bugid";
 
                     // index the bug posts
                     var ds = DbUtil.GetDataSet(@"
-select bp_bug, bp_id, 
-isnull(bp_comment_search,bp_comment) [text] 
-from bug_posts 
-where bp_type <> 'update'
-and bp_hidden_from_external_users = 0
-and bp_bug = " + Convert.ToString(bugId));
+                        select bp_bug, bp_id, 
+                        isnull(bp_comment_search,bp_comment) [text] 
+                        from bug_posts 
+                        where bp_type <> 'update'
+                        and bp_hidden_from_external_users = 0
+                        and bp_bug = " + Convert.ToString(bugId));
 
                     foreach (DataRow dr2 in ds.Tables[0].Rows)
-                        modifier.AddDocument(CreateDoc(
+                        writer.AddDocument(CreateDoc(
                             (int)dr2["bp_bug"],
                             (int)dr2["bp_id"],
                             "post",
                             (string)dr2["text"]));
 
-                    modifier.Flush();
-                    modifier.Close();
+                    writer.Commit();
+                    writer.Close();
                     Util.WriteToLog("done updating Lucene index");
                 }
                 catch (Exception e)
@@ -322,10 +334,11 @@ and bp_bug = " + Convert.ToString(bugId));
             }
         }
 
-        public static void BuildLuceneIndex(HttpApplicationState app)
+        public static void BuildLuceneIndex()
         {
             var thread = new Thread(ThreadProcBuild);
-            thread.Start(app);
+
+            thread.Start();
         }
 
         public static void UpdateLuceneIndex(int bugId)

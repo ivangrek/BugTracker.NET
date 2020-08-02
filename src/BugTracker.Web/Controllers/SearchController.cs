@@ -11,7 +11,7 @@ namespace BugTracker.Web.Controllers
     using Core.Controls;
     using Models;
     using Models.Search;
-    using Lucene.Net.Highlight;
+    using Lucene.Net.Search.Highlight;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace BugTracker.Web.Controllers
     using System.IO;
     using System.Text;
     using System.Web.Mvc;
+    using Lucene.Net.Store;
 
     [Authorize]
     public class SearchController : Controller
@@ -236,7 +237,7 @@ namespace BugTracker.Web.Controllers
             var scorer = new QueryScorer(searchQuery);
             var highlighter = new Highlighter(MyLucene.Formatter, scorer);
 
-            highlighter.SetTextFragmenter(MyLucene.Fragmenter); // new Lucene.Net.Highlight.SimpleFragmenter(400));
+            highlighter.TextFragmenter = MyLucene.Fragmenter;
 
             var sb = new StringBuilder();
             var guid = Guid.NewGuid().ToString().Replace("-", string.Empty);
@@ -254,7 +255,7 @@ namespace BugTracker.Web.Controllers
 
             lock (MyLucene.MyLock)
             {
-                Hits hits = null;
+                var hits = Array.Empty<ScoreDoc>();
 
                 try
                 {
@@ -267,37 +268,46 @@ namespace BugTracker.Web.Controllers
                     return Content(message);
                 }
 
+                var directory = FSDirectory.Open(MyLucene.IndexPath);
+                var searcher = new IndexSearcher(directory);
+
                 // insert the search results into a temp table which we will join with what's in the database
-                for (var i = 0; i < hits.Length(); i++)
+                for (var i = 0; i < hits.Length; i++)
                 {
                     if (dictAlreadySeenIds.Count < 100)
                     {
-                        var doc = hits.Doc(i);
-                        var bgId = doc.Get("bg_id");
+                        var docId = hits[i].Doc;
+                        //var bgId = doc.Get("bg_id");
+                        var document = searcher.Doc(docId);
+                        var bgId = document.Get("bg_id");
 
                         if (!dictAlreadySeenIds.ContainsKey(bgId))
                         {
+                            var bpId = document.Get("bp_id");
+                            var src = document.Get("src");
+                            var rawText = document.Get("raw_text");
+
                             dictAlreadySeenIds[bgId] = 1;
                             sb.Append("insert into #");
                             sb.Append(guid);
                             sb.Append(" values(");
                             sb.Append(bgId);
                             sb.Append(",");
-                            sb.Append(doc.Get("bp_id"));
+                            sb.Append(bpId);
                             sb.Append(",'");
-                            sb.Append(doc.Get("src"));
+                            sb.Append(src);
                             sb.Append("',");
-                            sb.Append(Convert.ToString(hits.Score(i))
+                            sb.Append(Convert.ToString(hits[i].Score)
                                 .Replace(",", ".")); // Somebody said this fixes a bug. Localization issue?
                             sb.Append(",N'");
 
-                            var rawText = Server.HtmlEncode(doc.Get("raw_text"));
-                            var stream = MyLucene.Anal.TokenStream(string.Empty, new StringReader(rawText));
-                            var highlightedText = highlighter.GetBestFragments(stream, rawText, 1, "...").Replace("'", "''");
+                            var rawTextEncoded = Server.HtmlEncode(rawText);
+                            var stream = MyLucene.Anal.TokenStream(string.Empty, new StringReader(rawTextEncoded));
+                            var highlightedText = highlighter.GetBestFragments(stream, rawTextEncoded, 1, "...").Replace("'", "''");
 
                             if (string.IsNullOrEmpty(highlightedText)) // someties the highlighter fails to emit text...
                             {
-                                highlightedText = rawText.Replace("'", "''");
+                                highlightedText = rawTextEncoded.Replace("'", "''");
                             }
 
                             if (highlightedText.Length > 3000)
