@@ -12,7 +12,7 @@
     using Models;
 
     [Authorize]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class HgController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

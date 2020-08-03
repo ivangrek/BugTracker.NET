@@ -22,7 +22,7 @@ namespace BugTracker.Web.Controllers
     using System.Web.UI;
 
     [Authorize]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class ReportController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

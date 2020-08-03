@@ -23,7 +23,7 @@ namespace BugTracker.Web.Controllers
     using Tracking.Querying.Organizations;
 
     [Authorize]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class QueryController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

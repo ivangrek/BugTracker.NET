@@ -20,7 +20,7 @@ namespace BugTracker.Web.Controllers
     using System.Web.UI;
 
     [Authorize]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class AspController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

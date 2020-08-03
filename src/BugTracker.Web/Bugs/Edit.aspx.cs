@@ -50,7 +50,7 @@ namespace BugTracker.Web.Bugs
         public void Page_Load(object sender, EventArgs e)
         {
             // Ok
-            Util.DoNotCache(Response);
+            //Util.DoNotCache(Response);
             // Ok
             Security.CheckSecurity(SecurityLevel.AnyUserOk);
             // Ok

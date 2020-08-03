@@ -201,14 +201,6 @@ namespace BugTracker.Web.Core
         //    list.Add(line);
         //}
 
-        [Obsolete("Use [OutputCache(Location = OutputCacheLocation.None)]")]
-        public static void DoNotCache(HttpResponse response)
-        {
-            response.CacheControl = "no-cache";
-            response.AddHeader("Pragma", "no-cache");
-            response.Expires = -1;
-        }
-
         public static bool IsInt(string maybeInt)
         {
             try

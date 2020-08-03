@@ -22,7 +22,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrator)]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class OrganizationController : Controller
     {
         private readonly IApplicationFacade applicationFacade;

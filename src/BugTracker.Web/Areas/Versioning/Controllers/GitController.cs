@@ -11,7 +11,7 @@
     using Models;
 
     [Authorize]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class GitController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

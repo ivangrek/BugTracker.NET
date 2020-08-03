@@ -20,7 +20,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using Web.Models;
 
     [Authorize(Roles = ApplicationRoles.Administrators)]
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class UserController : Controller
     {
         private readonly IApplicationSettings applicationSettings;

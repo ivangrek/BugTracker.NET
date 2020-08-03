@@ -21,7 +21,7 @@ namespace BugTracker.Web.Controllers
     using System.Web.Security;
     using System.Web.UI;
 
-    [OutputCache(Location = OutputCacheLocation.None)]
+    [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class AccountController : Controller
     {
         private readonly IApplicationSettings applicationSettings;
