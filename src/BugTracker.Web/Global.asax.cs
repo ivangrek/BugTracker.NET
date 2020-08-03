@@ -11,7 +11,6 @@ namespace BugTracker.Web
     using System.IO;
     using System.Text;
     using System.Web;
-    using System.Web.Hosting;
     using System.Web.Mvc;
     using System.Web.Optimization;
     using System.Web.Routing;
@@ -42,7 +41,7 @@ namespace BugTracker.Web
 
             _containerProvider = new ContainerProvider(container);
 
-            var path = HostingEnvironment.ApplicationPhysicalPath;
+            var path = AppDomain.CurrentDomain.BaseDirectory;
 
             Util.ServerRootForlder = path;
 

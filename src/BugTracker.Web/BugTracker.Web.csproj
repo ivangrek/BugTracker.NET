@@ -110,6 +110,18 @@
       <HintPath>..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.4.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.FileSystems.4.1.0\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb.4.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.StaticFiles.4.1.0\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
@@ -118,6 +130,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="SharpMimeTools">
       <HintPath>App_Code\SharpMimeTools.dll</HintPath>
@@ -168,9 +183,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\about.html" />
-    <Content Include="Content\MvcGrid\mvc-grid.css" />
-    <Content Include="Content\site.css" />
+    <Content Include="wwwroot\html\about.html" />
+    <Content Include="wwwroot\css\MvcGrid\mvc-grid.css" />
+    <Content Include="wwwroot\css\site.css" />
     <Content Include="Content\btnet_screen_capture.exe" />
     <Content Include="Content\custom\btnet_custom.css" />
     <Content Include="Content\custom\btnet_edit_bug.css" />
@@ -179,116 +194,116 @@
     <Content Include="Content\custom\custom_header.html" />
     <Content Include="Content\custom\custom_logo.html" />
     <Content Include="Content\custom\custom_welcome.html" />
-    <Content Include="Content\images\accept.png" />
-    <Content Include="Content\images\add.png" />
+    <Content Include="wwwroot\images\accept.png" />
+    <Content Include="wwwroot\images\add.png" />
     <Content Include="App_Code\SharpMimeTools.dll" />
-    <Content Include="Content\images\arrow_down.png" />
-    <Content Include="Content\images\arrow_up.png" />
-    <Content Include="Content\images\attach.gif" />
-    <Content Include="Content\images\brick.png" />
-    <Content Include="Content\btnet.css" />
-    <Content Include="Content\btnet_base.css" />
-    <Content Include="Content\images\bugtracker_screen_capture.jpeg" />
+    <Content Include="wwwroot\images\arrow_down.png" />
+    <Content Include="wwwroot\images\arrow_up.png" />
+    <Content Include="wwwroot\images\attach.gif" />
+    <Content Include="wwwroot\images\brick.png" />
+    <Content Include="wwwroot\css\btnet.css" />
+    <Content Include="wwwroot\css\btnet_base.css" />
+    <Content Include="wwwroot\images\bugtracker_screen_capture.jpeg" />
     <Content Include="Core\Controls\MainMenu.ascx" />
-    <Content Include="Scripts\bug_list.js" />
-    <Content Include="Content\images\camera.png" />
-    <Content Include="Content\images\clock.png" />
-    <Content Include="Content\images\comment.png" />
-    <Content Include="Content\images\database.png" />
-    <Content Include="Content\images\database_link.png" />
-    <Content Include="Content\images\database_refresh.png" />
-    <Content Include="Scripts\datejs\date-de-DE.js" />
-    <Content Include="Scripts\datejs\date-fr-FR.js" />
-    <Content Include="Scripts\datejs\date.js" />
-    <Content Include="Content\images\delete.png" />
-    <Content Include="Scripts\edit_area\autocompletion.js" />
-    <Content Include="Scripts\edit_area\edit_area.css" />
-    <Content Include="Scripts\edit_area\edit_area.js" />
-    <Content Include="Scripts\edit_area\edit_area_compressor.php" />
-    <Content Include="Scripts\edit_area\edit_area_full.js" />
-    <Content Include="Scripts\edit_area\edit_area_functions.js" />
-    <Content Include="Scripts\edit_area\edit_area_loader.js" />
-    <Content Include="Scripts\edit_area\elements_functions.js" />
-    <Content Include="Scripts\edit_area\highlight.js" />
-    <Content Include="Scripts\edit_area\images\autocompletion.gif" />
-    <Content Include="Scripts\edit_area\images\close.gif" />
-    <Content Include="Scripts\edit_area\images\fullscreen.gif" />
-    <Content Include="Scripts\edit_area\images\go_to_line.gif" />
-    <Content Include="Scripts\edit_area\images\help.gif" />
-    <Content Include="Scripts\edit_area\images\highlight.gif" />
-    <Content Include="Scripts\edit_area\images\load.gif" />
-    <Content Include="Scripts\edit_area\images\move.gif" />
-    <Content Include="Scripts\edit_area\images\newdocument.gif" />
-    <Content Include="Scripts\edit_area\images\opacity.png" />
-    <Content Include="Scripts\edit_area\images\processing.gif" />
-    <Content Include="Scripts\edit_area\images\redo.gif" />
-    <Content Include="Scripts\edit_area\images\reset_highlight.gif" />
-    <Content Include="Scripts\edit_area\images\save.gif" />
-    <Content Include="Scripts\edit_area\images\search.gif" />
-    <Content Include="Scripts\edit_area\images\smooth_selection.gif" />
-    <Content Include="Scripts\edit_area\images\spacer.gif" />
-    <Content Include="Scripts\edit_area\images\statusbar_resize.gif" />
-    <Content Include="Scripts\edit_area\images\undo.gif" />
-    <Content Include="Scripts\edit_area\images\word_wrap.gif" />
-    <Content Include="Scripts\edit_area\keyboard.js" />
-    <Content Include="Scripts\edit_area\langs\en.js" />
-    <Content Include="Scripts\edit_area\license_apache.txt" />
-    <Content Include="Scripts\edit_area\license_bsd.txt" />
-    <Content Include="Scripts\edit_area\license_lgpl.txt" />
-    <Content Include="Scripts\edit_area\manage_area.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\charmap.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\css\charmap.css" />
-    <Content Include="Scripts\edit_area\plugins\charmap\images\charmap.gif" />
-    <Content Include="Scripts\edit_area\plugins\charmap\jscripts\map.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\bg.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\cs.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\de.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\dk.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\en.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\eo.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\es.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\fr.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\hr.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\it.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\ja.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\mk.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\nl.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\pl.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\pt.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\ru.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\sk.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\langs\zh.js" />
-    <Content Include="Scripts\edit_area\plugins\charmap\popup.html" />
-    <Content Include="Scripts\edit_area\regexp.js" />
-    <Content Include="Scripts\edit_area\reg_syntax.js" />
-    <Content Include="Scripts\edit_area\reg_syntax\sql.js" />
-    <Content Include="Scripts\edit_area\resize_area.js" />
-    <Content Include="Scripts\edit_area\search_replace.js" />
-    <Content Include="Scripts\edit_area\template.html" />
+    <Content Include="wwwroot\js\bug_list.js" />
+    <Content Include="wwwroot\images\camera.png" />
+    <Content Include="wwwroot\images\clock.png" />
+    <Content Include="wwwroot\images\comment.png" />
+    <Content Include="wwwroot\images\database.png" />
+    <Content Include="wwwroot\images\database_link.png" />
+    <Content Include="wwwroot\images\database_refresh.png" />
+    <Content Include="wwwroot\js\datejs\date-de-DE.js" />
+    <Content Include="wwwroot\js\datejs\date-fr-FR.js" />
+    <Content Include="wwwroot\js\datejs\date.js" />
+    <Content Include="wwwroot\images\delete.png" />
+    <Content Include="wwwroot\js\edit_area\autocompletion.js" />
+    <Content Include="wwwroot\js\edit_area\edit_area.css" />
+    <Content Include="wwwroot\js\edit_area\edit_area.js" />
+    <Content Include="wwwroot\js\edit_area\edit_area_compressor.php" />
+    <Content Include="wwwroot\js\edit_area\edit_area_full.js" />
+    <Content Include="wwwroot\js\edit_area\edit_area_functions.js" />
+    <Content Include="wwwroot\js\edit_area\edit_area_loader.js" />
+    <Content Include="wwwroot\js\edit_area\elements_functions.js" />
+    <Content Include="wwwroot\js\edit_area\highlight.js" />
+    <Content Include="wwwroot\js\edit_area\images\autocompletion.gif" />
+    <Content Include="wwwroot\js\edit_area\images\close.gif" />
+    <Content Include="wwwroot\js\edit_area\images\fullscreen.gif" />
+    <Content Include="wwwroot\js\edit_area\images\go_to_line.gif" />
+    <Content Include="wwwroot\js\edit_area\images\help.gif" />
+    <Content Include="wwwroot\js\edit_area\images\highlight.gif" />
+    <Content Include="wwwroot\js\edit_area\images\load.gif" />
+    <Content Include="wwwroot\js\edit_area\images\move.gif" />
+    <Content Include="wwwroot\js\edit_area\images\newdocument.gif" />
+    <Content Include="wwwroot\js\edit_area\images\opacity.png" />
+    <Content Include="wwwroot\js\edit_area\images\processing.gif" />
+    <Content Include="wwwroot\js\edit_area\images\redo.gif" />
+    <Content Include="wwwroot\js\edit_area\images\reset_highlight.gif" />
+    <Content Include="wwwroot\js\edit_area\images\save.gif" />
+    <Content Include="wwwroot\js\edit_area\images\search.gif" />
+    <Content Include="wwwroot\js\edit_area\images\smooth_selection.gif" />
+    <Content Include="wwwroot\js\edit_area\images\spacer.gif" />
+    <Content Include="wwwroot\js\edit_area\images\statusbar_resize.gif" />
+    <Content Include="wwwroot\js\edit_area\images\undo.gif" />
+    <Content Include="wwwroot\js\edit_area\images\word_wrap.gif" />
+    <Content Include="wwwroot\js\edit_area\keyboard.js" />
+    <Content Include="wwwroot\js\edit_area\langs\en.js" />
+    <Content Include="wwwroot\js\edit_area\license_apache.txt" />
+    <Content Include="wwwroot\js\edit_area\license_bsd.txt" />
+    <Content Include="wwwroot\js\edit_area\license_lgpl.txt" />
+    <Content Include="wwwroot\js\edit_area\manage_area.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\charmap.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\css\charmap.css" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\images\charmap.gif" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\jscripts\map.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\bg.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\cs.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\de.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\dk.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\en.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\eo.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\es.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\fr.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\hr.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\it.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\ja.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\mk.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\nl.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\pl.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\pt.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\ru.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\sk.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\langs\zh.js" />
+    <Content Include="wwwroot\js\edit_area\plugins\charmap\popup.html" />
+    <Content Include="wwwroot\js\edit_area\regexp.js" />
+    <Content Include="wwwroot\js\edit_area\reg_syntax.js" />
+    <Content Include="wwwroot\js\edit_area\reg_syntax\sql.js" />
+    <Content Include="wwwroot\js\edit_area\resize_area.js" />
+    <Content Include="wwwroot\js\edit_area\search_replace.js" />
+    <Content Include="wwwroot\js\edit_area\template.html" />
     <Content Include="Bugs\Edit.aspx" />
-    <Content Include="Scripts\edit_bug.js" />
-    <Content Include="Content\images\email_edit.png" />
-    <Content Include="Content\images\email_open.png" />
-    <Content Include="Content\favicon.ico" />
-    <Content Include="Content\images\git.png" />
+    <Content Include="wwwroot\js\edit_bug.js" />
+    <Content Include="wwwroot\images\email_edit.png" />
+    <Content Include="wwwroot\images\email_open.png" />
+    <Content Include="wwwroot\favicon.ico" />
+    <Content Include="wwwroot\images\git.png" />
     <Content Include="Global.asax" />
-    <Content Include="Content\images\hg.png" />
-    <Content Include="Scripts\MvcGrid\mvc-grid.js" />
-    <Content Include="Scripts\jquery\grippie.png" />
-    <Content Include="Scripts\jquery\jquery.textarearesizer.compressed.js" />
-    <Content Include="Content\login.htm" />
-    <Content Include="Content\lucene_syntax.html" />
-    <Content Include="Content\mbtnet_base.css" />
-    <Content Include="Content\images\paste_plain.png" />
-    <Content Include="Content\images\printer.png" />
+    <Content Include="wwwroot\images\hg.png" />
+    <Content Include="wwwroot\js\MvcGrid\mvc-grid.js" />
+    <Content Include="wwwroot\js\jquery\grippie.png" />
+    <Content Include="wwwroot\js\jquery\jquery.textarearesizer.compressed.js" />
+    <Content Include="wwwroot\html\login.htm" />
+    <Content Include="wwwroot\html\lucene_syntax.html" />
+    <Content Include="wwwroot\css\mbtnet_base.css" />
+    <Content Include="wwwroot\images\paste_plain.png" />
+    <Content Include="wwwroot\images\printer.png" />
     <Content Include="setup.sql" />
-    <Content Include="Scripts\sortable.js" />
-    <Content Include="Scripts\suggest.js" />
-    <Content Include="Content\images\svn.png" />
-    <Content Include="Content\images\telephone.png" />
-    <Content Include="Content\images\telephone_edit.png" />
-    <Content Include="Scripts\version_control_sel_rev.js" />
-    <Content Include="Content\images\vote_up.png" />
+    <Content Include="wwwroot\js\sortable.js" />
+    <Content Include="wwwroot\js\suggest.js" />
+    <Content Include="wwwroot\images\svn.png" />
+    <Content Include="wwwroot\images\telephone.png" />
+    <Content Include="wwwroot\images\telephone_edit.png" />
+    <Content Include="wwwroot\js\version_control_sel_rev.js" />
+    <Content Include="wwwroot\images\vote_up.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -438,10 +453,11 @@
     <Compile Include="Models\Report\DeleteModel.cs" />
     <Compile Include="Models\Report\DashboardModel.cs" />
     <Compile Include="Models\SortableTableModel.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\edit_area\edit_area_full.gz" />
-    <Content Include="Content\btnet_css_for_email.css.renamed" />
+    <Content Include="wwwroot\js\edit_area\edit_area_full.gz" />
+    <Content Include="wwwroot\css\btnet_css_for_email.css.renamed" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\logs\" />
@@ -451,9 +467,6 @@
     <Folder Include="Areas\Versioning\Svn\" />
     <Folder Include="Areas\Versioning\Views\Shared\" />
     <Folder Include="Models\News\" />
-    <Folder Include="wwwroot\css\" />
-    <Folder Include="wwwroot\images\" />
-    <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
   <ItemGroup>
@@ -504,7 +517,7 @@
     <Content Include="Areas\Administration\Views\CustomField\Update.cshtml" />
     <Content Include="Areas\Administration\Views\User\Edit.cshtml" />
     <Content Include="Areas\Versioning\Views\Hg\Blame.cshtml" />
-    <Content Include="Content\MvcGrid\Fonts\GridGlyphs.woff" />
+    <Content Include="wwwroot\css\MvcGrid\Fonts\GridGlyphs.woff" />
     <Content Include="Areas\Versioning\Views\Svn\Blame.cshtml" />
     <Content Include="Areas\Versioning\Views\Svn\Log.cshtml" />
     <Content Include="Areas\Versioning\Views\Svn\Diff.cshtml" />
