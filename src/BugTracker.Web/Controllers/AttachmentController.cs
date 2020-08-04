@@ -17,6 +17,7 @@ namespace BugTracker.Web.Controllers
     using System.Text;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core.Identification;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
@@ -322,7 +323,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Update(int id, int bugId)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -380,7 +381,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Update(UpdateModel model)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -426,7 +427,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Delete(int id, int bugId)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -469,7 +470,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Delete(DeleteModel model)
         {
             var isAuthorized = this.security.User.IsAdmin

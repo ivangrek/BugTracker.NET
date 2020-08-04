@@ -20,6 +20,7 @@ namespace BugTracker.Web.Controllers
     using System.IO;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core.Identification;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
@@ -202,7 +203,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Create()
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -232,7 +233,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Create(EditModel model)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -270,7 +271,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Update(int id)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -306,7 +307,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Update(EditModel model)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -344,7 +345,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Delete(int id)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -381,7 +382,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Delete(DeleteModel model)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -406,7 +407,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Administrator)]
+        [Authorize(Roles = ApplicationRole.Administrator)]
         public ActionResult Dashboard()
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -444,7 +445,7 @@ order by ds_col, ds_row";
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult EditDashboard()
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -481,7 +482,7 @@ order by ds_col, ds_row";
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType)
         {
             var isAuthorized = this.security.User.IsAdmin

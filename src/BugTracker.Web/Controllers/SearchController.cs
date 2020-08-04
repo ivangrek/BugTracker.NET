@@ -19,6 +19,7 @@ namespace BugTracker.Web.Controllers
     using System.IO;
     using System.Text;
     using System.Web.Mvc;
+    using Core.Identification;
     using Lucene.Net.Store;
 
     [Authorize]

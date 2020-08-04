@@ -18,11 +18,12 @@ namespace BugTracker.Web.Controllers
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core.Identification;
     using Identification.Querying;
     using Querying;
     using Tracking.Querying.Organizations;
 
-    [Authorize]
+    [Authorize(Roles = ApplicationRole.Member)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class QueryController : Controller
     {
@@ -52,6 +53,7 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Index(bool? showAll)
         {
+            // TODO for reporter
             var isAuthorized = this.security.User.IsAdmin
                  || this.security.User.CanEditSql;
 

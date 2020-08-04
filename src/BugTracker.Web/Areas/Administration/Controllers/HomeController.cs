@@ -21,10 +21,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Xml;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models.Home;
     using Web.Models;
 
-    [Authorize(Roles = ApplicationRoles.Administrator)]
+    [Authorize(Roles = ApplicationRole.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class HomeController : Controller
     {

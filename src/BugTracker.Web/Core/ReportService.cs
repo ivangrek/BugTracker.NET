@@ -11,6 +11,7 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.Linq;
     using System.Web;
+    using Identification;
     using Persistence;
     using Persistence.Models;
 

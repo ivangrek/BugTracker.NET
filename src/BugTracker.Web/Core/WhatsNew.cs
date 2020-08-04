@@ -9,6 +9,7 @@ namespace BugTracker.Web.Core
 {
     using System;
     using System.Collections.Generic;
+    using Identification;
 
     public static class WhatsNew
     {

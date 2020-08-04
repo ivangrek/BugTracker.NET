@@ -12,6 +12,7 @@ namespace BugTracker.Web.Core
     using System.IO;
     using System.Text;
     using anmar.SharpMimeTools;
+    using Identification;
 
     public static class MyMime
     {
@@ -390,7 +391,7 @@ where us_username = N'$us'";
             var dr = GetUserDataRowMaybeUsingFromAddr(mimeMessage, fromAddr, username);
 
             // simulate a user having logged in, for downstream code
-            var security = new Security();
+            var security = new Security(new ApplicationSettings());
 
             security.User.Username = username;
             security.User.Usid = (int)dr["us_id"];

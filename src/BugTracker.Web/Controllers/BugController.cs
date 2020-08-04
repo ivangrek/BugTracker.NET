@@ -27,6 +27,7 @@ namespace BugTracker.Web.Controllers
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core.Identification;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
@@ -1131,7 +1132,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult MassEdit()
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -1300,7 +1301,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult MassEdit(MassEditModel model)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -1357,7 +1358,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Delete(int id)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -1399,7 +1400,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Delete(DeleteModel model)
         {
             var isAuthorized = this.security.User.IsAdmin
@@ -1549,7 +1550,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Subscribe(int id, string actn)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(id, this.security);
@@ -1604,7 +1605,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Merge(int id)
         {
             var isAutorized = this.security.User.IsAdmin
@@ -1636,7 +1637,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Merge(MergeModel model)
         {
             var isAutorized = this.security.User.IsAdmin
@@ -2050,7 +2051,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Administrator)]
+        [Authorize(Roles = ApplicationRole.Administrator)]
         public ActionResult DeleteSubscriber(DeleteSubscriberModel model)
         {
             var sql = "delete from bug_subscriptions where bs_bug = $bg_id and bs_user = $us_id";

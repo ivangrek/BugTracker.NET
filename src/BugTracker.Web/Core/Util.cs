@@ -19,6 +19,7 @@ namespace BugTracker.Web.Core
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Web;
+    using Identification;
 
     public static class Util
     {
@@ -498,20 +499,39 @@ namespace BugTracker.Web.Core
             }
         }
 
-        public static void UpdateUserPassword(int usId, string unencypted)
+        public static void UpdateUserPassword(int us_id, string unencypted)
         {
-            var random = new Random();
-            var salt = random.Next(10000, 99999);
+            var salt = GenerateRandomString();
+            var hashed = HashString(unencypted, Convert.ToString(salt));
+            var sql = new SqlString("update users set us_password = @hashed, us_salt = @salt where us_id = @id");
 
-            var encrypted = EncryptStringUsingMd5(unencypted + Convert.ToString(salt));
-
-            var sql = "update users set us_password = N'$en', us_salt = $salt where us_id = $id";
-
-            sql = sql.Replace("$en", encrypted);
-            sql = sql.Replace("$salt", Convert.ToString(salt));
-            sql = sql.Replace("$id", Convert.ToString(usId));
+            sql = sql.AddParameterWithValue("hashed", hashed);
+            sql = sql.AddParameterWithValue("salt", Convert.ToString(salt));
+            sql = sql.AddParameterWithValue("id", Convert.ToString(us_id));
 
             DbUtil.ExecuteNonQuery(sql);
+        }
+
+        public static string HashString(string password, string salt)
+        {
+            var key = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes(salt + salt));
+            var result = Encoding.UTF8.GetString(key.GetBytes(128));
+
+            return result;
+        }
+
+        private static readonly Random _random = new Random();
+        public static string GenerateRandomString()
+        {
+            var characters = "ABCDEFGHIJKLMNOPQURSTUVWXYZabcdefghijklmnopqurtuvwxyz1234567890".ToCharArray();
+            var builder = new StringBuilder();
+
+            for (var i = 0; i < _random.Next(10, 100); i++)
+            {
+                builder.Append(characters[_random.Next(characters.Length - 1)]);
+            }
+
+            return builder.ToString();
         }
 
         public static string CapitalizeFirstLetter(string s)

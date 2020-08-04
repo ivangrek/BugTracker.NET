@@ -16,12 +16,13 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using Changing.Results;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models.Organization;
     using Querying;
     using Tracking.Querying.Organizations;
     using Web.Models;
 
-    [Authorize(Roles = ApplicationRoles.Administrator)]
+    [Authorize(Roles = ApplicationRole.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class OrganizationController : Controller
     {

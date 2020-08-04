@@ -11,6 +11,7 @@ namespace BugTracker.Web.Core
     using System.Collections.Generic;
     using System.Data;
     using System.Text;
+    using Identification;
 
     public class User
     {

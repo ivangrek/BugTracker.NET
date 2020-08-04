@@ -7,13 +7,16 @@
 namespace BugTracker.Web
 {
     using System.Reflection;
+    using System.Web;
     using System.Web.Mvc;
     using Autofac;
     using Autofac.Integration.Mvc;
     using Changing;
     using Core;
+    using Core.Identification;
     using Core.Persistence;
     using Identification;
+    using Microsoft.Owin.Security;
 
     internal static class IoCConfig
     {
@@ -32,6 +35,9 @@ namespace BugTracker.Web
             builder.RegisterGenericDecorator(typeof(LoggingCommandHandlerDecorator<>), typeof(ICommandHandler<>));
 
             // Services
+            builder.Register(x => HttpContext.Current.GetOwinContext().Authentication)
+                .As<IAuthenticationManager>();
+
             builder.RegisterType<ApplicationSettings>()
                 .As<IApplicationSettings>();
 

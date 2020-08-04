@@ -7,6 +7,7 @@
 namespace BugTracker.Web.Models
 {
     using Core;
+    using Core.Identification;
 
     public sealed class PageModel
     {

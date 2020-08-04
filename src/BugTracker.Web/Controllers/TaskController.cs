@@ -16,6 +16,7 @@ namespace BugTracker.Web.Controllers
     using System.Linq;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core.Identification;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
@@ -162,7 +163,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Create(int bugId)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(bugId, this.security);
@@ -207,7 +208,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Create(EditModel model)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(model.BugId, this.security);
@@ -353,7 +354,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Update(int id, int bugId)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(bugId, this.security);
@@ -434,7 +435,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Update(EditModel model)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(model.BugId, this.security);
@@ -555,7 +556,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Administrator)]
+        [Authorize(Roles = ApplicationRole.Administrator)]
         public ActionResult Delete(int id, int bugId)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(bugId, this.security);
@@ -592,7 +593,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Administrator)]
+        [Authorize(Roles = ApplicationRole.Administrator)]
         public ActionResult Delete(DeleteModel model)
         {
             var permissionLevel = Bug.GetBugPermissionLevel(model.BugId, this.security);

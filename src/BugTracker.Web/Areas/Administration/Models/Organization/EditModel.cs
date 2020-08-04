@@ -8,6 +8,7 @@ namespace BugTracker.Web.Areas.Administration.Models.Organization
 {
     using System.ComponentModel.DataAnnotations;
     using Core;
+    using Core.Identification;
 
     public sealed class EditModel
     {

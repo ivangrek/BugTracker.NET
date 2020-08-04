@@ -18,8 +18,8 @@ namespace BugTracker.Web.Controllers
     using System.DirectoryServices;
     using System.Web;
     using System.Web.Mvc;
-    using System.Web.Security;
     using System.Web.UI;
+    using Core.Identification;
 
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class AccountController : Controller
@@ -373,11 +373,8 @@ namespace BugTracker.Web.Controllers
 
                 if (dr != null)
                 {
-                    var usId = (int)dr["us_id"];
-
-                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response, usId, "guest", "0");
-
-                    FormsAuthentication.SetAuthCookie("guest", false);
+                    this.authenticate
+                        .SignIn("guest", false);
 
                     return Redirect(Util.RedirectUrl(System.Web.HttpContext.Current.Request));
                 }
@@ -402,11 +399,8 @@ namespace BugTracker.Web.Controllers
 
                     if (dr != null)
                     {
-                        var usId = (int)dr["us_id"];
-
-                        this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response, usId, model.Login, "0");
-
-                        FormsAuthentication.SetAuthCookie(model.Login, model.RememberMe);
+                        this.authenticate
+                            .SignIn(model.Login, model.RememberMe);
 
                         return Redirect(Util.RedirectUrl(System.Web.HttpContext.Current.Request));
                     }
@@ -480,10 +474,8 @@ namespace BugTracker.Web.Controllers
                 {
                     // The user was found, so bake a cookie and redirect
                     var userid = (int)dr["us_id"];
-                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
-                        userid,
-                        (string)dr["us_username"],
-                        "1");
+                    this.authenticate
+                        .SignIn((string)dr["us_username"], false);
 
                     Util.UpdateMostRecentLoginDateTime(userid);
 
@@ -570,10 +562,8 @@ namespace BugTracker.Web.Controllers
                     if (newUserId > 0) // automatically created the user
                     {
                         // The user was created, so bake a cookie and redirect
-                        this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
-                            newUserId,
-                            windowsUsername.Replace("'", "''"),
-                            "1");
+                        this.authenticate
+                            .SignIn((string)dr["us_username"], false);
 
                         Util.UpdateMostRecentLoginDateTime(newUserId);
 
@@ -595,10 +585,8 @@ namespace BugTracker.Web.Controllers
                 {
                     // The Guest user was found, so bake a cookie and redirect
                     var userid = (int)dr["us_id"];
-                    this.security.CreateSession(System.Web.HttpContext.Current.Request, System.Web.HttpContext.Current.Response,
-                        userid,
-                        (string)dr["us_username"],
-                        "1");
+                    this.authenticate
+                        .SignIn((string)dr["us_username"], false);
 
                     Util.UpdateMostRecentLoginDateTime(userid);
 
@@ -856,8 +844,8 @@ namespace BugTracker.Web.Controllers
             return View(model);
         }
 
-        //[HttpPost]                    // TODO uncomment after migration
-        //[ValidateAntiForgeryToken]    // TODO uncomment after migration
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Logoff()
         {
             //using (DbUtil.GetSqlConnection())
@@ -905,13 +893,14 @@ namespace BugTracker.Web.Controllers
                 Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
             }
 
-            FormsAuthentication.SignOut();
+            this.authenticate
+                .SignOut();
 
             return RedirectToAction(nameof(Login));
         }
 
         [HttpGet]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Settings()
         {
             ViewBag.Page = new PageModel
@@ -998,7 +987,7 @@ namespace BugTracker.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = ApplicationRoles.Member)]
+        [Authorize(Roles = ApplicationRole.Member)]
         public ActionResult Settings(SettingsModel model)
         {
             ViewBag.Page = new PageModel

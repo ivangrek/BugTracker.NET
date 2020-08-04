@@ -119,6 +119,12 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb.4.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.Security.4.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.Security.Cookies.4.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin.StaticFiles, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Owin.StaticFiles.4.1.0\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
     </Reference>
@@ -321,6 +327,11 @@
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Core\Identification\ApplicationRole.cs" />
+    <Compile Include="Core\Identification\Authenticate.cs" />
+    <Compile Include="Core\Identification\Security.cs" />
+    <Compile Include="Core\Identification\SecurityLevel.cs" />
+    <Compile Include="Core\Identification\SecurityPermissionLevel.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
     <Compile Include="Models\Bug\SendEmailModel.cs" />
     <Compile Include="Models\Search\IndexModel.cs" />
@@ -370,9 +381,7 @@
     <Compile Include="Controllers\AspController.cs" />
     <Compile Include="Controllers\AttachmentController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
-    <Compile Include="Core\ApplicationRoleProvider.cs" />
     <Compile Include="Core\ApplicationSettings.cs" />
-    <Compile Include="Core\Authenticate.cs" />
     <Compile Include="Core\Bug.cs" />
     <Compile Include="Core\BugList.cs" />
     <Compile Include="Core\Persistence\Configurations\DashboardItemConfiguration.cs" />
@@ -405,7 +414,6 @@
     <Compile Include="Core\MyPop3.cs" />
     <Compile Include="Core\Pop3Client.cs" />
     <Compile Include="Core\PrintBug.cs" />
-    <Compile Include="Core\Security.cs" />
     <Compile Include="Core\SortableHtmlTable.cs" />
     <Compile Include="Core\Tags.cs" />
     <Compile Include="Core\TranslationService.cs" />

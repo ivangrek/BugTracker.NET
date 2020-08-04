@@ -14,6 +14,7 @@ namespace BugTracker.Web.Core
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Web;
+    using Identification;
 
     public static class PrintBug
     {

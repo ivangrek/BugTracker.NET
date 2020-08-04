@@ -5,60 +5,76 @@
     Distributed under the terms of the GNU General Public License
 */
 
-namespace BugTracker.Web.Core
+namespace BugTracker.Web.Core.Identification
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.DirectoryServices.Protocols;
     using System.Net;
+    using System.Security.Claims;
     using System.Web;
+    using Microsoft.Owin.Security;
 
     public interface IAuthenticate
     {
         bool CheckPassword(string username, string password);
+
+        void SignIn(string username, bool persistent);
+
+        void SignOut();
     }
 
     internal sealed class Authenticate : IAuthenticate
     {
         private readonly IApplicationSettings applicationSettings;
+        private readonly IAuthenticationManager authenticationManager;
 
-        public Authenticate(IApplicationSettings applicationSettings)
+        public Authenticate(
+            IApplicationSettings applicationSettings,
+            IAuthenticationManager authenticationManager)
         {
             this.applicationSettings = applicationSettings;
+            this.authenticationManager = authenticationManager;
         }
 
         public bool CheckPassword(string username, string password)
         {
-            var sql = @"
-select us_username, us_id, us_password, isnull(us_salt,0) us_salt, us_active
-from users
-where us_username = N'$username'";
+            var sql = new SqlString(@"
+                select
+                    us_username,
+                    us_id,
+                    us_password,
+                    isnull(us_salt,0) us_salt,
+                    us_active
+                from
+                    users
+                where
+                    us_username = @username");
 
-            sql = sql.Replace("$username", username);
+            sql = sql.AddParameterWithValue("username", username);
 
             var dr = DbUtil.GetDataRow(sql);
 
             if (dr == null)
             {
-                Util.WriteToLog("Unknown user " + username + " attempted to login.");
+                Util.WriteToLog($"Unknown user {username} attempted to login.");
+
                 return false;
             }
 
-            var usActive = (int) dr["us_active"];
+            var usActive = (int)dr["us_active"];
 
             if (usActive == 0)
             {
-                Util.WriteToLog("Inactive user " + username + " attempted to login.");
+                Util.WriteToLog($"Inactive user {username} attempted to login.");
+
                 return false;
             }
 
-            var authenticated = false;
-            LinkedList<DateTime> failedAttempts = null;
-
             // Too many failed attempts?
             // We'll only allow N in the last N minutes.
-            failedAttempts = (LinkedList<DateTime>) HttpRuntime.Cache[username];
+            var failedAttempts = (LinkedList<DateTime>)HttpRuntime.Cache[username];
 
             if (failedAttempts != null)
             {
@@ -67,7 +83,9 @@ where us_username = N'$username'";
                 var failedAttemptsAllowed = this.applicationSettings.FailedLoginAttemptsAllowed;
 
                 var nMinutesAgo = DateTime.Now.AddMinutes(-1 * minutesAgo);
+
                 while (true)
+                {
                     if (failedAttempts.Count > 0)
                     {
                         if (failedAttempts.First.Value < nMinutesAgo)
@@ -84,14 +102,15 @@ where us_username = N'$username'";
                     {
                         break;
                     }
+                }
 
                 // how many failed attempts in last N minutes?
-                Util.WriteToLog(
-                    "failed attempt count for " + username + ":" + Convert.ToString(failedAttempts.Count));
+                Util.WriteToLog($"failed attempt count for {username}: {failedAttempts.Count}");
 
                 if (failedAttempts.Count > failedAttemptsAllowed)
                 {
                     Util.WriteToLog("Too many failed login attempts in too short a time period: " + username);
+
                     return false;
                 }
 
@@ -99,10 +118,16 @@ where us_username = N'$username'";
                 HttpRuntime.Cache[username] = failedAttempts;
             }
 
+            bool authenticated;
+
             if (this.applicationSettings.AuthenticateUsingLdap)
+            {
                 authenticated = CheckPasswordWithLdap(username, password);
+            }
             else
+            {
                 authenticated = CheckPasswordWithDb(username, password, dr);
+            }
 
             if (authenticated)
             {
@@ -113,11 +138,15 @@ where us_username = N'$username'";
                     HttpRuntime.Cache[username] = failedAttempts;
                 }
 
-                Util.UpdateMostRecentLoginDateTime((int) dr["us_id"]);
+                Util.UpdateMostRecentLoginDateTime((int)dr["us_id"]);
+
                 return true;
             }
 
-            if (failedAttempts == null) failedAttempts = new LinkedList<DateTime>();
+            if (failedAttempts == null)
+            {
+                failedAttempts = new LinkedList<DateTime>();
+            }
 
             // Record a failed login attempt.
             failedAttempts.AddLast(DateTime.Now);
@@ -139,16 +168,16 @@ where us_username = N'$username'";
                 for (var i = 0; i < dnArray.Length; i++)
                 {
                     var dn = dnArray[i].Replace("$REPLACE_WITH_USERNAME$", username);
-
                     var cred = new NetworkCredential(dn, password);
 
-                    ldap.AuthType = (AuthType) Enum.Parse
+                    ldap.AuthType = (AuthType)Enum.Parse
                     (typeof(AuthType), this.applicationSettings.LdapAuthType);
 
                     try
                     {
                         ldap.Bind(cred);
-                        Util.WriteToLog("LDAP authentication ok using " + dn + " for username: " + username);
+                        Util.WriteToLog($"LDAP authentication ok using {dn} for username: {username}");
+
                         return true;
                     }
                     catch (Exception e)
@@ -161,7 +190,7 @@ where us_username = N'$username'";
                             exceptionMsg += e.InnerException.Message;
                         }
 
-                        Util.WriteToLog("LDAP authentication failed using " + dn + ": " + exceptionMsg);
+                        Util.WriteToLog($"LDAP authentication failed using {dn}: {exceptionMsg}");
                     }
                 }
             }
@@ -169,32 +198,92 @@ where us_username = N'$username'";
             return false;
         }
 
-        private static bool CheckPasswordWithDb(string username, string password, DataRow dr)
+        public static bool CheckPasswordWithDb(string username, string enteredPassword, DataRow dr)
         {
-            var usSalt = (int) dr["us_salt"];
+            Util.UpdateUserPassword(1, "admin");
 
-            string encrypted;
+            var salt = (string)dr["us_salt"];
+            var hashedEnteredPassword = Util.HashString(enteredPassword, salt);
+            var databasePassword = (string)dr["us_password"];
 
-            var usPassword = (string) dr["us_password"];
-
-            if (usPassword.Length < 32) // if password in db is unencrypted
-                encrypted = password; // in other words, unecrypted
-            else if (usSalt == 0)
-                encrypted = Util.EncryptStringUsingMd5(password);
-            else
-                encrypted = Util.EncryptStringUsingMd5(password + Convert.ToString(usSalt));
-
-            if (encrypted == usPassword)
+            if (hashedEnteredPassword == databasePassword)
             {
-                // Authenticated, but let's do a better job encrypting the password.
-                // If it is not encrypted, or, if it is encrypted without salt, then
-                // update it so that it is encrypted WITH salt.
-                if (usSalt == 0 || usPassword.Length < 32) Util.UpdateUserPassword((int) dr["us_id"], password);
                 return true;
             }
 
-            Util.WriteToLog("User " + username + " entered an incorrect password.");
+            Util.WriteToLog($"User {username} entered an incorrect password.");
+
             return false;
+        }
+
+        public void SignIn(string username, bool persistent)
+        {
+            var properties = new AuthenticationProperties()
+            {
+                IsPersistent = persistent
+            };
+
+            var sql = new SqlString(@"
+                select
+                    us_id,
+                    us_username,
+                    us_admin,
+                    isnull(proj.pu_admin, 0) pu_admin
+                from
+                    users
+
+                    left outer join
+                        project_user_xref proj
+                    on
+                        proj.pu_project = us_forced_project
+                        and
+                        proj.pu_user = us_id
+                where
+                    us_username = @us
+                    and
+                    us_active = 1");
+
+            sql = sql.AddParameterWithValue("us", username);
+
+            var dr = DbUtil.GetDataRow(sql);
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, Convert.ToString(dr["us_id"])),
+                new Claim(ClaimTypes.Name, Convert.ToString(dr["us_username"])),
+            };
+
+            if (username == "guest")
+            {
+                claims.Add(new Claim(ClaimTypes.Role, ApplicationRole.Guest));
+            }
+            else
+            {
+                if ((int)dr["us_admin"] == 1)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, ApplicationRole.Administrator));
+                }
+                else
+                {
+                    if ((int)dr["pu_admin"] > 0)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, ApplicationRole.ProjectAdministrator));
+                    }
+                }
+            }
+
+            claims.Add(new Claim(ClaimTypes.Role, ApplicationRole.Member));
+
+            var identity = new ClaimsIdentity(claims, "ApplicationCookie", ClaimTypes.Name, ClaimTypes.Role);
+
+            this.authenticationManager
+                .SignIn(properties, identity);
+        }
+
+        public void SignOut()
+        {
+            this.authenticationManager
+                .SignOut();
         }
     }
 }

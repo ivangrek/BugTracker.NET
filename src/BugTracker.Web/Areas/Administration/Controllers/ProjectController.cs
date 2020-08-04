@@ -15,13 +15,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using Changing.Results;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models.Project;
     using Querying;
     using Tracking.Changing.Projects.Commands;
     using Tracking.Querying.Projects;
     using Web.Models;
 
-    [Authorize(Roles = ApplicationRoles.Administrator)]
+    [Authorize(Roles = ApplicationRole.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class ProjectController : Controller
     {

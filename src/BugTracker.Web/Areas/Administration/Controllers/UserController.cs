@@ -16,10 +16,11 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models.User;
     using Web.Models;
 
-    [Authorize(Roles = ApplicationRoles.Administrators)]
+    [Authorize(Roles = ApplicationRole.Administrators)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class UserController : Controller
     {

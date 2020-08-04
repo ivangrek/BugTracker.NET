@@ -9,6 +9,7 @@
 
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
+<%@ Import Namespace="BugTracker.Web.Core.Identification" %>
 
 <asp:Content ContentPlaceHolderID="Head" runat="server">
     <%--TODO <body onload="on_body_load()" onunload="on_body_unload()">--%>

@@ -15,13 +15,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using Changing.Results;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models.Status;
     using Querying;
     using Tracking.Changing.Statuses.Commands;
     using Tracking.Querying.Statuses;
     using Web.Models;
 
-    [Authorize(Roles = ApplicationRoles.Administrator)]
+    [Authorize(Roles = ApplicationRole.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class StatusController : Controller
     {

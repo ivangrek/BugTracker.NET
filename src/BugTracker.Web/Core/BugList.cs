@@ -13,6 +13,7 @@ namespace BugTracker.Web.Core
     using System.Runtime.Caching;
     using System.Text;
     using System.Web;
+    using Identification;
 
     public static class BugList
     {

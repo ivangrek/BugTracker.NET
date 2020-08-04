@@ -15,6 +15,7 @@ namespace BugTracker.Web.Core
     using System.Text;
     using System.Threading;
     using System.Web;
+    using Identification;
 
     public class Bug
     {
@@ -1087,7 +1088,7 @@ and (us_id <> $us or isnull(us_send_notifications_to_self,0) = 1)";
                                      ApplicationSettings.AbsoluteUrlPrefix + "\"/>");
 
                     // create a security rec for the user receiving the email
-                    var sec2 = new Security();
+                    var sec2 = new Security(new ApplicationSettings());
 
                     // fill in what we know is needed downstream
                     sec2.User.IsAdmin = Convert.ToBoolean(dr["us_admin"]);

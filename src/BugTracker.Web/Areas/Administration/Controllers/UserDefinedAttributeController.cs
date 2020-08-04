@@ -14,13 +14,14 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using Changing.Results;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models.UserDefinedAttribute;
     using Querying;
     using Tracking.Changing.UserDefinedAttributes.Commands;
     using Tracking.Querying.UserDefinedAttributes;
     using Web.Models;
 
-    [Authorize(Roles = ApplicationRoles.Administrator)]
+    [Authorize(Roles = ApplicationRole.Administrator)]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class UserDefinedAttributeController : Controller
     {

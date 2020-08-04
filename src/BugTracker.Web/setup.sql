@@ -134,8 +134,9 @@ create table users
 (
 us_id int identity constraint pk_users primary key not null,
 us_username nvarchar(40) not null,
-us_salt int null,
-us_password nvarchar(64) not null,
+us_salt nvarchar(200) null,
+us_password nvarchar(200) not null,
+password_reset_key nvarchar(200),
 us_firstname nvarchar(60) null,
 us_lastname nvarchar(60) null,
 us_email nvarchar(120) null,
@@ -163,9 +164,10 @@ us_most_recent_login_datetime datetime null
 
 create unique index unique_us_username on users (us_username)
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_org)
-values ('admin', 'System', 'Administrator', 'admin', 1, 1, 1)
+--admin/admin is the username/password
+SET IDENTITY_INSERT [dbo].[users] ON;  
+INSERT [dbo].[users] ([us_id], [us_username], [us_salt], [us_password], [password_reset_key], [us_firstname], [us_lastname], [us_email], [us_admin], [us_default_query], [us_enable_notifications], [us_auto_subscribe], [us_auto_subscribe_own_bugs], [us_auto_subscribe_reported_bugs], [us_send_notifications_to_self], [us_active], [us_bugs_per_page], [us_forced_project], [us_reported_notifications], [us_assigned_notifications], [us_subscribed_notifications], [us_signature], [us_use_fckeditor], [us_enable_bug_list_popups], [us_created_user], [us_org], [us_most_recent_login_datetime]) VALUES (1, N'admin', N'PmafvZSWFYML3', N'si�ύ�oJ̚�M����cx����piĦWNls��!�9O��XL]�s��׊6�{�%�$�7������ڨFL�IS�v.����MC��1(K�C�8F[�fW�0����.a���c''iR%�U�hߎ��', NULL, N'System', N'Administrator', NULL, 1, 1, 1, 0, 0, 0, 0, 1, NULL, NULL, 4, 4, 4, NULL, 0, 1, 1, 1, CAST(N'2015-01-13 22:05:16.973' AS DateTime))
+SET IDENTITY_INSERT [dbo].[users] OFF;  
 
 insert into users (
 us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_org)
@@ -207,10 +209,6 @@ create table sessions
 	se_date datetime not null default(getdate()),
 	se_user int not null
 )
-
-
-
-
 /* EMAILED LINKS */
 
 
@@ -239,7 +237,6 @@ ct_default int not null default(0)
 )
 
 create unique index unique_ct_name on categories (ct_name)
-
 
 insert into categories (ct_name) values('bug')
 insert into categories (ct_name) values('enhancement')
@@ -278,7 +275,6 @@ create unique index unique_pj_name on projects (pj_name)
 
 insert into projects (pj_name) values('project 1')
 insert into projects (pj_name) values('project 2')
-
 
 /* BUGS */
 
@@ -326,7 +322,6 @@ bp_email_cc nvarchar(800) null
 )
 
 create clustered index bp_index_1 on bug_posts (bp_bug)
-
 
 /* BUG TASKS - subtasks and time tracking */
 
@@ -407,7 +402,6 @@ re_direction int not null
 create unique index re_index_1 on bug_relationships (re_bug1, re_bug2)
 create unique index re_index_2 on bug_relationships (re_bug2, re_bug1)
 
-
 /* PROJECT USER XREF */
 
 create table project_user_xref
@@ -446,7 +440,6 @@ create unique index unique_udf_name on user_defined_attribute (udf_name)
 insert into user_defined_attribute (udf_name) values ('whatever')
 insert into user_defined_attribute (udf_name) values ('anything')
 
-
 /* STATUSES */
 
 create table statuses
@@ -484,7 +477,6 @@ insert into priorities (pr_name, pr_sort_seq, pr_background_color, pr_style) val
 insert into priorities (pr_name, pr_sort_seq, pr_background_color, pr_style) values ('med', 2, '#ffdddd', 'pr2_')
 insert into priorities (pr_name, pr_sort_seq, pr_background_color, pr_style) values ('low', 3, '#ffffff', 'pr3_')
 
-
 /* CUSTOM COL METADATA */
 
 create table custom_col_metadata
@@ -511,7 +503,6 @@ svnrev_msg ntext not null
 
 create clustered index svn_bug_index on svn_revisions (svnrev_bug)
 
-
 /* SVN AFFECTED PATHS */
 
 create table svn_affected_paths
@@ -523,7 +514,6 @@ svnap_path nvarchar(400) not null
 )
 
 create clustered index svn_revision_index on svn_affected_paths (svnap_svnrev_id)
-
 
 /* GIT COMMITS */
 
@@ -580,8 +570,6 @@ hgap_path nvarchar(400) not null
 )
 
 create clustered index hgap_hgrev_index on hg_affected_paths (hgap_hgrev_id)
-
-
 
 /* REPORTS */
 create table reports
@@ -690,8 +678,6 @@ values ('Hours Remaining by Project',
 + char(10) + ' group by pj_name ',
 'table')
 
-
-
 /* QUERIES */
 
 create table queries
@@ -705,7 +691,6 @@ qu_org int null
 )
 
 create unique index unique_qu_desc on queries (qu_desc, qu_user, qu_org)
-
 
 create table queued_notifications
 (
@@ -721,7 +706,6 @@ qn_from nvarchar(200) not null,
 qn_subject nvarchar(400) not null,
 qn_body ntext not null
 )
-
 
 create table dashboard_items
 (
@@ -820,7 +804,6 @@ insert into queries (qu_desc, qu_sql, qu_default) values (
 + char(10) + ' where bg_status = 3 order by bg_id desc',
 0)
 
-
 insert into queries (qu_desc, qu_sql, qu_default) values (
 'demo use of css classes',
 'select isnull(pr_style + st_style,''datad''), bg_id [id], isnull(bu_flag,0) [$FLAG], bg_short_desc [desc], isnull(pr_name,'''') [priority], isnull(st_name,'''') [status]'
@@ -843,7 +826,6 @@ insert into queries (qu_desc, qu_sql, qu_default) values (
 + char(10) + ' order by bg_id desc',
 0)
 
-
 insert into queries (qu_desc, qu_sql, qu_default) values (
 'days in status',
 'select case '
@@ -864,7 +846,6 @@ insert into queries (qu_desc, qu_sql, qu_default) values (
 + char(10) + ' WhErE 1 = 1 '
 + char(10) + ' order by 4 desc ',
 0)
-
 
 insert into queries (qu_desc, qu_sql, qu_default) values (
 'bugs with attachments',

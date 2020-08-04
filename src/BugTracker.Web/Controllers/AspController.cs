@@ -18,6 +18,7 @@ namespace BugTracker.Web.Controllers
     using System.Threading;
     using System.Web.Mvc;
     using System.Web.UI;
+    using Core.Identification;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]

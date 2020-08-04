@@ -15,6 +15,7 @@ namespace BugTracker.Web.Bugs
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Core;
+    using Core.Identification;
 
     public partial class Edit : Page
     {
@@ -52,7 +53,7 @@ namespace BugTracker.Web.Bugs
             // Ok
             //Util.DoNotCache(Response);
             // Ok
-            Security.CheckSecurity(SecurityLevel.AnyUserOk);
+            //Security.CheckSecurity(SecurityLevel.AnyUserOk);
             // Ok
             this.MainMenu.SelectedItem = ApplicationSettings.PluralBugLabel;
 

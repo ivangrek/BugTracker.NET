@@ -8,6 +8,7 @@
     using System.Web.UI;
     using Core;
     using Core.Controls;
+    using Core.Identification;
     using Models;
 
     [Authorize]
