@@ -11,12 +11,14 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.Data.SqlClient;
     using System.Diagnostics;
+    using System.Linq;
     using System.Text;
 
     public static class DbUtil
     {
         private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
+        [Obsolete("Use ExecuteScalar(SqlString sql)")]
         public static object ExecuteScalar(string sql)
         {
             if (ApplicationSettings.LogSqlEnabled)
@@ -34,6 +36,23 @@ namespace BugTracker.Web.Core
             }
         }
 
+        public static object ExecuteScalar(SqlString sql)
+        {
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
+
+            using (var conn = GetSqlConnection())
+            using (var cmd = new SqlCommand(sql.ToString(), conn))
+            {
+                cmd.Parameters.AddRange(sql.GetParameters().ToArray());
+
+                return cmd.ExecuteScalar();
+            }
+        }
+
+        [Obsolete("Use ExecuteNonQueryWithoutLogging(SqlString sql)")]
         public static void ExecuteNonQueryWithoutLogging(string sql)
         {
             using (var conn = GetSqlConnection())
@@ -44,6 +63,17 @@ namespace BugTracker.Web.Core
             }
         }
 
+        public static void ExecuteNonQueryWithoutLogging(SqlString sql)
+        {
+            using (var conn = GetSqlConnection())
+            using (var cmd = new SqlCommand(sql.ToString(), conn))
+            {
+                cmd.Parameters.AddRange(sql.GetParameters().ToArray());
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        [Obsolete("Use ExecuteNonQuery(SqlString sql)")]
         public static void ExecuteNonQuery(string sql)
         {
             if (ApplicationSettings.LogSqlEnabled)
@@ -56,6 +86,21 @@ namespace BugTracker.Web.Core
                 var cmd = new SqlCommand(sql, conn);
                 cmd.ExecuteNonQuery();
                 conn.Close(); // redundant, but just to be clear
+            }
+        }
+
+        public static void ExecuteNonQuery(SqlString sql)
+        {
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
+
+            using (var conn = GetSqlConnection())
+            using (var cmd = new SqlCommand(sql.ToString(), conn))
+            {
+                cmd.Parameters.AddRange(sql.GetParameters().ToArray());
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -79,6 +124,7 @@ namespace BugTracker.Web.Core
             }
         }
 
+        [Obsolete("Use ExecuteReader(SqlString sql, CommandBehavior behavior)")]
         public static SqlDataReader ExecuteReader(string sql, CommandBehavior behavior)
         {
             if (ApplicationSettings.LogSqlEnabled)
@@ -91,6 +137,31 @@ namespace BugTracker.Web.Core
             {
                 using (var cmd = new SqlCommand(sql, conn))
                 {
+                    return cmd.ExecuteReader(behavior | CommandBehavior.CloseConnection);
+                }
+            }
+            catch
+            {
+                conn.Close();
+                throw;
+            }
+        }
+
+        public static SqlDataReader ExecuteReader(SqlString sql, CommandBehavior behavior)
+        {
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
+
+            var conn = GetSqlConnection();
+
+            try
+            {
+                using (var cmd = new SqlCommand(sql.ToString(), conn))
+                {
+                    cmd.Parameters.AddRange(sql.GetParameters().ToArray());
+
                     return cmd.ExecuteReader(behavior | CommandBehavior.CloseConnection);
                 }
             }
@@ -122,6 +193,7 @@ namespace BugTracker.Web.Core
             }
         }
 
+        [Obsolete("Use GetDataSet(SqlString sql)")]
         public static DataSet GetDataSet(string sql)
         {
             if (ApplicationSettings.LogSqlEnabled)
@@ -145,6 +217,31 @@ namespace BugTracker.Web.Core
             }
         }
 
+        public static DataSet GetDataSet(SqlString sql)
+        {
+            if (ApplicationSettings.LogSqlEnabled)
+            {
+                Util.WriteToLog("sql=\n" + sql);
+            }
+
+            var ds = new DataSet();
+
+            using (var conn = GetSqlConnection())
+            using (var da = new SqlDataAdapter(sql.ToString(), conn))
+            {
+                da.SelectCommand.Parameters.AddRange(sql.GetParameters().ToArray());
+
+                var stopwatch = new Stopwatch();
+
+                stopwatch.Start();
+                da.Fill(ds);
+                stopwatch.Stop();
+                LogStopwatchTime(stopwatch);
+
+                return ds;
+            }
+        }
+
         public static void LogStopwatchTime(Stopwatch stopwatch)
         {
             if (ApplicationSettings.LogSqlEnabled)
@@ -153,17 +250,38 @@ namespace BugTracker.Web.Core
             }
         }
 
+        [Obsolete("Use GetDataView(SqlString sql)")]
         public static DataView GetDataView(string sql)
         {
             var ds = GetDataSet(sql);
             return new DataView(ds.Tables[0]);
         }
 
+        public static DataView GetDataView(SqlString sql)
+        {
+            var ds = GetDataSet(sql);
+
+            return new DataView(ds.Tables[0]);
+        }
+
+        [Obsolete("Use GetDataRow(SqlString sql)")]
         public static DataRow GetDataRow(string sql)
         {
             var ds = GetDataSet(sql);
             if (ds.Tables[0].Rows.Count != 1)
                 return null;
+            return ds.Tables[0].Rows[0];
+        }
+
+        public static DataRow GetDataRow(SqlString sql)
+        {
+            var ds = GetDataSet(sql);
+
+            if (ds.Tables[0].Rows.Count != 1)
+            {
+                return null;
+            }
+
             return ds.Tables[0].Rows[0];
         }
 

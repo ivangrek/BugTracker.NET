@@ -354,7 +354,7 @@
     <Compile Include="Areas\Administration\Models\UserDefinedAttribute\DeleteModel.cs" />
     <Compile Include="Areas\Administration\Models\UserDefinedAttribute\EditModel.cs" />
     <Compile Include="Areas\Administration\Models\User\EditModel.cs" />
-    <Compile Include="btnet\SQLString.cs" />
+    <Compile Include="Core\SqlString.cs" />
     <Compile Include="Areas\Administration\Models\User\IndexModel.cs" />
     <Compile Include="Areas\Administration\Models\User\DeleteModel.cs" />
     <Compile Include="Areas\Versioning\Controllers\SvnController.cs" />
