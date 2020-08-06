@@ -2,6 +2,7 @@
 @using BugTracker.Web.Core
 
 @{
+    var fieldId = (string)ViewData["FieldId"];
     var columnName = (string)ViewData["ColumnName"];
     var dropdownType = (string)ViewData["DropdownType"];
     var dropdownValues = (string)ViewData["DropdownValues"];
@@ -11,7 +12,6 @@
     var dataTableUsers = (DataTable)ViewData["DataTableUsers"];
     var applicationSettings = (IApplicationSettings)ViewBag.ApplicationSettings;
 
-    var fieldId = columnName.Replace(" ", string.Empty);
     var minTextAreaSize = applicationSettings.TextAreaThreshold;
     var maxTextAreaRows = applicationSettings.MaxTextAreaRows;
 }
@@ -34,13 +34,9 @@
         });
     }
 
-    <div class="form-group" id="@(fieldId)_row">
-        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
-        @Html.DropDownList(columnName, list, new { id = fieldId, @class = "form-control" })
-        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
-    </div>
+    @Html.DropDownList(fieldId, list, new { id = columnName, @class = "form-control" })
 }
-else if (dropdownType == "users")
+@*else if (dropdownType == "users")
 {
     var dataViewUsers = new DataView(dataTableUsers);
     var list = new List<SelectListItem>();
@@ -58,53 +54,35 @@ else if (dropdownType == "users")
         });
     }
 
-    <div class="form-group" id="@(fieldId)_row">
-        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
-        @Html.DropDownList(columnName, list, new { id = fieldId, @class = "form-control" })
-        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
-    </div>
-}
+    @Html.DropDownList(fieldId, list, new { id = columnName, @class = "form-control" })
+}*@
 else if (dataType == "datetime")
 {
-    <div class="form-group" id="@(fieldId)_row">
-        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
+    <div class="input-group">
+        @Html.TextBox(fieldId, selectedValue, new { id = columnName, @class = "form-control date", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
 
-        <div class="input-group">
-            @Html.TextBox(columnName, selectedValue, new { id = fieldId, @class = "form-control date", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
-
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@fieldId')">[select]</button>
-            </div>
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@columnName')">[select]</button>
         </div>
-
-        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
     </div>
 }
 else if (fieldLength > minTextAreaSize)
 {
-    <div class="form-group" id="@(fieldId)_row">
-        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
-        @Html.TextArea(columnName, WebUtility.HtmlEncode(selectedValue), new
-        {
-            id = fieldId,
-            @class = "form-control resizable",
-            onkeydown = $"count_chars('{fieldId}', {fieldLength})",
-            onkeyup = $"count_chars('{fieldId}', {fieldLength})",
-            cols = minTextAreaSize,
-            rows = fieldLength / minTextAreaSize > maxTextAreaRows
-                ? maxTextAreaRows
-                : fieldLength / minTextAreaSize
-        })
+    @Html.TextArea(fieldId, WebUtility.HtmlEncode(selectedValue), new
+    {
+        id = columnName,
+        @class = "form-control resizable",
+        onkeydown = $"count_chars('{columnName}', {fieldLength})",
+        onkeyup = $"count_chars('{columnName}', {fieldLength})",
+        cols = minTextAreaSize,
+        rows = fieldLength / minTextAreaSize > maxTextAreaRows
+            ? maxTextAreaRows
+            : fieldLength / minTextAreaSize
+    })
 
-        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
-        <small id="@(fieldId)_cnt" class="form-text text-muted"></small>
-    </div>
+    <small id="@(columnName)_cnt" class="form-text text-muted"></small>
 }
 else
 {
-    <div class="form-group" id="@(fieldId)_row">
-        @Html.Label(columnName, columnName, new { id = $"{fieldId}_label" }):
-        @Html.TextBox(columnName, selectedValue, new { id = fieldId, @class = "form-control", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
-        @Html.ValidationMessage(columnName, null, new { @class = "text-danger" }, "small")
-    </div>
+    @Html.TextBox(fieldId, selectedValue, new { id = columnName, @class = "form-control", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
 }

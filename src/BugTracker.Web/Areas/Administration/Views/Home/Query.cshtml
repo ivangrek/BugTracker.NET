@@ -97,7 +97,7 @@
 
 @if (ViewBag.Table != null && ViewBag.Table.DataTable.Rows.Count > 0)
 {
-    @Html.Partial("_SortableTable", (SortableTableModel) ViewBag.Table);
+    @Html.Partial("_SortableTable", (SortableTableModel) ViewBag.Table)
 }
 else
 {

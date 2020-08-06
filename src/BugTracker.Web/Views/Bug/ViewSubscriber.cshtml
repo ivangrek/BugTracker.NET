@@ -49,16 +49,16 @@
                     </div>
 
                     <button type="submit" class="btn btn-success">Add</button>
-                    <a href="~/Bugs/Edit.aspx?id=@Model.Id" class="btn btn-link">Cancel</a>
+                    <a href="@Url.Action("Update", "Bug", new { id = Model.Id})" class="btn btn-link">Cancel</a>
                 }
             </div>
         </div>
     </div>
 </div>
 
-@if (ViewBag.Table.DataSet.Tables[0].Rows.Count > 0)
+@if (ViewBag.Table != null)
 {
-    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table);
+    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.Table)
 }
 else
 {

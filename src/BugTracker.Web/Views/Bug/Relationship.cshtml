@@ -116,7 +116,7 @@
 
 @if (ViewBag.SortableTable.DataSet.Tables[0].Rows.Count > 0)
 {
-    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.SortableTable);
+    @Html.Partial("_SortableTable", (BugTracker.Web.Models.SortableTableModel)ViewBag.SortableTable)
 
     var parents = string.Empty;
     var siblings = string.Empty;

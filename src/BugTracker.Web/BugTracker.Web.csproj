@@ -441,13 +441,6 @@
     <Compile Include="Models\Task\EditModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AssemblyInfoExt.cs" />
-    <Compile Include="Site.Master.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Site.Master.designer.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-    </Compile>
     <Compile Include="Models\Account\ChangePasswordModel.cs" />
     <Compile Include="Models\Account\RegisterModel.cs" />
     <Compile Include="Models\Account\ForgotModel.cs" />
@@ -533,7 +526,6 @@
     <Content Include="Areas\Versioning\Views\Hg\Log.cshtml" />
     <Content Include="Areas\Versioning\Views\Hg\Diff.cshtml" />
     <None Include="packages.config" />
-    <Content Include="Site.Master" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />

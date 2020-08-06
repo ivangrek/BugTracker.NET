@@ -5,7 +5,7 @@
     Distributed under the terms of the GNU General Public License
 --%>
 
-<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Bugs.Edit" MasterPageFile="~/Site.Master" ClientIDMode="Static" %>
+<%@ Page Language="C#" ValidateRequest="false" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="BugTracker.Web.Bugs.Edit" ClientIDMode="Static" %>
 
 <%@ Register TagPrefix="BugTracker" TagName="MainMenu" Src="~/Core/Controls/MainMenu.ascx" %>
 <%@ Import Namespace="BugTracker.Web.Core" %>
@@ -226,8 +226,8 @@
 
 
                                                                                 <%
-                                                                                    display_custom_fields(Security);
-                                                                                    display_project_specific_custom_fields(Security);
+                                                                                    //display_custom_fields(Security);
+                                                                                    //display_project_specific_custom_fields(Security);
                                                                                 %>
                                 </table>
 

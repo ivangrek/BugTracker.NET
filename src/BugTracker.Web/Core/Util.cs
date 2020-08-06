@@ -23,11 +23,11 @@ namespace BugTracker.Web.Core
 
     public static class Util
     {
-        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; } = new ApplicationSettings();
 
         private static readonly object Dummy = new object();
 
-        private static readonly CacheItemPolicy CacheItemPolicy = new CacheItemPolicy() { Priority = CacheItemPriority.NotRemovable };
+        private static readonly CacheItemPolicy CacheItemPolicy = new CacheItemPolicy { Priority = CacheItemPriority.NotRemovable };
 
         public const string CustomHeaderHtmlCacheKey = "custom_header";
         public const string CustomFooterHtmlCacheKey = "custom_footer";
@@ -92,7 +92,17 @@ namespace BugTracker.Web.Core
         public static DataSet CustomColumnsDataSet
         {
             get => (DataSet)MemoryCache.Default.Get(CustomColumnsDataSetCacheKey);
-            set => MemoryCache.Default.Set(CustomColumnsDataSetCacheKey, value, CacheItemPolicy);
+            set
+            {
+                if (value == null)
+                {
+                    MemoryCache.Default.Remove(CustomColumnsDataSetCacheKey, CacheEntryRemovedReason.Removed);
+                }
+                else
+                {
+                    MemoryCache.Default.Set(CustomColumnsDataSetCacheKey, value, CacheItemPolicy);
+                }
+            }
         }
 
         public static int? Dbs
@@ -235,21 +245,6 @@ namespace BugTracker.Web.Core
             }
 
             return "";
-        }
-
-        public static bool IsDateTime(string maybeDatetime)
-        {
-            DateTime d;
-
-            try
-            {
-                d = DateTime.Parse(maybeDatetime, GetCultureInfo());
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
 
         public static string BoolToString(bool b)
@@ -1013,26 +1008,6 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             return "N'" + val + "'";
         }
 
-        public static void Redirect(HttpRequest request, HttpResponse response)
-        {
-            // redirect to the page the user was going to or start off with /Bug
-            var url = request.QueryString["url"];
-            var qs = request.QueryString["qs"];
-
-            if (string.IsNullOrEmpty(url))
-            {
-                response.Redirect("~/Bug");
-            }
-            else if (url == request.ServerVariables["URL"]) // I can't remember what this code means...
-            {
-                response.Redirect("~/Bug");
-            }
-            else
-            {
-                response.Redirect(RemoveLineBreaks(url) + "?" + RemoveLineBreaks(HttpUtility.UrlDecode(qs)));
-            }
-        }
-
         public static string RedirectUrl(HttpRequest request)
         {
             // redirect to the page the user was going to or start off with /Bug
@@ -1049,21 +1024,6 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             }
 
             return RemoveLineBreaks(url) + "?" + RemoveLineBreaks(HttpUtility.UrlDecode(qs));
-        }
-
-        public static void Redirect(string url, HttpRequest request, HttpResponse response)
-        {
-            //redirect to the url supplied with the original querystring
-            if (url.IndexOf("?") > 0)
-                response.Redirect(url + "&url="
-                                      + RemoveLineBreaks(request.QueryString["url"])
-                                      + "&qs="
-                                      + RemoveLineBreaks(request.QueryString["qs"]));
-            else
-                response.Redirect(url + "?url="
-                                      + RemoveLineBreaks(request.QueryString["url"])
-                                      + "&qs="
-                                      + RemoveLineBreaks(request.QueryString["qs"]));
         }
 
         public static string RedirectUrl(string url, HttpRequest request)
@@ -1090,60 +1050,6 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             sql = sql.Replace("$us", Convert.ToString(usId));
             DbUtil.ExecuteNonQuery(sql);
         }
-
-        //
-        //public static void PrintAsExcel(HttpResponse Response, DataView dv)
-        //{ 
-        //    Response.AddHeader("content-disposition", "attachment;filename=bugs.xls");
-        //    Response.Write("<html><head><meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/></head><body>");
-        //    Response.Write("<table border=1>");
-        //    int startCol = 0;
-        //    int col;
-
-        //    // column names first_column = true;
-        //    for (col = startCol; col < dv.Table.Columns.Count;col++)
-        //    { 
-        //        if (dv.Table.Columns[col].ColumnName == "$FLAG")
-        //            continue;
-        //        if (dv.Table.Columns[col].ColumnName == "$SEEN")
-        //            continue;
-        //        Response.Write("<td>");
-        //        Response.Write(dv.Table.Columns[col].ColumnName.Replace("<br>"," "));
-        //        Response.Write("</td>");
-
-        //    } // bug rows 
-
-        //    foreach (DataRowView drv in dv)
-        //    {
-        //        Response.Write("<tr>");
-
-        //        for (col = startCol; col < dv.Table.Columns.Count; col++)
-        //        {
-        //            if (dv.Table.Columns[col].ColumnName == "$FLAG")
-        //                continue;
-        //            if (dv.Table.Columns[col].ColumnName == "$SEEN")
-        //                continue;
-
-        //            Response.Write("<td>");
-
-        //            if (drv[col].ToString().IndexOf("\r\n") >= 0)
-        //            {
-        //                Response.Write("\"" + drv[col].ToString().Replace("\"", "\"\"").Replace("\r\n", "\n") + "\"");
-        //            }
-        //            else
-        //            {
-        //                Response.Write(drv[col].ToString().Replace("\n", ""));
-        //            }
-
-        //            Response.Write("</td>");
-        //        }
-        //        Response.Write("</tr>");
-
-        //    } 
-
-        //    Response.Write("</table>");
-
-        //} 
 
         public static void PrintAsExcel(HttpResponse response, DataView dv)
         {

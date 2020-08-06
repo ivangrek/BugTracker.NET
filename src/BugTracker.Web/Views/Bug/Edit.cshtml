@@ -18,10 +18,45 @@
 }
 
 @section Styles {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css">
+    <link rel="stylesheet" href="@Url.Content("~/Content/custom/btnet_edit_bug.css")" type="text/css">
 }
 
 @section Scripts {
-    <script type="text/javascript" src="~/Scripts/edit_bug.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery/jquery.textarearesizer.compressed.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/edit_bug.js")"></script>
+
+    @if (page.Security.User.UseFckeditor)
+    {
+        <script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
+    }
+
+    <script>
+        var this_bugid = @Model.Id;
+
+        $(document).ready(do_doc_ready);
+
+        function do_doc_ready() {
+            date_format = '@page.ApplicationSettings.DatepickerDateFormat';
+            $(".date").datepicker({ dateFormat: date_format, duration: 'fast' });
+            $(".date").change(mark_dirty);
+            $(".warn").click(warn_if_dirty);
+            $("textarea.resizable:not(.processed)").TextAreaResizer();
+
+            @if (page.Security.User.UseFckeditor)
+            {
+                @:CKEDITOR.replace('@Html.IdFor(x => x.Comment)');
+            }
+            else
+            {
+                @:$('textarea.resizable2:not(.processed)').TextAreaResizer();
+            }
+        }
+    </script>
 }
 
 @section BodyHeader {
@@ -35,17 +70,22 @@
             {
                 if (!page.Security.User.AddsNotAllowed)
                 {
-                    <a href="@Url.Action("Create", "Bug")" class="nav-link"><img src="~/Content/images/add.png" align="top">&nbsp;New</a>
+                    <a href="@Url.Action("Create", "Bug")" class="nav-link"><img src="@Url.Content("~/Content/images/add.png")" alt="new">&nbsp;New</a>
                 }
 
-                <a href="@Url.Action("PrintDetail", "Bug", new { id = Model.Id })" class="nav-link" title='Display this item in a printer-friendly format'><img src="~/Content/images/printer.png" align="top">&nbsp;Print</a>
+                if (ViewBag.PermissionLevel == SecurityPermissionLevel.PermissionAll)
+                {
+                    <a href="javascript:clone()" class="nav-link" title='Create a copy of this item'><img src="@Url.Content("~/Content/images/paste_plain.png")" alt="clone">&nbsp;Copy</a>
+                }
+
+                <a href="@Url.Action("PrintDetail", "Bug", new { id = Model.Id })" class="nav-link" title='Display this item in a printer-friendly format'><img src="~/Content/images/printer.png">&nbsp;Print</a>
 
                 if (!page.Security.User.IsGuest)
                 {
                     if (page.Security.User.IsAdmin
                         || page.Security.User.CanMergeBugs)
                     {
-                        <a href="@Url.Action("Merge", "Bug", new { id = Model.Id })" class="nav-link" title='Merge this item and another item together'><img src="~/Content/images/database_refresh.png" align="top">&nbsp;Merge</a>
+                        <a href="@Url.Action("Merge", "Bug", new { id = Model.Id })" class="nav-link" title='Merge this item and another item together'><img src="~/Content/images/database_refresh.png">&nbsp;Merge</a>
                     }
                 }
 
@@ -54,7 +94,55 @@
                     if (page.Security.User.IsAdmin
                     || page.Security.User.CanDeleteBug)
                     {
-                        <a href="@Url.Action("Delete", "Bug", new { id = Model.Id })" class="nav-link" title='Delete this item'><img src="~/Content/images/delete.png" align="top">&nbsp;Delete</a>
+                        <a href="@Url.Action("Delete", "Bug", new { id = Model.Id })" class="nav-link" title='Delete this item'><img src="~/Content/images/delete.png">&nbsp;Delete</a>
+                    }
+                }
+
+                if (page.ApplicationSettings.EnableSubversionIntegration)
+                {
+                    <a href="@Url.Action("Index", "Svn", new { area = "Versioning", id = Model.Id })" class="nav-link" title='View Subversion svn_revisions related to this item' target="_blank"><img src="@Url.Content("~/Content/images/svn.png")" alt="svn">&nbsp;Svn revisions(@ViewBag.SvnRevisionsCount)</a>
+                }
+
+                if (page.ApplicationSettings.EnableGitIntegration)
+                {
+                    <a href="@Url.Action("Index", "Git", new { area = "Versioning", id = Model.Id })" class="nav-link" title='View git git_commits related to this item' target="_blank"><img src="@Url.Content("~/Content/images/git.png")" alt="git">&nbsp;Git commits(@ViewBag.GitCommitsCount)</a>
+                }
+
+                if (page.ApplicationSettings.EnableMercurialIntegration)
+                {
+                    <a href="@Url.Action("Index", "Hg", new { area = "Versioning", id = Model.Id })" class="nav-link" title='View mercurial git_hg_revisions related to this item' target="_blank"><img src="@Url.Content("~/Content/images/hg.png")" alt="hg">&nbsp;Hg revisions(@ViewBag.HgRevisionsCount)</a>
+                }
+
+                if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                {
+                    <a href="@Url.Action("ViewSubscriber", "Bug", new { id = Model.Id })" class="nav-link" title='View users who have subscribed to email notifications for this item' target="_blank"><img src="@Url.Content("~/Content/images/telephone_edit.png")" alt="subscribers">&nbsp;Subscribers</a>
+                }
+
+                if (!page.Security.User.IsGuest)
+                {
+                    if (page.ApplicationSettings.NotificationEmailEnabled)
+                    {
+                        var label = "Get notifications";
+
+                        if (ViewBag.Subscribed > 0)
+                        {
+                            label = "Stop notifications";
+                        }
+
+                        <a id="notifications" href="javascript:toggle_notifications(@Model.Id)" class="nav-link" title="Get or stop getting email notifications about changes to this item."><img src="@Url.Content("~/Content/images/telephone.png")" alt="notifications">&nbsp;<span id="get_stop_notifications">@label</span></a>
+                    }
+                }
+
+                if (page.ApplicationSettings.EnableRelationships)
+                {
+                    <a href="@Url.Action("Relationship", "Bug", new { bugId = Model.Id })" class="nav-link" title='Create a relationship between this item and another item' target="_blank"><img src="@Url.Content("~/Content/images/database_link.png")" alt="relationships">&nbsp;Relationships(<span id="relationship_cnt">@ViewBag.RelationshipCount</span>)</a>
+                }
+
+                if (page.Security.User.IsAdmin || page.Security.User.CanViewTasks)
+                {
+                    if (page.ApplicationSettings.EnableTasks)
+                    {
+                        <a href="@Url.Action("Index", "Task", new { bugId = Model.Id })" class="nav-link" title='View sub-tasks/time-tracking entries related to this item' target="_blank"><img src="@Url.Content("~/Content/images/clock.png")" alt="task">&nbsp;Tasks/time(<span id="task_cnt">@ViewBag.TasksCount</span>)</a>
                     }
                 }
 
@@ -62,8 +150,13 @@
                 {
                     if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                     {
-                        <a href="@Url.Action("SendEmail", "Bug", new { bg_id = Model.Id })" class="nav-link" title='Send an email about this item'><img src="~/Content/images/email_edit.png" align="top">&nbsp;Email</a>
+                        <a href="@Url.Action("SendEmail", "Bug", new { bg_id = Model.Id })" class="nav-link" title='Send an email about this item'><img src="~/Content/images/email_edit.png" alt="send email">&nbsp;Email</a>
                     }
+                }
+
+                if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
+                {
+                    <a href="javascript:open_popup_window('@Url.Action("Create", "Attachment")', 'Add attachment', @Model.Id, 700, 320)" class="nav-link" title='Attach an image, document, or other file to this item'><img src="@Url.Content("~/Content/images/attach.gif")" alt="add attachment">&nbsp;Attachment</a>
                 }
 
                 if (!string.IsNullOrEmpty(page.ApplicationSettings.CustomBugLinkLabel))
@@ -103,71 +196,402 @@
 
                     <div class="form-group">
                         @Html.LabelFor(x => x.Name):
-                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "200", onkeydown = "count_chars('" + @Html.IdFor(x => x.Name) + "', 200)", onkeyup = "count_chars('" + @Html.IdFor(x => x.Name) + "', 200)" })
+                        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", maxlength = "200", onkeydown = $"count_chars('{Html.IdFor(x => x.Name)}', 200)", onkeyup = $"count_chars('{Html.IdFor(x => x.Name)}', 200)" })
                         @Html.ValidationMessageFor(x => x.Name, null, new { @class = "text-danger" }, "small")
 
                         <small id="@Html.IdFor(x => x.Name)_cnt" class="form-text text-muted"></small>
                     </div>
 
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.ProjectId):
-                        @Html.DropDownListFor(x => x.ProjectId, (List<SelectListItem>)ViewBag.Projects, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.ProjectId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.OrganizationId):
-                        @Html.DropDownListFor(x => x.OrganizationId, (List<SelectListItem>)ViewBag.Organizations, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.OrganizationId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.CategoryId):
-                        @Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.Categories, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.CategoryId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.PriorityId):
-                        @Html.DropDownListFor(x => x.PriorityId, (List<SelectListItem>)ViewBag.Priorities, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.PriorityId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.UserId):
-                        @Html.DropDownListFor(x => x.UserId, (List<SelectListItem>)ViewBag.Users, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.UserId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.StatusId):
-                        @Html.DropDownListFor(x => x.StatusId, (List<SelectListItem>)ViewBag.Statuses, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.StatusId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(x => x.UserDefinedAttributeId):
-                        @Html.DropDownListFor(x => x.UserDefinedAttributeId, (List<SelectListItem>)ViewBag.UserDefinedAttributes, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(x => x.UserDefinedAttributeId, null, new { @class = "text-danger" }, "small")
-                    </div>
-
-                    foreach (DataRow drCustom in ViewBag.CustomColumns.Tables[0].Rows)
+                    if (ViewBag.ProjectFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
                     {
-                        var fieldId = (string)drCustom["name"];
-                        var fieldPermissionLevel = page.Security.User.DictCustomFieldPermissionLevel[fieldId];
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.ProjectId):
+                            @Html.DropDownListFor(x => x.ProjectId, (List<SelectListItem>)ViewBag.Projects, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.ProjectId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.ProjectFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.ProjectId):
+
+                            @{
+                                var projectName = string.Empty;
+                                var projectItem = ((List<SelectListItem>)ViewBag.Projects)
+                                    .FirstOrDefault(x => x.Value == Model.ProjectId.ToString());
+
+                                if (projectItem != null)
+                                {
+                                    projectName = projectItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@projectName</p>
+                        </div>
+                    }
+
+                    if (ViewBag.OrganizationFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.OrganizationId):
+                            @Html.DropDownListFor(x => x.OrganizationId, (List<SelectListItem>)ViewBag.Organizations, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.OrganizationId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.OrganizationFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.OrganizationId):
+
+                            @{
+                                var organizationName = string.Empty;
+                                var organizationItem = ((List<SelectListItem>)ViewBag.Organizations)
+                                    .FirstOrDefault(x => x.Value == Model.OrganizationId.ToString());
+
+                                if (organizationItem != null)
+                                {
+                                    organizationName = organizationItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@organizationName</p>
+                        </div>
+                    }
+
+                    if (ViewBag.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        //this.static_category.Visible = false;
+
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.CategoryId):
+                            @Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.Categories, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.CategoryId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.CategoryFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        //this.category.Visible = false;
+                        //this.static_category.InnerText = this.category.SelectedItem.Text;
+
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.CategoryId):
+
+                            @{
+                                var categoryName = string.Empty;
+                                var categoryItem = ((List<SelectListItem>)ViewBag.Categories)
+                                    .FirstOrDefault(x => x.Value == Model.CategoryId.ToString());
+
+                                if (categoryItem != null)
+                                {
+                                    categoryName = categoryItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@categoryName</p>
+                        </div>
+                    }
+
+                    if (ViewBag.PriorityFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.PriorityId):
+                            @Html.DropDownListFor(x => x.PriorityId, (List<SelectListItem>)ViewBag.Priorities, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.PriorityId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.PriorityFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.PriorityId):
+
+                            @{
+                                var priorityName = string.Empty;
+                                var priorityItem = ((List<SelectListItem>)ViewBag.Priorities)
+                                    .FirstOrDefault(x => x.Value == Model.PriorityId.ToString());
+
+                                if (priorityItem != null)
+                                {
+                                    priorityName = priorityItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@priorityName</p>
+                        </div>
+                    }
+
+                    if (ViewBag.UserFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.UserId):
+                            @Html.DropDownListFor(x => x.UserId, (List<SelectListItem>)ViewBag.Users, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.UserId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.UserFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.UserId):
+
+                            @{
+                                var userName = string.Empty;
+                                var userItem = ((List<SelectListItem>)ViewBag.Users)
+                                    .FirstOrDefault(x => x.Value == Model.PriorityId.ToString());
+
+                                if (userItem != null)
+                                {
+                                    userName = userItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@userName</p>
+                        </div>
+                    }
+
+                    if (ViewBag.StatusFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.StatusId):
+                            @Html.DropDownListFor(x => x.StatusId, (List<SelectListItem>)ViewBag.Statuses, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.StatusId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.StatusFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.StatusId):
+
+                            @{
+                                var statusName = string.Empty;
+                                var statusItem = ((List<SelectListItem>)ViewBag.Statuses)
+                                    .FirstOrDefault(x => x.Value == Model.StatusId.ToString());
+
+                                if (statusItem != null)
+                                {
+                                    statusName = statusItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@statusName</p>
+                        </div>
+                    }
+
+                    if (ViewBag.UdfFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.UserDefinedAttributeId):
+                            @Html.DropDownListFor(x => x.UserDefinedAttributeId, (List<SelectListItem>)ViewBag.UserDefinedAttributes, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(x => x.UserDefinedAttributeId, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
+                    else if (ViewBag.UdfFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.UserDefinedAttributeId):
+
+                            @{
+                                var udfName = string.Empty;
+                                var udfItem = ((List<SelectListItem>)ViewBag.UserDefinedAttributes)
+                                    .FirstOrDefault(x => x.Value == Model.UserDefinedAttributeId.ToString());
+
+                                if (udfItem != null)
+                                {
+                                    udfName = udfItem.Text;
+                                }
+                            }
+
+                            <p class="form-control-static font-weight-bold">@udfName</p>
+                        </div>
+                    }
+
+                    foreach (DataRow customColumnRow in ViewBag.CustomColumns)
+                    {
+                        var columnName = (string)customColumnRow["name"];
+                        var fieldPermissionLevel = page.Security.User.DictCustomFieldPermissionLevel[columnName];
 
                         if (fieldPermissionLevel == SecurityPermissionLevel.PermissionNone)
                         {
                             continue;
                         }
 
-                        <div class="form-group">
-                            @Html.Label(fieldId, $"{fieldId}"):
-                            @Html.TextBox(fieldId, string.Empty, new { @class = "form-control", rows = "5", cols = "100", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
-                            @Html.ValidationMessage(fieldId, null, new { @class = "text-danger" }, "small")
+                        var fieldId = $"{Html.NameFor(x => Model.CustomFieldValues[columnName])}";
+                        var dropdownType = (string)customColumnRow["dropdown type"];
+                        var dropdownValues = (string)customColumnRow["vals"];
+                        var dataType = (string)customColumnRow["datatype"];
+                        var fieldLength = (int)customColumnRow["length"];
+                        var selectedValue = Model.CustomFieldValues[columnName];
+                        var minTextAreaSize = page.ApplicationSettings.TextAreaThreshold;
+                        var maxTextAreaRows = page.ApplicationSettings.MaxTextAreaRows;
 
-                            @*@Html.ValidationMessageFor(x => x.TagsFieldPermissionLevel, null, new { @class = "text-danger" }, "small")*@
-                        </div>
+                        if (ViewBag.PermissionLevel == SecurityPermissionLevel.PermissionReadonly
+                            || fieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                        {
+                            <div class="form-group">
+                                @Html.Label(fieldId, columnName)@(":")
+
+                                @if (dropdownType == "normal")
+                                {
+                                    var options = Util.SplitDropdownVals(dropdownValues);
+                                    var value = string.Empty;
+                                    var decodedOption = options
+                                        .FirstOrDefault(x => WebUtility.HtmlDecode(x) == HttpUtility.HtmlDecode(selectedValue));
+
+                                    if (decodedOption != null)
+                                    {
+                                        value = decodedOption;
+                                    }
+
+                                    <div class="form-text">@value</div>
+                                }
+                                else if (dropdownType == "users")
+                                {
+                                    var dataViewUsers = new DataView(ViewBag.DtUsers);
+                                    var userName = string.Empty;
+
+                                    foreach (DataRowView row in dataViewUsers)
+                                    {
+                                        var userId = Convert.ToString(row[0]);
+
+                                        if (userId == selectedValue)
+                                        {
+                                            userName = Convert.ToString(row[1]);
+                                            break;
+                                        }
+                                    }
+
+                                    <div class="form-text">@userName</div>
+                                }
+                                else if (dataType == "datetime")
+                                {
+                                    <div class="form-text">@Util.FormatDbDateTime(selectedValue)</div>
+                                }
+                                else if (fieldLength > minTextAreaSize)
+                                {
+                                    <div class="form-text">@selectedValue</div>
+                                }
+                                else
+                                {
+                                    <div class="form-text">@selectedValue</div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                @Html.Label(fieldId, columnName)@(":")
+                                @Html.Hidden($"{fieldId}.Key", columnName)
+
+                                @if (dropdownType == "normal")
+                                {
+                                    var options = Util.SplitDropdownVals(dropdownValues);
+                                    var decodedSelectedValue = HttpUtility.HtmlDecode(selectedValue);
+                                    var list = new List<SelectListItem>();
+
+                                    foreach (var option in options)
+                                    {
+                                        var decodedOption = WebUtility.HtmlDecode(option);
+
+                                        list.Add(new SelectListItem
+                                        {
+                                            Value = decodedOption,
+                                            Text = decodedOption,
+                                            Selected = decodedOption == decodedSelectedValue
+                                        });
+                                    }
+
+                                    @Html.DropDownList(fieldId, list, new { @class = "form-control" })
+                                }
+                                else if (dropdownType == "users")
+                                {
+                                    var dataViewUsers = new DataView(ViewBag.DtUsers);
+                                    var list = new List<SelectListItem>();
+
+                                    foreach (DataRowView row in dataViewUsers)
+                                    {
+                                        var userId = Convert.ToString(row[0]);
+                                        var userName = Convert.ToString(row[1]);
+
+                                        list.Add(new SelectListItem
+                                        {
+                                            Value = userId,
+                                            Text = userName,
+                                            Selected = userId == selectedValue
+                                        });
+                                    }
+
+                                    @Html.DropDownList(fieldId, list, new { @class = "form-control" })
+                                }
+                                else if (dataType == "datetime")
+                                {
+                                    <div class="input-group">
+                                        @Html.TextBox(fieldId, selectedValue, new { id = columnName, @class = "form-control date", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
+
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="show_calendar('@columnName')">[select]</button>
+                                        </div>
+                                    </div>
+                                }
+                                else if (fieldLength > minTextAreaSize)
+                                {
+                                    @Html.TextArea(fieldId, WebUtility.HtmlEncode(selectedValue), new
+                                    {
+                                        id = columnName,
+                                        @class = "form-control resizable",
+                                        onkeydown = $"count_chars('{columnName}', {fieldLength})",
+                                        onkeyup = $"count_chars('{columnName}', {fieldLength})",
+                                        cols = minTextAreaSize,
+                                        rows = fieldLength / minTextAreaSize > maxTextAreaRows
+                                            ? maxTextAreaRows
+                                            : fieldLength / minTextAreaSize
+                                    })
+
+                                    <small id="@(columnName)_cnt" class="form-text text-muted"></small>
+                                }
+                                else
+                                {
+                                    @Html.TextBox(fieldId, selectedValue, new { @class = "form-control", onkeydown = "mark_dirty()", onkeyup = "mark_dirty()" })
+                                }
+
+                                @Html.ValidationMessage(fieldId, null, new { @class = "text-danger" }, "small")
+                            </div>
+                        }
+                    }
+
+                    for (var number = 1; number <= 3; ++number)
+                    {
+                        if (ViewData[$"ProjectCustomFieldName{number}"] == null)
+                        {
+                            continue;
+                        }
+
+                        if (ViewBag.ProjectCustomFieldPermissionLevel == SecurityPermissionLevel.PermissionAll)
+                        {
+                            <div class="form-group">
+                                @Html.Label($"ProjectCustomFieldValue{number}", (string)ViewData[$"ProjectCustomFieldName{number}"], new { id = $"label_pcd{number}" })@(":")
+                                @Html.Hidden($"label_pcd{number}", (string)ViewData[$"ProjectCustomFieldName{number}"])
+                                @Html.DropDownList($"ProjectCustomFieldValue{number}", (List<SelectListItem>)ViewData[$"ProjectCustomFieldValues{number}"], new { id = $"pcd{number}", @class = "form-control" })
+                                @Html.ValidationMessage($"ProjectCustomFieldValue{number}", null, new { @class = "text-danger" }, "small")
+                            </div>
+                        }
+                        else if (ViewBag.ProjectCustomFieldPermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(x => x.ProjectCustomFieldValue1, (string)ViewData[$"ProjectCustomFieldName{number}"], new { id = $"label_pcd{number}" }):
+                                @Html.Hidden($"label_pcd{number}", (string)ViewData[$"ProjectCustomFieldName{number}"])
+
+                                @{
+                                    var value = string.Empty;
+                                    var valueItem = ((List<SelectListItem>)ViewData[$"ProjectCustomFieldValues{number}"])
+                                        .FirstOrDefault(x => x.Value == Model.StatusId.ToString());
+
+                                    if (valueItem != null)
+                                    {
+                                        value = valueItem.Text;
+                                    }
+                                }
+
+                                <p class="form-control-static font-weight-bold">@value</p>
+                            </div>
+                        }
                     }
 
                     <div class="form-group">

@@ -24,7 +24,6 @@ function set_task_cnt(bugid, cnt) {
     }
 }
 
-
 var popup_window = null;
 
 function open_popup_window(url, title, bugid, width, height) {
@@ -99,7 +98,7 @@ function toggle_notifications(bugid) {
         + bugid
         + "&actn=";
 
-    if (text == "get notifications")
+    if (text == "Get notifications")
         url += "1";
     else
         url += "0";
@@ -107,14 +106,13 @@ function toggle_notifications(bugid) {
     $.post(url);
 
     // modify text in web page	
-    if (text == "get notifications") {
-        set_text(el, "stop notifications");
+    if (text == "Get notifications") {
+        set_text(el, "Stop notifications");
     }
     else {
-        set_text(el, "get notifications");
+        set_text(el, "Get notifications");
     }
 }
-
 
 function toggle_images2(bugid) {
     var images_inline = get_cookie("images_inline");
@@ -148,8 +146,6 @@ function toggle_history2(bugid) {
     rewrite_posts(bugid);
 }
 
-
-
 function resize_iframe(elid, delta) {
     var el = get_el(elid);
 
@@ -161,7 +157,6 @@ function resize_iframe(elid, delta) {
     }
 
 }
-
 
 function resize_image(elid, delta) {
     var el = get_el(elid);
@@ -177,7 +172,6 @@ function resize_image(elid, delta) {
     }
 }
 
-
 // prevent user from hitting "Submit" twice
 function on_user_hit_submit() {
     $("#user_hit_submit").val("1");
@@ -189,6 +183,7 @@ function on_user_hit_submit() {
     btn.form.submit();
 
 }
+
 function set_cookie(name, value) {
     var date = new Date();
 
@@ -199,7 +194,6 @@ function set_cookie(name, value) {
         + ";expires=" + date.toGMTString();
     + ";path=/";
 }
-
 
 function get_cookie(name) {
     var nameEQ = name + "=";
@@ -297,12 +291,10 @@ function get_text(el) {
     return el.firstChild.nodeValue;
 }
 
-
 function set_text(el, text) {
     el.textContent = text;
     return el.firstChild.nodeValue = text;
 }
-
 
 function on_body_load() {
 
@@ -402,7 +394,6 @@ function count_chars(textarea_id, max) {
     return true;
 }
 
-
 function show_tags() // also in bug_list.js
 {
     popup_window = window.open(
@@ -432,7 +423,6 @@ function append_tag(s) // also in bug_list.js, different element
 
     el.value += s;
 }
-
 
 function done_selecting_tags() {
 }

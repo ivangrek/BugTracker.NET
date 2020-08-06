@@ -20,6 +20,7 @@ namespace BugTracker.Web.Controllers
     using System.Data.SqlClient;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Net.Mail;
     using System.Runtime.Caching;
     using System.Text;
@@ -152,8 +153,45 @@ namespace BugTracker.Web.Controllers
         {
             if (this.security.User.AddsNotAllowed)
             {
-                // TODO No access
-                throw new InvalidOperationException();
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
+
+            if (TempData["Errors"] is Dictionary<string, ModelErrorCollection> failErrors)
+                foreach (var failError in failErrors)
+                    foreach (var err in failError.Value)
+                        ModelState.AddModelError(failError.Key, err.ErrorMessage);
+
+            var defaultProjectId = GetDefaultProject();
+            var customColumnRows = Util.GetCustomColumns()
+                .Tables[0].Rows;
+
+            if (!(TempData["Model"] is EditModel model))
+            {
+                model = new EditModel
+                {
+                    ProjectId = defaultProjectId,
+                    OrganizationId = GetDefaultOrganization(),
+                    CategoryId = GetDefaultCategory(),
+                    PriorityId = GetDefaultPriority(),
+                    StatusId = GetDefaultStatus(),
+                    UserDefinedAttributeId = GetDefaultUserDefinedAttribute(),
+                    UserId = Util.GetDefaultUser(defaultProjectId)
+                };
+
+                // Custom field values
+                foreach (DataRow customColumnRow in customColumnRows)
+                {
+                    var columnName = (string)customColumnRow["name"];
+
+                    if (this.security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
+                    {
+                        continue;
+                    }
+
+                    var defaultValue = GetCustomColDefaultValue(customColumnRow["default value"]);
+
+                    model.CustomFieldValues.Add(columnName, defaultValue);
+                }
             }
 
             ViewBag.Page = new PageModel
@@ -166,51 +204,18 @@ namespace BugTracker.Web.Controllers
 
             LoadDropdowns();
             LoadUserDropdown();
+            LoadProjectCustomDropdowns(model.ProjectId);
 
-            ViewBag.CustomColumns = Util.GetCustomColumns();
-            ViewBag.PermissionLevel = SecurityPermissionLevel.PermissionNone;
-
-            // Prepare for custom columns
-            var hashCustomColumns = new SortedDictionary<string, string>();
-
-            foreach (DataRow drcc in ViewBag.CustomColumns.Tables[0].Rows)
-            {
-                var columnName = (string)drcc["name"];
-
-                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
-                {
-                    var defaultval = GetCustomColDefaultValue(drcc["default value"]);
-
-                    hashCustomColumns.Add(columnName, defaultval);
-                }
-            }
+            ViewBag.CustomColumns = customColumnRows;
 
             // We don't know the project yet, so all permissions
-            //set_controls_field_permission(SecurityPermissionLevel.PermissionAll, security);
+            ViewBag.PermissionLevel = SecurityPermissionLevel.PermissionAll;
 
-            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
-                foreach (var failError in failErrors)
-                    ModelState.AddModelError(failError.Property, failError.Message);
+            SetControlsFieldPermission(ViewBag.PermissionLevel);
 
-            if (TempData["Errors2"] is Dictionary<string, ModelErrorCollection> failErrors2)
-                foreach (var failError in failErrors2)
-                    foreach (var err in failError.Value)
-                        ModelState.AddModelError(failError.Key, err.ErrorMessage);
-
-            if (TempData["Model"] is EditModel model) return View("Edit", model);
-
-            var defaultProjectId = GetDefaultProject();
-
-            model = new EditModel
-            {
-                ProjectId = defaultProjectId,
-                OrganizationId = GetDefaultOrganization(),
-                CategoryId = GetDefaultCategory(),
-                PriorityId = GetDefaultPriority(),
-                StatusId = GetDefaultStatus(),
-                UserDefinedAttributeId = GetDefaultUserDefinedAttribute(),
-                UserId = Util.GetDefaultUser(defaultProjectId/*Convert.ToInt32(this.project.SelectedItem.Value)*/)
-            };
+            // TODO
+            // Execute code not written by me
+            //Workflow.CustomAdjustControls(null, security.User, this);
 
             return View("Edit", model);
         }
@@ -219,27 +224,6 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(EditModel model)
         {
-            GetCookieValuesForShowHideToggles();
-
-            //var drBug = Bug.GetBugDataRow(this.Id, Security, this.DsCustomCols);
-
-            //load_incoming_custom_col_vals_into_hash(Security);
-
-            // Fetch the values of the custom columns from the Request and stash them in a hash table.
-
-            var dsCustomColumns = Util.GetCustomColumns();
-            var hashCustomColumns = new SortedDictionary<string, string>();
-
-            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
-            {
-                var columnName = (string)drcc["name"];
-
-                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
-                {
-                    hashCustomColumns.Add(columnName, Request[columnName]);
-                }
-            }
-
             //if (did_user_hit_submit_button()) // or is this a project dropdown autopostback?
             //{
             //    //this.Good = validate(Security);
@@ -263,89 +247,16 @@ namespace BugTracker.Web.Controllers
             //    }
             //}
 
-            //Validate
+            var dsCustomColumns = Util.GetCustomColumns();
 
-            //TODO
-            //if (!did_something_change()) return false;
-
-            // validate custom columns
-            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
-            {
-                var name = (string)drcc["name"];
-
-                if (this.security.User.DictCustomFieldPermissionLevel[name] != SecurityPermissionLevel.PermissionAll) continue;
-
-                var val = Request[name];
-
-                if (val == null) continue;
-
-                val = val.Replace("'", "''");
-
-                // if a date was entered, convert to db format
-                if (val.Length > 0)
-                {
-                    var datatype = drcc["datatype"].ToString();
-
-                    if (datatype == "datetime")
-                    {
-                        try
-                        {
-                            DateTime.Parse(val, Util.GetCultureInfo());
-                        }
-                        catch (FormatException)
-                        {
-                            ModelState.AddModelError(name, "\"" + name + "\" not in a valid date format.");
-                        }
-                    }
-                    else if (datatype == "int")
-                    {
-                        if (!Util.IsInt(val))
-                        {
-                            ModelState.AddModelError(name, "\"" + name + "\" must be an integer.<br>");
-                        }
-                    }
-                    else if (datatype == "decimal")
-                    {
-                        var xprec = Convert.ToInt32(drcc["xprec"]);
-                        var xscale = Convert.ToInt32(drcc["xscale"]);
-                        var decimalError = Util.IsValidDecimal(name, val, xprec - xscale, xscale);
-
-                        if (!string.IsNullOrEmpty(decimalError))
-                        {
-                            ModelState.AddModelError(name, decimalError);
-                        }
-                    }
-                }
-                else
-                {
-                    var nullable = (int)drcc["isnullable"];
-
-                    if (nullable == 0)
-                    {
-                        ModelState.AddModelError(name, "\"" + name + "\" is required.");
-                    }
-                }
-            }
-
-            // validate assigned to user versus 
-            if (!DoesAssignedToHavePermissionForOrg(model.UserId, model.OrganizationId))
-            {
-                ModelState.AddModelError(nameof(EditModel.UserId), "User does not have permission for the Organization");
-            }
-
-            // custom validations go here
-            //if (!Workflow.CustomValidations(this.DrBug, security.User,
-            //    this, this.custom_validation_err_msg))
-            //good = false;
-
-            //Validate
+            Validate(model, dsCustomColumns);
 
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError(string.Empty, Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel) + " was not created.");
 
                 TempData["Model"] = model;
-                TempData["Errors2"] = ModelState.Where(x => x.Value.Errors.Any())
+                TempData["Errors"] = ModelState.Where(x => x.Value.Errors.Any())
                     .Select(x => new { x.Key, x.Value.Errors })
                     .ToDictionary(x => x.Key, x => x.Errors);
 
@@ -353,7 +264,6 @@ namespace BugTracker.Web.Controllers
             }
 
             // Do insert
-            //get_comment_text_from_control(security);
             var commentFormated = string.Empty;
             var commentSearch = string.Empty;
             var commentType = string.Empty;
@@ -371,19 +281,6 @@ namespace BugTracker.Web.Controllers
                 commentType = "text/plain";
             }
 
-            // Project specific
-            var pcd1 = Request["pcd1"];
-            var pcd2 = Request["pcd2"];
-            var pcd3 = Request["pcd3"];
-
-            if (pcd1 == null) pcd1 = string.Empty;
-            if (pcd2 == null) pcd2 = string.Empty;
-            if (pcd3 == null) pcd3 = string.Empty;
-
-            pcd1 = pcd1.Replace("'", "''");
-            pcd2 = pcd2.Replace("'", "''");
-            pcd3 = pcd3.Replace("'", "''");
-
             var newIds = Bug.InsertBug(model.Name, this.security, /*this.tags.Value*/string.Empty, // TODO Tags
                 model.ProjectId,
                 model.OrganizationId,
@@ -392,12 +289,13 @@ namespace BugTracker.Web.Controllers
                 model.StatusId,
                 model.UserId,
                 model.UserDefinedAttributeId,
-                pcd1,
-                pcd2,
-                pcd3, commentFormated, commentSearch,
+                model.ProjectCustomFieldValue1 ?? string.Empty,
+                model.ProjectCustomFieldValue2 ?? string.Empty,
+                model.ProjectCustomFieldValue3 ?? string.Empty,
+                commentFormated, commentSearch,
                 null, // from
                 null, // cc
-                commentType, /*this.internal_only.Checked*/false /*TODO*/ , hashCustomColumns,
+                commentType, /*this.internal_only.Checked*/false /*TODO*/ , new SortedDictionary<string, string>(model.CustomFieldValues),
                 true); // send notifications
 
             // TODO Tags
@@ -406,18 +304,16 @@ namespace BugTracker.Web.Controllers
             //    Tags.BuildTagIndex(HttpContext.ApplicationInstance.Application);
             //}
 
-            //this.Id = newIds.Bugid;
-
             WhatsNew.AddNews(newIds.Bugid, model.Name, "added", security);
 
-            //this.new_id.Value = Convert.ToString(this.Id);
             //TODO
             //set_msg(Util.CapitalizeFirstLetter(thie.applicationSettings.SingularBugLabel) + " was created.");
 
+            // TODO research
             // save for next bug
             Session["project"] = model.ProjectId;
 
-            //Response.Redirect($"~/Bugs/Edit.aspx?id={this.Id}");
+            GetCookieValuesForShowHideToggles();
 
             return RedirectToAction(nameof(Update), new { id = newIds.Bugid });
         }
@@ -425,32 +321,51 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult Update(int id)
         {
-            ViewBag.Page = new PageModel
-            {
-                ApplicationSettings = this.applicationSettings,
-                Security = this.security,
-                Title = $"{this.applicationSettings.AppTitle} - edit bug",
-                SelectedItem = ApplicationSettings.PluralBugLabelDefault
-            };
-
-            LoadDropdowns();
-            LoadUserDropdown();
-
-            ViewBag.CustomColumns = Util.GetCustomColumns();
-            //ViewBag.PermissionLevel = SecurityPermissionLevel.PermissionNone;
-
-            if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
+            if (TempData["Errors"] is Dictionary<string, ModelErrorCollection> failErrors)
                 foreach (var failError in failErrors)
-                    ModelState.AddModelError(failError.Property, failError.Message);
+                    foreach (var err in failError.Value)
+                        ModelState.AddModelError(failError.Key, err.ErrorMessage);
 
-            if (TempData["Model"] is EditModel model) return View("Edit", model);
-
-            GetCookieValuesForShowHideToggles();
+            var customColumnRows = Util.GetCustomColumns()
+                .Tables[0].Rows;
 
             // Get this entry's data from the db and fill in the form
-            var drBug = Bug.GetBugDataRow(id, this.security, ViewBag.CustomColumns);
+            var bugDataRow = Bug.GetBugDataRow(id, this.security, Util.GetCustomColumns());
 
-            //prepare_for_update(Security);
+            if (!(TempData["Model"] is EditModel model))
+            {
+                model = new EditModel
+                {
+                    Id = (int)bugDataRow["id"],
+                    Name = (string)bugDataRow["short_desc"],
+                    ProjectId = (int)bugDataRow["project"],
+                    OrganizationId = (int)bugDataRow["organization"],
+                    CategoryId = (int)bugDataRow["category"],
+                    PriorityId = (int)bugDataRow["priority"],
+                    StatusId = (int)bugDataRow["status"],
+                    UserDefinedAttributeId = (int)bugDataRow["udf"],
+                    //UserId = Util.GetDefaultUser(defaultProjectId/*Convert.ToInt32(this.project.SelectedItem.Value)*/)
+                    ProjectCustomFieldValue1 = (string)bugDataRow["bg_project_custom_dropdown_value1"],
+                    ProjectCustomFieldValue2 = (string)bugDataRow["bg_project_custom_dropdown_value2"],
+                    ProjectCustomFieldValue3 = (string)bugDataRow["bg_project_custom_dropdown_value3"]
+                    // TODO this.tags.Value = (string)this.DrBug["bg_tags"];
+                };
+
+                foreach (DataRow customColumnRow in customColumnRows)
+                {
+                    var columnName = (string)customColumnRow["name"];
+
+                    if (this.security.User.DictCustomFieldPermissionLevel[columnName] == SecurityPermissionLevel.PermissionNone)
+                    {
+                        continue;
+                    }
+
+                    var value = Util.FormatDbValue(bugDataRow[columnName]);
+
+                    model.CustomFieldValues.Add(columnName, value);
+                }
+            }
+
             //if (this.DrBug == null)
             //{
             //    this.mainBlock.Visible = false;
@@ -461,9 +376,6 @@ namespace BugTracker.Web.Controllers
             //    return;
             //}
 
-            // look at permission level and react accordingly
-            ViewBag.PermissionLevel = (SecurityPermissionLevel)(int)drBug["pu_permission_level"];
-
             //if (PermissionLevel == SecurityPermissionLevel.PermissionNone)
             //{
             //    this.mainBlock.Visible = false;
@@ -473,48 +385,6 @@ namespace BugTracker.Web.Controllers
 
             //    return;
             //}
-
-            var hashCustomColumns = new SortedDictionary<string, string>();
-
-            foreach (DataRow drcc in ViewBag.CustomColumns.Tables[0].Rows)
-            {
-                var columnName = (string)drcc["name"];
-
-                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
-                {
-                    var val = Util.FormatDbValue(drBug[columnName]);
-
-                    hashCustomColumns.Add(columnName, val);
-                }
-            }
-
-            // move stuff to the page
-
-            //this.bugid.InnerText = Convert.ToString((int)this.DrBug["id"]);
-
-            // Fill in this form
-            //this.short_desc.Value = (string)this.DrBug["short_desc"];
-            //this.tags.Value = (string)this.DrBug["bg_tags"];
-            //Page.Title = Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
-            //             + " ID " + Convert.ToString(this.DrBug["id"]) + " " + (string)this.DrBug["short_desc"];
-            ViewBag.Page.Title = Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel)
-                         + " ID " + Convert.ToString(drBug["id"]) + " " + (string)drBug["short_desc"];
-
-            // reported by
-            string s;
-            s = "Created by ";
-            s += PrintBug.FormatEmailUserName(
-                true,
-                Convert.ToInt32(drBug["id"]), ViewBag.PermissionLevel,
-                Convert.ToString(drBug["reporter_email"]),
-                Convert.ToString(drBug["reporter"]),
-                Convert.ToString(drBug["reporter_fullname"]));
-            s += " on ";
-            s += Util.FormatDbDateTime(drBug["reported_date"]);
-            s += ", ";
-            s += Util.HowLongAgo((int)drBug["seconds_ago"]);
-
-            ViewBag.ReportedBy = s;
 
             // save current values in previous, so that later we can write the audit trail when things change
             //this.prev_short_desc.Value = (string)this.DrBug["short_desc"];
@@ -563,36 +433,54 @@ namespace BugTracker.Web.Controllers
 
             //load_project_and_user_dropdown_for_update(security); // must come before set_controls_field_permission, after assigning to prev_ values
 
-            //set_controls_field_permission(PermissionLevel, security);
+            ViewBag.Page = new PageModel
+            {
+                ApplicationSettings = this.applicationSettings,
+                Security = this.security,
+                Title = $"{this.applicationSettings.AppTitle} - edit bug",
+                SelectedItem = ApplicationSettings.PluralBugLabelDefault
+            };
 
-            //this.snapshot_timestamp.Value = Convert.ToDateTime(this.DrBug["snapshot_timestamp"])
-            //    .ToString("yyyyMMdd HH\\:mm\\:ss\\:fff");
+            ViewBag.Page.Title = $"{Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel)} ID {bugDataRow["id"]} {bugDataRow["short_desc"]}";
 
-            //prepare_a_bunch_of_links_for_update(security);
+            // reported by
+            var emailUsername = PrintBug.FormatEmailUserName(
+                true,
+                Convert.ToInt32(bugDataRow["id"]), (SecurityPermissionLevel)(int)bugDataRow["pu_permission_level"],
+                Convert.ToString(bugDataRow["reporter_email"]),
+                Convert.ToString(bugDataRow["reporter"]),
+                Convert.ToString(bugDataRow["reporter_fullname"]));
+
+            ViewBag.ReportedBy = $"Created by {emailUsername}  on {Util.FormatDbDateTime(bugDataRow["reported_date"])}, {Util.HowLongAgo((int)bugDataRow["seconds_ago"])}";
+
+            LoadDropdowns();
+            LoadUserDropdown();
+            LoadProjectCustomDropdowns(model.ProjectId);
+
+            GetCookieValuesForShowHideToggles();
+
+            ViewBag.CustomColumns = Util.GetCustomColumns()
+                .Tables[0].Rows;
+
+            // look at permission level and react accordingly
+            ViewBag.PermissionLevel = (SecurityPermissionLevel)(int)bugDataRow["pu_permission_level"];
+
+            SetControlsFieldPermission(ViewBag.PermissionLevel);
 
             FormatPrevNextBug(id);
 
             // save for next bug
-            if (/*this.project.SelectedItem != null*/ (int)drBug["project"] != 0)
+            if (/*this.project.SelectedItem != null*/ (int)bugDataRow["project"] != 0)
             {
-                Session["project"] = (int)drBug["project"];/*this.project.SelectedItem.Value*/
+                Session["project"] = (int)bugDataRow["project"];/*this.project.SelectedItem.Value*/
             }
 
-            //// Execute code not written by me
-            //Workflow.CustomAdjustControls(this.DrBug, security.User, this);
+            //TODO
+            //this.snapshot_timestamp.Value = Convert.ToDateTime(this.DrBug["snapshot_timestamp"])
+            //    .ToString("yyyyMMdd HH\\:mm\\:ss\\:fff");
 
-            model = new EditModel
-            {
-                Id = drBug["id"],
-                Name = drBug["short_desc"],
-                ProjectId = (int)drBug["project"],
-                OrganizationId = (int)drBug["organization"],
-                CategoryId = (int)drBug["category"],
-                PriorityId = (int)drBug["priority"],
-                StatusId = (int)drBug["status"],
-                UserDefinedAttributeId = (int)drBug["udf"],
-                //UserId = Util.GetDefaultUser(defaultProjectId/*Convert.ToInt32(this.project.SelectedItem.Value)*/)
-            };
+            // Execute code not written by me
+            //Workflow.CustomAdjustControls(this.DrBug, security.User, this);
 
             return View("Edit", model);
         }
@@ -3277,26 +3165,7 @@ namespace BugTracker.Web.Controllers
             }
         }
 
-        //public void LoadDropdownsForInsert()
-        //{
-        //    //LoadDropdowns();
-
-        //    // Get the defaults
-        //    var sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
-        //    sql += "\nselect top 1 ct_id from categories where ct_default = 1 order by ct_name;"; // 1
-        //    sql += "\nselect top 1 pr_id from priorities where pr_default = 1 order by pr_name;"; // 2
-        //    sql += "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
-        //    sql += "\nselect top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;"; // 4
-
-        //    var dsDefaults = DbUtil.GetDataSet(sql);
-
-        //    //LoadProjectForInsert(dsDefaults.Tables[0]); /*AndUserDropdown*/
-        //    //LoadUserDropdown();
-
-        //    //LoadOtherDropdownsAndSelectDefaults(dsDefaults);
-        //}
-
-        public void LoadDropdowns()
+        private void LoadDropdowns()
         {
             // only show projects where user has permissions
             // 0
@@ -3430,7 +3299,7 @@ namespace BugTracker.Web.Controllers
             }
         }
 
-        public int GetDefaultProject()
+        private int GetDefaultProject()
         {
             var sql = "\nselect top 1 pj_id from projects where pj_default = 1 order by pj_name;"; // 0
             var projectDefault = DbUtil.GetDataSet(sql);
@@ -3460,12 +3329,12 @@ namespace BugTracker.Web.Controllers
             }
         }
 
-        public int GetDefaultOrganization()
+        private int GetDefaultOrganization()
         {
             return this.security.User.Org;
         }
 
-        public int GetDefaultCategory()
+        private static int GetDefaultCategory()
         {
             var sql = "\nselect top 1 ct_id from categories where ct_default = 1 order by ct_name;"; // 1
             var dsDefaults = DbUtil.GetDataSet(sql);
@@ -3480,7 +3349,7 @@ namespace BugTracker.Web.Controllers
             return defaultValue;
         }
 
-        public int GetDefaultPriority()
+        private static int GetDefaultPriority()
         {
             var sql = "\nselect top 1 pr_id from priorities where pr_default = 1 order by pr_name;"; // 2
             var dsDefaults = DbUtil.GetDataSet(sql);
@@ -3495,7 +3364,7 @@ namespace BugTracker.Web.Controllers
             return defaultValue;
         }
 
-        public int GetDefaultStatus()
+        private static int GetDefaultStatus()
         {
             var sql = "\nselect top 1 st_id from statuses where st_default = 1 order by st_name;"; // 3
             var dsDefaults = DbUtil.GetDataSet(sql);
@@ -3510,7 +3379,7 @@ namespace BugTracker.Web.Controllers
             return defaultValue;
         }
 
-        public int GetDefaultUserDefinedAttribute()
+        private static int GetDefaultUserDefinedAttribute()
         {
             var sql = "\nselect top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;"; // 4
             var dsDefaults = DbUtil.GetDataSet(sql);
@@ -3525,71 +3394,84 @@ namespace BugTracker.Web.Controllers
             return defaultValue;
         }
 
-        public void LoadUserDropdown()
+        private void LoadUserDropdown(EditModel model = null)
         {
             // What's selected now?   Save it before we refresh the dropdown.
-            var currentValue = string.Empty;
+            var currentValue = 0;
 
-            //if (IsPostBack)
-            //{
-            //    currentValue = this.assigned_to.SelectedItem.Value;
-            //}
+            if (model != null)
+            {
+                currentValue = model.UserId;
+            }
 
             var sql = string.Empty;
             // Load the user dropdown, which changes per project
             // Only users explicitly allowed will be listed
             if (this.applicationSettings.DefaultPermissionLevel == 0)
+            {
                 sql = @"
-            /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
-            from users
-            inner join orgs on us_org = og_id
-            where us_active = 1
-            and og_can_be_assigned_to = 1
-            and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or (og_external_user = 0 and $og_can_assign_to_internal_users))
-            and us_id in
-                (select pu_user from project_user_xref
-                    where pu_project = $pj
-                    and pu_permission_level <> 0)
-            order by us_username; ";
+                /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
+                from users
+                inner join orgs on us_org = og_id
+                where us_active = 1
+                and og_can_be_assigned_to = 1
+                and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or (og_external_user = 0 and $og_can_assign_to_internal_users))
+                and us_id in
+                    (select pu_user from project_user_xref
+                        where pu_project = $pj
+                        and pu_permission_level <> 0)
+                order by us_username; ";
+            }
             // Only users explictly DISallowed will be omitted
             else
+            {
                 sql = @"
-            /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
-            from users
-            inner join orgs on us_org = og_id
-            where us_active = 1
-            and og_can_be_assigned_to = 1
-            and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or (og_external_user = 0 and $og_can_assign_to_internal_users))
-            and us_id not in
-                (select pu_user from project_user_xref
-                    where pu_project = $pj
-                    and pu_permission_level = 0)
-            order by us_username; ";
+                    /* users this project */ select us_id, case when $fullnames then us_lastname + ', ' + us_firstname else us_username end us_username
+                    from users
+                    inner join orgs on us_org = og_id
+                    where us_active = 1
+                    and og_can_be_assigned_to = 1
+                    and ($og_other_orgs_permission_level <> 0 or $og_id = og_id or (og_external_user = 0 and $og_can_assign_to_internal_users))
+                    and us_id not in
+                        (select pu_user from project_user_xref
+                            where pu_project = $pj
+                            and pu_permission_level = 0)
+                    order by us_username; ";
+            }
 
             if (!this.applicationSettings.UseFullNames)
+            {
                 // false condition
                 sql = sql.Replace("$fullnames", "0 = 1");
+            }
             else
+            {
                 // true condition
                 sql = sql.Replace("$fullnames", "1 = 1");
+            }
 
-            var defaultProjectId = GetDefaultProject();
-
-            //if (this.project.SelectedItem != null)
-            sql = sql.Replace("$pj", defaultProjectId.ToString()/*this.project.SelectedItem.Value*/);
-            //else
-            //    sql = sql.Replace("$pj", "0");
+            if (model != null && model.ProjectId != 0)
+            {
+                sql = sql.Replace("$pj", model.ProjectId.ToString());
+            }
+            else
+            {
+                sql = sql.Replace("$pj", "0");
+            }
 
             sql = sql.Replace("$og_id", Convert.ToString(this.security.User.Org));
-            sql = sql.Replace("$og_other_orgs_permission_level",
-                Convert.ToString((int)this.security.User.OtherOrgsPermissionLevel));
+            sql = sql.Replace("$og_other_orgs_permission_level", Convert.ToString((int)this.security.User.OtherOrgsPermissionLevel));
 
             if (this.security.User.CanAssignToInternalUsers)
+            {
                 sql = sql.Replace("$og_can_assign_to_internal_users", "1 = 1");
+            }
             else
+            {
                 sql = sql.Replace("$og_can_assign_to_internal_users", "0 = 1");
+            }
 
-            var dtUsers = DbUtil.GetDataSet(sql).Tables[0];
+            ViewBag.DtUsers = DbUtil.GetDataSet(sql).Tables[0];
 
             ViewBag.Users = new List<SelectListItem>();
             ViewBag.Users.Add(new SelectListItem
@@ -3598,7 +3480,7 @@ namespace BugTracker.Web.Controllers
                 Text = "[not assigned]"
             });
 
-            foreach (DataRow row in dtUsers.Rows)
+            foreach (DataRow row in ViewBag.DtUsers.Rows)
             {
                 ViewBag.Users.Add(new SelectListItem
                 {
@@ -3607,15 +3489,12 @@ namespace BugTracker.Web.Controllers
                 });
             }
 
-            //this.assigned_to.DataSource = new DataView(DtUsers);
-            //this.assigned_to.DataTextField = "us_username";
-            //this.assigned_to.DataValueField = "us_id";
-            //this.assigned_to.DataBind();
-            //this.assigned_to.Items.Insert(0, new ListItem("[not assigned]", "0"));
+            //TODO research
 
             // It can happen that the user in the db is not listed in the dropdown, because of a subsequent change in permissions.
             // Since that user IS the user associated with the bug, let's force it into the dropdown.
-            //if (this.Id != 0) // if existing bug
+            //if (model != null) // if existing bug
+            //{
             //    if (this.prev_assigned_to.Value != "0")
             //    {
             //        // see if already in the dropdown.
@@ -3632,6 +3511,7 @@ namespace BugTracker.Web.Controllers
             //            this.assigned_to.Items.Insert(1,
             //                new ListItem(this.prev_assigned_to_username.Value, this.prev_assigned_to.Value));
             //    }
+            //}
 
             //// At this point, all the users we need are in the dropdown.
             //// Now selected the selected.
@@ -3665,7 +3545,7 @@ namespace BugTracker.Web.Controllers
             //}
         }
 
-        public static string GetCustomColDefaultValue(object o)
+        private static string GetCustomColDefaultValue(object o)
         {
             var defaultval = Convert.ToString(o);
 
@@ -3681,7 +3561,7 @@ namespace BugTracker.Web.Controllers
             return defaultval;
         }
 
-        public static bool DoesAssignedToHavePermissionForOrg(int assignedTo, int org)
+        private static bool DoesAssignedToHavePermissionForOrg(int assignedTo, int org)
         {
             if (assignedTo < 1) return true;
 
@@ -3704,22 +3584,31 @@ namespace BugTracker.Web.Controllers
             return false;
         }
 
-        public void GetCookieValuesForShowHideToggles()
+        private void GetCookieValuesForShowHideToggles()
         {
             var cookie = Request.Cookies["images_inline"];
             if (cookie == null || cookie.Value == "0")
+            {
                 ViewBag.ImagesInline = false;
+            }
             else
+            {
                 ViewBag.ImagesInline = true;
+            }
 
             cookie = Request.Cookies["history_inline"];
+
             if (cookie == null || cookie.Value == "0")
+            {
                 ViewBag.HistoryInline = false;
+            }
             else
+            {
                 ViewBag.HistoryInline = true;
+            }
         }
 
-        public void FormatPrevNextBug(int id)
+        private void FormatPrevNextBug(int id)
         {
             // for next/prev bug links
             var dvBugs = (DataView)Session["bugs"];
@@ -3787,7 +3676,7 @@ namespace BugTracker.Web.Controllers
             }
         }
 
-        public void LoadFromDropdown(DataRow dr, bool projectFirst)
+        private void LoadFromDropdown(DataRow dr, bool projectFirst)
         {
             // format from dropdown
             var projectEmail = dr["pj_pop3_email_from"].ToString();
@@ -3881,7 +3770,7 @@ namespace BugTracker.Web.Controllers
             }
         }
 
-        public void ValidateSendEmail(SendEmailModel model)
+        private void ValidateSendEmail(SendEmailModel model)
         {
             if (string.IsNullOrEmpty(model.To))
             {
@@ -3922,7 +3811,7 @@ namespace BugTracker.Web.Controllers
             }
         }
 
-        public int[] HandleAttachments(int commentId, ISecurity security, SendEmailModel model)
+        private int[] HandleAttachments(int commentId, ISecurity security, SendEmailModel model)
         {
             var attachments = new ArrayList();
 
@@ -3970,7 +3859,7 @@ namespace BugTracker.Web.Controllers
             return (int[])attachments.ToArray(typeof(int));
         }
 
-        public void PutAddresses()
+        private void PutAddresses()
         {
             var dictUsersForThisProject = new Dictionary<int, int>();
             string sql;
@@ -4056,6 +3945,246 @@ namespace BugTracker.Web.Controllers
             }
 
             ViewBag.EmailAddresses = Session["email_addresses"];
+        }
+
+        private void SetControlsFieldPermission(SecurityPermissionLevel permissionLevel)
+        {
+            if (permissionLevel == SecurityPermissionLevel.PermissionReadonly
+                || permissionLevel == SecurityPermissionLevel.PermissionReporter)
+            {
+                //TODO
+                //// even turn off commenting updating for read only
+                //if (PermissionLevel == SecurityPermissionLevel.PermissionReadonly)
+                //{
+                //    this.submit_button.Disabled = true;
+                //    this.submit_button.Visible = false;
+                //    if (ApplicationSettings.DisplayAnotherButtonInEditBugPage)
+                //    {
+                //        this.submit_button2.Disabled = true;
+                //        this.submit_button2.Visible = false;
+                //    }
+
+                //    this.comment_label.Visible = false;
+                //    this.comment.Visible = false;
+                //}
+
+                ViewBag.ProjectFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.ProjectFieldPermissionLevel);
+                ViewBag.OrganizationFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.OrgFieldPermissionLevel);
+                ViewBag.CategoryFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.CategoryFieldPermissionLevel);
+                ViewBag.PriorityFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.PriorityFieldPermissionLevel);
+                ViewBag.UserFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.AssignedToFieldPermissionLevel);
+                ViewBag.StatusFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.StatusFieldPermissionLevel);
+                ViewBag.UdfFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.UdfFieldPermissionLevel);
+
+                ViewBag.ProjectCustomFieldPermissionLevel = SecurityPermissionLevel.PermissionReadonly;
+
+                //TODO
+                //ViewBag.TagsFieldPermissionLevel = SecurityPermissionLevel.PermissionReadonly;
+
+                //// turn on the spans to hold the data
+                //if (this.Id != 0)
+                //{
+                //    this.static_short_desc.Style["display"] = "block";
+                //    this.short_desc.Visible = false;
+                //}
+
+                //this.static_short_desc.InnerText = this.short_desc.Value;]
+
+                //this.internal_only_label.Visible = false;
+                //this.internal_only.Visible = false;
+            }
+            else
+            {
+                // Call these functions so that the field level permissions can kick in
+                if (this.security.User.ForcedProject != 0)
+                {
+                    ViewBag.ProjectFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.ProjectFieldPermissionLevel);
+                }
+                else
+                {
+                    ViewBag.ProjectFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.ProjectFieldPermissionLevel);
+                }
+
+                if (this.security.User.OtherOrgsPermissionLevel == 0)
+                {
+                    ViewBag.OrganizationFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionReadonly, this.security.User.OrgFieldPermissionLevel);
+                }
+                else
+                {
+                    ViewBag.OrganizationFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.OrgFieldPermissionLevel);
+                }
+
+                ViewBag.CategoryFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.CategoryFieldPermissionLevel);
+                ViewBag.PriorityFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.PriorityFieldPermissionLevel);
+                ViewBag.UserFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.AssignedToFieldPermissionLevel);
+                ViewBag.StatusFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.StatusFieldPermissionLevel);
+                ViewBag.UdfFieldPermissionLevel = Min(SecurityPermissionLevel.PermissionAll, this.security.User.UdfFieldPermissionLevel);
+
+                ViewBag.ProjectCustomFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
+
+                //TODO
+                //ViewBag.TagsFieldPermissionLevel = SecurityPermissionLevel.PermissionAll;
+            }
+        }
+
+        private static T Min<T>(T firstValue, T secondValue) where T : IComparable
+        {
+            return firstValue.CompareTo(secondValue) <= 0 ? firstValue : secondValue;
+        }
+
+        private void LoadProjectCustomDropdowns(int projectId)
+        {
+            if (projectId == 0)
+            {
+                return;
+            }
+
+            var sql = @"
+                select
+                    isnull(pj_enable_custom_dropdown1, 0) [pj_enable_custom_dropdown],
+                    isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label],
+                    isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values],
+                    1 number
+                from projects
+                where
+                    pj_id = $pj
+                    and
+                    [pj_enable_custom_dropdown1] <> 0
+
+                union all
+
+                select
+                    isnull(pj_enable_custom_dropdown2, 0),
+                    isnull(pj_custom_dropdown_label2,''),
+                    isnull(pj_custom_dropdown_values2,''),
+                    2
+                from projects
+                where
+                    pj_id = $pj
+                    and
+                    [pj_enable_custom_dropdown2] <> 0
+
+                union all
+
+                select
+                    isnull(pj_enable_custom_dropdown3, 0),
+                    isnull(pj_custom_dropdown_label3,''),
+                    isnull(pj_custom_dropdown_values3,''),
+                    3
+
+                from projects
+                where
+                    pj_id = $pj
+                    and
+                    [pj_enable_custom_dropdown3] <> 0";
+
+            sql = sql.Replace("$pj", projectId.ToString());
+
+            var dataSet = DbUtil.GetDataSet(sql);
+
+            foreach (DataRow row in dataSet.Tables[0].Rows)
+            {
+                var number = (int)row["number"];
+                var columnName = (string)row["pj_custom_dropdown_label"];
+                var dropdownValues = (string)row["pj_custom_dropdown_values"];
+                var values = Util.SplitDropdownVals(dropdownValues);
+
+                ViewData[$"ProjectCustomFieldName{number}"] = columnName;
+                ViewData[$"ProjectCustomFieldValues{number}"] = new List<SelectListItem>();
+
+                foreach (var value in values)
+                {
+                    var decodedOption = WebUtility.HtmlDecode(value);
+
+                    ((List<SelectListItem>)ViewData[$"ProjectCustomFieldValues{number}"]).Add(new SelectListItem
+                    {
+                        Value = decodedOption,
+                        Text = decodedOption
+                    });
+                }
+            }
+        }
+
+        private void Validate(EditModel model, DataSet dsCustomColumns)
+        {
+            //TODO
+            //if (!did_something_change()) return false;
+
+            // validate custom columns
+            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
+            {
+                var name = (string)drcc["name"];
+
+                if (this.security.User.DictCustomFieldPermissionLevel[name] != SecurityPermissionLevel.PermissionAll)
+                {
+                    continue;
+                }
+
+                var val = model.CustomFieldValues[name];
+
+                if (val == null)
+                {
+                    continue;
+                }
+
+                val = val.Replace("'", "''");
+
+                // if a date was entered, convert to db format
+                if (val.Length > 0)
+                {
+                    var datatype = drcc["datatype"].ToString();
+
+                    if (datatype == "datetime")
+                    {
+                        try
+                        {
+                            DateTime.Parse(val, Util.GetCultureInfo());
+                        }
+                        catch (FormatException)
+                        {
+                            ModelState.AddModelError($"CustomFieldValues[{name}]", "\"" + name + "\" not in a valid date format.");
+                        }
+                    }
+                    else if (datatype == "int")
+                    {
+                        if (!Util.IsInt(val))
+                        {
+                            ModelState.AddModelError($"CustomFieldValues[{name}]", "\"" + name + "\" must be an integer.");
+                        }
+                    }
+                    else if (datatype == "decimal")
+                    {
+                        var xprec = Convert.ToInt32(drcc["xprec"]);
+                        var xscale = Convert.ToInt32(drcc["xscale"]);
+                        var decimalError = Util.IsValidDecimal(name, val, xprec - xscale, xscale);
+
+                        if (!string.IsNullOrEmpty(decimalError))
+                        {
+                            ModelState.AddModelError($"CustomFieldValues[{name}]", decimalError);
+                        }
+                    }
+                }
+                else
+                {
+                    var nullable = (int)drcc["isnullable"];
+
+                    if (nullable == 0)
+                    {
+                        ModelState.AddModelError($"CustomFieldValues[{name}]", "\"" + name + "\" is required.");
+                    }
+                }
+            }
+
+            // validate assigned to user versus 
+            if (!DoesAssignedToHavePermissionForOrg(model.UserId, model.OrganizationId))
+            {
+                ModelState.AddModelError(nameof(EditModel.UserId), "User does not have permission for the Organization");
+            }
+
+            // TODO
+            // custom validations go here
+            //if (!Workflow.CustomValidations(this.DrBug, security.User,
+            //    this, this.custom_validation_err_msg))
         }
     }
 }

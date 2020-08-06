@@ -6,10 +6,17 @@
 
 namespace BugTracker.Web.Models.Bug
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Web.Mvc;
 
     public sealed class EditModel
     {
+        public EditModel()
+        {
+            CustomFieldValues = new Dictionary<string, string>();
+        }
+
         [Display(Name = "Bug ID")]
         public int Id { get; set; }
 
@@ -39,6 +46,15 @@ namespace BugTracker.Web.Models.Bug
         public int UserId { get; set; }
 
         [Display(Name = "Comment")]
+        [AllowHtml]
         public string Comment { get; set; }
+
+        public Dictionary<string, string> CustomFieldValues { get; set; }
+
+        public string ProjectCustomFieldValue1 { get; set; }
+
+        public string ProjectCustomFieldValue2 { get; set; }
+
+        public string ProjectCustomFieldValue3 { get; set; }
     }
 }

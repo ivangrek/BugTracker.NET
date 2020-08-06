@@ -488,153 +488,167 @@ insert into bug_posts
             var sql = @" /* get_bug_datarow */";
 
             if (ApplicationSettings.EnableSeen)
+            {
                 sql += @"
-if not exists (select bu_bug from bug_user where bu_bug = $id and bu_user = $this_usid)
-    insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($id, $this_usid, 0, 1, 0) 
-update bug_user set bu_seen = 1, bu_seen_datetime = getdate() where bu_bug = $id and bu_user = $this_usid and bu_seen <> 1";
+                    if not exists (select bu_bug from bug_user where bu_bug = $id and bu_user = $this_usid)
+                        insert into bug_user (bu_bug, bu_user, bu_flag, bu_seen, bu_vote) values($id, $this_usid, 0, 1, 0) 
+                    update bug_user set bu_seen = 1, bu_seen_datetime = getdate() where bu_bug = $id and bu_user = $this_usid and bu_seen <> 1";
+            }
 
             sql += @"
-declare @svn_revisions int
-declare @git_commits int
-declare @hg_revisions int
-declare @tasks int
-declare @related int;
-set @svn_revisions = 0
-set @git_commits = 0
-set @hg_revisions = 0
-set @tasks = 0
-set @related = 0";
+                declare @svn_revisions int
+                declare @git_commits int
+                declare @hg_revisions int
+                declare @tasks int
+                declare @related int;
+                set @svn_revisions = 0
+                set @git_commits = 0
+                set @hg_revisions = 0
+                set @tasks = 0
+                set @related = 0";
 
             if (ApplicationSettings.EnableSubversionIntegration)
+            {
                 sql += @"
-select @svn_revisions = count(1)
-from svn_affected_paths
-inner join svn_revisions on svnap_svnrev_id = svnrev_id
-where svnrev_bug = $id;";
+                    select @svn_revisions = count(1)
+                    from svn_affected_paths
+                    inner join svn_revisions on svnap_svnrev_id = svnrev_id
+                    where svnrev_bug = $id;";
+            }
 
             if (ApplicationSettings.EnableGitIntegration)
+            {
                 sql += @"
-select @git_commits = count(1)
-from git_affected_paths
-inner join git_commits on gitap_gitcom_id = gitcom_id
-where gitcom_bug = $id;";
+                    select @git_commits = count(1)
+                    from git_affected_paths
+                    inner join git_commits on gitap_gitcom_id = gitcom_id
+                    where gitcom_bug = $id;";
+            }
 
             if (ApplicationSettings.EnableMercurialIntegration)
+            {
                 sql += @"
-select @hg_revisions = count(1)
-from hg_affected_paths
-inner join hg_revisions on hgap_hgrev_id = hgrev_id
-where hgrev_bug = $id;";
+                    select @hg_revisions = count(1)
+                    from hg_affected_paths
+                    inner join hg_revisions on hgap_hgrev_id = hgrev_id
+                    where hgrev_bug = $id;";
+            }
 
             if (ApplicationSettings.EnableTasks)
+            {
                 sql += @"
-select @tasks = count(1)
-from bug_tasks
-where tsk_bug = $id;";
+                    select @tasks = count(1)
+                    from bug_tasks
+                    where tsk_bug = $id;";
+            }
 
             if (ApplicationSettings.EnableRelationships)
+            {
                 sql += @"
-select @related = count(1)
-from bug_relationships
-where re_bug1 = $id;";
+                    select @related = count(1)
+                    from bug_relationships
+                    where re_bug1 = $id;";
+            }
 
             sql += @"
+                select bg_id [id],
+                bg_short_desc [short_desc],
+                isnull(bg_tags,'') [bg_tags],
+                isnull(ru.us_username,'[deleted user]') [reporter],
+                isnull(ru.us_email,'') [reporter_email],
+                case rtrim(ru.us_firstname)
+                    when null then isnull(ru.us_lastname, '')
+                    when '' then isnull(ru.us_lastname, '')
+                    else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+                    end [reporter_fullname],
+                bg_reported_date [reported_date],
+                datediff(s,bg_reported_date,getdate()) [seconds_ago],
+                isnull(lu.us_username,'') [last_updated_user],
+                case rtrim(lu.us_firstname)
+                    when null then isnull(lu.us_lastname, '')
+                    when '' then isnull(lu.us_lastname, '')
+                    else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+                    end [last_updated_fullname],
 
-select bg_id [id],
-bg_short_desc [short_desc],
-isnull(bg_tags,'') [bg_tags],
-isnull(ru.us_username,'[deleted user]') [reporter],
-isnull(ru.us_email,'') [reporter_email],
-case rtrim(ru.us_firstname)
-    when null then isnull(ru.us_lastname, '')
-    when '' then isnull(ru.us_lastname, '')
-    else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
-    end [reporter_fullname],
-bg_reported_date [reported_date],
-datediff(s,bg_reported_date,getdate()) [seconds_ago],
-isnull(lu.us_username,'') [last_updated_user],
-case rtrim(lu.us_firstname)
-    when null then isnull(lu.us_lastname, '')
-    when '' then isnull(lu.us_lastname, '')
-    else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
-    end [last_updated_fullname],
+                bg_last_updated_date [last_updated_date],
+                isnull(bg_project,0) [project],
+                isnull(pj_name,'[no project]') [current_project],
 
+                isnull(bg_org,0) [organization],
+                isnull(bugorg.og_name,'') [og_name],
 
-bg_last_updated_date [last_updated_date],
-isnull(bg_project,0) [project],
-isnull(pj_name,'[no project]') [current_project],
+                isnull(bg_category,0) [category],
+                isnull(ct_name,'') [category_name],
 
-isnull(bg_org,0) [organization],
-isnull(bugorg.og_name,'') [og_name],
+                isnull(bg_priority,0) [priority],
+                isnull(pr_name,'') [priority_name],
 
-isnull(bg_category,0) [category],
-isnull(ct_name,'') [category_name],
+                isnull(bg_status,0) [status],
+                isnull(st_name,'') [status_name],
 
-isnull(bg_priority,0) [priority],
-isnull(pr_name,'') [priority_name],
+                isnull(bg_user_defined_attribute,0) [udf],
+                isnull(udf_name,'') [udf_name],
 
-isnull(bg_status,0) [status],
-isnull(st_name,'') [status_name],
+                isnull(bg_assigned_to_user,0) [assigned_to_user],
+                isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+                case rtrim(asg.us_firstname)
+                when null then isnull(asg.us_lastname, '[not assigned]')
+                when '' then isnull(asg.us_lastname, '[not assigned]')
+                else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+                end [assigned_to_fullname],
 
-isnull(bg_user_defined_attribute,0) [udf],
-isnull(udf_name,'') [udf_name],
+                isnull(bs_user,0) [subscribed],
 
-isnull(bg_assigned_to_user,0) [assigned_to_user],
-isnull(asg.us_username,'[not assigned]') [assigned_to_username],
-case rtrim(asg.us_firstname)
-when null then isnull(asg.us_lastname, '[not assigned]')
-when '' then isnull(asg.us_lastname, '[not assigned]')
-else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
-end [assigned_to_fullname],
+                case
+                when
+                    $this_org <> bg_org
+                    and userorg.og_other_orgs_permission_level < 2
+                    and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
+                        then userorg.og_other_orgs_permission_level
+                else
+                    isnull(pu_permission_level,$dpl)
+                end [pu_permission_level],
 
-isnull(bs_user,0) [subscribed],
-
-case
-when
-    $this_org <> bg_org
-    and userorg.og_other_orgs_permission_level < 2
-    and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,$dpl)
-        then userorg.og_other_orgs_permission_level
-else
-    isnull(pu_permission_level,$dpl)
-end [pu_permission_level],
-
-isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
-isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
-isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
-@related [relationship_cnt],
-@svn_revisions [svn_revision_cnt],
-@git_commits [git_commit_cnt],
-@hg_revisions [hg_commit_cnt],
-@tasks [task_cnt],
-getdate() [snapshot_timestamp]
-$custom_cols_placeholder
-from bugs
-inner join users this_user on us_id = $this_usid
-inner join orgs userorg on this_user.us_org = userorg.og_id
-left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
-left outer join projects on bg_project = pj_id
-left outer join orgs bugorg on bg_org = bugorg.og_id
-left outer join categories on bg_category = ct_id
-left outer join priorities on bg_priority = pr_id
-left outer join statuses on bg_status = st_id
-left outer join users asg on bg_assigned_to_user = asg.us_id
-left outer join users ru on bg_reported_user = ru.us_id
-left outer join users lu on bg_last_updated_user = lu.us_id
-left outer join bug_subscriptions on bs_bug = bg_id and bs_user = $this_usid
-left outer join project_user_xref on pj_id = pu_project
-and pu_user = $this_usid
-where bg_id = $id";
+                isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+                isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+                isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+                @related [relationship_cnt],
+                @svn_revisions [svn_revision_cnt],
+                @git_commits [git_commit_cnt],
+                @hg_revisions [hg_commit_cnt],
+                @tasks [task_cnt],
+                getdate() [snapshot_timestamp]
+                $custom_cols_placeholder
+                from bugs
+                inner join users this_user on us_id = $this_usid
+                inner join orgs userorg on this_user.us_org = userorg.og_id
+                left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+                left outer join projects on bg_project = pj_id
+                left outer join orgs bugorg on bg_org = bugorg.og_id
+                left outer join categories on bg_category = ct_id
+                left outer join priorities on bg_priority = pr_id
+                left outer join statuses on bg_status = st_id
+                left outer join users asg on bg_assigned_to_user = asg.us_id
+                left outer join users ru on bg_reported_user = ru.us_id
+                left outer join users lu on bg_last_updated_user = lu.us_id
+                left outer join bug_subscriptions on bs_bug = bg_id and bs_user = $this_usid
+                left outer join project_user_xref on pj_id = pu_project
+                and pu_user = $this_usid
+                where bg_id = $id";
 
             if (dsCustomCols.Tables[0].Rows.Count == 0)
             {
-                sql = sql.Replace("$custom_cols_placeholder", "");
+                sql = sql.Replace("$custom_cols_placeholder", string.Empty);
             }
             else
             {
                 var customColsSql = string.Empty;
 
-                foreach (DataRow drcc in dsCustomCols.Tables[0].Rows) customColsSql += ",[" + drcc["name"] + "]";
+                foreach (DataRow drcc in dsCustomCols.Tables[0].Rows)
+                {
+                    customColsSql += ",[" + drcc["name"] + "]";
+                }
+
                 sql = sql.Replace("$custom_cols_placeholder", customColsSql);
             }
 
