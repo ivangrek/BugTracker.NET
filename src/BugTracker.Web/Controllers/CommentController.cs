@@ -11,6 +11,7 @@ namespace BugTracker.Web.Controllers
     using Models;
     using Models.Comment;
     using System;
+    using System.Net.Mime;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.UI;
@@ -63,7 +64,7 @@ namespace BugTracker.Web.Controllers
 
             var contentType = (string)dr["bp_content_type"];
 
-            if (this.security.User.UseFckeditor && contentType == "text/html" &&
+            if (this.security.User.UseFckeditor && contentType == MediaTypeNames.Text.Html &&
                 !this.applicationSettings.DisableFCKEditor)
             {
                 ViewBag.UseFckeditor = true;
@@ -205,7 +206,7 @@ namespace BugTracker.Web.Controllers
                 WhatsNew.AddNews(model.BugId, (string)dr["bg_short_desc"], "updated", this.security);
             }
 
-            return Redirect($"~/Bugs/Edit.aspx?id={model.BugId}");
+            return RedirectToAction("Update", "Bug", new { id = model.BugId });
         }
 
         [HttpGet]
@@ -287,7 +288,7 @@ namespace BugTracker.Web.Controllers
 
             DbUtil.ExecuteNonQuery(sql);
 
-            return Redirect($"~/Bugs/Edit.aspx?id={model.BugId}");
+            return RedirectToAction("Update", "Bug", new { id = model.BugId });
         }
     }
 }

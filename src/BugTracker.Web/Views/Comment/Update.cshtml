@@ -23,7 +23,7 @@
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="~/Scripts/jquery/jquery.textarearesizer.compressed.js"></script>
 
-    @if (page.Security.User.UseFckeditor)
+    @if (ViewBag.UseFckeditor)
     {
         <script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
     }
@@ -48,51 +48,39 @@
     @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
 }
 
-<div class="main">
-    <a href="~/Bugs/Edit.aspx?id=@Model.BugId">back to @page.ApplicationSettings.SingularBugLabel</a>
-    <div>&nbsp;</div>
-
-    <table style="border-collapse: collapse; border: 0;">
-        <tr>
-            <td>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light">
+            <div class="card-body">
                 @using (Html.BeginForm("Update", "Comment", FormMethod.Post, new { @class = "frm" }))
                 {
                     @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
+
                     @Html.HiddenFor(x => x.Id)
                     @Html.HiddenFor(x => x.BugId)
 
-                    <table border="0">
-                        <tr>
-                            <td colspan="3">
-                                @Html.TextAreaFor(x => x.Comment, new { @class = "txt resizable", id = "comment", rows = "16", cols = "80" })
-                            </td>
-                        </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Comment):
+                        @Html.TextAreaFor(x => x.Comment, new { @class = "form-control resizable", id = "comment", rows = "16", cols = "80" })
+                        @Html.ValidationMessageFor(x => x.Comment, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                        <tr>
-                            <td colspan="3" class="err">
-                                @Html.ValidationMessageFor(x => x.Comment)
-                            </td>
-                        </tr>
+                    if (ViewBag.ShowInternalOnly)
+                    {
+                        <div class="form-group form-check">
+                            @Html.CheckBoxFor(x => x.InternalOnly, new { @class = "form-check-input" })
+                            @Html.LabelFor(x => x.InternalOnly, new { @class = "form-check-label" })
+                            @Html.ValidationMessageFor(x => x.InternalOnly, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
 
-                        @if (ViewBag.ShowInternalOnly)
-                        {
-                            <tr>
-                                <td colspan="3">
-                                    <label>@Html.CheckBoxFor(x => x.InternalOnly, new { @class = "cb", id = "internal_only" })Visible to internal users only</label>
-                                </td>
-                            </tr>
-                        }
-
-                        <tr>
-                            <td colspan="2" align="center">
-                                <input class="btn" type="submit" id="sub" value="Update" />
-                            </td>
-                        </tr>
-                    </table>
+                    <button type="submit" class="btn btn-success">Update</button>
+                    <a href="@Url.Action("Update", "Bug", new { id = @Model.BugId})" class="btn btn-link">Cancel</a>
                 }
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section BodyFooter {

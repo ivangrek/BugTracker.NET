@@ -17,33 +17,28 @@
 }
 
 @section Scripts {
-    <script>
-        function submit_form() {
-            var frm = document.getElementById("frm");
-            frm.submit();
-            return true;
-        }
-    </script>
 }
 
 @section BodyHeader {
     @Html.Partial("~/Areas/Administration/Views/Shared/_MainMenu.cshtml", page)
 }
 
-<div class="main">
-    <a href="~/Bugs/Edit.aspx?id=@Model.BugId">back to @page.ApplicationSettings.SingularBugLabel</a>
+<h5>Confirm deletion of comment</h5>
 
-    <p>or</p>
+@using (Html.BeginForm("Delete", "Comment", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
 
-    @using (Html.BeginForm("Delete", "Comment", FormMethod.Post, new { id = "frm" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(x => x.Id)
-        @Html.HiddenFor(x => x.BugId)
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.BugId)
 
-        <a href="javascript: submit_form()">confirm delete of comment: "@Model.Comment"...</a>
-    }
-</div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.Comment): @Model.Comment
+    </div>
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="@Url.Action("Update", "Bug", new { id = @Model.BugId })" class="btn btn-link">Cancel</a>
+}
 
 @section BodyFooter {
     @Html.Raw(BugTracker.Web.Core.Util.CustomFooterHtml)
