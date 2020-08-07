@@ -156,7 +156,7 @@
 
                 if (ViewBag.PermissionLevel != SecurityPermissionLevel.PermissionReadonly)
                 {
-                    <a href="javascript:open_popup_window('@Url.Action("Create", "Attachment")', 'Add attachment', @Model.Id, 700, 320)" class="nav-link" title='Attach an image, document, or other file to this item'><img src="@Url.Content("~/Content/images/attach.gif")" alt="add attachment">&nbsp;Attachment</a>
+                    <a href="javascript:open_popup_window('@Url.Action("Create", "Attachment")', 'Add attachment', @Model.Id, 700, 440)" class="nav-link" title='Attach an image, document, or other file to this item'><img src="@Url.Content("~/Content/images/attach.gif")" alt="add attachment">&nbsp;Attachment</a>
                 }
 
                 if (!string.IsNullOrEmpty(page.ApplicationSettings.CustomBugLinkLabel))

@@ -423,7 +423,7 @@ namespace BugTracker.Web.Controllers
                 Bug.SendNotifications(Bug.Update, model.BugId, this.security);
             }
 
-            return Redirect($"~/Bugs/Edit.aspx?id={model.BugId}");
+            return RedirectToAction("Update", "Bug", new { id = model.BugId });
         }
 
         [HttpGet]
@@ -521,7 +521,7 @@ namespace BugTracker.Web.Controllers
                 }
             }
 
-            return Redirect($"~/Bugs/Edit.aspx?id={model.BugId}");
+            return RedirectToAction("Update", "Bug", new { id = model.BugId });
         }
     }
 }

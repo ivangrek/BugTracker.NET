@@ -17,87 +17,74 @@
     <script>
         function set_msg(s) {
             document.getElementById("msg").innerHTML = s;
-            //document.getElementById("file_input").innerHTML =
-            //    '<input type=file class=txt name="attached_file" id="attached_file" maxlength=255 size=60>';
         }
 
         function waiting() {
             document.getElementById("msg").innerHTML = "Uploading...";
             return true;
         }
+
+        $(function () {
+            $('#@Html.IdFor(x => x.File)').on('change', function (e) {
+                var fileName = e.target.files[0].name;
+
+                $(this).next('.custom-file-label').html(fileName);
+            });
+        });
     </script>
 }
 
 @section BodyHeader {
 }
 
-<div class="main">
-    <iframe name="hiddenframe" style="display: none">x</iframe>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card bg-light">
+            <div class="card-body">
+                <iframe name="hiddenframe" style="display: none">x</iframe>
+                @using (Html.BeginForm("Create", "Attachment", FormMethod.Post, new { @class = "frm", target = "hiddenframe", enctype = "multipart/form-data", onsubmit = "return waiting()" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_ValidationSummary")
 
-    <div class="align">
-        Add attachment to @Model.BugId
-        <p>
-            <table border="0">
-                <tr>
-                    <td>
-                        @using (Html.BeginForm("Create", "Attachment", FormMethod.Post, new { @class = "frm", target = "hiddenframe", enctype = "multipart/form-data", onsubmit = "return waiting()" }))
-                        {
-                            @Html.AntiForgeryToken()
-                            @Html.Partial("_ValidationSummary")
+                    @Html.HiddenFor(x => x.BugId)
 
-                            @Html.HiddenFor(x => x.BugId)
+                    <div class="form-control-plaintext">
+                        Add attachment to @Model.BugId
+                    </div>
 
-                            <table border="0">
-                                <tr>
-                                    <td class="lbl">Description:</td>
-                                    <td>
-                                        @Html.TextBoxFor(x => x.Description, new { @class = "txt", id = "desc", maxlength = "80", size = "80" })
-                                    </td>
-                                </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Description):
+                        @Html.TextBoxFor(x => x.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(x => x.Description, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td class="err">
-                                        @Html.ValidationMessageFor(x => x.Description)
-                                    </td>
-                                </tr>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.File):
 
-                                <tr>
-                                    <td class="lbl">File:</td>
-                                    <td>
-                                        <div id="file_input">
-                                            @Html.TextBoxFor(x => x.File, new { @class = "txt", type = "file", id = "attached_file", maxlength = "255", size = "60" })
-                                        </div>
-                                    </td>
-                                </tr>
+                        <div class="custom-file">
+                            @Html.TextBoxFor(x => x.File, new { @class = "custom-file-input", type = "file" })
+                            @Html.LabelFor(x => x.File, "Choose file...", new { @class = "custom-file-label" })
+                        </div>
 
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td class="err">
-                                        @Html.ValidationMessage("File")
-                                    </td>
-                                </tr>
+                        @Html.ValidationMessageFor(x => x.File, null, new { @class = "text-danger" }, "small")
+                    </div>
 
-                                @if (ViewBag.ShowInternalOnly)
-                                {
-                                    <tr>
-                                        <td colspan="2">
-                                            <label>@Html.CheckBoxFor(x => x.InternalOnly, new { @class = "cb", id = "internal_only" })Visible to internal users only</label>
-                                        </td>
-                                    </tr>
-                                }
+                    if (ViewBag.ShowInternalOnly)
+                    {
+                        <div class="form-group form-check">
+                            @Html.CheckBoxFor(x => x.InternalOnly, new { @class = "form-check-input" })
+                            @Html.LabelFor(x => x.InternalOnly, new { @class = "form-check-label" })
+                            @Html.ValidationMessageFor(x => x.InternalOnly, null, new { @class = "text-danger" }, "small")
+                        </div>
+                    }
 
-                                <tr>
-                                    <td colspan="2" align="center">
-                                        <input runat="server" class="btn" type="submit" id="sub" value="Upload" />
-                                    </td>
-                                </tr>
-                            </table>
-                        }
-                    </td>
-                </tr>
-            </table>
-        </p>
+                    <button type="submit" class="btn btn-success">Upload</button>
+
+                    <div id="msg" class="form-control-plaintext text-danger"></div>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
