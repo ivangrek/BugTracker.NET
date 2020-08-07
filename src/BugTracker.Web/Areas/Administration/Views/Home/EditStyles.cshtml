@@ -5,6 +5,7 @@
     Distributed under the terms of the GNU General Public License
 *@
 
+@using System.Data
 @using BugTracker.Web.Models
 @model BugTracker.Web.Models.SortableTableModel
 
@@ -45,14 +46,24 @@
         a priority or a status.
     </div>
 
-    @if (Model.DataTable.Rows.Count > 0)
-    {
-        @Html.Partial("_SortableTable", Model)
-    }
-    else
-    {
-        <div>No priority/status combos in the database.</div>
-    }
+    @(Html
+        .Grid("MvcGrid/_GridBootstrap4", Model.DataTable.Rows.Cast<DataRow>())
+        .Build(columns =>
+        {
+            foreach (DataColumn column in Model.DataTable.Columns)
+            {
+                columns.Add(model => model[column.ColumnName])
+                    .Named(column.ColumnName)
+                    .Titled(column.ColumnName.Replace("<br>", " ").Replace("$no_sort_", string.Empty))
+                    .Encoded(false)
+                    .Sortable(true);
+            }
+        })
+        .Empty("No priority/status combos in the database.")
+        //.UsingProcessingMode(GridProcessingMode.Manual)
+        .Sortable()
+        //.Pageable()
+        )
 
     <div cls="lbl">Relevant lines from btnet_custom.css:</div>
     <div class="frm" style="width: 600px;" id="relevant_lines" runat="server">
