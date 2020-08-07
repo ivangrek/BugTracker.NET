@@ -1694,7 +1694,7 @@ namespace BugTracker.Web.Controllers
 
                 Bug.SendNotifications(Bug.Update, model.FromBugId, this.security);
 
-                return Redirect($"~/Bugs/Edit.aspx?id={model.IntoBugId}");
+                return RedirectToAction("Update", "Bug", new { id = model.IntoBugId });
             }
 
             ModelState.Clear();
