@@ -91,20 +91,39 @@ namespace BugTracker.Web.Controllers
             var salt = random.Next(10000, 99999);
             var encrypted = Util.EncryptStringUsingMd5(model.Password + Convert.ToString(salt));
 
-            var sql = @"
-                    insert into emailed_links
-                        (el_id, el_date, el_email, el_action,
-                            el_username, el_salt, el_password, el_firstname, el_lastname)
-                        values ('$guid', getdate(), N'$email', N'register',
-                            N'$username', $salt, N'$password', N'$firstname', N'$lastname')";
+            var sql = new SqlString(@"
+                insert into emailed_links
+                (
+                    el_id,
+                    el_date,
+                    el_email,
+                    el_action,
+                    el_username,
+                    el_salt,
+                    el_password,
+                    el_firstname,
+                    el_lastname
+                )
+                values
+                (
+                    @guid,
+                    getdate(),
+                    @email,
+                    N'register',
+                    @username,
+                    @salt,
+                    @password,
+                    @firstname,
+                    @lastname
+                )");
 
-            sql = sql.Replace("$guid", guid);
-            sql = sql.Replace("$password", encrypted);
-            sql = sql.Replace("$salt", Convert.ToString(salt));
-            sql = sql.Replace("$username", model.Login.Replace("'", "''"));
-            sql = sql.Replace("$email", model.Email.Replace("'", "''"));
-            sql = sql.Replace("$firstname", model.FirstName.Replace("'", "''"));
-            sql = sql.Replace("$lastname", model.LastName.Replace("'", "''"));
+            sql = sql.AddParameterWithValue("guid", guid);
+            sql = sql.AddParameterWithValue("password", encrypted);
+            sql = sql.AddParameterWithValue("salt", salt);
+            sql = sql.AddParameterWithValue("username", model.Login);
+            sql = sql.AddParameterWithValue("email", model.Email);
+            sql = sql.AddParameterWithValue("firstname", model.FirstName);
+            sql = sql.AddParameterWithValue("lastname", model.LastName);
 
             DbUtil.ExecuteNonQuery(sql);
 
@@ -133,19 +152,20 @@ namespace BugTracker.Web.Controllers
         [HttpGet]
         public ActionResult CompleteRegistration(string id)
         {
-            var sql = @"
+            var sql = new SqlString(@"
                 declare @expiration datetime
-                set @expiration = dateadd(n,-$minutes,getdate())
+                set @expiration = dateadd(n, @minutes, getdate())
 
                 select *,
                     case when el_date < @expiration then 1 else 0 end [expired]
                     from emailed_links
-                    where el_id = '$guid'
+                    where el_id = @guid
 
                 delete from emailed_links
-                    where el_date < dateadd(n,-240,getdate())"
-                .Replace("$minutes", this.applicationSettings.RegistrationExpiration.ToString())
-                .Replace("$guid", id.Replace("'", "''"));
+                    where el_date < dateadd(n, -240, getdate())");
+
+            sql.AddParameterWithValue("minutes", -this.applicationSettings.RegistrationExpiration);
+            sql.AddParameterWithValue("guid", id);
 
             var dr = DbUtil.GetDataRow(sql);
 
@@ -170,8 +190,9 @@ namespace BugTracker.Web.Controllers
                     false);
 
                 //  Delete the temp link
-                sql = @"delete from emailed_links where el_id = '$guid'"
-                    .Replace("$guid", id.Replace("'", "''"));
+                sql = new SqlString(@"delete from emailed_links where el_id = @guid");
+
+                sql.AddParameterWithValue("guid", id);
 
                 DbUtil.ExecuteNonQuery(sql);
 
@@ -366,8 +387,9 @@ namespace BugTracker.Web.Controllers
             if (model.AsGuest)
             {
                 // for now
-                var sql = "select us_id from users where us_username = N'$us'"
-                    .Replace("$us", "guest");
+                var sql = new SqlString("select us_id from users where us_username = @$us");
+
+                sql.AddParameterWithValue("us", "guest");
 
                 var dr = DbUtil.GetDataRow(sql);
 
@@ -392,8 +414,9 @@ namespace BugTracker.Web.Controllers
 
                 if (authenticated)
                 {
-                    var sql = "select us_id from users where us_username = N'$us'"
-                        .Replace("$us", model.Login.Replace("'", "''"));
+                    var sql = new SqlString("select us_id from users where us_username = @us");
+
+                    sql.AddParameterWithValue("us", model.Login);
 
                     var dr = DbUtil.GetDataRow(sql);
 
@@ -462,11 +485,18 @@ namespace BugTracker.Web.Controllers
                     domainWindowsUsername.Substring(pos, domainWindowsUsername.Length - pos);
 
                 // Fetch the user's information from the users table
-                var sql = @"select us_id, us_username
-                    from users
-                    where us_username = N'$us'
-                    and us_active = 1"
-                    .Replace("$us", windowsUsername.Replace("'", "''"));
+                var sql = new SqlString(@"
+                    select
+                        us_id,
+                        us_username
+                    from
+                        users
+                    where
+                        us_username = @us
+                        and
+                        us_active = 1");
+
+                sql.AddParameterWithValue("us", windowsUsername);
 
                 var dr = DbUtil.GetDataRow(sql);
 
@@ -574,10 +604,16 @@ namespace BugTracker.Web.Controllers
                 }
 
                 // Try fetching the guest user.
-                sql = @"select us_id, us_username
-                        from users
-                        where us_username = 'guest'
-                        and us_active = 1";
+                sql = new SqlString(@"
+                    select
+                        us_id,
+                        us_username
+                    from
+                        users
+                    where
+                        us_username = 'guest'
+                        and
+                        us_active = 1");
 
                 dr = DbUtil.GetDataRow(sql);
 
@@ -703,21 +739,21 @@ namespace BugTracker.Web.Controllers
                 if (userCount == 1)
                 {
                     var guid = Guid.NewGuid().ToString();
-                    var sql = @"
+                    var sql = new SqlString(@"
                         declare @username nvarchar(255)
                         declare @email nvarchar(255)
 
                         select @username = us_username, @email = us_email
-                            from users where us_id = $user_id
+                            from users where us_id = @user_id
 
                         insert into emailed_links
                             (el_id, el_date, el_email, el_action, el_user_id)
-                            values ('$guid', getdate(), @email, N'forgot', $user_id)
+                            values (@guid, getdate(), @email, N'forgot', @user_id)
 
-                        select @username us_username, @email us_email";
+                        select @username us_username, @email us_email");
 
-                    sql = sql.Replace("$guid", guid);
-                    sql = sql.Replace("$user_id", Convert.ToString(userId));
+                    sql = sql.AddParameterWithValue("guid", guid);
+                    sql = sql.AddParameterWithValue("user_id", userId);
 
                     var dr = DbUtil.GetDataRow(sql);
 
@@ -803,19 +839,20 @@ namespace BugTracker.Web.Controllers
                 return Content("no guid");
             }
 
-            var sql = @"
+            var sql = new SqlString(@"
                     declare @expiration datetime
-                    set @expiration = dateadd(n,-$minutes,getdate())
+                    set @expiration = dateadd(n, @minutes, getdate())
 
                     select *,
                         case when el_date < @expiration then 1 else 0 end [expired]
                         from emailed_links
-                        where el_id = '$guid'
+                        where el_id = @guid
 
                     delete from emailed_links
-                        where el_date < dateadd(n,-240,getdate())"
-                .Replace("$minutes", this.applicationSettings.RegistrationExpiration.ToString())
-                .Replace("$guid", model.Id.Replace("'", "''"));
+                        where el_date < dateadd(n,-240, getdate())");
+
+            sql.AddParameterWithValue("minutes", -this.applicationSettings.RegistrationExpiration);
+            sql.AddParameterWithValue("guid", model.Id);
 
             var dr = DbUtil.GetDataRow(sql);
 
@@ -848,50 +885,8 @@ namespace BugTracker.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Logoff()
         {
-            //using (DbUtil.GetSqlConnection())
-            //{ }
-
-            // delete the session row
-            //var cookie = Request.Cookies["se_id2"];
-
-            //if (cookie != null)
-            //{
-            //    var seId = cookie.Value.Replace("'", "''");
-
-            //    var sql = @"delete from sessions
-            //        where se_id = N'$se'
-            //        or datediff(d, se_date, getdate()) > 2"
-            //        .Replace("$se", seId);
-
-            //    DbUtil.ExecuteNonQuery(sql);
-
-            //    Session[seId] = 0;
-
-            //    Session["SelectedBugQuery"] = null;
-            //    Session["bugs"] = null;
-            //    Session["bugs_unfiltered"] = null;
-            //    Session["project"] = null;
-
-            //    Session.Abandon();
-
-            //    foreach (string key in Request.Cookies.AllKeys)
-            //    {
-            //        Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
-            //    }
-            //}
-
-            // for now, quik code
-            Session["SelectedBugQuery"] = null;
-            Session["bugs"] = null;
-            Session["bugs_unfiltered"] = null;
-            Session["project"] = null;
-
             Session.Abandon();
-
-            foreach (string key in Request.Cookies.AllKeys)
-            {
-                Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
-            }
+            Request.Cookies.Clear();
 
             this.authenticate
                 .SignOut();
@@ -913,14 +908,26 @@ namespace BugTracker.Web.Controllers
 
             InitSettingsLists();
 
-            var sql = @"select pj_id, pj_name, isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
-                from projects
-                left outer join project_user_xref on pj_id = pu_project and $us = pu_user
-                where isnull(pu_permission_level,$dpl) <> 0
-                order by pj_name";
+            var sql = new SqlString(@"
+                select
+                    pj_id,
+                    pj_name,
+                    isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
+                from
+                    projects
+                    
+                    left outer join
+                        project_user_xref
+                    on
+                        pj_id = pu_project
+                        and
+                         pu_user = @us
+                where
+                    isnull(pu_permission_level, @dpl) <> 0
+                order by pj_name");
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
-            sql = sql.Replace("$dpl", this.applicationSettings.DefaultPermissionLevel.ToString());
+            sql = sql.AddParameterWithValue("us", this.security.User.Usid);
+            sql = sql.AddParameterWithValue("dpl", this.applicationSettings.DefaultPermissionLevel);
 
             var projectsDv = DbUtil.GetDataView(sql);
             var projectsAutoSubscribe = new List<int>();
@@ -935,28 +942,31 @@ namespace BugTracker.Web.Controllers
 
             // Get this entry's data from the db and fill in the form
             // MAW -- 2006/01/27 -- Converted to use new notification columns
-            sql = @"select
-                us_username [username],
-                isnull(us_firstname,'') [firstname],
-                isnull(us_lastname,'') [lastname],
-                isnull(us_bugs_per_page,10) [us_bugs_per_page],
-                us_use_fckeditor,
-                us_enable_bug_list_popups,
-                isnull(us_email,'') [email],
-                us_enable_notifications,
-                us_send_notifications_to_self,
-                us_reported_notifications,
-                us_assigned_notifications,
-                us_subscribed_notifications,
-                us_auto_subscribe,
-                us_auto_subscribe_own_bugs,
-                us_auto_subscribe_reported_bugs,
-                us_default_query,
-                isnull(us_signature,'') [signature]
-                from users
-                where us_id = $id";
+            sql = new SqlString(@"
+                select
+                    us_username [username],
+                    isnull(us_firstname,'') [firstname],
+                    isnull(us_lastname,'') [lastname],
+                    isnull(us_bugs_per_page,10) [us_bugs_per_page],
+                    us_use_fckeditor,
+                    us_enable_bug_list_popups,
+                    isnull(us_email,'') [email],
+                    us_enable_notifications,
+                    us_send_notifications_to_self,
+                    us_reported_notifications,
+                    us_assigned_notifications,
+                    us_subscribed_notifications,
+                    us_auto_subscribe,
+                    us_auto_subscribe_own_bugs,
+                    us_auto_subscribe_reported_bugs,
+                    us_default_query,
+                    isnull(us_signature,'') [signature]
+                from
+                    users
+                where
+                    us_id = @id");
 
-            sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+            sql = sql.AddParameterWithValue("id", this.security.User.Usid);
 
             var dr = DbUtil.GetDataRow(sql);
 
@@ -1020,42 +1030,45 @@ namespace BugTracker.Web.Controllers
                 return View(model);
             }
 
-            var sql = @"update users set
-                us_firstname = N'$fn',
-                us_lastname = N'$ln',
-                us_bugs_per_page = N'$bp',
-                us_use_fckeditor = $fk,
-                us_enable_bug_list_popups = $pp,
-                us_email = N'$em',
-                us_enable_notifications = $en,
-                us_send_notifications_to_self = $ss,
-                us_reported_notifications = $rn,
-                us_assigned_notifications = $an,
-                us_subscribed_notifications = $sn,
-                us_auto_subscribe = $as,
-                us_auto_subscribe_own_bugs = $ao,
-                us_auto_subscribe_reported_bugs = $ar,
-                us_default_query = $dq,
-                us_signature = N'$sg'
-                where us_id = $id";
+            var sql = new SqlString(@"
+                update
+                    users
+                set
+                    us_firstname = @fn,
+                    us_lastname = @ln,
+                    us_bugs_per_page = @bp,
+                    us_use_fckeditor = @fk,
+                    us_enable_bug_list_popups = @pp,
+                    us_email = @em,
+                    us_enable_notifications = @en,
+                    us_send_notifications_to_self = @ss,
+                    us_reported_notifications = @rn,
+                    us_assigned_notifications = @an,
+                    us_subscribed_notifications = @sn,
+                    us_auto_subscribe = @as,
+                    us_auto_subscribe_own_bugs = @ao,
+                    us_auto_subscribe_reported_bugs = @ar,
+                    us_default_query = @dq,
+                    us_signature = @sg
+                    where us_id = @id");
 
-            sql = sql.Replace("$fn", model.FirstName);
-            sql = sql.Replace("$ln", model.LastName);
-            sql = sql.Replace("$bp", model.BugsPerPage.ToString());
-            sql = sql.Replace("$fk", Util.BoolToString(model.EditText));
-            sql = sql.Replace("$pp", Util.BoolToString(model.EnableBugListPopups));
-            sql = sql.Replace("$em", model.Email);
-            sql = sql.Replace("$en", Util.BoolToString(model.EnableNotifications));
-            sql = sql.Replace("$ss", Util.BoolToString(model.SendNotificationsEvenForItemsAddOrChange));
-            sql = sql.Replace("$rn", model.NotificationsSubscribedBugsReportedByMe.ToString());
-            sql = sql.Replace("$an", model.NotificationsSubscribedBugsAssignedToMe.ToString());
-            sql = sql.Replace("$sn", model.NotificationsForAllOtherSubscribedBugs.ToString());
-            sql = sql.Replace("$as", Util.BoolToString(model.AutoSubscribeToAllItems));
-            sql = sql.Replace("$ao", Util.BoolToString(model.AutoSubscribeToAllItemsAssignedToYou));
-            sql = sql.Replace("$ar", Util.BoolToString(model.AutoSubscribeToAllItemsReportedByYou));
-            sql = sql.Replace("$dq", model.DefaultQueryId.ToString());
-            sql = sql.Replace("$sg", model.EmailSignature);
-            sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+            sql = sql.AddParameterWithValue("fn", model.FirstName);
+            sql = sql.AddParameterWithValue("ln", model.LastName);
+            sql = sql.AddParameterWithValue("bp", model.BugsPerPage);
+            sql = sql.AddParameterWithValue("fk", Util.BoolToString(model.EditText));
+            sql = sql.AddParameterWithValue("pp", Util.BoolToString(model.EnableBugListPopups));
+            sql = sql.AddParameterWithValue("em", model.Email);
+            sql = sql.AddParameterWithValue("en", Util.BoolToString(model.EnableNotifications));
+            sql = sql.AddParameterWithValue("ss", Util.BoolToString(model.SendNotificationsEvenForItemsAddOrChange));
+            sql = sql.AddParameterWithValue("rn", model.NotificationsSubscribedBugsReportedByMe);
+            sql = sql.AddParameterWithValue("an", model.NotificationsSubscribedBugsAssignedToMe);
+            sql = sql.AddParameterWithValue("sn", model.NotificationsForAllOtherSubscribedBugs);
+            sql = sql.AddParameterWithValue("as", Util.BoolToString(model.AutoSubscribeToAllItems));
+            sql = sql.AddParameterWithValue("ao", Util.BoolToString(model.AutoSubscribeToAllItemsAssignedToYou));
+            sql = sql.AddParameterWithValue("ar", Util.BoolToString(model.AutoSubscribeToAllItemsReportedByYou));
+            sql = sql.AddParameterWithValue("dq", model.DefaultQueryId);
+            sql = sql.AddParameterWithValue("sg", model.EmailSignature);
+            sql = sql.AddParameterWithValue("id", this.security.User.Usid);
 
             // update user
             DbUtil.ExecuteNonQuery(sql);
@@ -1068,10 +1081,13 @@ namespace BugTracker.Web.Controllers
 
             // Now update project_user_xref
             // First turn everything off, then turn selected ones on.
-            sql = @"update project_user_xref
-                set pu_auto_subscribe = 0 where pu_user = $id";
+            sql = new SqlString(@"
+                update project_user_xref
+                set
+                    pu_auto_subscribe = 0
+                where pu_user = @id");
 
-            sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
+            sql = sql.AddParameterWithValue("id", this.security.User.Usid);
 
             DbUtil.ExecuteNonQuery(sql);
 
@@ -1091,17 +1107,38 @@ namespace BugTracker.Web.Controllers
             // If we need to turn anything back on
             if (!string.IsNullOrEmpty(projects))
             {
-                sql = @"update project_user_xref
-                    set pu_auto_subscribe = 1 where pu_user = $id and pu_project in ($projects)
+                sql = new SqlString(@"
+                    update
+                        project_user_xref
+                    set
+                        pu_auto_subscribe = 1
+                    where
+                        pu_user = @id
+                        and
+                        pu_project in (@projects)
 
                 insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
-                    select pj_id, $id, 1
-                    from projects
-                    where pj_id in ($projects)
-                    and pj_id not in (select pu_project from project_user_xref where pu_user = $id)";
+                select
+                    pj_id,
+                    @id,
+                    1
+                from
+                    projects
+                where
+                    pj_id in (@projects)
+                    and
+                    pj_id not in
+                    (
+                        select
+                            pu_project
+                        from
+                            project_user_xref
+                        where
+                            pu_user = @id
+                    )");
 
-                sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
-                sql = sql.Replace("$projects", projects);
+                sql = sql.AddParameterWithValue("id", this.security.User.Usid);
+                sql = sql.AddParameterWithValue("projects", projects);
 
                 DbUtil.ExecuteNonQuery(sql);
             }
@@ -1109,39 +1146,90 @@ namespace BugTracker.Web.Controllers
             // apply subscriptions retroactively
             if (model.ApplySubscriptionChangesRetroactively)
             {
-                sql = @"delete from bug_subscriptions where bs_user = $id;";
+                sql = new SqlString(@"delete from bug_subscriptions where bs_user = @id;");
 
                 if (model.AutoSubscribeToAllItems)
                 {
-                    sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-                    select bg_id, $id from bugs;";
+                    sql.Append(@"
+                        insert into
+                            bug_subscriptions (bs_bug, bs_user)
+                        select
+                            bg_id,
+                            @id
+                        from
+                            bugs;");
                 }
                 else
                 {
                     if (model.AutoSubscribeToAllItemsReportedByYou)
                     {
-                        sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-                        select bg_id, $id from bugs where bg_reported_user = $id
-                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                        sql.Append(@"insert into bug_subscriptions (bs_bug, bs_user)
+                            select
+                                bg_id,
+                                @id
+                            from
+                                bugs
+                            where
+                                bg_reported_user = @id
+                                and
+                                bg_id not in
+                                (
+                                    select
+                                        bs_bug
+                                    from
+                                        bug_subscriptions
+                                    where
+                                        bs_user = @id
+                                );");
                     }
 
                     if (model.AutoSubscribeToAllItemsAssignedToYou)
                     {
-                        sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-                        select bg_id, $id from bugs where bg_assigned_to_user = $id
-                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                        sql.Append(@"insert into bug_subscriptions (bs_bug, bs_user)
+                            select
+                                bg_id,
+                                @id
+                            from
+                                bugs
+                            where
+                                bg_assigned_to_user = @id
+                                and
+                                bg_id not in
+                                (
+                                    select
+                                        bs_bug
+                                    from
+                                        bug_subscriptions
+                                    where
+                                        bs_user = @id
+                                );");
                     }
 
                     if (!string.IsNullOrEmpty(projects))
                     {
-                        sql += @"insert into bug_subscriptions (bs_bug, bs_user)
-                        select bg_id, $id from bugs where bg_project in ($projects)
-                        and bg_id not in (select bs_bug from bug_subscriptions where bs_user = $id);";
+                        sql.Append(@"insert into bug_subscriptions (bs_bug, bs_user)
+                            select
+                                bg_id,
+                                @id
+                            from
+                                bugs
+                            where
+                                bg_project in (@projects)
+                                and
+                                bg_id not in
+                                (
+                                    select
+                                        bs_bug
+                                    from
+                                        bug_subscriptions
+                                    where
+                                        bs_user = @id
+                                );");
                     }
                 }
 
-                sql = sql.Replace("$id", Convert.ToString(this.security.User.Usid));
-                sql = sql.Replace("$projects", projects);
+                sql = sql.AddParameterWithValue("id", this.security.User.Usid);
+                sql = sql.AddParameterWithValue("projects", projects);
 
                 DbUtil.ExecuteNonQuery(sql);
             }
@@ -1165,17 +1253,33 @@ namespace BugTracker.Web.Controllers
 
         private void InitSettingsLists()
         {
-            var sql = @"declare @org int
-                select @org = us_org from users where us_id = $us
+            var sql = new SqlString(@"
+                declare @org int
+                select
+                    @org = us_org
+                from
+                    users
+                where us_id = @us
 
-                select qu_id, qu_desc
-                from queries
-                where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
-                or isnull(qu_user,0) = $us
-                or isnull(qu_org,0) = @org
-                order by qu_desc";
+                select
+                    qu_id,
+                    qu_desc
+                from
+                    queries
+                where
+                    (
+                        isnull(qu_user,0) = 0
+                        and
+                        isnull(qu_org,0) = 0
+                    )
+                    or
+                    isnull(qu_user,0) = @us
+                    or
+                    isnull(qu_org,0) = @org
+                order by
+                    qu_desc");
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql = sql.AddParameterWithValue("us", this.security.User.Usid);
 
             var queriesDv = DbUtil.GetDataView(sql);
 
@@ -1190,14 +1294,27 @@ namespace BugTracker.Web.Controllers
                 });
             }
 
-            sql = @"select pj_id, pj_name, isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
-                from projects
-                left outer join project_user_xref on pj_id = pu_project and $us = pu_user
-                where isnull(pu_permission_level,$dpl) <> 0
-                order by pj_name";
+            sql = new SqlString(@"
+                select
+                    pj_id,
+                    pj_name,
+                    isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
+                from
+                    projects
+                    
+                    left outer join
+                        project_user_xref
+                    on
+                        pj_id = pu_project
+                        and
+                        pu_user = @us
+                where
+                    isnull(pu_permission_level, @dpl) <> 0
+                order
+                    by pj_name");
 
-            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
-            sql = sql.Replace("$dpl", this.applicationSettings.DefaultPermissionLevel.ToString());
+            sql = sql.AddParameterWithValue("us", this.security.User.Usid);
+            sql = sql.AddParameterWithValue("dpl", this.applicationSettings.DefaultPermissionLevel);
 
             var projectsDv = DbUtil.GetDataView(sql);
 
