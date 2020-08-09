@@ -32,7 +32,7 @@ namespace BugTracker.Web.Core.Identification
         {
             get
             {
-                if (this.applicationSettings.WindowsAuthentication == 1)
+                if (this.applicationSettings.WindowsAuthentication == AuthenticationMode.Windows)
                 {
                     return "windows";
                 }

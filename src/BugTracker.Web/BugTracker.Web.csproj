@@ -329,6 +329,7 @@
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Core\Identification\ApplicationRole.cs" />
     <Compile Include="Core\Identification\Authenticate.cs" />
+    <Compile Include="Core\Identification\AuthenticationMode.cs" />
     <Compile Include="Core\Identification\Security.cs" />
     <Compile Include="Core\Identification\SecurityLevel.cs" />
     <Compile Include="Core\Identification\SecurityPermissionLevel.cs" />

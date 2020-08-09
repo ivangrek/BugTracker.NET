@@ -2,12 +2,13 @@
 {
     using System;
     using System.Configuration;
+    using Identification;
 
     public interface IApplicationSettings
     {
         string this[string index] { get; }
 
-        int WindowsAuthentication { get; }
+        AuthenticationMode WindowsAuthentication { get; }
 
         bool AllowGuestWithoutLogin { get; }
 
@@ -294,7 +295,7 @@
 
     internal sealed class ApplicationSettings : IApplicationSettings
     {
-        public const int WindowsAuthenticationDefault = 0;
+        public const AuthenticationMode WindowsAuthenticationDefault = AuthenticationMode.Site;
         public const bool AllowGuestWithoutLoginDefault = false;
         public const bool AllowSelfRegistrationDefault = false;
         public const bool ShowForgotPasswordLinkDefault = false;
@@ -439,7 +440,7 @@
 
         public string this[string index] => ReadSetting(index, string.Empty);
 
-        public int WindowsAuthentication => ReadSetting(nameof(WindowsAuthentication), WindowsAuthenticationDefault);
+        public AuthenticationMode WindowsAuthentication => ReadSetting(nameof(WindowsAuthentication), WindowsAuthenticationDefault);
 
         public bool AllowGuestWithoutLogin => ReadSetting(nameof(AllowGuestWithoutLogin), AllowGuestWithoutLoginDefault);
 
@@ -728,9 +729,17 @@
         {
             var value = ConfigurationManager.AppSettings[name];
 
-            return string.IsNullOrEmpty(value)
-                ? defaultValue
-                : (TValue)Convert.ChangeType(value, typeof(TValue));
+            if (string.IsNullOrEmpty(value))
+            {
+                return defaultValue;
+            }
+
+            if (typeof(TValue).IsEnum)
+            {
+                return (TValue)Enum.Parse(typeof(TValue), value);
+            }
+
+            return (TValue)Convert.ChangeType(value, typeof(TValue));
         }
     }
 }

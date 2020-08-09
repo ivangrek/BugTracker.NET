@@ -254,13 +254,13 @@ namespace BugTracker.Web.Controllers
             if (Request.QueryString["msg"] == null)
             {
                 // If windows authentication only, then redirect
-                if (authMode == 1)
+                if (authMode == AuthenticationMode.Windows)
                 {
                     return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
                 }
 
                 // If previous login was with windows authentication, then try it again
-                if (previousAuthMode == "1" && authMode == 2)
+                if (previousAuthMode == "1" && authMode == AuthenticationMode.Both)
                 {
                     Response.Cookies["user"]["name"] = string.Empty;
                     Response.Cookies["user"]["NTLM"] = "0";
@@ -273,41 +273,23 @@ namespace BugTracker.Web.Controllers
                 ModelState.AddModelError(string.Empty, $"Error during windows authentication:<br>{HttpUtility.HtmlEncode(Request.QueryString["msg"])}");
             }
 
-            // strange code
-            //// fill in the username first time in
-            //if (previousAuthMode == "0")
-            //{
-            //    if (Request.QueryString["user"] == null || Request.QueryString["password"] == null)
-            //    {
-            //        //  User name and password are not on the querystring.
-            //        //  Set the user name from the last logon.
-            //        if (usernameCookie != null)
-            //        {
-            //            this.user.Value = usernameCookie["name"];
-            //        }
-            //    }
-            //    else
-            //    {
-            //        //  User name and password have been passed on the querystring.
+            var model = new LoginModel();
 
-            //        this.user.Value = Request.QueryString["user"];
-            //        this.pw.Value = Request.QueryString["password"];
-
-            //        OnLogon();
-            //    }
-            //}
+            if (previousAuthMode == "0")
+            {
+                // User name and password are not on the querystring.
+                if (usernameCookie != null)
+                {
+                    // Set the user name from the last logon.
+                    model.Login = usernameCookie["name"];
+                }
+            }
 
             ViewBag.Page = new PageModel
             {
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - logon"
-            };
-
-            var model = new LoginModel
-            {
-                Login = Request.QueryString["user"],
-                Password = Request.QueryString["password"]
             };
 
             return View(model);
@@ -359,13 +341,13 @@ namespace BugTracker.Web.Controllers
             if (Request.QueryString["msg"] == null)
             {
                 // If windows authentication only, then redirect
-                if (authMode == 1)
+                if (authMode == AuthenticationMode.Windows)
                 {
                     return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
                 }
 
                 // If previous login was with windows authentication, then try it again
-                if (previousAuthMode == "1" && authMode == 2)
+                if (previousAuthMode == "1" && authMode == AuthenticationMode.Both)
                 {
                     Response.Cookies["user"]["name"] = string.Empty;
                     Response.Cookies["user"]["NTLM"] = "0";
@@ -379,7 +361,7 @@ namespace BugTracker.Web.Controllers
             }
 
             // OnLogon
-            if (authMode != 0 && string.IsNullOrEmpty(model.Login.Trim()))
+            if (authMode != AuthenticationMode.Site && string.IsNullOrEmpty(model.Login.Trim()))
             {
                 return Redirect(Util.RedirectUrl("~/Account/LoginNt", System.Web.HttpContext.Current.Request));
             }
@@ -387,7 +369,7 @@ namespace BugTracker.Web.Controllers
             if (model.AsGuest)
             {
                 // for now
-                var sql = new SqlString("select us_id from users where us_username = @$us");
+                var sql = new SqlString("select us_id from users where us_username = @us");
 
                 sql.AddParameterWithValue("us", "guest");
 
@@ -461,12 +443,9 @@ namespace BugTracker.Web.Controllers
             var authMode = this.applicationSettings.WindowsAuthentication;
 
             // If manual authentication only, we shouldn't be here, so redirect to manual screen
-
-            if (authMode == 0)
+            if (authMode == AuthenticationMode.Site)
             {
-                var url = Util.RedirectUrl("~/Account/Login", System.Web.HttpContext.Current.Request);
-
-                return Redirect(url);
+                return RedirectToAction("Login", "Account");
             }
 
             // Get the logon user from IIS
@@ -634,11 +613,9 @@ namespace BugTracker.Web.Controllers
                 // If using mixed-mode authentication and we got this far,
                 // then we can't sign in using integrated security. Redirect
                 // to the manual screen.
-                if (authMode != 1)
+                if (authMode != AuthenticationMode.Windows)
                 {
-                    var url = Util.RedirectUrl("~/Account/Login?msg=user+not+valid", System.Web.HttpContext.Current.Request);
-
-                    return Redirect(url);
+                    return RedirectToAction("Login", "Account", new { msg = "user+not+valid" });
                 }
 
                 // If we are still here, then toss a 401 error.
