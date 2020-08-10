@@ -415,7 +415,6 @@
     <Compile Include="Core\MyPop3.cs" />
     <Compile Include="Core\Pop3Client.cs" />
     <Compile Include="Core\PrintBug.cs" />
-    <Compile Include="Core\SortableHtmlTable.cs" />
     <Compile Include="Core\Tags.cs" />
     <Compile Include="Core\TranslationService.cs" />
     <Compile Include="Core\User.cs" />
