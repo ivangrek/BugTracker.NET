@@ -7,8 +7,7 @@
 
 namespace BugTracker.Web.Controllers
 {
-    using anmar.SharpMimeTools;
-    using BugTracker.Changing.Results;
+    using Changing.Results;
     using Core;
     using Core.Controls;
     using Models;
@@ -29,6 +28,9 @@ namespace BugTracker.Web.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
     using Core.Identification;
+    using Core.Mail;
+    using OpenPop.Mime;
+    using MailPriority = Core.Mail.MailPriority;
 
     [Authorize]
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
@@ -724,22 +726,22 @@ namespace BugTracker.Web.Controllers
                 shortDesc = shortDesc.Substring(0, 200);
             }
 
-            SharpMimeMessage mimeMessage = null;
+            Message mimeMessage = null;
 
             if (message != null && message.Length > 0)
             {
-                mimeMessage = MyMime.GetSharpMimeMessage(message);
+                mimeMessage = Mime.GetSharpMimeMessage(message);
 
-                comment = MyMime.GetComment(mimeMessage);
+                comment = Mime.GetComment(mimeMessage);
 
-                var headers = MyMime.GetHeadersForComment(mimeMessage);
+                var headers = Mime.GetHeadersForComment(mimeMessage);
 
                 if (!string.IsNullOrEmpty(headers))
                 {
                     comment = headers + "\n" + comment;
                 }
 
-                fromAddr = MyMime.GetFromAddr(mimeMessage);
+                fromAddr = Mime.GetFromAddr(mimeMessage);
             }
             else
             {
@@ -771,7 +773,7 @@ namespace BugTracker.Web.Controllers
                 return Content("ERROR: invalid username or password");
             }
 
-            var security = MyMime.GetSynthesizedSecurity(mimeMessage, fromAddr, username);
+            var security = Mime.GetSynthesizedSecurity(mimeMessage, fromAddr, username);
 
             var projectid = 0;
             if (Util.IsInt(projectidString)) projectid = Convert.ToInt32(projectidString);
@@ -783,17 +785,17 @@ namespace BugTracker.Web.Controllers
                 bugid = Convert.ToInt32(bugidString);
             }
 
-            // Even though btnet_service.exe has already parsed out the bugid,
+            // Even though BugTracker.MailService.exe has already parsed out the bugid,
             // we can do a better job here with SharpMimeTools.dll
             var subject = string.Empty;
 
             if (mimeMessage != null)
             {
-                subject = MyMime.GetSubject(mimeMessage);
+                subject = Mime.GetSubject(mimeMessage);
 
-                if (subject != "[No Subject]") bugid = MyMime.GetBugidFromSubject(ref subject);
+                if (subject != "[No Subject]") bugid = Mime.GetBugIdFromSubject(ref subject);
 
-                cc = MyMime.GetCc(mimeMessage);
+                cc = Mime.GetCc(mimeMessage);
             }
 
             var sql = string.Empty;
@@ -913,9 +915,8 @@ namespace BugTracker.Web.Controllers
 
                 if (mimeMessage != null)
                 {
-                    MyMime.AddAttachments(mimeMessage, newIds.Bugid, newIds.Postid, security);
-
-                    MyPop3.AutoReply(newIds.Bugid, fromAddr, shortDesc, projectid);
+                    Mime.AddAttachments(mimeMessage, newIds.Bugid, newIds.Postid, security);
+                    Email.AutoReply(newIds.Bugid, fromAddr, shortDesc, projectid);
                 }
                 else if (attachmentAsBase64 != null && attachmentAsBase64.Length > 0)
                 {
@@ -984,7 +985,7 @@ namespace BugTracker.Web.Controllers
 
                 if (mimeMessage != null)
                 {
-                    MyMime.AddAttachments(mimeMessage, bugid, postid, security);
+                    Mime.AddAttachments(mimeMessage, bugid, postid, security);
                 }
                 else if (attachmentAsBase64 != null && attachmentAsBase64.Length > 0)
                 {
@@ -2496,19 +2497,19 @@ namespace BugTracker.Web.Controllers
             var attachments = HandleAttachments(commentId, security, model);
 
             string bodyText;
-            BtnetMailFormat format;
-            BtnetMailPriority priority;
+            MailFormat format;
+            MailPriority priority;
 
             switch (model.Priority)
             {
                 case "High":
-                    priority = BtnetMailPriority.High;
+                    priority = MailPriority.High;
                     break;
                 case "Low":
-                    priority = BtnetMailPriority.Low;
+                    priority = MailPriority.Low;
                     break;
                 default:
-                    priority = BtnetMailPriority.Normal;
+                    priority = MailPriority.Normal;
                     break;
             }
 
@@ -2544,20 +2545,20 @@ namespace BugTracker.Web.Controllers
 
                 bodyText += "<hr>" + writer.ToString();
 
-                format = BtnetMailFormat.Html;
+                format = MailFormat.Html;
             }
             else
             {
                 if (this.security.User.UseFckeditor)
                 {
                     bodyText = model.Body;
-                    format = BtnetMailFormat.Html;
+                    format = MailFormat.Html;
                 }
                 else
                 {
                     bodyText = HttpUtility.HtmlDecode(model.Body);
                     //body_text = body_text.Replace("\n","\r\n");
-                    format = BtnetMailFormat.Text;
+                    format = MailFormat.Text;
                 }
             }
 

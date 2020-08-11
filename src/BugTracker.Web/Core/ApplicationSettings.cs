@@ -154,8 +154,6 @@
 
         bool EnableLucene { get; }
 
-        bool EnablePop3 { get; }
-
         bool ErrorEmailEnabled { get; }
 
         string ErrorEmailTo { get; }
@@ -368,7 +366,6 @@
         public const int DisplayTimeOffsetInHoursDefault = 0;
         public const bool EnableVotesDefault = false;
         public const bool EnableLuceneDefault = true;
-        public const bool EnablePop3Default = false;
         public const bool ErrorEmailEnabledDefault = true;
         public const string ErrorEmailToDefault = "";
         public const string ErrorEmailFromDefault = "";
@@ -585,8 +582,6 @@
         public bool EnableVotes => ReadSetting(nameof(EnableVotes), EnableVotesDefault);
 
         public bool EnableLucene => ReadSetting(nameof(EnableLucene), EnableLuceneDefault);
-
-        public bool EnablePop3 => ReadSetting(nameof(EnablePop3), EnablePop3Default);
 
         public bool ErrorEmailEnabled => ReadSetting(nameof(ErrorEmailEnabled), ErrorEmailEnabledDefault);
 

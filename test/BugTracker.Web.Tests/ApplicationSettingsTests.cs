@@ -87,7 +87,6 @@
             Assert.That(applicationSettings.DisplayTimeOffsetInHours, Is.EqualTo(ApplicationSettings.DisplayTimeOffsetInHoursDefault));
             Assert.That(applicationSettings.EnableVotes, Is.EqualTo(ApplicationSettings.EnableVotesDefault));
             Assert.That(applicationSettings.EnableLucene, Is.EqualTo(ApplicationSettings.EnableLuceneDefault));
-            Assert.That(applicationSettings.EnablePop3, Is.EqualTo(ApplicationSettings.EnablePop3Default));
             Assert.That(applicationSettings.ErrorEmailEnabled, Is.EqualTo(ApplicationSettings.ErrorEmailEnabledDefault));
             Assert.That(applicationSettings.ErrorEmailTo, Is.EqualTo(ApplicationSettings.ErrorEmailToDefault));
             Assert.That(applicationSettings.ErrorEmailFrom, Is.EqualTo(ApplicationSettings.ErrorEmailFromDefault));

@@ -29,7 +29,7 @@ namespace BugTracker.Web.Areas.Administration.Models.Project
         [Display(Name = "Auto-Subscribe Default User to Notifications")]
         public bool AutoSubscribeDefaultUser { get; set; }
 
-        [Display(Name = "Enable Receiving bugs via POP3 (btnet_service.exe)")]
+        [Display(Name = "Enable Receiving bugs via POP3 (BugTracker.MailService.exe)")]
         public bool EnablePop3 { get; set; }
 
         [Display(Name = "Pop3 Username")]

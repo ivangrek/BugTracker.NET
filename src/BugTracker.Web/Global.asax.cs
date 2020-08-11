@@ -17,6 +17,7 @@ namespace BugTracker.Web
     using Autofac;
     using Autofac.Integration.Web;
     using Core;
+    using Core.Mail;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is an infrastructure")]
     public class Global : HttpApplication, IContainerProviderAccessor
@@ -109,11 +110,6 @@ namespace BugTracker.Web
             if (applicationSettings.EnableLucene)
             {
                 MyLucene.BuildLuceneIndex();
-            }
-
-            if (applicationSettings.EnablePop3)
-            {
-                MyPop3.StartPop3(Application);
             }
         }
 

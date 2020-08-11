@@ -5,19 +5,21 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web", "src\BugTracker.Web\BugTracker.Web.csproj", "{99A57642-D574-4264-AF23-5D0D383597BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web.Tests", "test\BugTracker.Web.Tests\BugTracker.Web.Tests.csproj", "{14958366-8B67-4A0D-88E5-4A573721F88C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Web.Tests", "test\BugTracker.Web.Tests\BugTracker.Web.Tests.csproj", "{14958366-8B67-4A0D-88E5-4A573721F88C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker", "src\BugTracker\BugTracker.csproj", "{1E06C8A8-49E7-472C-B8DF-BAB0158BB531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker", "src\BugTracker\BugTracker.csproj", "{1E06C8A8-49E7-472C-B8DF-BAB0158BB531}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{B8C6C9CE-0DEE-4E2A-8635-7A29A1C3BEE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Persistence", "src\Infrastructure\BugTracker.Persistence\BugTracker.Persistence.csproj", "{9373CE0B-5E3E-42AD-9F6E-10178652D5D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Persistence", "src\Infrastructure\BugTracker.Persistence\BugTracker.Persistence.csproj", "{9373CE0B-5E3E-42AD-9F6E-10178652D5D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Tracking", "src\BugTracker.Tracking\BugTracker.Tracking.csproj", "{515650F6-0E45-42E3-AE49-6C6533E02730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Tracking", "src\BugTracker.Tracking\BugTracker.Tracking.csproj", "{515650F6-0E45-42E3-AE49-6C6533E02730}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Utilities", "src\Infrastructure\BugTracker.Utilities\BugTracker.Utilities.csproj", "{D1D5CDF6-C6FE-4298-BFEE-50181CBAACA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Utilities", "src\Infrastructure\BugTracker.Utilities\BugTracker.Utilities.csproj", "{D1D5CDF6-C6FE-4298-BFEE-50181CBAACA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Identification", "src\BugTracker.Identification\BugTracker.Identification.csproj", "{225A07CA-61DB-4ECC-8FB6-A1C7D49530E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Identification", "src\BugTracker.Identification\BugTracker.Identification.csproj", "{225A07CA-61DB-4ECC-8FB6-A1C7D49530E8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.MailService", "src\Infrastructure\BugTracker.MailService\BugTracker.MailService.csproj", "{CA2F3D8B-787F-4DA4-934E-353BF3F16930}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{225A07CA-61DB-4ECC-8FB6-A1C7D49530E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{225A07CA-61DB-4ECC-8FB6-A1C7D49530E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{225A07CA-61DB-4ECC-8FB6-A1C7D49530E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9373CE0B-5E3E-42AD-9F6E-10178652D5D9} = {B8C6C9CE-0DEE-4E2A-8635-7A29A1C3BEE6}
 		{D1D5CDF6-C6FE-4298-BFEE-50181CBAACA2} = {B8C6C9CE-0DEE-4E2A-8635-7A29A1C3BEE6}
+		{CA2F3D8B-787F-4DA4-934E-353BF3F16930} = {B8C6C9CE-0DEE-4E2A-8635-7A29A1C3BEE6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {314C0FBD-2863-46A1-8BEA-8F73A61660D7}

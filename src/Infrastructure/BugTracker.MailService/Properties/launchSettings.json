@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BugTracker.MailService": {
+      "commandName": "Project",
+      "commandLineArgs": "MailService.config"
+    }
+  }
+}

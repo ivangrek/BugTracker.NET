@@ -16,6 +16,7 @@ namespace BugTracker.Web.Core
     using System.Threading;
     using System.Web;
     using Identification;
+    using Mail;
 
     public class Bug
     {
@@ -1197,7 +1198,7 @@ values (getdate(), $bug, $user, N'not sent', 0, N'$to', N'$from', N'$subject', N
                         "", // cc
                         (string)dr["qn_subject"],
                         (string)dr["qn_body"],
-                        BtnetMailFormat.Html);
+                        MailFormat.Html);
 
                     if (string.IsNullOrEmpty(err)) sql = "delete from queued_notifications where qn_id = $qn_id";
                 }

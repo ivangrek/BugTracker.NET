@@ -163,43 +163,173 @@ us_most_recent_login_datetime datetime null
 )
 
 create unique index unique_us_username on users (us_username)
+SET IDENTITY_INSERT users ON;  
 
---admin/admin is the username/password
-SET IDENTITY_INSERT [dbo].[users] ON;  
-INSERT [dbo].[users] ([us_id], [us_username], [us_salt], [us_password], [password_reset_key], [us_firstname], [us_lastname], [us_email], [us_admin], [us_default_query], [us_enable_notifications], [us_auto_subscribe], [us_auto_subscribe_own_bugs], [us_auto_subscribe_reported_bugs], [us_send_notifications_to_self], [us_active], [us_bugs_per_page], [us_forced_project], [us_reported_notifications], [us_assigned_notifications], [us_subscribed_notifications], [us_signature], [us_use_fckeditor], [us_enable_bug_list_popups], [us_created_user], [us_org], [us_most_recent_login_datetime]) VALUES (1, N'admin', N'PmafvZSWFYML3', N'si�ύ�oJ̚�M����cx����piĦWNls��!�9O��XL]�s��׊6�{�%�$�7������ڨFL�IS�v.����MC��1(K�C�8F[�fW�0����.a���c''iR%�U�hߎ��', NULL, N'System', N'Administrator', NULL, 1, 1, 1, 0, 0, 0, 0, 1, NULL, NULL, 4, 4, 4, NULL, 0, 1, 1, 1, CAST(N'2015-01-13 22:05:16.973' AS DateTime))
-SET IDENTITY_INSERT [dbo].[users] OFF;  
+INSERT INTO users
+(
+	us_id,
+	us_username,
+	us_salt,
+	us_password,
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_org)
-values ('developer', 'Al', 'Kaline', 'admin', 0, 2, 2)
+	us_firstname,
+	us_lastname,
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_org)
-values ('tester', 'Norman', 'Cash', 'admin', 0, 4, 4)
+	us_admin,
+	us_default_query,
+	us_org,
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_org)
-values ('customer1', 'Bill', 'Freehan', 'admin', 0, 1, 4)
+	us_forced_project,
+	us_active
+)
+VALUES
+(
+	1,
+	'admin',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_org)
-values ('customer2', 'Denny', 'McClain', 'admin', 0, 1, 5)
+	'System', 
+	'Administrator', 
+	
+	1,
+	1,
+	1,
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query)
-values ('email', 'for POP3', 'btnet_service.exe', 'x', 0, 1)
+	NULL,
+	1
+),
+(
+	2,
+	'developer',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_forced_project)
-values ('viewer', 'Read', 'Only', 'admin', 0, 1, 1)
+	'Al', 
+	'Kaline', 
+	
+	0,
+	2,
+	2,
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_forced_project)
-values ('reporter', 'Report And', 'Comment Only', 'admin', 0, 1, 1)
+	NULL,
+	1
+),
+(
+	3,
+	'tester',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
 
-insert into users (
-us_username, us_firstname, us_lastname, us_password, us_admin, us_default_query, us_forced_project, us_active)
-values ('guest', 'Special', 'cannot save searches, settings', 'guest', 0, 1, 1, 0)
+	'Norman', 
+	'Cash', 
+	
+	0,
+	4,
+	4,
+
+	NULL,
+	1
+),
+(
+	4,
+	'customer1',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
+
+	'Bill', 
+	'Freehan', 
+	
+	0,
+	1,
+	4,
+
+	NULL,
+	1
+),
+(
+	5,
+	'customer2',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
+
+	'Denny', 
+	'McClain', 
+	
+	0,
+	1,
+	5,
+
+	NULL,
+	1
+),
+(
+	6,
+	'email',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
+
+	'for POP3', 
+	'BugTracker.MailService.exe', 
+	
+	0,
+	1,
+	1,
+
+	NULL,
+	1
+),
+(
+	7,
+	'viewer',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
+
+	'Read', 
+	'Only', 
+	
+	0,
+	1,
+	1,
+
+	1,
+	1
+),
+(
+	8,
+	'reporter',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
+
+	'Report And', 
+	'Comment Only', 
+	
+	0,
+	1,
+	1,
+
+	1,
+	1
+),
+(
+	9,
+	'guest',
+	'uTgBGWekorP3r',
+	N'*�d6�t�d>bK�6V�)&u8E�R��e����sA�L<+���~Yf�������jb��5���t˯9���D���&d���B��kHs�5�׌L��1�g���F���䁪N�Ke4~����c^$',
+
+	'Special', 
+	'cannot save searches', 
+	
+	0,
+	1,
+	1,
+
+	1,
+	0
+
+)
+
+SET IDENTITY_INSERT users OFF; 
 
 /* SESSIONS */
 

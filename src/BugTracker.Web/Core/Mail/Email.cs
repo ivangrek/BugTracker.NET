@@ -9,7 +9,7 @@
 //#pragma warning disable 618
 //#warning System.Web.Mail is deprecated, but it doesn't work yet with "explicit" SSL, so keeping it for now - corey
 
-namespace BugTracker.Web.Core
+namespace BugTracker.Web.Core.Mail
 {
     using System;
     using System.Collections;
@@ -22,22 +22,9 @@ namespace BugTracker.Web.Core
     using System.Text;
     using System.Threading;
 
-    public enum BtnetMailFormat
-    {
-        Text,
-        Html
-    }
-
-    public enum BtnetMailPriority
-    {
-        Normal,
-        Low,
-        High
-    }
-
     public static class Email
     {
-        private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
+        private static IApplicationSettings ApplicationSettings { get; } = new ApplicationSettings();
 
         public enum AddrType
         {
@@ -58,8 +45,8 @@ namespace BugTracker.Web.Core
                 cc,
                 subject,
                 body,
-                BtnetMailFormat.Text,
-                BtnetMailPriority.Normal,
+                MailFormat.Text,
+                MailPriority.Normal,
                 null,
                 false);
         }
@@ -70,7 +57,7 @@ namespace BugTracker.Web.Core
             string cc,
             string subject,
             string body,
-            BtnetMailFormat bodyFormat)
+            MailFormat bodyFormat)
         {
             return SendEmail(
                 to,
@@ -79,13 +66,12 @@ namespace BugTracker.Web.Core
                 subject,
                 body,
                 bodyFormat,
-                BtnetMailPriority.Normal,
+                MailPriority.Normal,
                 null,
                 false);
         }
 
-        private static string ConvertUploadedBlobToFlatFile(string uploadFolder, int attachmentBpid,
-            Dictionary<string, int> filesToDelete)
+        private static string ConvertUploadedBlobToFlatFile(string uploadFolder, int attachmentBpid, Dictionary<string, int> filesToDelete)
         {
             var buffer = new byte[16 * 1024];
             string destPathAndFilename;
@@ -138,8 +124,8 @@ namespace BugTracker.Web.Core
             string cc,
             string subject,
             string body,
-            BtnetMailFormat bodyFormat,
-            BtnetMailPriority priority,
+            MailFormat bodyFormat,
+            MailPriority priority,
             int[] attachmentBpids,
             bool returnReceipt)
         {
@@ -153,12 +139,12 @@ namespace BugTracker.Web.Core
 
             msg.Subject = subject;
 
-            if (priority == BtnetMailPriority.Normal)
-                msg.Priority = MailPriority.Normal;
-            else if (priority == BtnetMailPriority.High)
-                msg.Priority = MailPriority.High;
+            if (priority == MailPriority.Normal)
+                msg.Priority = System.Net.Mail.MailPriority.Normal;
+            else if (priority == MailPriority.High)
+                msg.Priority = System.Net.Mail.MailPriority.High;
             else
-                priority = BtnetMailPriority.Low;
+                priority = MailPriority.Low;
 
             // This fixes a bug for a couple people, but make it configurable, just in case.
             if (ApplicationSettings.BodyEncodingUTF8) msg.BodyEncoding = Encoding.UTF8;
@@ -169,7 +155,7 @@ namespace BugTracker.Web.Core
             if (ApplicationSettings.SmtpForceReplaceOfBareLineFeeds) body = body.Replace("\n", "\r\n");
 
             msg.Body = body;
-            msg.IsBodyHtml = bodyFormat == BtnetMailFormat.Html;
+            msg.IsBodyHtml = bodyFormat == MailFormat.Html;
 
             StuffToDelete stuffToDelete = null;
 
@@ -320,11 +306,70 @@ namespace BugTracker.Web.Core
             return email;
         }
 
-        public class StuffToDelete
+        public static void AutoReply(int bugId, string fromAddr, string shortDesc, int projectId)
         {
-            public ArrayList DirectoriesToDelete = new ArrayList();
-            public Dictionary<string, int> FilesToDelete = new Dictionary<string, int>();
-            public MailMessage Msg;
+            var autoReplyText = ApplicationSettings.AutoReplyText;
+
+            if (autoReplyText == "")
+            {
+                return;
+            }
+
+            autoReplyText = autoReplyText.Replace("$BUGID$", Convert.ToString(bugId));
+
+            var sql = new SqlString(@"select
+                        pj_pop3_email_from
+                        from projects
+                        where pj_id = 2pj");
+
+            sql = sql.AddParameterWithValue("pj", projectId);
+
+            var projectEmail = DbUtil.ExecuteScalar(sql);
+
+            if (projectEmail == null)
+            {
+                Util.WriteToLog("skipping auto reply because project email is blank");
+                return;
+            }
+
+            var projectEmailString = Convert.ToString(projectEmail);
+
+            if (projectEmailString == "")
+            {
+                Util.WriteToLog("skipping auto reply because project email is blank");
+                return;
+            }
+
+            // To avoid an infinite loop of replying to emails and then having to reply to the replies!
+            if (projectEmailString.ToLower() == fromAddr.ToLower())
+            {
+                Util.WriteToLog("skipping auto reply because from address is same as project email:" + projectEmailString);
+                return;
+            }
+
+            var outgoingSubject = shortDesc + "  ("
+                                              + ApplicationSettings.TrackingIdString
+                                              + Convert.ToString(bugId) + ")";
+
+            var useHtmlFormat = ApplicationSettings.AutoReplyUseHtmlEmailFormat;
+
+            // commas cause trouble
+            var cleanerFromAddr = fromAddr.Replace(",", " ");
+
+            Email.SendEmail(// 4 args
+                cleanerFromAddr, // we are responding TO the address we just received email FROM
+                projectEmailString,
+                string.Empty, // cc
+                outgoingSubject,
+                autoReplyText,
+                useHtmlFormat ? MailFormat.Html : MailFormat.Text);
         }
+    }
+
+    public class StuffToDelete
+    {
+        public ArrayList DirectoriesToDelete = new ArrayList();
+        public Dictionary<string, int> FilesToDelete = new Dictionary<string, int>();
+        public MailMessage Msg;
     }
 }

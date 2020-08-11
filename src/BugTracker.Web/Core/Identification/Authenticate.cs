@@ -200,8 +200,6 @@ namespace BugTracker.Web.Core.Identification
 
         public static bool CheckPasswordWithDb(string username, string enteredPassword, DataRow dr)
         {
-            Util.UpdateUserPassword(1, "admin");
-
             var salt = (string)dr["us_salt"];
             var hashedEnteredPassword = Util.HashString(enteredPassword, salt);
             var databasePassword = (string)dr["us_password"];
@@ -218,7 +216,7 @@ namespace BugTracker.Web.Core.Identification
 
         public void SignIn(string username, bool persistent)
         {
-            var properties = new AuthenticationProperties()
+            var properties = new AuthenticationProperties
             {
                 IsPersistent = persistent
             };

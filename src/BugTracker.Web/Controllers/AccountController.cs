@@ -20,6 +20,7 @@ namespace BugTracker.Web.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
     using Core.Identification;
+    using Core.Mail;
 
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class AccountController : Controller
@@ -135,7 +136,7 @@ namespace BugTracker.Web.Controllers
                 + VirtualPathUtility.ToAbsolute("~/Account/CompleteRegistration?id=")
                 + guid
                 + "'>complete registration</a>.",
-                BtnetMailFormat.Html);
+                MailFormat.Html);
 
             ModelState.AddModelError(string.Empty, $"An email has been sent to {model.Email}<br>Please click on the link in the email message to complete registration.");
 
@@ -745,7 +746,7 @@ namespace BugTracker.Web.Controllers
                         + "'>reset password</a> for user \""
                         + (string)dr["us_username"]
                         + "\".",
-                        BtnetMailFormat.Html);
+                        MailFormat.Html);
 
                     if (string.IsNullOrEmpty(result))
                     {
