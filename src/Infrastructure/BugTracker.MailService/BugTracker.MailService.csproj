@@ -28,9 +28,4 @@
     <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
     <PackageReference Include="OpenPop.NET" Version="2.0.6.1120" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="MailService.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

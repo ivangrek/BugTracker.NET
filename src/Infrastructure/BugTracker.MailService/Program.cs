@@ -5,13 +5,13 @@
 
     internal static class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             using (var service = new MailService())
             {
                 if (Environment.UserInteractive)
                 {
-                    service.RunAsConsole(args);
+                    service.RunAsConsole();
                 }
                 else
                 {

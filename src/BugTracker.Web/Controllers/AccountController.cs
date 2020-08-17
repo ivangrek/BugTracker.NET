@@ -297,7 +297,7 @@ namespace BugTracker.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model)
         {
             // see if the connection string works

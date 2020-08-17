@@ -8,9 +8,11 @@ namespace BugTracker.Web
 {
     using System.Reflection;
     using System.Web;
+    using System.Web.Http;
     using System.Web.Mvc;
     using Autofac;
     using Autofac.Integration.Mvc;
+    using Autofac.Integration.WebApi;
     using Changing;
     using Core;
     using Core.Identification;
@@ -63,11 +65,15 @@ namespace BugTracker.Web
             // WebControllers
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
 
+            //Web API controllers.
+            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+
             // Init
             var container = builder.Build();
             var autofacWebDependencyResolver = new AutofacDependencyResolver(container);
 
             DependencyResolver.SetResolver(autofacWebDependencyResolver);
+            GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
             return container;
         }

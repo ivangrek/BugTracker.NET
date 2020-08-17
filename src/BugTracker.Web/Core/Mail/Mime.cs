@@ -19,7 +19,7 @@ namespace BugTracker.Web.Core.Mail
     {
         private static IApplicationSettings ApplicationSettings { get; set; } = new ApplicationSettings();
 
-        public static Message GetSharpMimeMessage(string messageRawString)
+        public static Message GetMimeMessage(string messageRawString)
         {
             // feed a stream to MIME parser
             var bytes = Encoding.UTF8.GetBytes(messageRawString);
@@ -191,7 +191,7 @@ namespace BugTracker.Web.Core.Mail
             return dr;
         }
 
-        public static void AddAttachments(Message message, int bugId, int parentPostId, Security security)
+        public static void AddAttachments(Message message, int bugId, int parentPostId, ISecurity security)
         {
             foreach (var attachment in message.FindAllAttachments())
             {
@@ -199,7 +199,7 @@ namespace BugTracker.Web.Core.Mail
             }
         }
 
-        public static void AddAttachment(string filename, MessagePart part, int bugId, int parentPostId, Security security)
+        public static void AddAttachment(string filename, MessagePart part, int bugId, int parentPostId, ISecurity security)
         {
             Util.WriteToLog("attachment:" + filename);
 

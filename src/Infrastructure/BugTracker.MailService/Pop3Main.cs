@@ -27,7 +27,6 @@ namespace BugTracker.MailService
 
         private ServiceState State = ServiceState.Started;
 
-        private string ConfigFile;
         public static bool Verbose = true;
         public static string LogFileFolder;
         public static int LogEnabled = 1;
@@ -72,13 +71,13 @@ namespace BugTracker.MailService
 
         public static DateTime HeartbeatDatetime = DateTime.Now;
 
-        public Pop3Main(string configFile, bool verbose)
+        public Pop3Main(bool verbose)
         {
             Thread watchdogThread;
             var thisExe = Assembly.GetExecutingAssembly().Location;
 
             LogFileFolder = Path.GetDirectoryName(thisExe);
-            ConfigFile = configFile;
+
             Verbose = verbose;
 
             //ServicePointManager.CertificatePolicy = new AcceptAllCertificatePolicy();
@@ -245,121 +244,121 @@ namespace BugTracker.MailService
             Websites = new ArrayList();
             StringDictionary settings = null;
 
-            var filename = ConfigFile;
-            XmlTextReader tr = null;
+            var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var section = configuration.GetSection("btnetSettings");
 
             try
             {
-                tr = new XmlTextReader(filename);
-
-                while (tr.Read())
+                using (var stringReader = new StringReader(section.SectionInformation.GetRawXml()))
+                using (var xmlReader = new XmlTextReader(stringReader))
                 {
-                    //continue;
-                    if (tr.Name == "add")
+                    while (xmlReader.Read())
                     {
-                        var key = tr["key"];
+                        //continue;
+                        if (xmlReader.Name == "add")
+                        {
+                            var key = xmlReader["key"];
 
-                        if (key == "FetchIntervalInMinutes")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            FetchIntervalInMinutes = Convert.ToInt32(tr["value"]);
-                        }
-                        else if (key == "TotalErrorsAllowed")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            TotalErrorsAllowed = Convert.ToInt32(tr["value"]);
-                        }
-                        else if (key == "ReadInputStreamCharByChar")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            ReadInputStreamCharByChar = Convert.ToInt32(tr["value"]);
-                        }
-                        else if (key == "LogFileFolder")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            LogFileFolder = Convert.ToString(tr["value"]);
-                        }
-                        else if (key == "LogEnabled")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            LogEnabled = Convert.ToInt32(tr["value"]);
-                        }
-                        else if (key == "EnableWatchdogThread")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            EnableWatchdogThread = Convert.ToInt32(tr["value"]);
-                        }
-                        else if (key == "RespawnFetchingThreadAfterNSecondsOfInactivity")
-                        {
-                            WriteToLog(key + "=" + tr["value"]);
-                            RespawnFetchingThreadAfterNSecondsOfInactivity = Convert.ToInt32(tr["value"]);
+                            if (key == "FetchIntervalInMinutes")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                FetchIntervalInMinutes = Convert.ToInt32(xmlReader["value"]);
+                            }
+                            else if (key == "TotalErrorsAllowed")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                TotalErrorsAllowed = Convert.ToInt32(xmlReader["value"]);
+                            }
+                            else if (key == "ReadInputStreamCharByChar")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                ReadInputStreamCharByChar = Convert.ToInt32(xmlReader["value"]);
+                            }
+                            else if (key == "LogFileFolder")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                LogFileFolder = Convert.ToString(xmlReader["value"]);
+                            }
+                            else if (key == "LogEnabled")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                LogEnabled = Convert.ToInt32(xmlReader["value"]);
+                            }
+                            else if (key == "EnableWatchdogThread")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                EnableWatchdogThread = Convert.ToInt32(xmlReader["value"]);
+                            }
+                            else if (key == "RespawnFetchingThreadAfterNSecondsOfInactivity")
+                            {
+                                WriteToLog(key + "=" + xmlReader["value"]);
+                                RespawnFetchingThreadAfterNSecondsOfInactivity = Convert.ToInt32(xmlReader["value"]);
+                            }
+                            else
+                            {
+                                if (key == "ConnectionString"
+                                    || key == "Pop3Server"
+                                    || key == "Pop3Port"
+                                    || key == "Pop3UseSSL"
+                                    || key == "SubjectMustContain"
+                                    || key == "SubjectCannotContain"
+                                    || key == "FromMustContain"
+                                    || key == "FromCannotContain"
+                                    || key == "DeleteMessagesOnServer"
+                                    || key == "FetchIntervalInMinutes"
+                                    || key == "InsertBugUrl"
+                                    || key == "ServiceUsername"
+                                    || key == "ServicePassword"
+                                    || key == "TrackingIdString"
+                                    || key == "MessageInputFile"
+                                    || key == "MessageOutputFile")
+                                {
+                                    WriteToLog(key + "=" + xmlReader["value"]);
+                                }
+
+                                if (settings != null)
+                                {
+                                    settings[key] = xmlReader["value"];
+                                }
+                            }
+                            // else an uninteresting setting
                         }
                         else
                         {
-                            if (key == "ConnectionString"
-                                || key == "Pop3Server"
-                                || key == "Pop3Port"
-                                || key == "Pop3UseSSL"
-                                || key == "SubjectMustContain"
-                                || key == "SubjectCannotContain"
-                                || key == "FromMustContain"
-                                || key == "FromCannotContain"
-                                || key == "DeleteMessagesOnServer"
-                                || key == "FetchIntervalInMinutes"
-                                || key == "InsertBugUrl"
-                                || key == "ServiceUsername"
-                                || key == "ServicePassword"
-                                || key == "TrackingIdString"
-                                || key == "MessageInputFile"
-                                || key == "MessageOutputFile")
+                            // create a new dictionary of settings each time we encounter a new Website section
+                            if (xmlReader.Name.ToLower() == "website" && xmlReader.NodeType == XmlNodeType.Element)
                             {
-                                WriteToLog(key + "=" + tr["value"]);
-                            }
+                                settings = new StringDictionary
+                                {
+                                    ["MessageInputFile"] = string.Empty,
+                                    ["MessageOutputFile"] = string.Empty,
+                                    ["ConnectionString"] = string.Empty,
+                                    ["Pop3Server"] = string.Empty,
+                                    ["Pop3Port"] = string.Empty,
+                                    ["Pop3UseSSL"] = string.Empty,
+                                    ["SubjectMustContain"] = string.Empty,
+                                    ["SubjectCannotContain"] = string.Empty,
+                                    ["FromMustContain"] = string.Empty,
+                                    ["FromCannotContain"] = string.Empty,
+                                    ["DeleteMessagesOnServer"] = string.Empty,
+                                    ["InsertBugUrl"] = string.Empty,
+                                    ["ServiceUsername"] = string.Empty,
+                                    ["ServicePassword"] = string.Empty,
+                                    ["TrackingIdString"] = string.Empty
+                                };
 
-                            if (settings != null)
-                            {
-                                settings[key] = tr["value"];
+                                Websites.Add(settings);
+                                WriteToLog($"*** loading settings for website {Websites.Count}");
                             }
-                        }
-                        // else an uninteresting setting
-                    }
-                    else
-                    {
-                        // create a new dictionary of settings each time we encounter a new Website section
-                        if (tr.Name.ToLower() == "website" && tr.NodeType == XmlNodeType.Element)
-                        {
-                            settings = new StringDictionary
-                            {
-                                ["MessageInputFile"] = string.Empty,
-                                ["MessageOutputFile"] = string.Empty,
-                                ["ConnectionString"] = string.Empty,
-                                ["Pop3Server"] = string.Empty,
-                                ["Pop3Port"] = string.Empty,
-                                ["Pop3UseSSL"] = string.Empty,
-                                ["SubjectMustContain"] = string.Empty,
-                                ["SubjectCannotContain"] = string.Empty,
-                                ["FromMustContain"] = string.Empty,
-                                ["FromCannotContain"] = string.Empty,
-                                ["DeleteMessagesOnServer"] = string.Empty,
-                                ["InsertBugUrl"] = string.Empty,
-                                ["ServiceUsername"] = string.Empty,
-                                ["ServicePassword"] = string.Empty,
-                                ["TrackingIdString"] = string.Empty
-                            };
-
-                            Websites.Add(settings);
-                            WriteToLog($"*** loading settings for website {Websites.Count}");
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                WriteToLog("Error trying to read file: " + filename);
+                WriteToLog($"Error trying to read configuration: {configuration.FilePath}");
                 WriteToLog(e.ToString());
             }
-
-            tr.Close();
         }
 
         private void FetchMessagesForProjects()
@@ -377,7 +376,6 @@ namespace BugTracker.MailService
 
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
-
                     if (State != ServiceState.Started)
                     {
                         break;
@@ -405,6 +403,7 @@ namespace BugTracker.MailService
             using (var client = new Pop3Client())
             {
                 List<string> messages = null;
+                var messageCount = 0;
 
                 try
                 {
@@ -429,9 +428,11 @@ namespace BugTracker.MailService
                     WriteToLog("Autenticating");
                     client.Authenticate(user, password);
 
+                    //WriteToLog("Getting list of documents");
+                    //messages = client.GetMessageUids();
+                    messageCount = client.GetMessageCount();
 
-                    WriteToLog("Getting list of documents");
-                    messages = client.GetMessageUids();
+                    WriteToLog($"Found {messageCount} messages");
                 }
                 catch (Exception e)
                 {
@@ -443,7 +444,7 @@ namespace BugTracker.MailService
                 var messageNumber = 0;
 
                 // loop through the messages
-                for (var i = 0; i < messages.Count; i++)
+                for (var i = 0; i < messageCount/*messages.Count*/; i++)
                 {
                     HeartbeatDatetime = DateTime.Now; // because the watchdog is watching
 
@@ -453,8 +454,9 @@ namespace BugTracker.MailService
                     }
 
                     // fetch the message
-                    WriteToLog("Getting Message:" + messages[i]);
-                    messageNumber = Convert.ToInt32(messages[i]);
+                    //WriteToLog("Getting Message:" + messages[i]);
+                    //messageNumber = Convert.ToInt32(messages[i]);
+                    messageNumber = i + 1;
                     Message mimeMessage = null;
 
                     try
@@ -532,7 +534,7 @@ namespace BugTracker.MailService
                         continue;
                     }
 
-                    WriteToLog("calling Bug/Create");
+                    WriteToLog($"calling {InsertBugUrl}");
 
                     var useBugId = false;
 
@@ -582,6 +584,7 @@ namespace BugTracker.MailService
                             UseCookies = true,
                             CookieContainer = new CookieContainer()
                         };
+
                         using (var httpClient = new HttpClient(handler))
                         {
                             var loginParameters = new Dictionary<string, string>
@@ -590,8 +593,9 @@ namespace BugTracker.MailService
                                 { "Password", ServicePassword }
                             };
 
-                            HttpContent loginContent = new FormUrlEncodedContent(loginParameters);
+                            var loginContent = new FormUrlEncodedContent(loginParameters);
                             var loginResponse = await httpClient.PostAsync(LoginUrl, loginContent);
+
                             loginResponse.EnsureSuccessStatusCode();
 
                             var rawMessage = Encoding.Default.GetString(mimeMessage.RawMessage);
@@ -614,6 +618,7 @@ namespace BugTracker.MailService
 
                             postBugResponse.EnsureSuccessStatusCode();
                         }
+
                         if (MessageInputFile == string.Empty && DeleteMessagesOnServer == "1")
                         {
                             WriteToLog("sending POP3 command DELE");

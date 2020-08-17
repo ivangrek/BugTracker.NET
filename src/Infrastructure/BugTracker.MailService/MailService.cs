@@ -1,8 +1,6 @@
 namespace BugTracker.MailService
 {
     using System;
-    using System.IO;
-    using System.Reflection;
     using System.ServiceProcess;
 
     internal sealed class MailService : ServiceBase
@@ -17,21 +15,11 @@ namespace BugTracker.MailService
             AutoLog = true;
         }
 
-        public void RunAsConsole(string[] args)
+        public void RunAsConsole()
         {
-            // check the command line
-            if (args.Length != 1)
-            {
-                Console.WriteLine("usage BugTracker.MailService.exe [path to MailService.config file]");
-                Console.WriteLine("example BugTracker.MailService.exe MailService.config");
-
-                return;
-            }
-
             Console.WriteLine("Press any key to exit...");
 
-            var configFile = args[0];
-            var pop3 = new Pop3Main(configFile, true);
+            var pop3 = new Pop3Main(true);
 
             pop3.Start();
 
@@ -42,11 +30,7 @@ namespace BugTracker.MailService
 
         protected override void OnStart(string[] args)
         {
-            // look in this exe's folder for the config, not the c:\ root folder.
-            var thisExe = Assembly.GetExecutingAssembly().Location;
-            var configFile = Path.Combine(Path.GetDirectoryName(thisExe), "MailService.config");
-
-            _pop3 = new Pop3Main(configFile, false);
+            _pop3 = new Pop3Main(false);
 
             OnContinue();
         }

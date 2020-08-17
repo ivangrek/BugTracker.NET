@@ -320,7 +320,7 @@ namespace BugTracker.Web.Core.Mail
             var sql = new SqlString(@"select
                         pj_pop3_email_from
                         from projects
-                        where pj_id = 2pj");
+                        where pj_id = @pj");
 
             sql = sql.AddParameterWithValue("pj", projectId);
 

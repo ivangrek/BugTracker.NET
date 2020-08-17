@@ -730,7 +730,7 @@ namespace BugTracker.Web.Controllers
 
             if (message != null && message.Length > 0)
             {
-                mimeMessage = Mime.GetSharpMimeMessage(message);
+                mimeMessage = Mime.GetMimeMessage(message);
 
                 comment = Mime.GetComment(mimeMessage);
 
@@ -2962,7 +2962,7 @@ namespace BugTracker.Web.Controllers
 
         private void CallSortAndFilterBuglistDataview(IndexModel model, bool postBack)
         {
-            var filterVal = model.Filter;
+            var filterVal = model.Filter ?? string.Empty;
             var sortVal = model.Sort.ToString();
             var prevSortVal = model.PrevSort.ToString();
             var prevDirVal = model.PrevDir;
