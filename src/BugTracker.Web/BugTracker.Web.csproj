@@ -325,6 +325,7 @@
     <Compile Include="Areas\Administration\Controllers\StatusController.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\BugFromEmailController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Core\Identification\ApplicationRole.cs" />
     <Compile Include="Core\Identification\Authenticate.cs" />
