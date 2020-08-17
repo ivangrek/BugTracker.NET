@@ -336,6 +336,7 @@
     <Compile Include="Core\Mail\MailFormat.cs" />
     <Compile Include="Core\Mail\MailPriority.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
+    <Compile Include="Models\BugFromEmail.cs" />
     <Compile Include="Models\Bug\SendEmailModel.cs" />
     <Compile Include="Models\Search\IndexModel.cs" />
     <Compile Include="Models\Bug\EditModel.cs" />
