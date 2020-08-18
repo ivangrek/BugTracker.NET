@@ -9,7 +9,6 @@ namespace BugTracker.Web
 {
     using System;
     using System.IO;
-    using System.Text;
     using System.Web;
     using System.Web.Http;
     using System.Web.Mvc;
@@ -18,7 +17,7 @@ namespace BugTracker.Web
     using Autofac;
     using Autofac.Integration.Web;
     using Core;
-    using Core.Mail;
+    using NLog;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is an infrastructure")]
     public class Global : HttpApplication, IContainerProviderAccessor
@@ -33,8 +32,11 @@ namespace BugTracker.Web
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "This is an infrastructure")]
         protected void Application_Start(object sender, EventArgs e)
         {
+            Util.ServerRootForlder = AppDomain.CurrentDomain.BaseDirectory;
+
             var container = IoCConfig.Configure();
 
+            LoggingConfig.Configure();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -43,59 +45,73 @@ namespace BugTracker.Web
 
             _containerProvider = new ContainerProvider(container);
 
-            var path = AppDomain.CurrentDomain.BaseDirectory;
+            CreateRequiredDirectories();
+            LoadConfiguration();
+        }
 
-            Util.ServerRootForlder = path;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "This is an infrastructure")]
+        protected void Application_Error(object sender, EventArgs e)
+        {
+            var exc = Server.GetLastError().GetBaseException();
+            var logger = LogManager.GetCurrentClassLogger();
 
-            var dir = path + "\\App_Data";
+            logger.Fatal(exc);
+        }
 
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-
-            dir = path + "\\App_Data\\logs";
-
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-
-            dir = path + "\\App_Data\\uploads";
+        private static void CreateRequiredDirectories()
+        {
+            var dir = Path.Combine(Util.ServerRootForlder, "App_Data");
 
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
 
-            dir = path + "\\App_Data\\lucene_index";
+            dir = Path.Combine(Util.ServerRootForlder, "App_Data", "logs");
 
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
 
-            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_header.html")))
+            dir = Path.Combine(Util.ServerRootForlder, "App_Data", "uploads");
+
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            dir = Path.Combine(Util.ServerRootForlder, "App_Data", "lucene_index");
+
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+        }
+
+        private void LoadConfiguration()
+        {
+            using (var streamReader = File.OpenText(Path.Combine(Util.ServerRootForlder, @"Content\custom\custom_header.html")))
             {
                 Util.CustomHeaderHtml = streamReader.ReadToEnd();
             }
 
-            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_footer.html")))
+            using (var streamReader = File.OpenText(Path.Combine(Util.ServerRootForlder, @"Content\custom\custom_footer.html")))
             {
                 Util.CustomFooterHtml = streamReader.ReadToEnd();
             }
 
-            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_logo.html")))
+            using (var streamReader = File.OpenText(Path.Combine(Util.ServerRootForlder, @"Content\custom\custom_logo.html")))
             {
                 Util.CustomLogoHtml = streamReader.ReadToEnd();
             }
 
-            using (var streamReader = File.OpenText(Path.Combine(path, @"Content\custom\custom_welcome.html")))
+            using (var streamReader = File.OpenText(Path.Combine(Util.ServerRootForlder, @"Content\custom\custom_welcome.html")))
             {
                 Util.CustomWelcomeHtml = streamReader.ReadToEnd();
             }
 
-            var applicationSettings = container
+            var applicationSettings = _containerProvider.ApplicationContainer
                 .Resolve<IApplicationSettings>();
 
             if (applicationSettings.EnableVotes)
@@ -105,106 +121,12 @@ namespace BugTracker.Web
 
             if (applicationSettings.EnableTags)
             {
-                Tags.BuildTagIndex(Application);
+                Tags.BuildTagIndex();
             }
 
             if (applicationSettings.EnableLucene)
             {
                 MyLucene.BuildLuceneIndex();
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "This is an infrastructure")]
-        protected void Application_Error(object sender, EventArgs e)
-        {
-            // Put the server vars into a string
-            var serverVarsString = new StringBuilder();
-
-            // Load ServerVariable collection into NameValueCollection object.
-            var coll = Request.ServerVariables;
-
-            // Get names of all keys into a string array.
-            var arr1 = coll.AllKeys;
-
-            for (var loop1 = 0; loop1 < arr1.Length; loop1++)
-            {
-                var key = arr1[loop1];
-
-                if (key.StartsWith("AUTH_PASSWORD", StringComparison.InvariantCulture))
-                {
-                    continue;
-                }
-
-                var arr2 = coll.GetValues(key);
-
-                for (var loop2 = 0; loop2 < 1; loop2++)
-                {
-                    var val = arr2[loop2];
-
-                    if (string.IsNullOrEmpty(val))
-                    {
-                        break;
-                    }
-
-                    serverVarsString.Append("\n");
-                    serverVarsString.Append(key);
-                    serverVarsString.Append("=");
-                    serverVarsString.Append(val);
-                }
-            }
-
-            var exc = Server.GetLastError()
-                .GetBaseException();
-
-            var applicationSettings = ContainerProvider.ApplicationContainer
-                .Resolve<IApplicationSettings>();
-
-            var logEnabled = applicationSettings.LogEnabled;
-
-            if (logEnabled)
-            {
-                var path = Util.GetLogFilePath();
-
-                // open file
-                var w = File.AppendText(path);
-
-                w.WriteLine($"\nTIME: {DateTime.Now.ToLongTimeString()}");
-                w.WriteLine($"MSG: {exc.Message}");
-                w.WriteLine($"URL: {Request.Url}");
-                w.WriteLine($"EXCEPTION: {exc}");
-                w.WriteLine(serverVarsString.ToString());
-                w.Close();
-            }
-
-            var errorEmailEnabled = applicationSettings.ErrorEmailEnabled;
-
-            if (errorEmailEnabled)
-            {
-                if (exc.Message == "Expected integer. Possible SQL injection attempt?")
-                {
-                    // don't bother sending email.  Too many automated attackers
-                }
-                else if (exc.Message.Contains("Invalid postback or callback argument"))
-                {
-                    // don't bother sending email.  Too many automated attackers
-                }
-                else
-                {
-                    var to = applicationSettings.ErrorEmailTo;
-                    var from = applicationSettings.ErrorEmailFrom;
-                    var subject = $"Error: {exc.Message}";
-                    var body = new StringBuilder();
-
-                    body.Append("\nTIME: ");
-                    body.Append(DateTime.Now.ToLongTimeString());
-                    body.Append("\nURL: ");
-                    body.Append(Request.Url);
-                    body.Append("\nException: ");
-                    body.Append(exc);
-                    body.Append(serverVarsString);
-
-                    Email.SendEmail(to, from, string.Empty, subject, body.ToString()); // 5 args
-                }
             }
         }
     }

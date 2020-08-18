@@ -34,30 +34,33 @@ namespace BugTracker.Web.Core
 
                 // Because "create view" wants to be the first in a batch, it won't work in setup.sql.
                 // So let's just run it here every time.
-                var sql = @"
-if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
-drop view [votes_view]";
+                var sql = new SqlString(@"
+                    if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+                    drop view [votes_view]");
 
                 DbUtil.ExecuteNonQuery(sql);
 
-                sql = @"
-create view votes_view as
-select bu_bug as vote_bug, sum(bu_vote) as vote_total
-from bug_user
-group by bu_bug
-having sum(bu_vote) > 0";
+                sql = new SqlString(@"
+                    create view votes_view as
+                    select bu_bug as vote_bug, sum(bu_vote) as vote_total
+                    from bug_user
+                    group by bu_bug
+                    having sum(bu_vote) > 0");
 
                 DbUtil.ExecuteNonQuery(sql);
 
-                sql = @"
-select bu_bug, count(1)
-from bug_user 
-where bu_vote = 1
-group by bu_bug";
+                sql = new SqlString(@"
+                    select bu_bug, count(1)
+                    from bug_user 
+                    where bu_vote = 1
+                    group by bu_bug");
 
                 var ds = DbUtil.GetDataSet(sql);
 
-                foreach (DataRow dr in ds.Tables[0].Rows) app[Convert.ToString(dr[0])] = (int)dr[1];
+                foreach (DataRow dr in ds.Tables[0].Rows)
+                {
+                    app[Convert.ToString(dr[0])] = (int) dr[1];
+                }
             }
             catch (Exception ex)
             {
@@ -65,17 +68,15 @@ group by bu_bug";
             }
         }
 
-        public static void ThreadProcTags(object obj)
+        public static void ThreadProcTags()
         {
             try
             {
-                var app = (HttpApplicationState)obj;
-
                 var tags = new SortedDictionary<string, List<int>>();
 
                 // update the cache
 
-                var ds = DbUtil.GetDataSet("select bg_id, bg_tags from bugs where isnull(bg_tags,'') <> ''");
+                var ds = DbUtil.GetDataSet(new SqlString("select bg_id, bg_tags from bugs where isnull(bg_tags,'') <> ''"));
 
                 foreach (DataRow dr in ds.Tables[0].Rows)
                 {
@@ -109,10 +110,10 @@ group by bu_bug";
             thread.Start(app);
         }
 
-        public static void BuildTagIndex(HttpApplicationState app)
+        public static void BuildTagIndex()
         {
             var thread = new Thread(ThreadProcTags);
-            thread.Start(app);
+            thread.Start();
         }
 
         public static string BuildFilterClause(HttpApplicationState app, string selectedLabels)

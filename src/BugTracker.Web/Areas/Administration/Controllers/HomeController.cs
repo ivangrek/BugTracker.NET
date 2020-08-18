@@ -445,7 +445,9 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 HtmlEncode = false
             };
 
-            return View();
+            var model = new ManageLogsModel();
+
+            return View(model);
         }
 
         [HttpPost]

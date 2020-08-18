@@ -1714,7 +1714,7 @@ bg_project_custom_dropdown_value3 = N'$pcd3'
 
                 if (ApplicationSettings.EnableTags)
                 {
-                    Tags.BuildTagIndex(Application);
+                    Tags.BuildTagIndex();
                 }
             }
 
