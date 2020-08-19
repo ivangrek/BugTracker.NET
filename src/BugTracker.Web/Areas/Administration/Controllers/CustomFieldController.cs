@@ -193,8 +193,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             else
                 sql = sql.Replace("$null", "NULL");
 
-            var alterTableWorked = false;
-
             try
             {
                 DbUtil.ExecuteNonQuery(sql);

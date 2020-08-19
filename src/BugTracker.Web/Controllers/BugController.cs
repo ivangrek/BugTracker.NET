@@ -36,13 +36,13 @@ namespace BugTracker.Web.Controllers
     [OutputCache(Location = OutputCacheLocation.None, NoStore = true)]
     public class BugController : Controller
     {
-        private readonly IApplicationFacade applicationFacade;
+        //private readonly IApplicationFacade applicationFacade;
         private readonly IApplicationSettings applicationSettings;
         private readonly ISecurity security;
         private readonly IAuthenticate authenticate;
 
         public BugController(
-            IApplicationFacade applicationFacade,
+            //IApplicationFacade applicationFacade,
             IApplicationSettings applicationSettings,
             ISecurity security,
             IAuthenticate authenticate)
@@ -1449,19 +1449,19 @@ namespace BugTracker.Web.Controllers
                 return Content(string.Empty);
             }
 
-            string sql;
+            SqlString sql;
 
             if (actn == "1")
             {
-                sql = @"insert into bug_subscriptions (bs_bug, bs_user) values($bg, $us)";
+                sql = new SqlString(@"insert into bug_subscriptions (bs_bug, bs_user) values(@bg, @us)");
             }
             else
             {
-                sql = @"delete from bug_subscriptions where bs_bug = $bg and bs_user = $us";
+                sql = new SqlString(@"delete from bug_subscriptions where bs_bug = @bg and bs_user = @us");
             }
 
-            sql = sql.Replace("$bg", id.ToString());
-            sql = sql.Replace("$us", Convert.ToString(this.security.User.Usid));
+            sql.AddParameterWithValue("bg", id);
+            sql.AddParameterWithValue("us", this.security.User.Usid);
 
             DbUtil.ExecuteNonQuery(sql);
 

@@ -258,7 +258,7 @@ namespace BugTracker.Web.Controllers
                 return Content(message);
             }
 
-            var good = false;
+            bool good;
 
             try
             {

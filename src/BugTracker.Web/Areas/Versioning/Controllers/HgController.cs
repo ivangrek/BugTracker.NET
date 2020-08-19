@@ -209,7 +209,7 @@
                 inner join hg_affected_paths on hgap_hgrev_id = hgrev_id
                 where hgap_id = $id";
 
-            var hgapId = Convert.ToInt32(Util.SanitizeInteger(Request["revpathid"]));
+            var hgapId = revpathid;
             sql = sql.Replace("$id", Convert.ToString(hgapId));
 
             var dr = DbUtil.GetDataRow(sql);
@@ -227,7 +227,7 @@
             var leftOut = string.Empty;
             var rightOut = string.Empty;
 
-            var error = string.Empty;
+            string error;
 
             var revision0 = Request["rev_0"];
 
@@ -237,7 +237,7 @@
 
                 // we need to find the previous revision
                 var log = VersionControl.HgLog(repo, revision, path);
-                var prevRevision = GetPreviousRevision(log, revision);
+                var prevRevision = GetPreviousRevision(log);
 
                 if (string.IsNullOrEmpty(prevRevision))
                 {
@@ -509,7 +509,7 @@
             return stringBuilder.ToString();
         }
 
-        public static string GetPreviousRevision(string logResult, string thisRevision)
+        public static string GetPreviousRevision(string logResult)
         {
             var doc = new XmlDocument();
             doc.LoadXml("<log>" + logResult + "</log>");
