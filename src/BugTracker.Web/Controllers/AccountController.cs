@@ -668,49 +668,58 @@ namespace BugTracker.Web.Controllers
 
                 if (!string.IsNullOrEmpty(model.Email) && string.IsNullOrEmpty(model.Login))
                 {
+                    var sql = new SqlString("select count(1) from users where us_email = @email");
+
+                    sql.AddParameterWithValue("email", model.Email);
+
                     // check if email exists
-                    userCount = (int)DbUtil.ExecuteScalar(
-                        "select count(1) from users where us_email = N'" + model.Email.Replace("'", "''") +
-                        "'");
+                    userCount = (int)DbUtil.ExecuteScalar(sql);
 
                     if (userCount == 1)
                     {
-                        userId = (int)DbUtil.ExecuteScalar(
-                            "select us_id from users where us_email = N'" + model.Email.Replace("'", "''") +
-                            "'");
+                        sql = new SqlString("select us_id from users where us_email = @email");
+
+                        sql.AddParameterWithValue("email", model.Email);
+
+                        userId = (int)DbUtil.ExecuteScalar(sql);
                     }
                 }
                 else if (string.IsNullOrEmpty(model.Email) && !string.IsNullOrEmpty(model.Login))
                 {
+                    var sql = new SqlString("select count(1) from users where isnull(us_email,'') != '' and  us_username = @username");
+
+                    sql.AddParameterWithValue("username", model.Login);
+
                     // check if email exists
-                    userCount = (int)DbUtil.ExecuteScalar(
-                        "select count(1) from users where isnull(us_email,'') != '' and  us_username = N'" +
-                        model.Login.Replace("'", "''") + "'");
+                    userCount = (int)DbUtil.ExecuteScalar(sql);
 
                     if (userCount == 1)
                     {
-                        userId = (int)DbUtil.ExecuteScalar(
-                            "select us_id from users where us_username = N'" +
-                            model.Login.Replace("'", "''") +
-                            "'");
+                        sql = new SqlString("select us_id from users where us_username = @username");
+
+                        sql.AddParameterWithValue("username", model.Login);
+
+                        userId = (int)DbUtil.ExecuteScalar(sql);
                     }
                 }
                 else if (!string.IsNullOrEmpty(model.Email) && !string.IsNullOrEmpty(model.Login))
                 {
+                    var sql = new SqlString("select count(1) from users where us_username = @username and us_email = @email");
+
+                    sql.AddParameterWithValue("username", model.Login);
+                    sql.AddParameterWithValue("email", model.Email);
+
                     // check if email exists
-                    userCount = (int)DbUtil.ExecuteScalar(
-                        "select count(1) from users where us_username = N'" +
-                        model.Login.Replace("'", "''") +
-                        "' and us_email = N'"
-                        + model.Email.Replace("'", "''") + "'");
+                    userCount = (int)DbUtil.ExecuteScalar(sql);
 
                     if (userCount == 1)
                     {
-                        userId = (int)DbUtil.ExecuteScalar(
-                            "select us_id from users where us_username = N'" +
-                            model.Login.Replace("'", "''") +
-                            "' and us_email = N'"
-                            + model.Email.Replace("'", "''") + "'");
+                        sql = new SqlString("select us_id from users where us_username = @username and us_email = @email");
+
+                        sql.AddParameterWithValue("username", model.Login);
+                        sql.AddParameterWithValue("email", model.Email);
+
+                        userId = (int)DbUtil.ExecuteScalar(sql);
                     }
                 }
 

@@ -489,15 +489,17 @@ namespace BugTracker.Web.Controllers
             }
 
             // save the filename before deleting the row
-            var sql = @"select bp_file from bug_posts where bp_id = $ba"
-                .Replace("$ba", model.Id.ToString());
+            var sql = new SqlString(@"select bp_file from bug_posts where bp_id = @ba");
+
+            sql.AddParameterWithValue("ba", model.Id);
 
             var filename = (string)DbUtil.ExecuteScalar(sql);
 
             // delete the row representing the attachment
-            sql = @"delete bug_post_attachments where bpa_post = $ba
-                delete bug_posts where bp_id = $ba"
-                .Replace("$ba", model.Id.ToString());
+            sql = new SqlString(@"delete bug_post_attachments where bpa_post = @ba
+                delete bug_posts where bp_id = @ba");
+
+            sql.AddParameterWithValue("ba", model.Id);
 
             DbUtil.ExecuteNonQuery(sql);
 

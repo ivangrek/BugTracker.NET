@@ -50,7 +50,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             {
             }
 
-            var bugs = Convert.ToInt32(DbUtil.ExecuteScalar("select count(1) from bugs"));
+            var bugs = Convert.ToInt32(DbUtil.ExecuteScalar(new SqlString("select count(1) from bugs")));
 
             if (bugs > 100)
                 ViewBag.Nag = true;
@@ -96,7 +96,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
         [HttpGet]
         public ActionResult GetDbDateTime()
         {
-            var dt = (DateTime)DbUtil.ExecuteScalar("select getdate()");
+            var dt = (DateTime)DbUtil.ExecuteScalar(new SqlString("select getdate()"));
 
             return Content(dt.ToString("yyyyMMdd HH\\:mm\\:ss\\:fff"));
         }
@@ -410,7 +410,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
             if (string.IsNullOrEmpty(model.FileName))
             {
                 var date = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var db = (string)DbUtil.ExecuteScalar("select db_name()");
+                var db = (string)DbUtil.ExecuteScalar(new SqlString("select db_name()"));
                 var backupFile = Path.Combine(Util.ServerRootForlder, "App_Data",
                     $"db_backup_{date}.bak");
                 var sql = "backup database " + db + " to disk = '" + backupFile + "'";

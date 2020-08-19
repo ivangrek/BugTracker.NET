@@ -417,7 +417,6 @@
                 END	
                 ELSE
                     select 0
-
                 ";
 
             sql = sql.Replace("$gitcom_commit", commit.Replace("'", "''"));

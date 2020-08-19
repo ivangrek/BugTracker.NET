@@ -2981,7 +2981,7 @@ namespace BugTracker.Web.Controllers
 
         private void PrintAsHtml(DataView dataView)
         {
-            Response.Write("<html><head><link rel='StyleSheet' href='Content/btnet.css' type='text/css'></head><body>");
+            Response.Write($"<html><head><link rel='StyleSheet' href='{Url.Content("~/Content/btnet.css")}' type='text/css'></head><body>");
             Response.Write("<table class=bugt border=1>");
             int col;
 
