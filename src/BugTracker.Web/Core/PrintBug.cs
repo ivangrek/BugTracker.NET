@@ -97,7 +97,7 @@ namespace BugTracker.Web.Core
                            + Util.CapitalizeFirstLetter(applicationSettings.SingularBugLabel)
                            + " ID:&nbsp;<a href="
                            + applicationSettings.AbsoluteUrlPrefix
-                           + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
+                           + VirtualPathUtility.ToAbsolute("~/Bug/Update?id=")
                            + stringBugid
                            + ">"
                            + stringBugid
@@ -107,7 +107,7 @@ namespace BugTracker.Web.Core
 
             stringBuilder.Append("Short desc:&nbsp;<a href="
                            + applicationSettings.AbsoluteUrlPrefix
-                           + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
+                           + VirtualPathUtility.ToAbsolute("~/Bug/Update?id=")
                            + stringBugid
                            + ">"
                            + HttpUtility.HtmlEncode((string)dr["short_desc"])
@@ -1288,7 +1288,7 @@ namespace BugTracker.Web.Core
 
             return "<a href="
                    + applicationSettings.AbsoluteUrlPrefix
-                   + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=")
+                   + VirtualPathUtility.ToAbsolute("~/Bug/Update?id=")
                    + m.Groups[1]
                    + ">"
                    + m

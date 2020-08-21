@@ -14,7 +14,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using Changing.Results;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.Priority;
     using Querying;
@@ -52,7 +51,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - priorities",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var query = this.queryBuilder
@@ -78,7 +77,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - new priority",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
@@ -124,7 +123,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit priority",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
@@ -185,7 +184,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete priority",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)

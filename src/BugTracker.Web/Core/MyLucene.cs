@@ -13,7 +13,6 @@ namespace BugTracker.Web.Core
     using System.Data;
     using System.IO;
     using System.Threading;
-    using System.Web;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
     using Lucene.Net.Search.Highlight;

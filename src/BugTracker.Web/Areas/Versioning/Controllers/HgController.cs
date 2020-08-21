@@ -8,7 +8,6 @@
     using System.Web.UI;
     using System.Xml;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models;
 
@@ -43,7 +42,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - view hg file revisions",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var sql = @"
@@ -146,7 +145,7 @@
                 Security = this.security,
                 Title = "hg blame " + HttpUtility.HtmlEncode(revision) + " -- " +
                         HttpUtility.HtmlEncode((string)dr["hgap_path"]),
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -193,7 +192,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"hg log {HttpUtility.HtmlEncode(filePath)}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -288,7 +287,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"git diff {HttpUtility.HtmlEncode((string)dr["gitap_path"])}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();

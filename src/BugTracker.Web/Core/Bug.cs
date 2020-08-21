@@ -893,7 +893,7 @@ select scope_identity();";
                 {
                     // Update the bugs timestamp here.
                     // We don't do it unconditionally because it would mess up the locking.
-                    // The Bugs/Edit.aspx page gets its snapshot timestamp from the update of the bug
+                    // The Bug/Create, Bug/Update page gets its snapshot timestamp from the update of the bug
                     // row, not the comment row, so updating the bug again would confuse it.
                     sql += @"update bugs
                         set bg_last_updated_date = @now,

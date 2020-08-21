@@ -8,7 +8,6 @@
     using System.Web.UI;
     using System.Xml;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models;
 
@@ -43,7 +42,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} -  view svn file revisions",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var sql = @"
@@ -186,7 +185,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"svn blame {HttpUtility.HtmlEncode(path)} {Convert.ToString(revision)}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -237,7 +236,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"svn log {HttpUtility.HtmlEncode(filePath)}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -347,7 +346,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"svn diff {HttpUtility.HtmlEncode(path1)}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();

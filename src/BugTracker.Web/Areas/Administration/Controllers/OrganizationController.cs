@@ -15,7 +15,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using Changing.Results;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.Organization;
     using Querying;
@@ -52,7 +51,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - organizations",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var query = this.queryBuilder
@@ -77,7 +76,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - new organization",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new EditModel
@@ -125,7 +124,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - new organization",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 ViewBag.DictCustomFieldPermissionLevel = new Dictionary<string, int>();
@@ -262,7 +261,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit organization",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var query = this.queryBuilder
@@ -352,7 +351,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - edit organization",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 ViewBag.DictCustomFieldPermissionLevel = new Dictionary<string, int>();
@@ -458,7 +457,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete organization",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)

@@ -12,7 +12,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.CustomField;
     using Web.Models;
@@ -40,7 +39,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - custom fields",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var result = Util.GetCustomColumns().Tables[0];
@@ -56,7 +55,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - new custom field",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             InitLists();
@@ -152,7 +151,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - new custom field",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 InitLists();
@@ -207,7 +206,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - custom field",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 InitLists();
@@ -246,7 +245,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit custom field",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             // Get this entry's data from the db and fill in the form
@@ -313,7 +312,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - edit custom field",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 return View(model);
@@ -382,7 +381,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete custom field",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new DeleteModel

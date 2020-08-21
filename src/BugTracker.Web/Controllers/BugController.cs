@@ -9,7 +9,6 @@ namespace BugTracker.Web.Controllers
 {
     using Changing.Results;
     using Core;
-    using Core.Controls;
     using Models;
     using Models.Bug;
     using System;
@@ -493,24 +492,7 @@ namespace BugTracker.Web.Controllers
         {
             GetCookieValuesForShowHideToggles();
 
-            //var drBug = Bug.GetBugDataRow(this.Id, Security, this.DsCustomCols);
-
-            //load_incoming_custom_col_vals_into_hash(Security);
-
-            // Fetch the values of the custom columns from the Request and stash them in a hash table.
-
-            var dsCustomColumns = Util.GetCustomColumns();
-            var hashCustomColumns = new SortedDictionary<string, string>();
-
-            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
-            {
-                var columnName = (string)drcc["name"];
-
-                if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionNone)
-                {
-                    hashCustomColumns.Add(columnName, Request[columnName]);
-                }
-            }
+            var bugDataRow = Bug.GetBugDataRow(model.Id, this.security, Util.GetCustomColumns());
 
             //if (did_user_hit_submit_button()) // or is this a project dropdown autopostback?
             //{
@@ -536,164 +518,229 @@ namespace BugTracker.Web.Controllers
             //}
 
             //Validate
+            var dsCustomColumns = Util.GetCustomColumns();
 
-            //TODO
-            //if (!did_something_change()) return false;
-
-            // validate custom columns
-            foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
-            {
-                var name = (string)drcc["name"];
-
-                if (this.security.User.DictCustomFieldPermissionLevel[name] != SecurityPermissionLevel.PermissionAll) continue;
-
-                var val = Request[name];
-
-                if (val == null) continue;
-
-                val = val.Replace("'", "''");
-
-                // if a date was entered, convert to db format
-                if (val.Length > 0)
-                {
-                    var datatype = drcc["datatype"].ToString();
-
-                    if (datatype == "datetime")
-                    {
-                        try
-                        {
-                            DateTime.Parse(val, Util.GetCultureInfo());
-                        }
-                        catch (FormatException)
-                        {
-                            ModelState.AddModelError(name, "\"" + name + "\" not in a valid date format.");
-                        }
-                    }
-                    else if (datatype == "int")
-                    {
-                        if (!Util.IsInt(val))
-                        {
-                            ModelState.AddModelError(name, "\"" + name + "\" must be an integer.<br>");
-                        }
-                    }
-                    else if (datatype == "decimal")
-                    {
-                        var xprec = Convert.ToInt32(drcc["xprec"]);
-                        var xscale = Convert.ToInt32(drcc["xscale"]);
-                        var decimalError = Util.IsValidDecimal(name, val, xprec - xscale, xscale);
-
-                        if (!string.IsNullOrEmpty(decimalError))
-                        {
-                            ModelState.AddModelError(name, decimalError);
-                        }
-                    }
-                }
-                else
-                {
-                    var nullable = (int)drcc["isnullable"];
-
-                    if (nullable == 0)
-                    {
-                        ModelState.AddModelError(name, "\"" + name + "\" is required.");
-                    }
-                }
-            }
-
-            // validate assigned to user versus 
-            if (!DoesAssignedToHavePermissionForOrg(model.UserId, model.OrganizationId))
-            {
-                ModelState.AddModelError(nameof(EditModel.UserId), "User does not have permission for the Organization");
-            }
-
-            // custom validations go here
-            //if (!Workflow.CustomValidations(this.DrBug, security.User,
-            //    this, this.custom_validation_err_msg))
-            //good = false;
-
-            //Validate
+            Validate(model, dsCustomColumns);
 
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError(string.Empty, Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel) + " was not updated.");
 
                 TempData["Model"] = model;
-                TempData["Errors2"] = ModelState.Where(x => x.Value.Errors.Any())
+                TempData["Errors"] = ModelState.Where(x => x.Value.Errors.Any())
                     .Select(x => new { x.Key, x.Value.Errors })
                     .ToDictionary(x => x.Key, x => x.Errors);
 
-                return RedirectToAction(nameof(Create));
+                return RedirectToAction(nameof(Update));
             }
 
             // Do update
-            //TODO
-            //do_update(Security);
 
+            var permissionLevel = FetchPermissionLevel(model.ProjectId);
 
-            ////get_comment_text_from_control(security);
-            //var commentFormated = string.Empty;
-            //var commentSearch = string.Empty;
-            //var commentType = string.Empty;
+            ////(security);
+            var commentFormated = string.Empty;
+            var commentSearch = string.Empty;
+            var commentType = string.Empty;
 
-            //if (this.security.User.UseFckeditor)
+            if (this.security.User.UseFckeditor)
+            {
+                commentFormated = Util.StripDangerousTags(model.Comment);
+                commentSearch = Util.StripHtml(model.Comment);
+                commentType = "text/html";
+            }
+            else
+            {
+                commentFormated = HttpUtility.HtmlDecode(model.Comment);
+                commentSearch = commentFormated;
+                commentType = "text/plain";
+            }
+
+            var bugFieldsHaveChanged = false;
+            var bugpostFieldsHaveChanged = false;
+
+            //int newProject;
+
+            //if (model.PriorityId != this.prev_project.Value)
             //{
-            //    commentFormated = Util.StripDangerousTags(model.Comment);
-            //    commentSearch = Util.StripHtml(model.Comment);
-            //    commentType = "text/html";
+            //    newProject = model.PriorityId;
+
+            //    var permissionLevelOnNewProject = FetchPermissionLevel(newProject);
+
+            //    if (SecurityPermissionLevel.PermissionNone == permissionLevelOnNewProject
+            //        || SecurityPermissionLevel.PermissionReadonly == permissionLevelOnNewProject)
+            //    {
+            //        set_msg(Util.CapitalizeFirstLetter(ApplicationSettings.SingularBugLabel)
+            //                + " was not updated. You do not have the necessary permissions to change this "
+            //                + ApplicationSettings.SingularBugLabel + " to the specified Project.");
+            //        return;
+            //    }
+
+            //    permissionLevel = permissionLevelOnNewProject;
             //}
             //else
             //{
-            //    commentFormated = HttpUtility.HtmlDecode(model.Comment);
-            //    commentSearch = commentFormated;
-            //    commentType = "text/plain";
+            //    newProject = Util.SanitizeInteger(this.prev_project.Value);
             //}
 
-            //// Project specific
-            //var pcd1 = Request["pcd1"];
-            //var pcd2 = Request["pcd2"];
-            //var pcd3 = Request["pcd3"];
+            //for now
+            var newProject = model.ProjectId;
 
-            //if (pcd1 == null) pcd1 = string.Empty;
-            //if (pcd2 == null) pcd2 = string.Empty;
-            //if (pcd3 == null) pcd3 = string.Empty;
+            var sql = @"declare @now datetime
+                declare @last_updated datetime
+                select @last_updated = bg_last_updated_date from bugs where bg_id = $id
+                if @last_updated > '$snapshot_datetime'
+                begin
+                    -- signal that we did NOT do the update
+                    set @now = '$snapshot_datetime'
+                end
+                else
+                begin
+                    -- signal that we DID do the update
+                    set @now = getdate()
 
-            //pcd1 = pcd1.Replace("'", "''");
-            //pcd2 = pcd2.Replace("'", "''");
-            //pcd3 = pcd3.Replace("'", "''");
+                    update bugs set
+                    bg_short_desc = N'$sd',
+                    bg_tags = N'$tags',
+                    bg_project = $pj,
+                    bg_org = $og,
+                    bg_category = $ct,
+                    bg_priority = $pr,
+                    bg_assigned_to_user = $au,
+                    bg_status = $st,
+                    bg_last_updated_user = $lu,
+                    bg_last_updated_date = @now,
+                    bg_user_defined_attribute = $udf
+                    $pcd_placeholder	
+                    $custom_cols_placeholder
+                    where bg_id = $id
+                end
+                select @now";
 
-            //var newIds = Bug.InsertBug(model.Name, this.security, /*this.tags.Value*/string.Empty, // TODO Tags
-            //    model.ProjectId,
-            //    model.OrganizationId,
-            //    model.CategoryId,
-            //    model.PriorityId,
-            //    model.StatusId,
-            //    model.UserId,
-            //    model.UserDefinedAttributeId,
-            //    pcd1,
-            //    pcd2,
-            //    pcd3, commentFormated, commentSearch,
-            //    null, // from
-            //    null, // cc
-            //    commentType, /*this.internal_only.Checked*/false /*TODO*/ , hashCustomColumns,
-            //    true); // send notifications
+            sql = sql.Replace("$sd", model.Name);
+            sql = sql.Replace("$tags", string.Empty/*this.tags.Value.Replace("'", "''")*/);
+            sql = sql.Replace("$lu", Convert.ToString(this.security.User.Usid));
+            sql = sql.Replace("$id", Convert.ToString(model.Id));
+            sql = sql.Replace("$pj", Convert.ToString(newProject));
+            sql = sql.Replace("$og", Convert.ToString(model.OrganizationId));
+            sql = sql.Replace("$ct", Convert.ToString(model.CategoryId));
+            sql = sql.Replace("$pr", Convert.ToString(model.PriorityId));
+            sql = sql.Replace("$au", Convert.ToString(model.UserId));
+            sql = sql.Replace("$st", Convert.ToString(model.StatusId));
+            sql = sql.Replace("$udf", Convert.ToString(model.UserDefinedAttributeId));
+            
+            //for now
+            var dt = DateTime.UtcNow.ToString("yyyyMMdd HH\\:mm\\:ss\\:fff");
 
-            //// TODO Tags
-            ////if (!string.IsNullOrEmpty(this.tags.Value) && this.applicationSettings.EnableTags)
-            ////{
-            ////    Tags.BuildTagIndex(HttpContext.ApplicationInstance.Application);
-            ////}
+            sql = sql.Replace("$snapshot_datetime", dt/*this.snapshot_timestamp.Value*/);
 
-            ////this.Id = newIds.Bugid;
+            if (permissionLevel == SecurityPermissionLevel.PermissionReadonly
+                || permissionLevel == SecurityPermissionLevel.PermissionReporter)
+            {
+                sql = sql.Replace("$pcd_placeholder", "");
+            }
+            else
+            {
+                sql = sql.Replace("$pcd_placeholder", @",
+                    bg_project_custom_dropdown_value1 = N'$pcd1',
+                    bg_project_custom_dropdown_value2 = N'$pcd2',
+                    bg_project_custom_dropdown_value3 = N'$pcd3'");
 
-            //WhatsNew.AddNews(newIds.Bugid, model.Name, "added", security);
+                sql = sql.Replace("$pcd1", model.ProjectCustomFieldValue1 ?? string.Empty);
+                sql = sql.Replace("$pcd2", model.ProjectCustomFieldValue2 ?? string.Empty);
+                sql = sql.Replace("$pcd3", model.ProjectCustomFieldValue3 ?? string.Empty);
+            }
 
-            ////this.new_id.Value = Convert.ToString(this.Id);
-            ////TODO
-            ////set_msg(Util.CapitalizeFirstLetter(thie.applicationSettings.SingularBugLabel) + " was created.");
+            if (dsCustomColumns.Tables[0].Rows.Count == 0 || permissionLevel != SecurityPermissionLevel.PermissionAll)
+            {
+                sql = sql.Replace("$custom_cols_placeholder", string.Empty);
+            }
+            else
+            {
+                var customColsSql = string.Empty;
 
-            //// save for next bug
-            //Session["project"] = model.ProjectId;
+                foreach (DataRow drcc in dsCustomColumns.Tables[0].Rows)
+                {
+                    var columnName = (string)drcc["name"];
 
-            ////Response.Redirect($"~/Bugs/Edit.aspx?id={this.Id}");
+                    // if we've made customizations that cause the field to not come back to us,
+                    // don't replace something with null
+                    var o = Request[columnName];
+                    if (o == null) continue;
+
+                    // skip if no permission to update
+                    if (this.security.User.DictCustomFieldPermissionLevel[columnName] != SecurityPermissionLevel.PermissionAll)
+                    {
+                        continue;
+                    }
+
+                    customColsSql += ",[" + columnName + "]";
+                    customColsSql += " = ";
+
+                    var datatype = (string)drcc["datatype"];
+
+                    var customColVal = Util.RequestToStringForSql(
+                        Request[columnName],
+                        datatype);
+
+                    customColsSql += customColVal;
+                }
+
+                sql = sql.Replace("$custom_cols_placeholder", customColsSql);
+            }
+
+            var lastUpdateDate = (DateTime)DbUtil.ExecuteScalar(sql);
+
+            WhatsNew.AddNews(model.Id, model.Name, "updated", security);
+
+            //var dateFromDb = lastUpdateDate.ToString("yyyyMMdd HH\\:mm\\:ss\\:fff");
+            //var dateFromWebpage = this.snapshot_timestamp.Value;
+
+            //if (dateFromDb != dateFromWebpage)
+            //{
+            //    this.snapshot_timestamp.Value = dateFromDb;
+                
+            //    Bug.AutoSubscribe(model.Id);
+                
+            //    format_subcribe_cancel_link(security);
+            //    bugFieldsHaveChanged = record_changes(security);
+            //}
+            //else
+            //{
+            //    set_msg(Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel)
+            //            + " was NOT updated.<br>"
+            //            + " Somebody changed it while you were editing it.<br>"
+            //            + " Click <a href=" + Url.Action("Update", new { id = model.Id })
+            //            + ">[here]</a> to refresh the page and discard your changes.<br>");
+            //    return;
+            //}
+
+            bugpostFieldsHaveChanged = Bug.InsertComment(model.Id, this.security.User.Usid, commentFormated, commentSearch,
+                                              null, // from
+                                              null, // cc
+                                              commentType, /*this.internal_only.Checked*/true) != 0;
+
+            //if (bugFieldsHaveChanged || bugpostFieldsHaveChanged && !this.internal_only.Checked)
+            //{
+            //    Bug.SendNotifications(Bug.Update, model.Id, security, 0, this.StatusChanged, this.AssignedToChanged,
+            //        Convert.ToInt32(model.UserId));
+            //}
+
+            //set_msg(Util.CapitalizeFirstLetter(this.applicationSettings.SingularBugLabel) + " was updated.");
+
+            model.Comment = string.Empty;
+
+            SetControlsFieldPermission(permissionLevel);
+
+            if (bugFieldsHaveChanged)
+            {
+                // Fetch again from database
+                var updatedBug = Bug.GetBugDataRow(model.Id, security, dsCustomColumns);
+
+                // TODO
+                // Allow for customization not written by me
+                //Workflow.CustomAdjustControls(updatedBug, security.User, this);
+            }
 
             return RedirectToAction(nameof(Update), new { id = model.Id });
         }
@@ -1037,7 +1084,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - massedit",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var list = string.Empty;
@@ -2690,7 +2737,7 @@ namespace BugTracker.Web.Controllers
                             when re_direction = 2 then 'child of $bg'
                             else                       'parent of $bg' 
                         end as [parent or child],
-                        '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
+                        '<a target=_blank href=" + Url.Action("Update", "Bug") + @"?id=' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
 
                 if (!this.security.User.IsGuest && permissionLevel == SecurityPermissionLevel.PermissionAll)
                 {
@@ -2785,7 +2832,7 @@ namespace BugTracker.Web.Controllers
                         when re_direction = 2 then 'child of $bg'
                         else                       'parent of $bg' 
                     end as [parent or child],
-                    '<a target=_blank href=" + VirtualPathUtility.ToAbsolute("~/Bugs/Edit.aspx?id=") + @"' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
+                    '<a target=_blank href=" + Url.Action("Update", "Bug") + @"?id=' + convert(varchar,bg_id) + '>view</a>' [$no_sort_view]";
 
             if (!this.security.User.IsGuest && permissionLevel == SecurityPermissionLevel.PermissionAll)
             {
@@ -4186,6 +4233,33 @@ namespace BugTracker.Web.Controllers
             // custom validations go here
             //if (!Workflow.CustomValidations(this.DrBug, security.User,
             //    this, this.custom_validation_err_msg))
+        }
+
+        public SecurityPermissionLevel FetchPermissionLevel(int projectId)
+        {
+            // fetch the revised permission level
+            var sql = new SqlString(@"declare @permission_level int
+                set @permission_level = -1
+                select @permission_level = isnull(pu_permission_level, @dpl)
+                from project_user_xref
+                where pu_project = @pj
+                and pu_user = @us
+                if @permission_level = -1 set @permission_level = @dpl
+                select @permission_level");
+
+            sql.AddParameterWithValue("dpl", this.applicationSettings.DefaultPermissionLevel);
+            sql.AddParameterWithValue("pj", projectId);
+            sql.AddParameterWithValue("us", this.security.User.Usid);
+            
+            var pl = (int)DbUtil.ExecuteScalar(sql);
+
+            // reduce permissions for guest
+            //if (Security.User.is_guest && permission_level == Security.PERMISSION_ALL)
+            //{
+            //	pl = Security.PERMISSION_REPORTER;
+            //}
+
+            return (SecurityPermissionLevel)pl;
         }
     }
 }

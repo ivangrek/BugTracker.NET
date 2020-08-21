@@ -7,7 +7,6 @@
     using System.Web.Mvc;
     using System.Web.UI;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models;
 
@@ -42,7 +41,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - view git file commits",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var sql = @"
@@ -139,7 +138,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"git blame {commit} -- {HttpUtility.HtmlEncode((string) dr["gitap_path"])}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -178,7 +177,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"git log {HttpUtility.HtmlEncode((string) dr["gitap_path"])}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -256,7 +255,7 @@
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"git diff {HttpUtility.HtmlEncode((string) dr["gitap_path"])}",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();

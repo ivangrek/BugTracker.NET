@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Controllers
 {
     using Core;
-    using Core.Controls;
     using Models;
     using Models.Account;
     using System;
@@ -890,7 +889,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit your settings",
-                SelectedItem = MainMenuSections.Settings
+                SelectedItem = MainMenuSection.Settings
             };
 
             InitSettingsLists();
@@ -992,7 +991,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit your settings",
-                SelectedItem = MainMenuSections.Settings
+                SelectedItem = MainMenuSection.Settings
             };
 
             InitSettingsLists();

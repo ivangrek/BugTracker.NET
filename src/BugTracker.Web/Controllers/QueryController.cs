@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Controllers
 {
     using Core;
-    using Core.Controls;
     using BugTracker.Web.Core.Persistence;
     using Models;
     using Models.Query;
@@ -67,7 +66,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - queries",
-                SelectedItem = MainMenuSections.Queries
+                SelectedItem = MainMenuSection.Queries
             };
 
             var result = this.queryService
@@ -87,7 +86,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - create query",
-                SelectedItem = MainMenuSections.Queries
+                SelectedItem = MainMenuSection.Queries
             };
 
             var isAuthorized = this.security.User.IsAdmin
@@ -248,7 +247,7 @@ namespace BugTracker.Web.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - create query",
-                    SelectedItem = MainMenuSections.Queries
+                    SelectedItem = MainMenuSection.Queries
                 };
 
                 return View("Edit", model);
@@ -301,7 +300,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - update query",
-                SelectedItem = MainMenuSections.Queries
+                SelectedItem = MainMenuSection.Queries
             };
 
             var isAuthorized = this.security.User.IsAdmin
@@ -491,7 +490,7 @@ namespace BugTracker.Web.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - update query",
-                    SelectedItem = MainMenuSections.Queries
+                    SelectedItem = MainMenuSection.Queries
                 };
 
                 return View("Edit", model);
@@ -559,7 +558,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete query",
-                SelectedItem = MainMenuSections.Queries
+                SelectedItem = MainMenuSection.Queries
             };
 
             var model = new DeleteModel

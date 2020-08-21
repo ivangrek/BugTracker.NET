@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Controllers
 {
     using Core;
-    using Core.Controls;
     using Models;
     using Models.Report;
     using System;
@@ -57,7 +56,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - reports",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             var result = this.reportService
@@ -95,7 +94,7 @@ namespace BugTracker.Web.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = dataRow.Name,
-                    SelectedItem = MainMenuSections.Reports
+                    SelectedItem = MainMenuSection.Reports
                 };
 
                 var model = new SortableTableModel
@@ -188,7 +187,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - select report",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             var model = new SortableTableModel
@@ -219,7 +218,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - new report",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             var model = new EditModel
@@ -251,7 +250,7 @@ namespace BugTracker.Web.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - new report",
-                    SelectedItem = MainMenuSections.Reports
+                    SelectedItem = MainMenuSection.Reports
                 };
 
                 return View("Edit", model);
@@ -287,7 +286,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit report",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             // Get this entry's data from the db and fill in the form
@@ -325,7 +324,7 @@ namespace BugTracker.Web.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - edit report",
-                    SelectedItem = MainMenuSections.Reports
+                    SelectedItem = MainMenuSection.Reports
                 };
 
                 return View("Edit", model);
@@ -368,7 +367,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete report",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             var model = new DeleteModel
@@ -423,7 +422,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - dashboard",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             // TODO to service
@@ -461,7 +460,7 @@ order by ds_col, ds_row";
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit dashboard",
-                SelectedItem = MainMenuSections.Reports
+                SelectedItem = MainMenuSection.Reports
             };
 
             var sql = @"

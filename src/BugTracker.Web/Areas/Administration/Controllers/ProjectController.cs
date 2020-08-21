@@ -14,7 +14,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using Changing.Results;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.Project;
     using Querying;
@@ -52,7 +51,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - projects",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var query = this.queryBuilder
@@ -77,7 +76,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - new project",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             //var userQuery = this.queryBuilderFactory
@@ -141,7 +140,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit project",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             //var userQuery = this.queryBuilderFactory
@@ -253,7 +252,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit project per-user permissions",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var modle = new UpdateUserPermissionModel
@@ -336,7 +335,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit project per-user permissions",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View(model);
@@ -350,7 +349,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete project",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)

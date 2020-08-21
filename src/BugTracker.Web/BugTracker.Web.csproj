@@ -235,7 +235,6 @@
     <Content Include="wwwroot\css\btnet.css" />
     <Content Include="wwwroot\css\btnet_base.css" />
     <Content Include="wwwroot\images\bugtracker_screen_capture.jpeg" />
-    <Content Include="Core\Controls\MainMenu.ascx" />
     <Content Include="wwwroot\js\bug_list.js" />
     <Content Include="wwwroot\images\camera.png" />
     <Content Include="wwwroot\images\clock.png" />
@@ -311,7 +310,6 @@
     <Content Include="wwwroot\js\edit_area\resize_area.js" />
     <Content Include="wwwroot\js\edit_area\search_replace.js" />
     <Content Include="wwwroot\js\edit_area\template.html" />
-    <Content Include="Bugs\Edit.aspx" />
     <Content Include="wwwroot\js\edit_bug.js" />
     <Content Include="wwwroot\images\email_edit.png" />
     <Content Include="wwwroot\images\email_open.png" />
@@ -363,6 +361,7 @@
     <Compile Include="Core\Identification\SecurityPermissionLevel.cs" />
     <Compile Include="Core\Mail\MailFormat.cs" />
     <Compile Include="Core\Mail\MailPriority.cs" />
+    <Compile Include="Core\MainMenuSection.cs" />
     <Compile Include="Models\Asp\TranslateModel.cs" />
     <Compile Include="Models\BugFromEmail.cs" />
     <Compile Include="Models\Bug\SendEmailModel.cs" />
@@ -426,12 +425,6 @@
     <Compile Include="Core\Persistence\Models\Query.cs" />
     <Compile Include="Core\QueryService.cs" />
     <Compile Include="Core\ReportService.cs" />
-    <Compile Include="Core\Controls\MainMenu.ascx.cs">
-      <DependentUpon>MainMenu.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Controls\MainMenu.ascx.designer.cs">
-      <DependentUpon>MainMenu.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Core\DbUtil.cs" />
     <Compile Include="Core\Mail\Email.cs" />
     <Compile Include="Core\Persistence\ApplicationContext.cs" />
@@ -456,13 +449,6 @@
     <Compile Include="Models\Bug\MergeModel.cs" />
     <Compile Include="Models\Bug\DeleteModel.cs" />
     <Compile Include="Models\Query\DeleteModel.cs" />
-    <Compile Include="Bugs\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Bugs\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Models\Query\EditModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

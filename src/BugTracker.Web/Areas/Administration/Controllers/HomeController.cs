@@ -20,7 +20,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using System.Xml;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.Home;
     using Web.Models;
@@ -62,7 +61,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - administration",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -146,7 +145,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit custom html",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new EditCustomHtmlModel
@@ -205,7 +204,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit custom html",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View(model);
@@ -256,7 +255,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - run query",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View();
@@ -294,7 +293,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - run query",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var ds = DbUtil.GetDataSet("select name from sysobjects where type = 'u' order by 1");
@@ -339,7 +338,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit Web.config",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View(model);
@@ -377,7 +376,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit Web.config",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             return View(model);
@@ -391,7 +390,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - backup db",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             ViewBag.Table = new SortableTableModel
@@ -436,7 +435,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - manage logs",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             ViewBag.Table = new SortableTableModel
@@ -485,7 +484,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - queued notifications",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new SortableTableModel
@@ -576,7 +575,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - styles",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new SortableTableModel

@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Controllers
 {
     using Core;
-    using Core.Controls;
     using Models;
     using System;
     using System.Collections.Generic;
@@ -46,7 +45,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - news?",
-                SelectedItem = MainMenuSections.News
+                SelectedItem = MainMenuSection.News
             };
 
             return View();

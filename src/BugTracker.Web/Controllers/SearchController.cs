@@ -8,7 +8,6 @@
 namespace BugTracker.Web.Controllers
 {
     using Core;
-    using Core.Controls;
     using Models;
     using Models.Search;
     using Lucene.Net.Search.Highlight;
@@ -54,7 +53,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - search",
-                SelectedItem = MainMenuSections.Search
+                SelectedItem = MainMenuSection.Search
             };
 
             LoadDropDowns();
@@ -114,7 +113,7 @@ namespace BugTracker.Web.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - search",
-                SelectedItem = MainMenuSections.Search
+                SelectedItem = MainMenuSection.Search
             };
 
             LoadDropDowns();

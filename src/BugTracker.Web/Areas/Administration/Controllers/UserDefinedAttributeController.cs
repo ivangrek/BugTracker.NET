@@ -13,7 +13,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.UI;
     using Changing.Results;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.UserDefinedAttribute;
     using Querying;
@@ -51,7 +50,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - user defined attributes",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var query = this.queryBuilder
@@ -77,7 +76,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - new user defined attribute",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
@@ -120,7 +119,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - edit user defined attribute",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)
@@ -179,7 +178,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete user defined attribute",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (TempData["Errors"] is IReadOnlyCollection<IFailError> failErrors)

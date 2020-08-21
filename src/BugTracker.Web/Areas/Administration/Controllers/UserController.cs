@@ -15,7 +15,6 @@ namespace BugTracker.Web.Areas.Administration.Controllers
     using System.Web.Mvc;
     using System.Web.UI;
     using Core;
-    using Core.Controls;
     using Core.Identification;
     using Models.User;
     using Web.Models;
@@ -128,7 +127,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - users",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var filterCookie = Request.Cookies[nameof(IndexModel.Filter)];
@@ -218,7 +217,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - create user",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new EditModel
@@ -282,7 +281,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - create user",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 return View("Edit", model);
@@ -364,7 +363,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - create user",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 return View("Edit", model);
@@ -399,7 +398,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - update user",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (!this.security.User.IsAdmin)
@@ -556,7 +555,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - update user",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 return View("Edit", model);
@@ -619,7 +618,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                     ApplicationSettings = this.applicationSettings,
                     Security = this.security,
                     Title = $"{this.applicationSettings.AppTitle} - update user",
-                    SelectedItem = MainMenuSections.Administration
+                    SelectedItem = MainMenuSection.Administration
                 };
 
                 return View("Edit", model);
@@ -654,7 +653,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - update user",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             if (!this.security.User.IsAdmin)
@@ -803,7 +802,7 @@ namespace BugTracker.Web.Areas.Administration.Controllers
                 ApplicationSettings = this.applicationSettings,
                 Security = this.security,
                 Title = $"{this.applicationSettings.AppTitle} - delete user",
-                SelectedItem = MainMenuSections.Administration
+                SelectedItem = MainMenuSection.Administration
             };
 
             var model = new DeleteModel
