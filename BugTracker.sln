@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.MailService", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web2", "src\BugTracker.Web2\BugTracker.Web2.csproj", "{99A57642-D574-4264-AF23-5D0D383597BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web", "src\BugTracker.Web\BugTracker.Web.csproj", "{109A3759-4172-44D5-99FE-4DD19E7758BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{99A57642-D574-4264-AF23-5D0D383597BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99A57642-D574-4264-AF23-5D0D383597BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99A57642-D574-4264-AF23-5D0D383597BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{109A3759-4172-44D5-99FE-4DD19E7758BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{109A3759-4172-44D5-99FE-4DD19E7758BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{109A3759-4172-44D5-99FE-4DD19E7758BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{109A3759-4172-44D5-99FE-4DD19E7758BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
