@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web", "src\BugTracker.Web\BugTracker.Web.csproj", "{99A57642-D574-4264-AF23-5D0D383597BA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Web.Tests", "test\BugTracker.Web.Tests\BugTracker.Web.Tests.csproj", "{14958366-8B67-4A0D-88E5-4A573721F88C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker", "src\BugTracker\BugTracker.csproj", "{1E06C8A8-49E7-472C-B8DF-BAB0158BB531}"
@@ -21,16 +19,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Identification",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.MailService", "src\Infrastructure\BugTracker.MailService\BugTracker.MailService.csproj", "{CA2F3D8B-787F-4DA4-934E-353BF3F16930}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web2", "src\BugTracker.Web2\BugTracker.Web2.csproj", "{99A57642-D574-4264-AF23-5D0D383597BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{99A57642-D574-4264-AF23-5D0D383597BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99A57642-D574-4264-AF23-5D0D383597BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99A57642-D574-4264-AF23-5D0D383597BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99A57642-D574-4264-AF23-5D0D383597BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{14958366-8B67-4A0D-88E5-4A573721F88C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{14958366-8B67-4A0D-88E5-4A573721F88C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14958366-8B67-4A0D-88E5-4A573721F88C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,6 +55,10 @@ Global
 		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA2F3D8B-787F-4DA4-934E-353BF3F16930}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99A57642-D574-4264-AF23-5D0D383597BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99A57642-D574-4264-AF23-5D0D383597BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99A57642-D574-4264-AF23-5D0D383597BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99A57642-D574-4264-AF23-5D0D383597BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,6 +26,6 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BugTracker.Web\BugTracker.Web.csproj" />
+    <ProjectReference Include="..\..\src\BugTracker.Web2\BugTracker.Web2.csproj" />
   </ItemGroup>
 </Project>
