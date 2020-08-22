@@ -6,12 +6,44 @@
 For instructions on how to upgrade, see:
 http://ifdefined.com/readme.html#upgrading
 
-IMPORTANT: Starting with version 3.5.3, BugTracker.NET requires .NET 4.0.
+BugTracker.NET requires .NET 4.0.
 
 IMPORTANT: If you are using the subversion integration feature and 
 upgrading a pre-3.3.0 version, it's important that you read the notes 
 for version 3.3.0 below.
 
+
+-----------------------------------------------------------------------
+Version 3.6.8   2019/12/27  (svn revision 725)
+-----------------------------------------------------------------------
+
+Fixed "folder not found" errors, especially when running 
+install_btnet.cmd
+
+-----------------------------------------------------------------------
+Version 3.6.7   2019/12/21  (svn revision 721)
+-----------------------------------------------------------------------
+
+It only took me about eight years but I think I fixed the bug related to
+the error "request not available in this context". The bug occured
+when running in IIS integrated mode, aka, "DefaultAppPool". One of the
+symptoms would be that full text search wasn't working.
+
+Sorry it took so long.
+
+If your BugTracker.NET installation is working fine, you don't need 
+this release but for new installs, this should be easier.
+
+I also updated comments in Web.config to make it easier to get started.
+
+As part of my work on this release I went through the excercise of 
+doing a clean install of Windows 10 Pro, SQL Server, SQL Server
+Management Console, IIS, ASP.NET 4.7, and for my coding, the 
+Community Edition of Visual Studio.
+
+I then followed my own BugTracker.NET setup instructions. The 
+only glitch was the "request not available in this context", hence
+my motivation to fix it.
 
 -----------------------------------------------------------------------
 Version 3.6.6   2019/01/02  (svn revision 716, 717)
