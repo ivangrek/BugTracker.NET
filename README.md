@@ -5,7 +5,7 @@ Original [BugTracker.NET](http://ifdefined.com/bugtrackernet.html)
 
 ![GitHub](https://img.shields.io/github/license/ivangrek/BugTracker.NET)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/ivangrek/bugtracker.net/badge)](https://www.codefactor.io/repository/github/ivangrek/bugtracker.net)
+![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/ivangrek/BugTracker.NET/develop/asp.net)
 
 ![Azure DevOps builds](https://img.shields.io/azure-devops/build/ivangrek/db78dfbf-fbc0-4a1b-a955-e4904ceba208/3)
 ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/ivangrek/BugTracker.NET/3)
