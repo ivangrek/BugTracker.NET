@@ -1,0 +1,106 @@
+﻿@*
+    Copyright 2002-2011 Corey Trager
+    Copyright 2017-2019 Ivan Grek
+
+    Distributed under the terms of the GNU General Public License
+*@
+
+@model BugTracker.Web.Models.Account.LoginModel
+
+@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
+    //var page = (BugTracker.Web.Models.PageModel)ViewBag.Page;
+
+    //ViewBag.Title = page.Title;
+}
+
+<div class="p-3 mx-auto w-100 flex-grow-1" style="max-width: 360px;">
+    @*<h1 class="h3 mb-3 font-weight-normal text-center">@Html.Raw(BugTracker.Web.Core.Util.CustomLogoHtml)</h1>*@
+
+    <div class="card mr-auto ml-auto">
+        <div class="card-body">
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @*@Html.Partial("_ValidationSummary")*@
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Login):
+                    @Html.TextBoxFor(x => x.Login, new { @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.ValidationMessageFor(x => x.Login, null, new { @class = "text-danger" }, "small")
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Password):
+                    @Html.PasswordFor(x => x.Password, new { autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
+                    @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" }, "small")
+                </div>
+
+                <div class="form-group form-check">
+                    @Html.CheckBoxFor(x => x.RememberMe, new { @class = "form-check-input" })
+                    @Html.LabelFor(x => x.RememberMe, new { @class = "form-check-label" })
+                    @Html.ValidationMessageFor(x => x.RememberMe, null, new { @class = "text-danger" }, "small")
+                </div>
+
+                <button type="submit" class="btn btn-primary">Logon</button>
+
+                @*if (page.ApplicationSettings.AllowSelfRegistration)
+            {
+                <a href="@Url.Action("Register", "Account")" class="btn btn-link float-right">Register</a>
+            }*@
+            }
+        </div>
+    </div>
+
+    @*@if (page.ApplicationSettings.AllowGuestWithoutLogin || page.ApplicationSettings.ShowForgotPasswordLink)
+    {
+        <ul class="list-unstyled p-3">
+            @if (page.ApplicationSettings.AllowGuestWithoutLogin)
+            {
+                var formId = Guid.NewGuid().ToString();
+
+                <li>
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = formId }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.Hidden("AsGuest", true)
+
+                        <a href="#" onclick="document.getElementById('@formId').submit();">Continue as "guest"</a>
+                    }
+                </li>
+            }
+
+            @if (page.ApplicationSettings.ShowForgotPasswordLink)
+            {
+                <li>
+                    <a href="@Url.Action("Forgot", "Account")">Forgot your username or password?</a>
+                </li>
+            }
+        </ul>
+    }*@
+</div>
+
+<ul class="nav nav mb-5">
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href=" http://ifdefined.com/bugtrackernet.html">BugTracker.NET</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="http://ifdefined.com/README.html">Help</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="~/Content/about.html">About</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="mailto:ctrager@yahoo.com">Feedback</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link text-secondary" href="http://ifdefined.com/README.html">Donate</a>
+    </li>
+</ul>
+

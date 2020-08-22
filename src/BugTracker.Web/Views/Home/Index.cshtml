@@ -11,5 +11,15 @@
 </head>
 <body>
     <h1>Hello, world from BugTracker.NET Core MVC!</h1>
+    @{
+        var formId = Guid.NewGuid().ToString();
+    }
+
+    @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = formId, style = "display: inline;" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @User.Identity.Name <a href="#" onclick="document.getElementById('@formId').submit();">Logout</a>
+    }
 </body>
 </html>
