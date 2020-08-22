@@ -1117,8 +1117,12 @@ order by sc.id, isnull(ccm_sort_seq,sc.colorder)");
             {
                 return "text/xml";
             }
-            else
-	        {
+			else if (ext == ".pdf")
+			{
+				return "application/pdf";
+			}
+			else
+			{
 		        return "";
 	        }
         

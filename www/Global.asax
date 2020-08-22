@@ -4,32 +4,32 @@
 <script RunAt="server" Language="C#">
 
     /*
-Copyright 2002 Corey Trager 
-Distributed under the terms of the GNU General Public License
-*/
+    Copyright 2002 Corey Trager 
+    Distributed under the terms of the GNU General Public License
+    */
 
     string prev_day = DateTime.Now.ToString("yyyy-MM-dd");
 
     public void Application_Error(Object sender, EventArgs e)
     {
         // Put the server vars into a string
-        
-        StringBuilder server_vars_string = new StringBuilder();
-/*
-        var varnames = Request.ServerVariables.AllKeys.Where(x => !x.StartsWith("AUTH_PASSWORD"));
 
-        foreach (string varname in varnames)
-        {
-            string varval = Request.ServerVariables[varname];
-            if (!string.IsNullOrEmpty(varval))
-            {
-                server_vars_string.Append("\n");
-                server_vars_string.Append(varname);
-                server_vars_string.Append("=");
-                server_vars_string.Append(varval);
-            }
-        }
-*/
+        StringBuilder server_vars_string = new StringBuilder();
+        /*
+                var varnames = Request.ServerVariables.AllKeys.Where(x => !x.StartsWith("AUTH_PASSWORD"));
+
+                foreach (string varname in varnames)
+                {
+                    string varval = Request.ServerVariables[varname];
+                    if (!string.IsNullOrEmpty(varval))
+                    {
+                        server_vars_string.Append("\n");
+                        server_vars_string.Append(varname);
+                        server_vars_string.Append("=");
+                        server_vars_string.Append(varval);
+                    }
+                }
+        */
 
 
         int loop1, loop2;
@@ -44,9 +44,9 @@ Distributed under the terms of the GNU General Public License
             string key = arr1[loop1];
             if (key.StartsWith("AUTH_PASSWORD"))
                 continue;
-            
+
             String[] arr2 = coll.GetValues(key);
-            
+
             for (loop2 = 0; loop2 < 1; loop2++)
             {
                 string val = arr2[loop2];
@@ -59,7 +59,7 @@ Distributed under the terms of the GNU General Public License
             }
         }
 
-        
+
         Exception exc = Server.GetLastError().GetBaseException();
 
         bool log_enabled = (Util.get_setting("LogEnabled", "1") == "1");
@@ -113,55 +113,24 @@ Distributed under the terms of the GNU General Public License
         }
     }
 
-    /*     
-    static void my_threadproc(object obj)     
+
+    public void Application_BeginRequest(Object sender, EventArgs e)
     {
-        for (int i = 0; i < 50; i++)
+
+        // This logic used to be on Application_OnStart, but in IIS integrated mode that
+        // resulted in "Request not available in this context" errors
+        if (Application["once"] != null)
         {
-            System.Threading.Thread.Sleep(1000);
-            System.Console.Beep(440,10);
+            return;
         }
-	
-    }
-    */
+        else
+        {
+            Application["once"] = "done";
+        }
 
-
-    public void Application_OnStart(Object sender, EventArgs e)
-    {
-        /*
-            System.Threading.Thread thread = new System.Threading.Thread(my_threadproc);
-            thread.Start(null);
-        */
-
-        string path = HttpContext.Current.Server.MapPath(null);
-        //    HttpRuntime.Cache["MapPath"] = path;
-        //    HttpRuntime.Cache["Application"] = Application;
+        string path = HttpContext.Current.Server.MapPath("~");
         HttpRuntime.Cache.Add("MapPath", path, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
         HttpRuntime.Cache.Add("Application", Application, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
-
-        string dir = path + "\\App_Data";
-        if (!System.IO.Directory.Exists(dir))
-        {
-            System.IO.Directory.CreateDirectory(dir);
-        }
-
-        dir = path + "\\App_Data\\logs";
-        if (!System.IO.Directory.Exists(dir))
-        {
-            System.IO.Directory.CreateDirectory(dir);
-        }
-
-        dir = path + "\\App_Data\\uploads";
-        if (!System.IO.Directory.Exists(dir))
-        {
-            System.IO.Directory.CreateDirectory(dir);
-        }
-
-        dir = path + "\\App_Data\\lucene_index";
-        if (!System.IO.Directory.Exists(dir))
-        {
-            System.IO.Directory.CreateDirectory(dir);
-        }
 
         btnet.Util.set_context(HttpContext.Current); // required for map path calls to work in util.cs
 
@@ -200,22 +169,7 @@ Distributed under the terms of the GNU General Public License
         {
             btnet.MyPop3.start_pop3(this.Application);
         }
+
     }
 
-  
-/*
-public void Application_BeginRequest(Object sender, EventArgs e)
-{
-
-	string day = DateTime.Now.ToString("yyyy-MM-dd");
-	
-	if (day != prev_day)
-	{
-		prev_day = day;
-		Util.write_to_log("Global.asax detected first page hit of the day");
-	}
-
-	
-}
-*/
 </script>

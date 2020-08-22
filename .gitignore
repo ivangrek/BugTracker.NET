@@ -141,3 +141,5 @@ App_Data/*.ldf
 # Custom ruls
 *.jfm
 logs
+/www/App_Data/lucene_index/
+/www/App_Data/uploads/
