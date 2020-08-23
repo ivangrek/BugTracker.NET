@@ -1,5 +1,6 @@
 namespace BugTracker.Web
 {
+    using Core;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,8 @@ namespace BugTracker.Web
                 {
                     options.LoginPath = new PathString("/Account/Login");
                 });
+
+            services.AddScoped<IApplicationSettings, ApplicationSettings>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

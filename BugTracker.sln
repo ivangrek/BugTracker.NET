@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.MailService", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web2", "src\BugTracker.Web2\BugTracker.Web2.csproj", "{99A57642-D574-4264-AF23-5D0D383597BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugTracker.Web", "src\BugTracker.Web\BugTracker.Web.csproj", "{109A3759-4172-44D5-99FE-4DD19E7758BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BugTracker.Web", "src\BugTracker.Web\BugTracker.Web.csproj", "{109A3759-4172-44D5-99FE-4DD19E7758BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

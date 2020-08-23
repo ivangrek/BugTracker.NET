@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Core;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,20 @@
 
     public class AccountController : Controller
     {
+        private readonly IApplicationSettings applicationSettings;
+
+        public AccountController(
+            IApplicationSettings applicationSettings)
+        {
+            this.applicationSettings = applicationSettings;
+        }
+
         [HttpGet]
         public IActionResult Login()
         {
+            ViewBag.ApplicationSettings = this.applicationSettings;
+            ViewBag.Title = $"{this.applicationSettings.ApplicationTitle} - Sign in";
+
             return View();
         }
 
