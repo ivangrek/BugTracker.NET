@@ -62,7 +62,6 @@
             //Assert.That(applicationSettings.LdapLastName, Is.EqualTo(ApplicationSettings.LdapLastNameDefault));
             //Assert.That(applicationSettings.LdapEmail, Is.EqualTo(ApplicationSettings.LdapEmailDefault));
             //Assert.That(applicationSettings.LdapEmailSignature, Is.EqualTo(ApplicationSettings.LdapEmailSignatureDefault));
-            //Assert.That(applicationSettings.EnableMobile, Is.EqualTo(ApplicationSettings.EnableMobileDefault));
             //Assert.That(applicationSettings.PluralBugLabel, Is.EqualTo(ApplicationSettings.PluralBugLabelDefault));
             //Assert.That(applicationSettings.UseTransmitFileInsteadOfWriteFile, Is.EqualTo(ApplicationSettings.UseTransmitFileInsteadOfWriteFileDefault));
             //Assert.That(applicationSettings.DefaultPermissionLevel, Is.EqualTo(ApplicationSettings.DefaultPermissionLevelDefault));

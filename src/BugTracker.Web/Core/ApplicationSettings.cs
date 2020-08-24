@@ -52,8 +52,6 @@
 
         //string LdapEmailSignature { get; }
 
-        //bool EnableMobile { get; }
-
         //string PluralBugLabel { get; }
 
         //bool UseTransmitFileInsteadOfWriteFile { get; }
@@ -316,6 +314,7 @@
         //public const bool EnableWindowsUserAutoRegistrationDefault = true;
         //public const string WindowsUserAutoRegistrationUserTemplateDefault = "guest";
         //public const bool EnableWindowsUserAutoRegistrationLdapSearchDefault = false;
+        
         //public const string LdapDirectoryEntryPathDefault = "LDAP://127.0.0.1/DC=mycompany,DC=com";
         //public const string LdapDirectoryEntryAuthenticationTypeDefault = "Anonymous";
         //public const string LdapDirectoryEntryUsernameDefault = "";
@@ -325,9 +324,10 @@
         //public const string LdapLastNameDefault = "sn";
         //public const string LdapEmailDefault = "mail";
         //public const string LdapEmailSignatureDefault = "cn";
-        //public const bool EnableMobileDefault = false;
+
         //public const string SingularBugLabelDefault = "bug";
         //public const string PluralBugLabelDefault = "bugs";
+
         //public const bool UseTransmitFileInsteadOfWriteFileDefault = false;
         //public const int DefaultPermissionLevelDefault = 2;
         //public const bool EnableInternalOnlyPostsDefault = false;
@@ -339,6 +339,7 @@
         //public const bool EnableMercurialIntegrationDefault = false;
         //public const bool EnableTasksDefault = false;
         //public const bool EnableTagsDefault = false;
+        
         //public const string CustomBugLinkLabelDefault = "";
         //public const string CustomBugLinkUrlDefault = "";
         //public const bool UseFullNamesDefault = false;
@@ -490,8 +491,6 @@
         //public string LdapEmail => ReadOption(nameof(LdapEmail), LdapEmailDefault);
 
         //public string LdapEmailSignature => ReadOption(nameof(LdapEmailSignature), LdapEmailSignatureDefault);
-
-        //public bool EnableMobile => ReadOption(nameof(EnableMobile), EnableMobileDefault);
 
         //public string SingularBugLabel => ReadOption(nameof(SingularBugLabel), SingularBugLabelDefault);
 
