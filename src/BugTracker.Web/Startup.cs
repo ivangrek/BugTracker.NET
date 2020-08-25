@@ -8,9 +8,9 @@ namespace BugTracker.Web
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
-    public class Startup
+    internal sealed class Startup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -20,9 +20,10 @@ namespace BugTracker.Web
                 });
 
             services.AddScoped<IApplicationSettings, ApplicationSettings>();
+            services.AddScoped<ICustomizer, Customizer>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -41,7 +42,6 @@ namespace BugTracker.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
         }
     }
 }

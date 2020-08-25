@@ -1,7 +1,6 @@
 ﻿namespace BugTracker.Web.Core
 {
     using System;
-    using System.Configuration;
     using Identification;
     using Microsoft.Extensions.Configuration;
 
@@ -13,17 +12,15 @@
 
         AuthenticationMode WindowsAuthentication { get; }
 
-        //bool AllowGuestWithoutLogin { get; }
+        bool AllowGuestWithoutLogin { get; }
 
         bool AllowSelfRegistration { get; }
 
-        //bool ShowForgotPasswordLink { get; }
+        string SelfRegisteredUserTemplate { get; }
 
+        int RegistrationExpiration { get; }
 
-
-        //int RegistrationExpiration { get; }
-
-        //string SelfRegisteredUserTemplate { get; }
+        bool ShowForgotPasswordLink { get; }
 
         //string NotificationEmailFrom { get; }
 
@@ -299,6 +296,13 @@
         public const string ApplicationTitleDefault = "BugTracker.NET";
         public const AuthenticationMode WindowsAuthenticationDefault = AuthenticationMode.Site;
 
+        public const bool AllowSelfRegistrationDefault = false;
+        public const string SelfRegisteredUserTemplateDefault = "[error - missing user template]";
+        public const int RegistrationExpirationDefault = 20;
+
+        public const bool AllowGuestWithoutLoginDefault = false;
+        public const bool ShowForgotPasswordLinkDefault = false;
+
         private readonly IConfiguration configuration;
 
         public ApplicationSettings(IConfiguration configuration)
@@ -306,14 +310,6 @@
             this.configuration = configuration;
         }
 
-
-        //public const bool AllowGuestWithoutLoginDefault = false;
-        public const bool AllowSelfRegistrationDefault = false;
-        //public const bool ShowForgotPasswordLinkDefault = false;
-
-        //
-        //public const int RegistrationExpirationDefault = 20;
-        //public const string SelfRegisteredUserTemplateDefault = "[error - missing user template]";
         //public const string NotificationEmailFromDefault = "";
         //public const string AbsoluteUrlPrefixDefault = "";
         //public const string ConnectionStringDefault = " ?";
@@ -455,17 +451,15 @@
 
         public AuthenticationMode WindowsAuthentication => ReadOption(nameof(WindowsAuthentication), WindowsAuthenticationDefault);
 
-        //public bool AllowGuestWithoutLogin => ReadOption(nameof(AllowGuestWithoutLogin), AllowGuestWithoutLoginDefault);
+        public bool AllowGuestWithoutLogin => ReadOption(nameof(AllowGuestWithoutLogin), AllowGuestWithoutLoginDefault);
 
         public bool AllowSelfRegistration => ReadOption(nameof(AllowSelfRegistration), AllowSelfRegistrationDefault);
 
-        //public bool ShowForgotPasswordLink => ReadOption(nameof(ShowForgotPasswordLink), ShowForgotPasswordLinkDefault);
+        public string SelfRegisteredUserTemplate => ReadOption(nameof(SelfRegisteredUserTemplate), SelfRegisteredUserTemplateDefault);
 
+        public int RegistrationExpiration => ReadOption(nameof(RegistrationExpiration), RegistrationExpirationDefault);
 
-
-        //public int RegistrationExpiration => ReadOption(nameof(RegistrationExpiration), RegistrationExpirationDefault);
-
-        //public string SelfRegisteredUserTemplate => ReadOption(nameof(SelfRegisteredUserTemplate), SelfRegisteredUserTemplateDefault);
+        public bool ShowForgotPasswordLink => ReadOption(nameof(ShowForgotPasswordLink), ShowForgotPasswordLinkDefault);
 
         //public string NotificationEmailFrom => ReadOption(nameof(NotificationEmailFrom), NotificationEmailFromDefault);
 

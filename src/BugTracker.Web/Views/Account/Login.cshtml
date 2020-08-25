@@ -1,34 +1,23 @@
 ﻿@using BugTracker.Web.Core
 @model BugTracker.Web.Models.Account.LoginModel
 @inject IApplicationSettings ApplicationSettings
+@inject ICustomizer Customizer
 
 @{
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
-<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
-
-<style>
-    .login-brand {
-        width: 96px;
-        height: 96px;
-        font-size: 59px;
-        font-weight: bold;
-        font-family: "Open Sans";
-        color: #fff;
-    }
-</style>
-
 <div class="container">
     <div class="row">
         <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
-            <div class="login-brand my-5 mx-auto shadow-sm rounded-circle bg-primary d-flex justify-content-center">B</div>
+            @Html.Raw(Customizer.LoginLogoHtml)
 
             <div class="card shadow-sm">
                 <div class="card-body">
                     @using (Html.BeginForm("Login", "Account", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
+
                         @await Html.PartialAsync("_ValidationSummary")
 
                         <div class="form-group">
@@ -39,6 +28,16 @@
 
                         <div class="form-group">
                             @Html.LabelFor(x => x.Password)
+
+                            @if (ApplicationSettings.ShowForgotPasswordLink)
+                            {
+                                <div class="float-right">
+                                    <small>
+                                        <a href="@Url.Action("Forgot", "Account")">Forgot password?</a>
+                                    </small>
+                                </div>
+                            }
+
                             @Html.PasswordFor(x => x.Password, new { autocomplete = "off", @class = "form-control", maxlength = "20", size = "20" })
                             @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" }, "small")
                         </div>
@@ -50,6 +49,15 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+
+                        @if (ApplicationSettings.AllowGuestWithoutLogin)
+                        {
+                            <div class="mt-2 text-center">
+                                @Html.Hidden("AsGuest", false, new { id = "as-guest" })
+
+                                <button type="submit" class="btn btn-link" onclick="javascript: document.getElementById('as-guest').value = true;">Continue as "guest"</button>
+                            </div>
+                        }
                     }
                 </div>
             </div>

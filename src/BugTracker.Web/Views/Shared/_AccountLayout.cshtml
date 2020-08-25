@@ -1,4 +1,7 @@
-﻿<!doctype html>
+﻿@using BugTracker.Web.Core
+@inject ICustomizer Customizer
+
+<!doctype html>
 <html lang="en" class="h-100">
 <head>
     <meta charset="utf-8" />
@@ -10,7 +13,7 @@
 <body class="h-100 bg-light">
     @RenderBody()
 
-    @await RenderSectionAsync("BodyFooter", false)
+    @Html.Raw(Customizer.FooterHtml)
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

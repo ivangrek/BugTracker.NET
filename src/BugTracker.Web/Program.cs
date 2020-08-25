@@ -1,3 +1,5 @@
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("BugTracker.Web.Tests")]
+
 namespace BugTracker.Web
 {
     using Microsoft.AspNetCore.Hosting;
