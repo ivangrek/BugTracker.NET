@@ -1,0 +1,31 @@
+﻿@using BugTracker.Web.Core
+@*@model BugTracker.Web.Models.Bug.IndexModel*@
+@inject IApplicationSettings ApplicationSettings
+@inject ICustomizer Customizer
+
+@section Styles {
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+    @await Html.PartialAsync("_MainMenu")
+}
+
+@section BodySubHeader {
+}
+
+<h1>Hello, world, from BugTracker.NET Core MVC!</h1>
+@{
+    var formId = Guid.NewGuid().ToString();
+}
+
+@using (Html.BeginForm("Logout", "Account", new { area = string.Empty }, FormMethod.Post, true, new { id = formId, style = "display: inline;" }))
+{
+    @:Logged in as @User.Identity.Name <a href="#" onclick="document.getElementById('@formId').submit();">Logout</a>
+}
+
+@section BodyFooter {
+    @Html.Raw(Customizer.FooterHtml)
+}

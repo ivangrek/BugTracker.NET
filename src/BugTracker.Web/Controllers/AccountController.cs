@@ -73,7 +73,7 @@
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(BugController.Index), "Bug");
         }
 
         [HttpPost]

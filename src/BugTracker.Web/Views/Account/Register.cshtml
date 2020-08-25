@@ -16,8 +16,6 @@
                 <div class="card-body">
                     @using (Html.BeginForm("Register", "Account", FormMethod.Post))
                     {
-                        @Html.AntiForgeryToken()
-
                         @await Html.PartialAsync("_ValidationSummary")
 
                         <div class="form-group">

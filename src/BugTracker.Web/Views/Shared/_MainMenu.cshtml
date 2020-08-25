@@ -1,0 +1,153 @@
+﻿@using BugTracker.Web.Core
+
+<script>
+    function dbg(s) {
+        document.getElementById('debug').innerHTML += (s + '<br>');
+    }
+
+    function on_submit_search() {
+        var el = document.getElementById('lucene_input');
+
+        if (el.value == '') {
+            alert('Enter the words you are search for.');
+            el.focus();
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+
+<span id="debug" style="left: 0; position: absolute; top: 0;"></span>
+
+<header class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a href="@Url.Action("Index", "Bug", new {area = string.Empty})" class="navbar-brand">BugTracker.NET</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a href="@Url.Action("Index", "Bug", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Bugs ? "active" : string.Empty)">Bugs<!--<span class="sr-only">(current)</span>--></a>
+            </li>
+
+            @if (false@*Model.Security.User.CanSearch*@)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Search", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Search ? "active" : string.Empty)">Search</a>
+                </li>
+            }
+
+            @if (false @*Model.ApplicationSettings.EnableWhatsNewPage*@)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "News", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.News ? "active" : string.Empty)">News</a>
+                </li>
+            }
+
+            @if (true@*!Model.Security.User.IsGuest*@)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Query", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Queries ? "active" : string.Empty)">Queries</a>
+                </li>
+            }
+
+            @if (false@*Model.Security.User.IsAdmin || Model.Security.User.CanUseReports || Model.Security.User.CanEditReports*@)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Report", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Reports ? "active" : string.Empty)">Reports</a>
+                </li>
+            }
+
+            @if (false@*Model.ApplicationSettings.CustomMenuLinkLabel != string.Empty*@)
+            {
+                <li class="nav-item">
+                    <a href="@Model.ApplicationSettings.CustomMenuLinkUrl" class="nav-item nav-link @(ViewBag.SelectedItem == Model.ApplicationSettings.CustomMenuLinkLabel ? "active" : string.Empty)">@Model.ApplicationSettings.CustomMenuLinkLabel</a>
+                </li>
+            }
+
+            @if (false@*Model.Security.User.IsAdmin*@)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Home", new {area = "Administration"})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Administration ? "active" : string.Empty)">Administration</a>
+                </li>
+            }
+            else if (false@*Model.Security.User.IsProjectAdmin*@)
+            {
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "User", new {area = "Administration"})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Users ? "active" : string.Empty)">Users</a>
+                </li>
+            }
+
+            <li class="nav-item">
+                <form action="@Url.Action("Update", "Bug", new { id = "", area = string.Empty})" method="get" class="form-inline flex-nowrap m mt-1">
+                    <input class="form-control form-control-sm mr-sm-2" type="search" placeholder="ID" aria-label="Go to ID" size="4" name="id" accesskey="g">
+                    <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Go to ID</button>
+                </form>
+            </li>
+
+            @*@if (Model.ApplicationSettings.EnableLucene && Model.Security.User.CanSearch)
+            {
+                var query = (string) HttpContext.Current.Session["query"] ?? string.Empty;
+
+                <li class="nav-item">
+                    <form action="@Url.Action("SearchText", "Search", new {area = string.Empty})" method="get" onsubmit="return on_submit_search()" class="form-inline flex-nowrap mt-1">
+                        <input class="form-control form-control-sm mr-2" type="search" placeholder="Text" aria-label="Text" id="lucene_input" size="24" value='@query.Replace("' ", " ")' name="query" accesskey="s">
+                        <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Search</button>
+                        <a href="~/Content/lucene_syntax.html" target="_blank" class="btn btn-link btn-sm">advanced</a>
+                    </form>
+                </li>
+            }*@
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle @(ViewBag.SelectedItem == MainMenuSection.Settings ? "active" : string.Empty)" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hi, @User.Identity.Name @*@Model.Security.User.Username*@</a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a href="~/html/about.html" target="_blank" class="dropdown-item">About</a>
+                    <a href="http://ifdefined.com/README.html" target="_blank" class="dropdown-item">Help</a>
+
+                    @*// for guest account, suppress display of "edit_self*@
+                    @if (false@*!Model.Security.User.IsGuest*@)
+                    {
+                        <a href="@Url.Action("Settings", "Account", new {area = string.Empty})" class="dropdown-item @(ViewBag.SelectedItem == MainMenuSection.Settings ? "active" : string.Empty)">Settings</a>
+                    }
+
+                    @*TODO investigate*@
+                    @if (true@*Model.Security.AuthMethod == "plain" && !(Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)*@)
+                    {
+                        var formId = Guid.NewGuid().ToString();
+
+                        using (Html.BeginForm("Logout", "Account", new {area = string.Empty}, FormMethod.Post, true, new {id = formId, style = "display: inline;"}))
+                        {
+                            <div class="dropdown-divider"></div>
+
+                            <div class="dropdown-item">
+                                <button type="submit" class="btn btn-block btn-primary">Sign out</button>
+                            </div>
+                        }
+                    }
+                </div>
+            </li>
+
+            @if (false@*Model.Security.AuthMethod == "plain"*@)
+            {
+                if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Login", "Account", new {area = string.Empty})" class="nav-item nav-link">Login</a>
+                    </li>
+                }
+                @*else
+                    {
+                        <td class="menu_td">
+                            <a href="<%= ResolveUrl(" ~/Account/Logoff") %>"><span class="<%= SelectedItem == " logoff" ? "selected_menu_item" : "menu_item" %> warn" style="margin-left:3px;">logoff</span></a>
+                        </td>
+                    }*@
+            }
+        </ul>
+    </div>
+</header>
