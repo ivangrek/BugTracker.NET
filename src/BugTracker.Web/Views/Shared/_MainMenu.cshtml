@@ -21,7 +21,7 @@
 
 <span id="debug" style="left: 0; position: absolute; top: 0;"></span>
 
-<header class="navbar navbar-expand-lg navbar-dark bg-dark">
+<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <a href="@Url.Action("Index", "Bug", new {area = string.Empty})" class="navbar-brand">BugTracker.NET</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@
             <li class="nav-item">
                 <form action="@Url.Action("Update", "Bug", new { id = "", area = string.Empty})" method="get" class="form-inline flex-nowrap m mt-1">
                     <input class="form-control form-control-sm mr-sm-2" type="search" placeholder="ID" aria-label="Go to ID" size="4" name="id" accesskey="g">
-                    <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Go to ID</button>
+                    <button class="btn btn-outline-secondary btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Go to ID</button>
                 </form>
             </li>
 
@@ -96,7 +96,7 @@
                 <li class="nav-item">
                     <form action="@Url.Action("SearchText", "Search", new {area = string.Empty})" method="get" onsubmit="return on_submit_search()" class="form-inline flex-nowrap mt-1">
                         <input class="form-control form-control-sm mr-2" type="search" placeholder="Text" aria-label="Text" id="lucene_input" size="24" value='@query.Replace("' ", " ")' name="query" accesskey="s">
-                        <button class="btn btn-outline-light btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Search</button>
+                        <button class="btn btn-outline-secondary btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Search</button>
                         <a href="~/Content/lucene_syntax.html" target="_blank" class="btn btn-link btn-sm">advanced</a>
                     </form>
                 </li>
