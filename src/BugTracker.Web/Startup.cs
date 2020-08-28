@@ -12,7 +12,8 @@ namespace BugTracker.Web
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddHttpContextAccessor();
+            services.AddControllersWithViews();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -21,6 +22,8 @@ namespace BugTracker.Web
 
             services.AddScoped<IApplicationSettings, ApplicationSettings>();
             services.AddScoped<ICustomizer, Customizer>();
+            services.AddScoped<IApplicationLogger, ApplicationLogger>();
+            services.AddScoped<IDbUtil, DbUtil>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
