@@ -1,6 +1,7 @@
 namespace BugTracker.Web
 {
     using Core;
+    using Core.Identification;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -14,6 +15,7 @@ namespace BugTracker.Web
         {
             services.AddHttpContextAccessor();
             services.AddControllersWithViews();
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -24,6 +26,7 @@ namespace BugTracker.Web
             services.AddScoped<ICustomizer, Customizer>();
             services.AddScoped<IApplicationLogger, ApplicationLogger>();
             services.AddScoped<IDbUtil, DbUtil>();
+            services.AddScoped<IAuthenticate, Authenticate>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
