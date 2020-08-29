@@ -35,6 +35,12 @@ namespace BugTracker.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error/Error500");
+            }
+
+            app.UseStatusCodePagesWithReExecute("/Error/Error{0}");
 
             app.UseStaticFiles();
             app.UseRouting();
