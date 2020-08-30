@@ -14,6 +14,7 @@ namespace BugTracker.Web
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddSession();
             services.AddControllersWithViews();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -44,6 +45,8 @@ namespace BugTracker.Web
 
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();

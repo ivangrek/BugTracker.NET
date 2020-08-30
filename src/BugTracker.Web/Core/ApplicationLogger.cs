@@ -40,18 +40,17 @@
 
             lock (Dummy)
             {
-                using (var streamWriter = File.AppendText(path))
+                using var streamWriter = File.AppendText(path);
+
+                // write to it
+                var url = string.Empty;
+
+                if (this.httpContextAccessor.HttpContext?.Request != null)
                 {
-                    // write to it
-                    var url = string.Empty;
-
-                    if (this.httpContextAccessor.HttpContext?.Request != null)
-                    {
-                        url = this.httpContextAccessor.HttpContext.Request.Path;
-                    }
-
-                    streamWriter.WriteLine($"{DateTime.Now:yyy-MM-dd HH:mm:ss} {url} {value}");
+                    url = this.httpContextAccessor.HttpContext.Request.Path;
                 }
+
+                streamWriter.WriteLine($"{DateTime.Now:yyy-MM-dd HH:mm:ss} {url} {value}");
             }
         }
 

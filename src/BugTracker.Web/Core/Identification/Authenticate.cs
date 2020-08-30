@@ -3,8 +3,11 @@ namespace BugTracker.Web.Core.Identification
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.DirectoryServices.Protocols;
+    using System.Net;
     using System.Security.Claims;
     using System.Security.Cryptography;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,6 +23,8 @@ namespace BugTracker.Web.Core.Identification
 
     internal sealed class Authenticate : IAuthenticate
     {
+        private const string GuestLogin = "guest";
+
         private readonly IApplicationSettings applicationSettings;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IApplicationLogger applicationLogger;
@@ -45,68 +50,62 @@ namespace BugTracker.Web.Core.Identification
             //For now
             if (asGuest)
             {
-                var claims = new List<Claim>
+                username = GuestLogin;
+
+                var account = FindAccount(username);
+
+                if (account == null)
                 {
-                    new Claim(ClaimTypes.Name, "guest"),
-                    new Claim(ClaimTypes.Role, BtNetRole.Guest)
-                };
+                    this.applicationLogger
+                        .WriteToLog($"Unknown user {username} attempted to login.");
 
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    throw new InvalidOperationException("Guest not exist.");
+                }
 
-                await this.httpContextAccessor
-                    .HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(identity));
+                var usActive = (int)account["us_active"];
 
-                return;
-            }
-
-            var authenticated = CheckPassword(username, password);
-
-            if (!authenticated)
-            {
-                //result.Success = false;
-                //result.ErrorMessage = "Invalid User or Password.";
-                throw new InvalidOperationException("Invalid User or Password.");
-            }
-
-            var sql = new SqlString("select us_id, us_username, us_org from users where us_username = @us");
-
-            sql = sql.AddParameterWithValue("us", username);
-
-            var dr = this.dbUtil
-                .GetDataRow(sql);
-
-            if (dr != null)
-            {
-                var identity = GetIdentity(username);
-
-                //var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authenticationProperties = new AuthenticationProperties
+                if (usActive == 0)
                 {
-                    IsPersistent = persistent/*model.RememberMe && !model.AsGuest*/
-                };
-
-                await this.httpContextAccessor
-                    .HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(identity),
-                        authenticationProperties);
-
-                //result.Success = true;
-                //result.ErrorMessage = string.Empty;
+                    throw new InvalidOperationException("Guest not active.");
+                }
             }
             else
             {
-                // How could this happen?  If someday the authentication
-                // method uses, say LDAP, then check_password could return
-                // true, even though there's no user in the database";
-                //result.Success = false;
-                //result.ErrorMessage = "User not found in database";
-                throw new InvalidOperationException("User not found in database");
+                var unlocked = CheckFailedAttempts(username);
+
+                if (!unlocked)
+                {
+                    throw new InvalidOperationException("User login blocked.");
+                }
+
+                var authenticated = AuthenticateUser(username, password);
+
+                if (!authenticated)
+                {
+                    AddFailedAttempts(username);
+
+                    //result.Success = false;
+                    //result.ErrorMessage = "Invalid User or Password.";
+                    throw new InvalidOperationException("Invalid User or Password.");
+                }
+
+                ClearFailedAttempts(username);
             }
 
-            //return result;
+            var user = FindUser(username);
+            var identity = CreateIdentity(user);
+            var authenticationProperties = new AuthenticationProperties
+            {
+                IsPersistent = persistent && !asGuest
+            };
+
+            await this.httpContextAccessor
+                .HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity),
+                    authenticationProperties);
+
+            UpdateMostRecentLoginDateTime((int)user["us_id"]);
         }
 
         public async Task SignOutAsync()
@@ -115,14 +114,14 @@ namespace BugTracker.Web.Core.Identification
                 .HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        private bool CheckPassword(string username, string password)
+        private DataRow FindAccount(string username)
         {
             var sql = new SqlString(@"
                 select
-                    us_username,
                     us_id,
+                    us_username,
                     us_password,
-                    isnull(us_salt,0) us_salt,
+                    isnull(us_salt, 0) us_salt,
                     us_active
                 from
                     users
@@ -131,10 +130,15 @@ namespace BugTracker.Web.Core.Identification
 
             sql = sql.AddParameterWithValue("username", username);
 
-            var dr = this.dbUtil
+            return this.dbUtil
                 .GetDataRow(sql);
+        }
 
-            if (dr == null)
+        private bool AuthenticateUser(string username, string password)
+        {
+            var account = FindAccount(username);
+
+            if (account == null)
             {
                 this.applicationLogger
                     .WriteToLog($"Unknown user {username} attempted to login.");
@@ -142,7 +146,7 @@ namespace BugTracker.Web.Core.Identification
                 return false;
             }
 
-            var usActive = (int)dr["us_active"];
+            var usActive = (int)account["us_active"];
 
             if (usActive == 0)
             {
@@ -152,106 +156,71 @@ namespace BugTracker.Web.Core.Identification
                 return false;
             }
 
-            // Too many failed attempts?
-            // We'll only allow N in the last N minutes.
-            var failedAttempts = this.memoryCache
-                .Get<LinkedList<DateTime>>(username);
-
-            if (failedAttempts != null)
-            {
-                // Don't count attempts older than N minutes ago.
-                var minutesAgo = this.applicationSettings.FailedLoginAttemptsMinutes;
-                var failedAttemptsAllowed = this.applicationSettings.FailedLoginAttemptsAllowed;
-
-                var nMinutesAgo = DateTime.Now.AddMinutes(-1 * minutesAgo);
-
-                while (true)
-                {
-                    if (failedAttempts.Count > 0)
-                    {
-                        if (failedAttempts.First.Value < nMinutesAgo)
-                        {
-                            this.applicationLogger
-                                .WriteToLog("removing stale failed attempt for " + username);
-
-                            failedAttempts.RemoveFirst();
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                // how many failed attempts in last N minutes?
-                this.applicationLogger
-                    .WriteToLog($"failed attempt count for {username}: {failedAttempts.Count}");
-
-                if (failedAttempts.Count > failedAttemptsAllowed)
-                {
-                    this.applicationLogger
-                        .WriteToLog("Too many failed login attempts in too short a time period: " + username);
-
-                    return false;
-                }
-
-                // Save the list of attempts
-                this.memoryCache
-                    .Set(username, failedAttempts);
-            }
-
-            bool authenticated;
-
             if (this.applicationSettings.AuthenticateUsingLdap)
             {
-                authenticated = false; //CheckPasswordWithLdap(username, password);
-            }
-            else
-            {
-                authenticated = CheckPasswordWithDb(username, password, dr);
+                return AuthenticateUserWithLdap(username, password);
             }
 
-            if (authenticated)
+            return AuthenticateUserWithDb(username, password, account);
+        }
+
+        private bool AuthenticateUserWithLdap(string username, string password)
+        {
+            // allow multiple, seperated by a pipe character
+            var dns = this.applicationSettings.LdapUserDistinguishedName;
+            var dnArray = dns.Split('|');
+
+            var ldapServer = this.applicationSettings.LdapServer;
+            var ldapDirectoryIdentifier = new LdapDirectoryIdentifier(ldapServer, /*389*/636);
+
+            using var ldapConnection = new LdapConnection(ldapDirectoryIdentifier)
             {
-                // clear list of failed attempts
-                if (failedAttempts != null)
+                AuthType = (AuthType)Enum.Parse(typeof(AuthType), this.applicationSettings.LdapAuthType),
+                SessionOptions =
                 {
-                    failedAttempts.Clear();
-
-                    this.memoryCache
-                        .Set(username, failedAttempts);
+                    ProtocolVersion = 3,
+                    SecureSocketLayer = true
                 }
+            };
 
-                UpdateMostRecentLoginDateTime((int)dr["us_id"]);
+            ldapConnection.SessionOptions.VerifyServerCertificate += (LdapConnection connection, X509Certificate certificate) => { return true; };
 
-                return true;
-            }
-
-            if (failedAttempts == null)
+            for (var i = 0; i < dnArray.Length; i++)
             {
-                failedAttempts = new LinkedList<DateTime>();
+                var dn = dnArray[i].Replace("$REPLACE_WITH_USERNAME$", username);
+                var credential = new NetworkCredential(dn, password);
+
+                try
+                {
+                    ldapConnection.Bind(credential);
+
+                    this.applicationLogger
+                        .WriteToLog($"LDAP authentication ok using {dn} for username: {username}");
+
+                    return true;
+                }
+                catch (LdapException e)
+                {
+                    this.applicationLogger
+                        .WriteToLog($"LDAP authentication failed using {dn}: {e}");
+                }
+                catch (Exception e)
+                {
+                    this.applicationLogger
+                        .WriteToLog($"LDAP authentication failed using {dn}: {e}");
+                }
             }
-
-            // Record a failed login attempt.
-            failedAttempts.AddLast(DateTime.Now);
-
-            this.memoryCache
-                .Set(username, failedAttempts);
 
             return false;
         }
 
-        private bool CheckPasswordWithDb(string username, string enteredPassword, DataRow dr)
+        private bool AuthenticateUserWithDb(string username, string password, DataRow account)
         {
-            var salt = (string)dr["us_salt"];
-            var hashedEnteredPassword = HashString(enteredPassword, salt);
-            var databasePassword = (string)dr["us_password"];
+            var salt = (string)account["us_salt"];
+            var hashedPassword = HashString(password, salt);
+            var databasePassword = (string)account["us_password"];
 
-            if (hashedEnteredPassword == databasePassword)
+            if (hashedPassword == databasePassword)
             {
                 return true;
             }
@@ -262,50 +231,81 @@ namespace BugTracker.Web.Core.Identification
             return false;
         }
 
-        //private bool CheckPasswordWithLdap(string username, string password)
-        //{
-        //    // allow multiple, seperated by a pipe character
-        //    var dns = this.applicationSettings.LdapUserDistinguishedName;
-        //    var dnArray = dns.Split('|');
+        private bool CheckFailedAttempts(string username)
+        {
+            // Too many failed attempts?
+            // We'll only allow N in the last N minutes.
+            var failedAttempts = this.memoryCache
+                .GetOrCreate<LinkedList<DateTime>>(username, x => new LinkedList<DateTime>());
 
-        //    var ldapServer = this.applicationSettings.LdapServer;
+            var minutesAgo = this.applicationSettings.FailedLoginAttemptsMinutes;
+            var failedAttemptsAllowed = this.applicationSettings.FailedLoginAttemptsAllowed;
+            var nMinutesAgo = DateTime.Now.AddMinutes(-1 * minutesAgo);
 
-        //    using (var ldap = new LdapConnection(ldapServer))
-        //    {
-        //        for (var i = 0; i < dnArray.Length; i++)
-        //        {
-        //            var dn = dnArray[i].Replace("$REPLACE_WITH_USERNAME$", username);
-        //            var cred = new NetworkCredential(dn, password);
+            while (true)
+            {
+                if (failedAttempts.Count > 0)
+                {
+                    if (failedAttempts.First.Value < nMinutesAgo)
+                    {
+                        this.applicationLogger
+                            .WriteToLog($"Removing stale failed attempt for {username}");
 
-        //            ldap.AuthType = (AuthType)Enum.Parse
-        //                (typeof(AuthType), this.applicationSettings.LdapAuthType);
+                        failedAttempts.RemoveFirst();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
 
-        //            try
-        //            {
-        //                ldap.Bind(cred);
-        //                this.applicationLogger
-        //                    .WriteToLog($"LDAP authentication ok using {dn} for username: {username}");
+            // how many failed attempts in last N minutes?
+            this.applicationLogger
+                .WriteToLog($"Failed attempt count for {username}: {failedAttempts.Count}");
 
-        //                return true;
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                var exceptionMsg = e.Message;
+            if (failedAttempts.Count > failedAttemptsAllowed)
+            {
+                this.applicationLogger
+                    .WriteToLog($"Too many failed login attempts in too short a time period: {username}");
 
-        //                if (e.InnerException != null)
-        //                {
-        //                    exceptionMsg += "\n";
-        //                    exceptionMsg += e.InnerException.Message;
-        //                }
+                return false;
+            }
 
-        //                this.applicationLogger
-        //                    .WriteToLog($"LDAP authentication failed using {dn}: {exceptionMsg}");
-        //            }
-        //        }
-        //    }
+            // Save the list of attempts
+            this.memoryCache
+                .Set(username, failedAttempts);
 
-        //    return false;
-        //}
+            return true;
+        }
+
+        private void ClearFailedAttempts(string username)
+        {
+            // clear list of failed attempts
+            var failedAttempts = this.memoryCache
+                .GetOrCreate<LinkedList<DateTime>>(username, x => new LinkedList<DateTime>());
+
+            failedAttempts.Clear();
+
+            this.memoryCache
+                .Set(username, failedAttempts);
+        }
+
+        private void AddFailedAttempts(string username)
+        {
+            var failedAttempts = this.memoryCache
+                .GetOrCreate<LinkedList<DateTime>>(username, x => new LinkedList<DateTime>());
+
+            // Record a failed login attempt.
+            failedAttempts.AddLast(DateTime.Now);
+
+            this.memoryCache
+                .Set(username, failedAttempts);
+        }
 
         //From Util
         private static string HashString(string password, string salt)
@@ -327,7 +327,7 @@ namespace BugTracker.Web.Core.Identification
                 .ExecuteNonQuery(sql);
         }
 
-        private ClaimsIdentity GetIdentity(string username)
+        private DataRow FindUser(string username)
         {
             var sql = new SqlString(@"
                 select
@@ -343,7 +343,8 @@ namespace BugTracker.Web.Core.Identification
                     isnull(u.us_forced_project, 0 ) us_forced_project,
                     proj.pu_permission_level,
                     isnull(proj.pu_admin, 0) pu_admin,
-                    u.us_admin
+                    u.us_admin,
+                    u.us_active
                 from users u
                     inner join orgs org 
                     on u.us_org = org.og_id
@@ -351,28 +352,34 @@ namespace BugTracker.Web.Core.Identification
                     left outer join project_user_xref proj
                     on proj.pu_project = u.us_forced_project
                     and proj.pu_user = u.us_id
-                where us_username = @us and u.us_active = 1");
+                where
+                    us_username = @us
+                    and
+                    u.us_active = 1");
 
             sql = sql.AddParameterWithValue("us", username);
 
-            var dr = this.dbUtil
+            return this.dbUtil
                 .GetDataRow(sql);
+        }
 
-            var bugsPerPage = dr["us_bugs_per_page"] == DBNull.Value
+        private ClaimsIdentity CreateIdentity(DataRow user)
+        {
+            var bugsPerPage = user["us_bugs_per_page"] == DBNull.Value
                 ? 10
-                : (int)dr["us_bugs_per_page"];
+                : (int)user["us_bugs_per_page"];
 
             var canAdd = true;
-            var permissionLevel = dr["pu_permission_level"] == DBNull.Value
+            var permissionLevel = user["pu_permission_level"] == DBNull.Value
                 ? (PermissionLevel)this.applicationSettings.DefaultPermissionLevel
-                : (PermissionLevel)(int)dr["pu_permission_level"];
+                : (PermissionLevel)(int)user["pu_permission_level"];
 
             // if user is forced to a specific project, and doesn't have
             // at least reporter permission on that project, than user
             // can't add bugs
-            var forcedProjectId = dr["us_forced_project"] == DBNull.Value
+            var forcedProjectId = user["us_forced_project"] == DBNull.Value
                 ? 0
-                : (int)dr["us_forced_project"];
+                : (int)user["us_forced_project"];
 
             if (forcedProjectId != 0)
             {
@@ -384,44 +391,44 @@ namespace BugTracker.Web.Core.Identification
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, Convert.ToString(dr["us_username"])),
-                new Claim(ClaimTypes.Email, Convert.ToString(dr["us_email"])),
+                new Claim(ClaimTypes.Name, Convert.ToString(user["us_username"])),
+                new Claim(ClaimTypes.Email, Convert.ToString(user["us_email"])),
 
-                new Claim(BtNetClaimType.UserId, Convert.ToString(dr["us_id"])),
-                new Claim(BtNetClaimType.OrganizationId, Convert.ToString(dr["us_org"])),
+                new Claim(BtNetClaimType.UserId, Convert.ToString(user["us_id"])),
+                new Claim(BtNetClaimType.OrganizationId, Convert.ToString(user["us_org"])),
                 new Claim(BtNetClaimType.ForcedProjectId, Convert.ToString(forcedProjectId)),
                 new Claim(BtNetClaimType.BugsPerPage, Convert.ToString(bugsPerPage)),
-                new Claim(BtNetClaimType.EnablePopUps, Convert.ToString((int) dr["us_enable_bug_list_popups"] == 1)),
-                new Claim(BtNetClaimType.UseFCKEditor, Convert.ToString((int) dr["us_use_fckeditor"] == 1)),
+                new Claim(BtNetClaimType.EnablePopUps, Convert.ToString((int) user["us_enable_bug_list_popups"] == 1)),
+                new Claim(BtNetClaimType.UseFCKEditor, Convert.ToString((int) user["us_use_fckeditor"] == 1)),
                 new Claim(BtNetClaimType.CanAddBugs, Convert.ToString(canAdd)),
 
-                new Claim(BtNetClaimType.OtherOrgsPermissionLevel, Convert.ToString(dr["og_other_orgs_permission_level"])),
+                new Claim(BtNetClaimType.OtherOrgsPermissionLevel, Convert.ToString(user["og_other_orgs_permission_level"])),
 
-                new Claim(BtNetClaimType.CanSearch, Convert.ToString((int) dr["og_can_search"] == 1)),
-                new Claim(BtNetClaimType.IsExternalUser, Convert.ToString((int) dr["og_external_user"] == 1)),
-                new Claim(BtNetClaimType.CanOnlySeeOwnReportedBugs, Convert.ToString((int) dr["og_can_only_see_own_reported"] == 1)),
-                new Claim(BtNetClaimType.CanBeAssignedTo, Convert.ToString((int) dr["og_can_be_assigned_to"] == 1)),
-                new Claim(BtNetClaimType.NonAdminsCanUse, Convert.ToString((int) dr["og_non_admins_can_use"] == 1)),
+                new Claim(BtNetClaimType.CanSearch, Convert.ToString((int) user["og_can_search"] == 1)),
+                new Claim(BtNetClaimType.IsExternalUser, Convert.ToString((int) user["og_external_user"] == 1)),
+                new Claim(BtNetClaimType.CanOnlySeeOwnReportedBugs, Convert.ToString((int) user["og_can_only_see_own_reported"] == 1)),
+                new Claim(BtNetClaimType.CanBeAssignedTo, Convert.ToString((int) user["og_can_be_assigned_to"] == 1)),
+                new Claim(BtNetClaimType.NonAdminsCanUse, Convert.ToString((int) user["og_non_admins_can_use"] == 1)),
 
-                new Claim(BtNetClaimType.ProjectFieldPermissionLevel, Convert.ToString(dr["og_project_field_permission_level"])),
-                new Claim(BtNetClaimType.OrgFieldPermissionLevel, Convert.ToString(dr["og_org_field_permission_level"])),
-                new Claim(BtNetClaimType.CategoryFieldPermissionLevel, Convert.ToString(dr["og_category_field_permission_level"])),
-                new Claim(BtNetClaimType.PriorityFieldPermissionLevel, Convert.ToString(dr["og_priority_field_permission_level"])),
-                new Claim(BtNetClaimType.StatusFieldPermissionLevel, Convert.ToString(dr["og_status_field_permission_level"])),
-                new Claim(BtNetClaimType.AssignedToFieldPermissionLevel, Convert.ToString(dr["og_assigned_to_field_permission_level"])),
-                new Claim(BtNetClaimType.UdfFieldPermissionLevel, Convert.ToString(dr["og_udf_field_permission_level"])),
-                new Claim(BtNetClaimType.TagsFieldPermissionLevel, Convert.ToString(dr["og_tags_field_permission_level"])),
+                new Claim(BtNetClaimType.ProjectFieldPermissionLevel, Convert.ToString(user["og_project_field_permission_level"])),
+                new Claim(BtNetClaimType.OrgFieldPermissionLevel, Convert.ToString(user["og_org_field_permission_level"])),
+                new Claim(BtNetClaimType.CategoryFieldPermissionLevel, Convert.ToString(user["og_category_field_permission_level"])),
+                new Claim(BtNetClaimType.PriorityFieldPermissionLevel, Convert.ToString(user["og_priority_field_permission_level"])),
+                new Claim(BtNetClaimType.StatusFieldPermissionLevel, Convert.ToString(user["og_status_field_permission_level"])),
+                new Claim(BtNetClaimType.AssignedToFieldPermissionLevel, Convert.ToString(user["og_assigned_to_field_permission_level"])),
+                new Claim(BtNetClaimType.UdfFieldPermissionLevel, Convert.ToString(user["og_udf_field_permission_level"])),
+                new Claim(BtNetClaimType.TagsFieldPermissionLevel, Convert.ToString(user["og_tags_field_permission_level"])),
 
-                new Claim(BtNetClaimType.CanEditSql, Convert.ToString((int) dr["og_can_edit_sql"] == 1)),
-                new Claim(BtNetClaimType.CanDeleteBugs, Convert.ToString((int) dr["og_can_delete_bug"] == 1)),
-                new Claim(BtNetClaimType.CanEditAndDeletePosts, Convert.ToString((int) dr["og_can_edit_and_delete_posts"] == 1)),
-                new Claim(BtNetClaimType.CanMergeBugs, Convert.ToString((int) dr["og_can_merge_bugs"] == 1)),
-                new Claim(BtNetClaimType.CanMassEditBugs, Convert.ToString((int) dr["og_can_mass_edit_bugs"] == 1)),
-                new Claim(BtNetClaimType.CanUseReports, Convert.ToString((int) dr["og_can_use_reports"] == 1)),
-                new Claim(BtNetClaimType.CanEditReports, Convert.ToString((int) dr["og_can_edit_reports"] == 1)),
-                new Claim(BtNetClaimType.CanEditTasks, Convert.ToString((int) dr["og_can_edit_tasks"] == 1)),
-                new Claim(BtNetClaimType.CanViewTasks, Convert.ToString((int) dr["og_can_view_tasks"] == 1)),
-                new Claim(BtNetClaimType.CanAssignToInternalUsers, Convert.ToString((int) dr["og_can_assign_to_internal_users"] == 1))
+                new Claim(BtNetClaimType.CanEditSql, Convert.ToString((int) user["og_can_edit_sql"] == 1)),
+                new Claim(BtNetClaimType.CanDeleteBugs, Convert.ToString((int) user["og_can_delete_bug"] == 1)),
+                new Claim(BtNetClaimType.CanEditAndDeletePosts, Convert.ToString((int) user["og_can_edit_and_delete_posts"] == 1)),
+                new Claim(BtNetClaimType.CanMergeBugs, Convert.ToString((int) user["og_can_merge_bugs"] == 1)),
+                new Claim(BtNetClaimType.CanMassEditBugs, Convert.ToString((int) user["og_can_mass_edit_bugs"] == 1)),
+                new Claim(BtNetClaimType.CanUseReports, Convert.ToString((int) user["og_can_use_reports"] == 1)),
+                new Claim(BtNetClaimType.CanEditReports, Convert.ToString((int) user["og_can_edit_reports"] == 1)),
+                new Claim(BtNetClaimType.CanEditTasks, Convert.ToString((int) user["og_can_edit_tasks"] == 1)),
+                new Claim(BtNetClaimType.CanViewTasks, Convert.ToString((int) user["og_can_view_tasks"] == 1)),
+                new Claim(BtNetClaimType.CanAssignToInternalUsers, Convert.ToString((int) user["og_can_assign_to_internal_users"] == 1))
             };
 
 
@@ -429,7 +436,7 @@ namespace BugTracker.Web.Core.Identification
 
             //if (this.applicationSettings.EnableTags)
             //{
-            //    tagsPermissionLevel = (PermissionLevel)(int)dr["og_tags_field_permission_level"];
+            //    tagsPermissionLevel = (PermissionLevel)(int)user["og_tags_field_permission_level"];
             //}
             //else
             //{
@@ -438,13 +445,13 @@ namespace BugTracker.Web.Core.Identification
 
             //claims.Add(new Claim(BtNetClaimType.TagsFieldPermissionLevel, Convert.ToString(tagsPermissionLevel)));
 
-            if ((int)dr["us_admin"] == 1)
+            if ((int)user["us_admin"] == 1)
             {
                 claims.Add(new Claim(ClaimTypes.Role, BtNetRole.Administrator));
             }
             else
             {
-                if ((int)dr["pu_admin"] > 0)
+                if ((int)user["pu_admin"] > 0)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, BtNetRole.ProjectAdministrator));
                 }

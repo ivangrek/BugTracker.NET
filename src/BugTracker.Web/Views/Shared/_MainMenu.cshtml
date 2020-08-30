@@ -1,4 +1,6 @@
-﻿@using BugTracker.Web.Core
+﻿@using Microsoft.AspNetCore.Http
+@inject IApplicationSettings ApplicationSettings
+@inject IHttpContextAccessor HttpContextAccessor
 
 <script>
     function dbg(s) {
@@ -34,48 +36,48 @@
                 <a href="@Url.Action("Index", "Bug", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Bugs ? "active" : string.Empty)">Bugs<!--<span class="sr-only">(current)</span>--></a>
             </li>
 
-            @if (false@*Model.Security.User.CanSearch*@)
+            @if (User.Identity.GetCanSearch())
             {
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "Search", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Search ? "active" : string.Empty)">Search</a>
                 </li>
             }
 
-            @if (false @*Model.ApplicationSettings.EnableWhatsNewPage*@)
+            @if (ApplicationSettings.EnableWhatsNewPage)
             {
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "News", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.News ? "active" : string.Empty)">News</a>
                 </li>
             }
 
-            @if (true@*!Model.Security.User.IsGuest*@)
+            @if (!User.IsInRole(BtNetRole.Guest))
             {
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "Query", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Queries ? "active" : string.Empty)">Queries</a>
                 </li>
             }
 
-            @if (false@*Model.Security.User.IsAdmin || Model.Security.User.CanUseReports || Model.Security.User.CanEditReports*@)
+            @if (User.IsInRole(BtNetRole.Administrator) || User.Identity.GetCanUseReports() || User.Identity.GetCanEditReports())
             {
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "Report", new {area = string.Empty})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Reports ? "active" : string.Empty)">Reports</a>
                 </li>
             }
 
-            @if (false@*Model.ApplicationSettings.CustomMenuLinkLabel != string.Empty*@)
+            @if (string.IsNullOrEmpty(ApplicationSettings.CustomMenuLinkLabel))
             {
                 <li class="nav-item">
-                    <a href="@Model.ApplicationSettings.CustomMenuLinkUrl" class="nav-item nav-link @(ViewBag.SelectedItem == Model.ApplicationSettings.CustomMenuLinkLabel ? "active" : string.Empty)">@Model.ApplicationSettings.CustomMenuLinkLabel</a>
+                    <a href="@ApplicationSettings.CustomMenuLinkUrl" class="nav-item nav-link @(ViewBag.SelectedItem == ApplicationSettings.CustomMenuLinkLabel ? "active" : string.Empty)">@ApplicationSettings.CustomMenuLinkLabel</a>
                 </li>
             }
 
-            @if (false@*Model.Security.User.IsAdmin*@)
+            @if (User.IsInRole(BtNetRole.Administrator))
             {
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "Home", new {area = "Administration"})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Administration ? "active" : string.Empty)">Administration</a>
                 </li>
             }
-            else if (false@*Model.Security.User.IsProjectAdmin*@)
+            else if (User.IsInRole(BtNetRole.ProjectAdministrator))
             {
                 <li class="nav-item">
                     <a href="@Url.Action("Index", "User", new {area = "Administration"})" class="nav-item nav-link @(ViewBag.SelectedItem == MainMenuSection.Users ? "active" : string.Empty)">Users</a>
@@ -89,39 +91,39 @@
                 </form>
             </li>
 
-            @*@if (Model.ApplicationSettings.EnableLucene && Model.Security.User.CanSearch)
+            @if (ApplicationSettings.EnableLucene && User.Identity.GetCanSearch())
             {
-                var query = (string) HttpContext.Current.Session["query"] ?? string.Empty;
+                var query = HttpContextAccessor.HttpContext.Session.GetString("query") ?? string.Empty;
 
                 <li class="nav-item">
                     <form action="@Url.Action("SearchText", "Search", new {area = string.Empty})" method="get" onsubmit="return on_submit_search()" class="form-inline flex-nowrap mt-1">
-                        <input class="form-control form-control-sm mr-2" type="search" placeholder="Text" aria-label="Text" id="lucene_input" size="24" value='@query.Replace("' ", " ")' name="query" accesskey="s">
+                        <input class="form-control form-control-sm mr-2" type="search" placeholder="Text" aria-label="Text" id="lucene_input" size="24" value='@query' name="query" accesskey="s">
                         <button class="btn btn-outline-secondary btn-sm my-2 my-sm-0 mr-sm-2" type="submit">Search</button>
-                        <a href="~/Content/lucene_syntax.html" target="_blank" class="btn btn-link btn-sm">advanced</a>
+                        <a href="~/html/lucene_syntax.html" target="_blank" class="btn btn-link btn-sm">advanced</a>
                     </form>
                 </li>
-            }*@
+            }
         </ul>
 
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle @(ViewBag.SelectedItem == MainMenuSection.Settings ? "active" : string.Empty)" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hi, @User.Identity.Name @*@Model.Security.User.Username*@</a>
+                <a class="nav-link dropdown-toggle @(ViewBag.SelectedItem == MainMenuSection.Settings ? "active" : string.Empty)" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hi, @User.Identity.Name</a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                     <a href="~/html/about.html" target="_blank" class="dropdown-item">About</a>
                     <a href="http://ifdefined.com/README.html" target="_blank" class="dropdown-item">Help</a>
 
                     @*// for guest account, suppress display of "edit_self*@
-                    @if (false@*!Model.Security.User.IsGuest*@)
+                    @if (!User.IsInRole(BtNetRole.Guest))
                     {
                         <a href="@Url.Action("Settings", "Account", new {area = string.Empty})" class="dropdown-item @(ViewBag.SelectedItem == MainMenuSection.Settings ? "active" : string.Empty)">Settings</a>
                     }
 
                     @*TODO investigate*@
-                    @if (true@*Model.Security.AuthMethod == "plain" && !(Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)*@)
+                    @if (ApplicationSettings.WindowsAuthentication == AuthenticationMode.Site && !(User.IsInRole(BtNetRole.Guest) && ApplicationSettings.AllowGuestWithoutLogin))
                     {
                         var formId = Guid.NewGuid().ToString();
 
-                        using (Html.BeginForm("Logout", "Account", new {area = string.Empty}, FormMethod.Post, true, new {id = formId, style = "display: inline;"}))
+                        using (Html.BeginForm("Logout", "Account", new { area = string.Empty }, FormMethod.Post, true, new { id = formId, style = "display: inline;" }))
                         {
                             <div class="dropdown-divider"></div>
 
@@ -133,9 +135,10 @@
                 </div>
             </li>
 
-            @if (false@*Model.Security.AuthMethod == "plain"*@)
+            @*TODO investigate*@
+            @if (ApplicationSettings.WindowsAuthentication == AuthenticationMode.Site)
             {
-                if (Model.Security.User.IsGuest && Model.ApplicationSettings.AllowGuestWithoutLogin)
+                if (User.IsInRole(BtNetRole.Guest) && ApplicationSettings.AllowGuestWithoutLogin)
                 {
                     <li class="nav-item">
                         <a href="@Url.Action("Login", "Account", new {area = string.Empty})" class="nav-item nav-link">Login</a>
