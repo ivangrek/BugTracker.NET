@@ -1,17 +1,27 @@
 namespace BugTracker.Web
 {
+    using BugTracker.Web.Core.Persistence;
     using Core;
     using Core.Identification;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
 
     internal sealed class Startup
     {
-        public static void ConfigureServices(IServiceCollection services)
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
             services.AddSession();
@@ -22,6 +32,11 @@ namespace BugTracker.Web
                 {
                     options.LoginPath = new PathString("/Account/Login");
                 });
+
+            services.AddDbContext<BtNetDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             services.AddScoped<IApplicationSettings, ApplicationSettings>();
             services.AddScoped<ICustomizer, Customizer>();
