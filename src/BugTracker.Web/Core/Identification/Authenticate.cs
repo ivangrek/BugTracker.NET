@@ -8,6 +8,7 @@ namespace BugTracker.Web.Core.Identification
     using System.Security.Claims;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
+    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,6 +20,10 @@ namespace BugTracker.Web.Core.Identification
         Task SignInAsync(string username, string password, bool persistent, bool asGuest);
 
         Task SignOutAsync();
+
+        void UpdateUserPassword(int userId, string password);
+
+        bool CheckPasswordStrength(string password);
     }
 
     internal sealed class Authenticate : IAuthenticate
@@ -112,6 +117,55 @@ namespace BugTracker.Web.Core.Identification
         {
             await this.httpContextAccessor
                 .HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
+        //From Util
+        public void UpdateUserPassword(int userId, string password)
+        {
+            var salt = GenerateRandomString();
+            var hashed = HashString(password, Convert.ToString(salt));
+            var sql = new SqlString("update users set us_password = @hashed, us_salt = @salt where us_id = @id");
+
+            sql = sql.AddParameterWithValue("hashed", hashed);
+            sql = sql.AddParameterWithValue("salt", salt);
+            sql = sql.AddParameterWithValue("id", userId);
+
+            this.dbUtil
+                .ExecuteNonQuery(sql);
+        }
+
+        //From Util
+        public bool CheckPasswordStrength(string password)
+        {
+            if (!applicationSettings.RequireStrongPasswords)
+            {
+                return true;
+            }
+
+            if (password.Length < 8) return false;
+            if (password.IndexOf("password") > -1) return false;
+            if (password.IndexOf("123") > -1) return false;
+            if (password.IndexOf("asdf") > -1) return false;
+            if (password.IndexOf("qwer") > -1) return false;
+            if (password.IndexOf("test") > -1) return false;
+
+            var lowercase = 0;
+            var uppercase = 0;
+            var digits = 0;
+            var specialChars = 0;
+
+            for (var i = 0; i < password.Length; i++)
+            {
+                var c = password[i];
+                if (c >= 'a' && c <= 'z') lowercase = 1;
+                else if (c >= 'A' && c <= 'Z') uppercase = 1;
+                else if (c >= '0' && c <= '9') digits = 1;
+                else specialChars = 1;
+            }
+
+            if (lowercase + uppercase + digits + specialChars < 2) return false;
+
+            return true;
         }
 
         private DataRow FindAccount(string username)
@@ -310,8 +364,8 @@ namespace BugTracker.Web.Core.Identification
         //From Util
         private static string HashString(string password, string salt)
         {
-            var k2 = new Rfc2898DeriveBytes(password, System.Text.Encoding.UTF8.GetBytes(salt + salt));
-            var result = System.Text.Encoding.UTF8.GetString(k2.GetBytes(128));
+            var k2 = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes(salt + salt));
+            var result = Encoding.UTF8.GetString(k2.GetBytes(128));
 
             return result;
         }
@@ -325,6 +379,27 @@ namespace BugTracker.Web.Core.Identification
 
             this.dbUtil
                 .ExecuteNonQuery(sql);
+        }
+
+        //From Util
+        private string GenerateRandomString()
+        {
+            using var random = RandomNumberGenerator.Create();
+            var value = new byte[100];
+
+            random.GetBytes(value);
+
+            return Encoding.UTF8.GetString(value);
+
+            //var characters = "ABCDEFGHIJKLMNOPQURSTUVWXYZabcdefghijklmnopqurtuvwxyz1234567890".ToCharArray();
+            //var builder = new StringBuilder();
+
+            //for (var i = 0; i < _random.Next(10, 100); i++)
+            //{
+            //    builder.Append(characters[_random.Next(characters.Length - 1)]);
+            //}
+
+            //return builder.ToString();
         }
 
         private DataRow FindUser(string username)

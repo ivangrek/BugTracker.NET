@@ -1,10 +1,14 @@
 ﻿namespace BugTracker.Web.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Threading.Tasks;
     using Core;
     using Core.Identification;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
     using Models.Account;
 
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
@@ -12,13 +16,16 @@
     {
         private readonly IApplicationSettings applicationSettings;
         private readonly IAuthenticate authenticate;
+        private readonly IDbUtil dbUtil;
 
         public AccountController(
             IApplicationSettings applicationSettings,
-            IAuthenticate authenticate)
+            IAuthenticate authenticate,
+            IDbUtil dbUtil)
         {
             this.applicationSettings = applicationSettings;
             this.authenticate = authenticate;
+            this.dbUtil = dbUtil;
         }
 
         [HttpGet]
@@ -335,6 +342,462 @@
             //};
 
             //return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = BtNetRole.User)]
+        public ActionResult Settings()
+        {
+            ViewBag.Title = $"{this.applicationSettings.ApplicationTitle} - Edit your settings";
+            ViewBag.SelectedItem = MainMenuSection.Settings;
+
+            InitSettingsLists();
+
+            var sql = new SqlString(@"
+                select
+                    pj_id,
+                    pj_name,
+                    isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
+                from
+                    projects
+                    
+                    left outer join
+                        project_user_xref
+                    on
+                        pj_id = pu_project
+                        and
+                         pu_user = @us
+                where
+                    isnull(pu_permission_level, @dpl) <> 0
+                order by pj_name");
+
+            sql = sql.AddParameterWithValue("us", User.Identity.GetUserId());
+            sql = sql.AddParameterWithValue("dpl", this.applicationSettings.DefaultPermissionLevel);
+
+            var projectsDv = this.dbUtil
+                .GetDataView(sql);
+
+            var projectsAutoSubscribe = new List<int>();
+
+            foreach (DataRowView row in projectsDv)
+            {
+                if ((int)row["pu_auto_subscribe"] == 1)
+                {
+                    projectsAutoSubscribe.Add((int)row["pj_id"]);
+                }
+            }
+
+            // Get this entry's data from the db and fill in the form
+            // MAW -- 2006/01/27 -- Converted to use new notification columns
+            sql = new SqlString(@"
+                select
+                    us_username [username],
+                    isnull(us_firstname,'') [firstname],
+                    isnull(us_lastname,'') [lastname],
+                    isnull(us_bugs_per_page,10) [us_bugs_per_page],
+                    us_use_fckeditor,
+                    us_enable_bug_list_popups,
+                    isnull(us_email,'') [email],
+                    us_enable_notifications,
+                    us_send_notifications_to_self,
+                    us_reported_notifications,
+                    us_assigned_notifications,
+                    us_subscribed_notifications,
+                    us_auto_subscribe,
+                    us_auto_subscribe_own_bugs,
+                    us_auto_subscribe_reported_bugs,
+                    us_default_query,
+                    isnull(us_signature,'') [signature]
+                from
+                    users
+                where
+                    us_id = @id");
+
+            sql = sql.AddParameterWithValue("id", User.Identity.GetUserId());
+
+            var dr = this.dbUtil
+                .GetDataRow(sql);
+
+            // Fill in this form
+            var model = new SettingsModel
+            {
+                FirstName = (string)dr["firstname"],
+                LastName = (string)dr["lastname"],
+                BugsPerPage = (int)dr["us_bugs_per_page"],
+                EditText = Convert.ToBoolean((int)dr["us_use_fckeditor"]),
+                EnableBugListPopups = Convert.ToBoolean((int)dr["us_enable_bug_list_popups"]),
+                Email = (string)dr["email"],
+                EnableNotifications = Convert.ToBoolean((int)dr["us_enable_notifications"]),
+                NotificationsForAllOtherSubscribedBugs = (int)dr["us_subscribed_notifications"],
+                NotificationsSubscribedBugsReportedByMe = (int)dr["us_reported_notifications"],
+                NotificationsSubscribedBugsAssignedToMe = (int)dr["us_assigned_notifications"],
+                SendNotificationsEvenForItemsAddOrChange = Convert.ToBoolean((int)dr["us_send_notifications_to_self"]),
+                AutoSubscribeToAllItems = Convert.ToBoolean((int)dr["us_auto_subscribe"]),
+                AutoSubscribeToAllItemsAssignedToYou = Convert.ToBoolean((int)dr["us_auto_subscribe_own_bugs"]),
+                AutoSubscribeToAllItemsReportedByYou = Convert.ToBoolean((int)dr["us_auto_subscribe_reported_bugs"]),
+                EmailSignature = (string)dr["signature"],
+                DefaultQueryId = (int)dr["us_default_query"],
+                AutoSubscribePerProjectIds = projectsAutoSubscribe
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = BtNetRole.User)]
+        public ActionResult Settings(SettingsModel model)
+        {
+            ViewBag.Title = $"{this.applicationSettings.ApplicationTitle} - Edit your settings";
+            ViewBag.SelectedItem = MainMenuSection.Settings;
+
+            InitSettingsLists();
+
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                if (!this.authenticate.CheckPasswordStrength(model.Password))
+                {
+                    ModelState.AddModelError(nameof(SettingsModel.Password), "Password is not difficult enough to guess.<br>Avoid common words.<br>Try using a mixture of lowercase, uppercase, digits, and special characters.");
+                }
+
+                if (model.ConfirmedPassword != model.Password)
+                {
+                    ModelState.AddModelError(nameof(SettingsModel.ConfirmedPassword), "Confirm Password must match Password.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, "Your settings have not been updated.");
+
+                return View(model);
+            }
+
+            var sql = new SqlString(@"
+                update
+                    users
+                set
+                    us_firstname = @fn,
+                    us_lastname = @ln,
+                    us_bugs_per_page = @bp,
+                    us_use_fckeditor = @fk,
+                    us_enable_bug_list_popups = @pp,
+                    us_email = @em,
+                    us_enable_notifications = @en,
+                    us_send_notifications_to_self = @ss,
+                    us_reported_notifications = @rn,
+                    us_assigned_notifications = @an,
+                    us_subscribed_notifications = @sn,
+                    us_auto_subscribe = @as,
+                    us_auto_subscribe_own_bugs = @ao,
+                    us_auto_subscribe_reported_bugs = @ar,
+                    us_default_query = @dq,
+                    us_signature = @sg
+                    where us_id = @id");
+
+            sql = sql.AddParameterWithValue("fn", model.FirstName);
+            sql = sql.AddParameterWithValue("ln", model.LastName);
+            sql = sql.AddParameterWithValue("bp", model.BugsPerPage);
+            sql = sql.AddParameterWithValue("fk", model.EditText);
+            sql = sql.AddParameterWithValue("pp", model.EnableBugListPopups);
+            sql = sql.AddParameterWithValue("em", model.Email);
+            sql = sql.AddParameterWithValue("en", model.EnableNotifications);
+            sql = sql.AddParameterWithValue("ss", model.SendNotificationsEvenForItemsAddOrChange);
+            sql = sql.AddParameterWithValue("rn", model.NotificationsSubscribedBugsReportedByMe);
+            sql = sql.AddParameterWithValue("an", model.NotificationsSubscribedBugsAssignedToMe);
+            sql = sql.AddParameterWithValue("sn", model.NotificationsForAllOtherSubscribedBugs);
+            sql = sql.AddParameterWithValue("as", model.AutoSubscribeToAllItems);
+            sql = sql.AddParameterWithValue("ao", model.AutoSubscribeToAllItemsAssignedToYou);
+            sql = sql.AddParameterWithValue("ar", model.AutoSubscribeToAllItemsReportedByYou);
+            sql = sql.AddParameterWithValue("dq", model.DefaultQueryId);
+            sql = sql.AddParameterWithValue("sg", model.EmailSignature);
+            sql = sql.AddParameterWithValue("id", User.Identity.GetUserId());
+
+            // update user
+            this.dbUtil
+                .ExecuteNonQuery(sql);
+
+            // update the password
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                this.authenticate
+                    .UpdateUserPassword(User.Identity.GetUserId(), model.Password);
+            }
+
+            // Now update project_user_xref
+            // First turn everything off, then turn selected ones on.
+            sql = new SqlString(@"
+                update project_user_xref
+                set
+                    pu_auto_subscribe = 0
+                where pu_user = @id");
+
+            sql = sql.AddParameterWithValue("id", User.Identity.GetUserId());
+
+            this.dbUtil
+                .ExecuteNonQuery(sql);
+
+            // Second see what to turn back on
+            var projects = string.Empty;
+
+            foreach (var id in model.AutoSubscribePerProjectIds)
+            {
+                if (!string.IsNullOrEmpty(projects))
+                {
+                    projects += ",";
+                }
+
+                projects += Convert.ToInt32(id);
+            }
+
+            // If we need to turn anything back on
+            if (!string.IsNullOrEmpty(projects))
+            {
+                sql = new SqlString(@"
+                    update
+                        project_user_xref
+                    set
+                        pu_auto_subscribe = 1
+                    where
+                        pu_user = @id
+                        and
+                        pu_project in (@projects)
+
+                insert into project_user_xref (pu_project, pu_user, pu_auto_subscribe)
+                select
+                    pj_id,
+                    @id,
+                    1
+                from
+                    projects
+                where
+                    pj_id in (@projects)
+                    and
+                    pj_id not in
+                    (
+                        select
+                            pu_project
+                        from
+                            project_user_xref
+                        where
+                            pu_user = @id
+                    )");
+
+                sql = sql.AddParameterWithValue("id", User.Identity.GetUserId());
+                sql = sql.AddParameterWithValue("projects", projects);
+
+                this.dbUtil
+                    .ExecuteNonQuery(sql);
+            }
+
+            // apply subscriptions retroactively
+            if (model.ApplySubscriptionChangesRetroactively)
+            {
+                sql = new SqlString(@"delete from bug_subscriptions where bs_user = @id;");
+
+                if (model.AutoSubscribeToAllItems)
+                {
+                    sql.Append(@"
+                        insert into
+                            bug_subscriptions (bs_bug, bs_user)
+                        select
+                            bg_id,
+                            @id
+                        from
+                            bugs;");
+                }
+                else
+                {
+                    if (model.AutoSubscribeToAllItemsReportedByYou)
+                    {
+                        sql.Append(@"insert into bug_subscriptions (bs_bug, bs_user)
+                            select
+                                bg_id,
+                                @id
+                            from
+                                bugs
+                            where
+                                bg_reported_user = @id
+                                and
+                                bg_id not in
+                                (
+                                    select
+                                        bs_bug
+                                    from
+                                        bug_subscriptions
+                                    where
+                                        bs_user = @id
+                                );");
+                    }
+
+                    if (model.AutoSubscribeToAllItemsAssignedToYou)
+                    {
+                        sql.Append(@"insert into bug_subscriptions (bs_bug, bs_user)
+                            select
+                                bg_id,
+                                @id
+                            from
+                                bugs
+                            where
+                                bg_assigned_to_user = @id
+                                and
+                                bg_id not in
+                                (
+                                    select
+                                        bs_bug
+                                    from
+                                        bug_subscriptions
+                                    where
+                                        bs_user = @id
+                                );");
+                    }
+
+                    if (!string.IsNullOrEmpty(projects))
+                    {
+                        sql.Append(@"insert into bug_subscriptions (bs_bug, bs_user)
+                            select
+                                bg_id,
+                                @id
+                            from
+                                bugs
+                            where
+                                bg_project in (@projects)
+                                and
+                                bg_id not in
+                                (
+                                    select
+                                        bs_bug
+                                    from
+                                        bug_subscriptions
+                                    where
+                                        bs_user = @id
+                                );");
+                    }
+                }
+
+                sql = sql.AddParameterWithValue("id", User.Identity.GetUserId());
+                sql = sql.AddParameterWithValue("projects", projects);
+
+                this.dbUtil
+                    .ExecuteNonQuery(sql);
+            }
+
+            ModelState.AddModelError("Ok", "Your settings have been updated.");
+
+            return View(model);
+        }
+
+        private void InitSettingsLists()
+        {
+            var sql = new SqlString(@"
+                declare @org int
+                select
+                    @org = us_org
+                from
+                    users
+                where us_id = @us
+
+                select
+                    qu_id,
+                    qu_desc
+                from
+                    queries
+                where
+                    (
+                        isnull(qu_user,0) = 0
+                        and
+                        isnull(qu_org,0) = 0
+                    )
+                    or
+                    isnull(qu_user,0) = @us
+                    or
+                    isnull(qu_org,0) = @org
+                order by
+                    qu_desc");
+
+            sql = sql.AddParameterWithValue("us", User.Identity.GetUserId());
+
+            var queriesDv = this.dbUtil
+                .GetDataView(sql);
+
+            ViewBag.Queries = new List<SelectListItem>();
+
+            foreach (DataRowView row in queriesDv/*ds.Tables[1].DefaultView*/)
+            {
+                ViewBag.Queries.Add(new SelectListItem
+                {
+                    Value = ((int)row["qu_id"]).ToString(),
+                    Text = (string)row["qu_desc"],
+                });
+            }
+
+            sql = new SqlString(@"
+                select
+                    pj_id,
+                    pj_name,
+                    isnull(pu_auto_subscribe,0) [pu_auto_subscribe]
+                from
+                    projects
+                    
+                    left outer join
+                        project_user_xref
+                    on
+                        pj_id = pu_project
+                        and
+                        pu_user = @us
+                where
+                    isnull(pu_permission_level, @dpl) <> 0
+                order
+                    by pj_name");
+
+            sql = sql.AddParameterWithValue("us", User.Identity.GetUserId());
+            sql = sql.AddParameterWithValue("dpl", this.applicationSettings.DefaultPermissionLevel);
+
+            var projectsDv = this.dbUtil
+                .GetDataView(sql);
+
+            ViewBag.Projects = new List<SelectListItem>();
+
+            foreach (DataRowView row in projectsDv)
+            {
+                ViewBag.Projects.Add(new SelectListItem
+                {
+                    Value = ((int)row["pj_id"]).ToString(),
+                    Text = (string)row["pj_name"],
+                });
+            }
+
+            ViewBag.Notifications = new List<SelectListItem>();
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "0",
+                Text = "no notifications"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "1",
+                Text = "when created"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "2",
+                Text = "when status changes"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "3",
+                Text = "when status or assigned-to changes"
+            });
+
+            ViewBag.Notifications.Add(new SelectListItem
+            {
+                Value = "4",
+                Text = "when anything changes"
+            });
         }
     }
 }
