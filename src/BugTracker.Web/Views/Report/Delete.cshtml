@@ -1,0 +1,33 @@
+﻿@model BugTracker.Web.Models.Report.DeleteModel
+@inject ICustomizer Customizer
+
+@section Styles {
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+    @await Html.PartialAsync("_MainMenu")
+}
+
+@section BodySubHeader {
+}
+
+<h5>Confirm deletion of report</h5>
+
+@using (Html.BeginForm("Delete", "Report", FormMethod.Post))
+{
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Name): @Model.Name
+    </div>
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="@Url.Action("Index")" class="btn btn-link">Cancel</a>
+}
+
+@section BodyFooter {
+    @Html.Raw(Customizer.FooterHtml)
+}

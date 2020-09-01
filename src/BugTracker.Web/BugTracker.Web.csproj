@@ -3,12 +3,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="App_Data\logs\" />
-    <Folder Include="wwwroot\css\" />
-    <Folder Include="wwwroot\js\" />
-    <Folder Include="wwwroot\lib\" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
       <PrivateAssets>all</PrivateAssets>
@@ -20,6 +14,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.1" />
+    <PackageReference Include="NonFactors.Grid.Mvc6" Version="6.2.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 </Project>

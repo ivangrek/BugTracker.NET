@@ -1,0 +1,64 @@
+﻿@using System.Data
+@model DataTable
+@inject ICustomizer Customizer
+
+@section Styles {
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+    @await Html.PartialAsync("_MainMenu")
+}
+
+@section BodySubHeader {
+    <div class="nav-scroller bg-light border-bottom">
+        <nav class="nav nav-underline">
+            <a href="@Url.Action("Create", "Report")" class="nav-link"><img src="~/images/add.png" align="top">&nbsp;New</a>
+            <a href="@Url.Action("Dashboard", "Report")" class="nav-link"><img src="~/images/brick.png" align="top">&nbsp;Dashboard</a>
+        </nav>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @(Html
+            .Grid(Model.Rows.Cast<DataRow>())
+            .Build(columns =>
+            {
+                columns.Add(model => model["report"] as string)
+                    .Named("report")
+                    .Titled("report")
+                    .Sortable(true);
+
+                columns.Add(model => model["view<br>chart"] as string)
+                    .Named("view chart")
+                    .Titled("view chart")
+                    .Encoded(false);
+
+                columns.Add(model => model["view<br>data"] as string)
+                    .Named("view data")
+                    .Titled("view data")
+                    .Encoded(false);
+
+                if (User.IsInRole(BtNetRole.Administrator) || User.Identity.GetCanEditReports())
+                {
+                    columns.Add(model => Html.ActionLink("edit", "Update", new { id = model["id"] }))
+                        .Titled("edit");
+
+                    columns.Add(model => Html.ActionLink("delete", "Delete", new { id = model["id"] }))
+                        .Titled("delete");
+                }
+            })
+            .Empty("No reports in the database.")
+            //.UsingProcessingMode(GridProcessingMode.Manual)
+            .Sortable()
+            //.Pageable()
+        )
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(Customizer.FooterHtml)
+}

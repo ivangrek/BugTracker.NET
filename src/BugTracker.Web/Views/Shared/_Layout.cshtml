@@ -7,6 +7,7 @@
     <link rel="shortcut icon" type="image/png" href="~/favicon.ico">
     <link href="~/lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
     <link href="~/lib/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet" />
+    <link href="~/lib/mvc-grid/css/mvc-grid/mvc-grid.css" rel="stylesheet" />
 
     @await RenderSectionAsync("Styles", false)
 </head>
@@ -29,6 +30,10 @@
     <script src="~/lib/jquery/jquery.js"></script>
     <script src="~/lib/popper.js/umd/popper.js"></script>
     <script src="~/lib/twitter-bootstrap/js/bootstrap.js"></script>
+    <script src="~/lib/mvc-grid/js/mvc-grid.js"></script>
+    <script>
+        document.querySelectorAll(".mvc-grid").forEach(element => new MvcGrid(element));
+    </script>
 
     @await RenderSectionAsync("Scripts", false)
 </body>

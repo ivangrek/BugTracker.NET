@@ -1,0 +1,47 @@
+﻿@using System.Data
+@model DataTable
+@inject ICustomizer Customizer
+
+@section Styles {
+}
+
+@section Scripts {
+    <script src="~/js/sortable.js"></script>
+
+    <script>
+        function select_report(type, id) {
+            opener.add_selected_report(type, id);
+            window.close();
+        }
+    </script>
+}
+
+@section BodyHeader {
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @(Html
+            .Grid(Model.Rows.Cast<DataRow>())
+            .Build(columns =>
+            {
+                foreach (DataColumn column in Model.Columns)
+                {
+                    columns.Add(model => model[column.ColumnName])
+                        .Named(column.ColumnName)
+                        .Titled(column.ColumnName)
+                        .Sortable(true)
+                        .Encoded(false);
+                }
+            })
+            .Empty("No reports in the database.")
+            //.UsingProcessingMode(GridProcessingMode.Manual)
+            .Sortable()
+            //.Pageable()
+        )
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(Customizer.FooterHtml)
+}

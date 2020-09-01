@@ -1,0 +1,36 @@
+﻿@using System.Data
+@model DataTable
+
+@section Styles {
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @(Html
+            .Grid(Model.Rows.Cast<DataRow>())
+            .Build(columns =>
+            {
+                foreach (DataColumn column in Model.Columns)
+                {
+                    columns.Add(model => model[column.ColumnName])
+                        .Named(column.ColumnName)
+                        .Titled(column.ColumnName)
+                        .Sortable(true);
+                }
+            })
+            .Empty("The database query for this report returned zero rows.")
+            //.UsingProcessingMode(GridProcessingMode.Manual)
+            .Sortable()
+            //.Pageable()
+        )
+    </div>
+</div>
+
+@section BodyFooter {
+}

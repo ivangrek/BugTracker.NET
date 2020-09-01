@@ -1,0 +1,82 @@
+﻿@model BugTracker.Web.Models.Report.DashboardModel
+@inject ICustomizer Customizer
+
+@section Styles {
+    <style>
+        iframe {
+            height: 320px;
+        }
+    </style>
+}
+
+@section Scripts {
+}
+
+@section BodyHeader {
+    @await Html.PartialAsync("_MainMenu")
+}
+
+@section BodySubHeader {
+    @if (!User.IsInRole(BtNetRole.Guest)) /* no dashboard */
+    {
+        <div class="nav-scroller bg-light border-bottom">
+            <nav class="nav nav-underline">
+                <a href="@Url.Action("EditDashboard", "Report")" class="nav-link">Edit</a>
+            </nav>
+        </div>
+    }
+}
+
+@{
+    void WriteColumn(int column)
+    {
+        var iframeId = 0;
+
+        foreach (System.Data.DataRow dr in Model.DataSet.Tables[0].Rows)
+        {
+            if ((int)dr["ds_col"] == column)
+            {
+                if ((string)dr["ds_chart_type"] == "data")
+                {
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <iframe frameborder="0" src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = "data" })" class="w-100"></iframe>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <img class="img-fluid" src="@Url.Action("Show", "Report", new { id = dr["ds_report"], view = dr["ds_chart_type"], scale = 2 })">
+                        </div>
+                    </div>
+                }
+            }
+        }
+    }
+}
+
+<div class="row">
+    <div class="col-lg-4">
+        @{
+            WriteColumn(1);
+        }
+    </div>
+
+    <div class="col-lg-4">
+        @{
+            WriteColumn(2);
+        }
+    </div>
+
+    <div class="col-lg-4">
+        @{
+            WriteColumn(3);
+        }
+    </div>
+</div>
+
+@section BodyFooter {
+    @Html.Raw(Customizer.FooterHtml)
+}

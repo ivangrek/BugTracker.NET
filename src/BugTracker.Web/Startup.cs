@@ -43,6 +43,7 @@ namespace BugTracker.Web
             services.AddScoped<IApplicationLogger, ApplicationLogger>();
             services.AddScoped<IDbUtil, DbUtil>();
             services.AddScoped<IAuthenticate, Authenticate>();
+            services.AddScoped<IReportService, ReportService>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
