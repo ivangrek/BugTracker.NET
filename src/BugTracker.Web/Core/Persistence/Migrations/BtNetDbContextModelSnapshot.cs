@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BugTracker.Web.Migrations
 {
     [DbContext(typeof(BtNetDbContext))]
-    partial class BtNetContextModelSnapshot : ModelSnapshot
+    partial class BtNetDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -18,6 +18,77 @@ namespace BugTracker.Web.Migrations
                 .HasAnnotation("ProductVersion", "3.1.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("BugTracker.Web.Core.Persistence.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ct_id")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Default")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ct_default")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("ct_name")
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
+
+                    b.Property<int>("SortSequence")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ct_sort_seq")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Default = 0,
+                            Name = "Bug",
+                            SortSequence = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Default = 0,
+                            Name = "Enhancement",
+                            SortSequence = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Default = 0,
+                            Name = "Task",
+                            SortSequence = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Default = 0,
+                            Name = "Question",
+                            SortSequence = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Default = 0,
+                            Name = "Ticket",
+                            SortSequence = 0
+                        });
+                });
 
             modelBuilder.Entity("BugTracker.Web.Core.Persistence.Models.DashboardItem", b =>
                 {
@@ -382,6 +453,146 @@ namespace BugTracker.Web.Migrations
                             StatusFieldPermissionLevel = 0,
                             TagsFieldPermissionLevel = 0,
                             UdfFieldPermissionLevel = 0
+                        });
+                });
+
+            modelBuilder.Entity("BugTracker.Web.Core.Persistence.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("pj_id")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("pj_active")
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<int?>("AutoAssignDefaultUser")
+                        .HasColumnName("pj_auto_assign_default_user")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AutoSubscribeDefaultUser")
+                        .HasColumnName("pj_auto_subscribe_default_user")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomDropdown1Label")
+                        .HasColumnName("pj_custom_dropdown_label1")
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("CustomDropdown1Values")
+                        .HasColumnName("pj_custom_dropdown_values1")
+                        .HasColumnType("nvarchar(800)")
+                        .HasMaxLength(800);
+
+                    b.Property<string>("CustomDropdown2Label")
+                        .HasColumnName("pj_custom_dropdown_label2")
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("CustomDropdown2Values")
+                        .HasColumnName("pj_custom_dropdown_values2")
+                        .HasColumnType("nvarchar(800)")
+                        .HasMaxLength(800);
+
+                    b.Property<string>("CustomDropdown3Label")
+                        .HasColumnName("pj_custom_dropdown_label3")
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("CustomDropdown3Values")
+                        .HasColumnName("pj_custom_dropdown_values3")
+                        .HasColumnType("nvarchar(800)")
+                        .HasMaxLength(800);
+
+                    b.Property<int>("Default")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("pj_default")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int?>("DefaultUserId")
+                        .HasColumnName("pj_default_user")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnName("pj_description")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<int>("EnableCustomDropdown1")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("pj_enable_custom_dropdown1")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("EnableCustomDropdown2")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("pj_enable_custom_dropdown2")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("EnableCustomDropdown3")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("pj_enable_custom_dropdown3")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int?>("EnablePop3")
+                        .HasColumnName("pj_enable_pop3")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("pj_name")
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("Pop3EmailFrom")
+                        .HasColumnName("pj_pop3_email_from")
+                        .HasColumnType("nvarchar(120)")
+                        .HasMaxLength(120);
+
+                    b.Property<string>("Pop3Password")
+                        .HasColumnName("pj_pop3_password")
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<string>("Pop3Username")
+                        .HasColumnName("pj_pop3_username")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("projects");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Active = 0,
+                            Default = 0,
+                            EnableCustomDropdown1 = 0,
+                            EnableCustomDropdown2 = 0,
+                            EnableCustomDropdown3 = 0,
+                            Name = "Project 1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Active = 0,
+                            Default = 0,
+                            EnableCustomDropdown1 = 0,
+                            EnableCustomDropdown2 = 0,
+                            EnableCustomDropdown3 = 0,
+                            Name = "Project 2"
                         });
                 });
 

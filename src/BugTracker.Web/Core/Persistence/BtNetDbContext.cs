@@ -21,6 +21,10 @@
 
         public DbSet<DashboardItem> DashboardItems { get; set; }
 
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<Project> Projects { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());
@@ -28,6 +32,8 @@
             modelBuilder.ApplyConfiguration(new QueryConfiguration());
             modelBuilder.ApplyConfiguration(new ReportConfiguration());
             modelBuilder.ApplyConfiguration(new DashboardItemConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new ProjectConfiguration());
 
             Seed(modelBuilder);
         }
@@ -658,6 +664,63 @@
             #region DashboardItem
 
             #endregion DashboardItem
+
+            #region Category
+
+            modelBuilder.Entity<Category>()
+                .HasData(new Category
+                {
+                    Id = 1,
+                    Name = "Bug"
+                });
+
+            modelBuilder.Entity<Category>()
+               .HasData(new Category
+               {
+                   Id = 2,
+                   Name = "Enhancement"
+               });
+
+            modelBuilder.Entity<Category>()
+               .HasData(new Category
+               {
+                   Id = 3,
+                   Name = "Task"
+               });
+
+            modelBuilder.Entity<Category>()
+               .HasData(new Category
+               {
+                   Id = 4,
+                   Name = "Question"
+               });
+
+            modelBuilder.Entity<Category>()
+               .HasData(new Category
+               {
+                   Id = 5,
+                   Name = "Ticket"
+               });
+
+            #endregion Category
+
+            #region Project 
+
+            modelBuilder.Entity<Project>()
+                .HasData(new Project
+                {
+                    Id = 1,
+                    Name = "Project 1"
+                });
+
+            modelBuilder.Entity<Project>()
+               .HasData(new Project
+               {
+                   Id = 2,
+                   Name = "Project 2"
+               });
+
+            #endregion Project
         }
     }
 }
