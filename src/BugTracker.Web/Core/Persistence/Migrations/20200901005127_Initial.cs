@@ -8,6 +8,34 @@ namespace BugTracker.Web.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "bugs",
+                columns: table => new
+                {
+                    bg_id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    bg_short_desc = table.Column<string>(maxLength: 200, nullable: false),
+                    bg_reported_user = table.Column<int>(nullable: false),
+                    bg_reported_date = table.Column<DateTime>(nullable: false),
+                    bg_org = table.Column<int>(nullable: false),
+                    bg_category = table.Column<int>(nullable: false),
+                    bg_project = table.Column<int>(nullable: false),
+                    bg_priority = table.Column<int>(nullable: false),
+                    bg_status = table.Column<int>(nullable: false),
+                    bg_user_defined_attribute = table.Column<int>(nullable: true),
+                    bg_assigned_to_user = table.Column<int>(nullable: true),
+                    bg_last_updated_user = table.Column<int>(nullable: false),
+                    bg_project_custom_dropdown_value3 = table.Column<DateTime>(maxLength: 120, nullable: false),
+                    ProjectCustomDropdown1Value = table.Column<string>(nullable: true),
+                    ProjectCustomDropdown2Value = table.Column<string>(nullable: true),
+                    ProjectCustomDropdown3Value = table.Column<string>(nullable: true),
+                    bg_tags = table.Column<string>(maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_bugs", x => x.bg_id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "categories",
                 columns: table => new
                 {
@@ -574,6 +602,9 @@ namespace BugTracker.Web.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "bugs");
+
             migrationBuilder.DropTable(
                 name: "categories");
 

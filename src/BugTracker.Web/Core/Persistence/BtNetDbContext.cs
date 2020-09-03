@@ -25,6 +25,8 @@
 
         public DbSet<Project> Projects { get; set; }
 
+        public DbSet<Bug> Bugs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());
@@ -34,6 +36,7 @@
             modelBuilder.ApplyConfiguration(new DashboardItemConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+            modelBuilder.ApplyConfiguration(new BugConfiguration());
 
             Seed(modelBuilder);
         }
@@ -660,10 +663,6 @@
                 });
 
             #endregion Report
-
-            #region DashboardItem
-
-            #endregion DashboardItem
 
             #region Category
 

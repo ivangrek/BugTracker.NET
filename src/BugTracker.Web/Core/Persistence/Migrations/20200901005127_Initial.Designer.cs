@@ -21,6 +21,86 @@ namespace BugTracker.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("BugTracker.Web.Core.Persistence.Models.Bug", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("bg_id")
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnName("bg_assigned_to_user")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnName("bg_category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("bg_short_desc")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnName("bg_org")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PriorityId")
+                        .HasColumnName("bg_priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProjectCustomDropdown1Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProjectCustomDropdown2Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProjectCustomDropdown3Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnName("bg_project")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReportedOn")
+                        .HasColumnName("bg_reported_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReportedUserId")
+                        .HasColumnName("bg_reported_user")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnName("bg_status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnName("bg_tags")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .IsRequired()
+                        .HasColumnName("bg_project_custom_dropdown_value3")
+                        .HasColumnType("datetime2")
+                        .HasMaxLength(120);
+
+                    b.Property<int?>("UpdatedUserId")
+                        .IsRequired()
+                        .HasColumnName("bg_last_updated_user")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserDefinedAttributeId")
+                        .HasColumnName("bg_user_defined_attribute")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("bugs");
+                });
+
             modelBuilder.Entity("BugTracker.Web.Core.Persistence.Models.Category", b =>
                 {
                     b.Property<int>("Id")
