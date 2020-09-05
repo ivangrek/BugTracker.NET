@@ -9,7 +9,6 @@ var gecko = navigator.userAgent.toLowerCase().indexOf("gecko") > -1;
 
 /*********************************************************************/
 function create_xls() {
-
     var cnt = 0;
 
     table = document.getElementById("mytable");
@@ -28,7 +27,6 @@ function create_xls() {
     document.getElementById("xls").value = s;
     document.getElementById("xlsholder").style.display = "block";
     document.getElementById("xlsanchor").scrollIntoView();
-
 }
 
 /*********************************************************************/
@@ -36,9 +34,6 @@ function onload() {
     prevcol = -1;
     asc = true;
 }
-
-
-
 
 /*********************************************************************/
 function sort_by_col(c, t) {
@@ -61,7 +56,6 @@ function get_number(val) {
     }
 }
 
-
 /*********************************************************************/
 function get_date(val) {
     var x = Date.parse(val);
@@ -74,7 +68,6 @@ function get_date(val) {
 
 /*********************************************************************/
 function sort_by_col_impl() {
-
     table = document.getElementById("mytable");
     holder = document.getElementById("myholder");
 
@@ -90,7 +83,6 @@ function sort_by_col_impl() {
         myarray[j].val = getInnerTextHelper(table.rows[i].cells[col]);
     }
 
-
     // clicking on a column twice toggles the sort order
     if (col == prevcol) {
         if (asc)
@@ -101,7 +93,6 @@ function sort_by_col_impl() {
     else {
         asc = true;
     }
-
 
     document.getElementById("sortedby").firstChild.nodeValue = "Sorted by ["
         + getInnerTextHelper(table.rows[0].cells[col])
@@ -135,14 +126,11 @@ function sort_by_col_impl() {
         );
     }
 
-
     // for speed, use string array and join rather
     // than concatenation
 
     var k = 0;
-
     var string_array = new Array();
-
 
     string_array[k++] = "<table id=" + table.id
         + " class='table table-sm table-striped table-bordered'"
@@ -150,7 +138,6 @@ function sort_by_col_impl() {
         + (gecko ? GET_OUTER_HTML(table.rows[0]) : table.rows[0].outerHTML);
 
     // use and array and join for speed
-
     // append the sorted rows to the table
     for (i = 1; i < len; i++) {
 
@@ -166,11 +153,9 @@ function sort_by_col_impl() {
                 string_array[k++] = cells[j].outerHTML;
             }
         }
-
     }
 
     string_array[k++] = "</table>";
-
 
     var s = string_array.join("");
 
@@ -180,11 +165,9 @@ function sort_by_col_impl() {
 
     document.getElementById("wait").firstChild.nodeValue = "";
     document.getElementById("wait").innerHTML = "&nbsp;";
-
 }
 
 function flip(num) {
-
     // toggle ascending and descending order
     if (!asc) {
         return -1 * num;
@@ -215,7 +198,6 @@ function getInnerTextHelper(el) {
     return str;
 }
 
-
 var emptyElements = {
     HR: true, BR: true, IMG: true, INPUT: true
 };
@@ -225,7 +207,6 @@ var specialElements = {
 };
 
 function GET_OUTER_HTML(node) {
-
     var html = '';
     switch (node.nodeType) {
         case Node.ELEMENT_NODE:
@@ -264,4 +245,3 @@ function GET_OUTER_HTML(node) {
     }
     return html;
 }
-
