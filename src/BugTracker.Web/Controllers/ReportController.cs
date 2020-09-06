@@ -33,7 +33,7 @@
         }
 
         [HttpGet]
-        public ActionResult Index()
+        public IActionResult Index()
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanUseReports()
@@ -55,7 +55,7 @@
         }
 
         [HttpGet]
-        public ActionResult Show(int id, string view, int scale = 1)
+        public IActionResult Show(int id, string view, int scale = 1)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanUseReports();
@@ -149,7 +149,7 @@
         }
 
         [HttpGet]
-        public ActionResult Select()
+        public IActionResult Select()
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanUseReports();
@@ -171,7 +171,7 @@
 
         [HttpGet]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Create()
+        public IActionResult Create()
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanEditReports();
@@ -196,7 +196,7 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Create(EditModel model)
+        public IActionResult Create(EditModel model)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanEditReports();
@@ -229,7 +229,7 @@
 
         [HttpGet]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Update(int id)
+        public IActionResult Update(int id)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanEditReports();
@@ -260,7 +260,7 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Update(EditModel model)
+        public IActionResult Update(EditModel model)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanEditReports();
@@ -293,7 +293,7 @@
 
         [HttpGet]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Delete(int id)
+        public IActionResult Delete(int id)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanEditReports();
@@ -325,7 +325,7 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Delete(DeleteModel model)
+        public IActionResult Delete(DeleteModel model)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanEditReports();
@@ -350,7 +350,7 @@
 
         [HttpGet]
         [Authorize(Roles = BtNetRole.Administrator)]
-        public ActionResult Dashboard()
+        public IActionResult Dashboard()
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanUseReports();
@@ -384,7 +384,7 @@
 
         [HttpGet]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult EditDashboard()
+        public IActionResult EditDashboard()
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanUseReports();
@@ -417,7 +417,7 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType)
+        public IActionResult UpdateDashboard(string action, int? dashboardId, int? reportId, int? column, string chartType)
         {
             var isAuthorized = User.IsInRole(BtNetRole.Administrator)
                 || User.Identity.GetCanUseReports();

@@ -76,7 +76,7 @@
         }
 
         [HttpGet]
-        public ActionResult Register()
+        public IActionResult Register()
         {
             if (!this.applicationSettings.AllowSelfRegistration)
             {
@@ -92,7 +92,7 @@
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterModel model)
+        public IActionResult Register(RegisterModel model)
         {
             if (!this.applicationSettings.AllowSelfRegistration)
             {
@@ -188,7 +188,7 @@
         }
 
         [HttpGet]
-        public ActionResult Forgot()
+        public IActionResult Forgot()
         {
             if (!this.applicationSettings.ShowForgotPasswordLink)
             {
@@ -204,7 +204,7 @@
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Forgot(ForgotModel model)
+        public IActionResult Forgot(ForgotModel model)
         {
             if (!this.applicationSettings.ShowForgotPasswordLink)
             {
@@ -346,7 +346,7 @@
 
         [HttpGet]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Settings()
+        public IActionResult Settings()
         {
             ViewBag.Title = $"{this.applicationSettings.ApplicationTitle} - Edit your settings";
             ViewBag.SelectedItem = MainMenuSection.Settings;
@@ -446,7 +446,7 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = BtNetRole.User)]
-        public ActionResult Settings(SettingsModel model)
+        public IActionResult Settings(SettingsModel model)
         {
             ViewBag.Title = $"{this.applicationSettings.ApplicationTitle} - Edit your settings";
             ViewBag.SelectedItem = MainMenuSection.Settings;
